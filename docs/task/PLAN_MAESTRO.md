@@ -3,7 +3,7 @@
 > **Proyecto**: Plataforma de noticias automatizada con IA y RSS  
 > **Stack**: Laravel 12, Filament, Docker, Redis, PostgreSQL, Horizon, Reverb  
 > **Fecha de creación**: 29 de Marzo 2026  
-> **Estado**: En desarrollo  
+> **Estado**: En desarrollo
 
 ---
 
@@ -40,15 +40,15 @@ Construir una plataforma de noticias escalable, automatizada y competitiva que c
 
 ### 1.2 Pilares Fundamentales
 
-| Pilar | Descripción |
-|-------|-------------|
-| **Automatización** | Las noticias se consultan, redactan y publican automáticamente |
-| **Calidad** | Contenido 100% humanizado, SEO optimizado, ADA/WCAG compliant |
-| **Velocidad** | Publicación en <5-8 minutos desde la fuente original |
-| **Tiempo Real** | Actualizaciones sin refrescar la página (WebSockets) |
-| **Escalabilidad** | Arquitectura preparada para crecer de 1 a 100 nichos |
-| **Sostenibilidad** | Modelo de negocio viable con control de costos y validación temprana |
-| **Validación Temprana** | Fase 0 de pruebas manuales antes de escalar |
+| Pilar                   | Descripción                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| **Automatización**      | Las noticias se consultan, redactan y publican automáticamente       |
+| **Calidad**             | Contenido 100% humanizado, SEO optimizado, ADA/WCAG compliant        |
+| **Velocidad**           | Publicación en <5-8 minutos desde la fuente original                 |
+| **Tiempo Real**         | Actualizaciones sin refrescar la página (WebSockets)                 |
+| **Escalabilidad**       | Arquitectura preparada para crecer de 1 a 100 nichos                 |
+| **Sostenibilidad**      | Modelo de negocio viable con control de costos y validación temprana |
+| **Validación Temprana** | Fase 0 de pruebas manuales antes de escalar                          |
 
 ### 1.3 Principios de Desarrollo
 
@@ -66,6 +66,7 @@ Construir una plataforma de noticias escalable, automatizada y competitiva que c
 ### 1.4 Fase 0 de Validación (Nueva - Crítica)
 
 Antes de cualquier desarrollo completo:
+
 - Configurar 20 feeds RSS manualmente
 - Generar 10-20 artículos con prompts manuales
 - Publicar en Medium/subdominio y medir engagement (CTR >2%, tiempo lectura >45s)
@@ -91,13 +92,13 @@ Antes de cualquier desarrollo completo:
 
 No competir como generalista desde el día 1. Las razones:
 
-| Factor | Generalista | Especialista (Elegido) |
-|--------|-------------|------------------------|
-| Autoridad de Dominio | Décadas para construir | Meses para dominar un nicho |
-| Costos de IA | Muy altos (muchas categorías) | Controlados (1-2 categorías) |
-| Backlinks | Difíciles de conseguir | Naturales por autoridad temática |
-| Competencia | CNN, BBC, NYT (imposible) | Blogs pequeños (superables) |
-| Google E-E-A-T | Penalizado por falta de foco | Premiado por expertise demostrable |
+| Factor               | Generalista                   | Especialista (Elegido)             |
+| -------------------- | ----------------------------- | ---------------------------------- |
+| Autoridad de Dominio | Décadas para construir        | Meses para dominar un nicho        |
+| Costos de IA         | Muy altos (muchas categorías) | Controlados (1-2 categorías)       |
+| Backlinks            | Difíciles de conseguir        | Naturales por autoridad temática   |
+| Competencia          | CNN, BBC, NYT (imposible)     | Blogs pequeños (superables)        |
+| Google E-E-A-T       | Penalizado por falta de foco  | Premiado por expertise demostrable |
 
 ### 2.2 Criterios de Selección del Nicho
 
@@ -112,13 +113,13 @@ No competir como generalista desde el día 1. Las razones:
 
 ### 2.3 Top Nichos Evaluados
 
-| # | Nicho | RSS | Competencia | Monetización | Veredicto |
-|---|-------|-----|-------------|--------------|-----------|
-| 1 | **IA y Automatización** | ⭐⭐⭐⭐⭐ | Media | Muy Alta | 🏆 GANADOR |
-| 2 | Ciberseguridad | ⭐⭐⭐⭐ | Baja-Media | Alta | Excelente |
-| 3 | Finanzas/Crypto/Web3 | ⭐⭐⭐⭐⭐ | Alta | Muy Alta | Riesgoso |
-| 4 | Salud & Wellness Tech | ⭐⭐⭐ | Baja | Alta | Nicho azul |
-| 5 | Energías Renovables | ⭐⭐⭐ | Muy Baja | Media-Alta | Largo plazo |
+| #   | Nicho                   | RSS        | Competencia | Monetización | Veredicto   |
+| --- | ----------------------- | ---------- | ----------- | ------------ | ----------- |
+| 1   | **IA y Automatización** | ⭐⭐⭐⭐⭐ | Media       | Muy Alta     | 🏆 GANADOR  |
+| 2   | Ciberseguridad          | ⭐⭐⭐⭐   | Baja-Media  | Alta         | Excelente   |
+| 3   | Finanzas/Crypto/Web3    | ⭐⭐⭐⭐⭐ | Alta        | Muy Alta     | Riesgoso    |
+| 4   | Salud & Wellness Tech   | ⭐⭐⭐     | Baja        | Alta         | Nicho azul  |
+| 5   | Energías Renovables     | ⭐⭐⭐     | Muy Baja    | Media-Alta   | Largo plazo |
 
 ### 2.4 Nicho Elegido: IA y Automatización
 
@@ -178,26 +179,27 @@ FASE 3 (Año 3+): Agregar "Finanzas Tech" → Plataforma multi-nicho
 
 ### 3.2 Stack Tecnológico Completo (Actualizado para FrankenPHP)
 
-| Capa | Tecnología | Justificación | Beneficios con FrankenPHP |
-|------|-----------|---------------|---------------------------|
-| **Servidor Web + PHP** | **FrankenPHP** (PHP 8.3 + Caddy) | PHP + servidor web integrado, HTTP/3 nativo | ⚡ **20-30% más rápido**, 🚀 **HTTP/3**, 🔧 **Menos configuración** |
-| Backend | Laravel 12 | Framework robusto, comunidad activa | Compatibilidad total, worker mode optimizado |
-| Admin | Filament v3 | Panel de administración rápido y potente | Sin cambios, funciona perfectamente |
-| DB Principal | PostgreSQL + pgvector | JSONB para metadatos, embeddings para IA | pgvector para similitud semántica |
-| Cache | Redis | Cache ultra-rápido, colas de trabajos | Sesiones en Redis para mejor performance |
-| Colas | Laravel Horizon | Gestión visual de colas para procesamiento IA | Procesamiento async de IA sin bloquear servidor |
-| Tiempo Real | Laravel Reverb | WebSockets nativos, sin servicios externos | Contenedor separado para escalabilidad |
-| Frontend | Blade + Alpine.js + Tailwind | SSR para SEO + interactividad ligera | SSR más rápido con FrankenPHP worker mode |
-| Build | Vite | Compilación rápida de assets | Sin cambios |
-| Imágenes | Intervention Image + WebP/AVIF | Compresión inteligente + formatos modernos | Mejor performance de entrega de assets |
-| IA | OpenRouter (multi-model) | Flexibilidad para rotar modelos según costo/calidad | Async processing via Horizon |
-| Imágenes IA | FluxAPI.ai + fallback SVG | Generación única + placeholder de marca | Evita problemas de licencia |
-| RSS | vedmant/laravel-feed-reader | Lectura robusta con manejo de errores | Sin cambios |
-| Deploy | Docker + Laravel Forge | Consistencia dev/prod + escalado horizontal | FrankenPHP incluido en Docker |
-| CDN | Cloudflare | Assets estáticos + edge caching + HTTP/3 | Compatibilidad perfecta con FrankenPHP HTTP/3 |
-| Monitoreo | Laravel Pulse + FrankenPHP metrics | Monitoreo nativo + métricas del servidor | Métricas integradas de FrankenPHP |
+| Capa                   | Tecnología                         | Justificación                                       | Beneficios con FrankenPHP                                           |
+| ---------------------- | ---------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
+| **Servidor Web + PHP** | **FrankenPHP** (PHP 8.3 + Caddy)   | PHP + servidor web integrado, HTTP/3 nativo         | ⚡ **20-30% más rápido**, 🚀 **HTTP/3**, 🔧 **Menos configuración** |
+| Backend                | Laravel 12                         | Framework robusto, comunidad activa                 | Compatibilidad total, worker mode optimizado                        |
+| Admin                  | Filament v3                        | Panel de administración rápido y potente            | Sin cambios, funciona perfectamente                                 |
+| DB Principal           | PostgreSQL + pgvector              | JSONB para metadatos, embeddings para IA            | pgvector para similitud semántica                                   |
+| Cache                  | Redis                              | Cache ultra-rápido, colas de trabajos               | Sesiones en Redis para mejor performance                            |
+| Colas                  | Laravel Horizon                    | Gestión visual de colas para procesamiento IA       | Procesamiento async de IA sin bloquear servidor                     |
+| Tiempo Real            | Laravel Reverb                     | WebSockets nativos, sin servicios externos          | Contenedor separado para escalabilidad                              |
+| Frontend               | Blade + Alpine.js + Tailwind       | SSR para SEO + interactividad ligera                | SSR más rápido con FrankenPHP worker mode                           |
+| Build                  | Vite                               | Compilación rápida de assets                        | Sin cambios                                                         |
+| Imágenes               | Intervention Image + WebP/AVIF     | Compresión inteligente + formatos modernos          | Mejor performance de entrega de assets                              |
+| IA                     | OpenRouter (multi-model)           | Flexibilidad para rotar modelos según costo/calidad | Async processing via Horizon                                        |
+| Imágenes IA            | FluxAPI.ai + fallback SVG          | Generación única + placeholder de marca             | Evita problemas de licencia                                         |
+| RSS                    | vedmant/laravel-feed-reader        | Lectura robusta con manejo de errores               | Sin cambios                                                         |
+| Deploy                 | Docker + Laravel Forge             | Consistencia dev/prod + escalado horizontal         | FrankenPHP incluido en Docker                                       |
+| CDN                    | Cloudflare                         | Assets estáticos + edge caching + HTTP/3            | Compatibilidad perfecta con FrankenPHP HTTP/3                       |
+| Monitoreo              | Laravel Pulse + FrankenPHP metrics | Monitoreo nativo + métricas del servidor            | Métricas integradas de FrankenPHP                                   |
 
 **Ventajas clave de FrankenPHP:**
+
 1. **🚀 Performance superior**: Hasta 30% más rápido que Nginx+PHP-FPM
 2. **⚡ HTTP/3 nativo**: Soporte para QUIC protocol
 3. **🔧 Simplificación**: Un solo servicio en lugar de Nginx+PHP-FPM
@@ -233,34 +235,35 @@ Sistema encargado de consultar fuentes RSS de manera automatizada, parsear el co
 
 ### 4.3 Estrategia de Fuentes
 
-| Tipo | Ejemplos | Proporción |
-|------|----------|------------|
-| **Gratis** | Blogs oficiales (OpenAI, Google AI), Medium, Substack, arXiv, HN, Reddit | 80% |
-| **Pagas** | NewsAPI.org, GDELT, AYLIEN, GNews | 20% |
+| Tipo       | Ejemplos                                                                 | Proporción |
+| ---------- | ------------------------------------------------------------------------ | ---------- |
+| **Gratis** | Blogs oficiales (OpenAI, Google AI), Medium, Substack, arXiv, HN, Reddit | 80%        |
+| **Pagas**  | NewsAPI.org, GDELT, AYLIEN, GNews                                        | 20%        |
 
 ### 4.4 Sistema de Scoring de Fuentes
 
 Cada fuente RSS tendrá un score automático basado en:
 
-| Criterio | Descripción | Peso |
-|----------|-------------|------|
-| **Fiabilidad** | ¿Cuántas veces falla el fetch? | 30% |
-| **Frescura** | ¿Publica contenido nuevo frecuentemente? | 25% |
-| **Originalidad** | ¿Su contenido aparece primero o es copia? | 25% |
-| **Calidad** | ¿El contenido tiene suficiente texto? | 20% |
+| Criterio         | Descripción                               | Peso |
+| ---------------- | ----------------------------------------- | ---- |
+| **Fiabilidad**   | ¿Cuántas veces falla el fetch?            | 30%  |
+| **Frescura**     | ¿Publica contenido nuevo frecuentemente?  | 25%  |
+| **Originalidad** | ¿Su contenido aparece primero o es copia? | 25%  |
+| **Calidad**      | ¿El contenido tiene suficiente texto?     | 20%  |
 
 **Reglas automáticas:**
+
 - Score bajo → Fuente se desactiva automáticamente
 - Score alto → Fuente se consulta más frecuentemente
 - Score crítico → Alerta al administrador
 
 ### 4.5 Frecuencia de Polling Dinámico
 
-| Tipo de Fuente | Frecuencia | Ejemplo |
-|----------------|------------|---------|
-| Alta frecuencia | 2-5 minutos | Hacker News, TechCrunch |
-| Media frecuencia | 15-30 minutos | Blogs de empresas AI |
-| Baja frecuencia | 1-2 horas | Medios generalistas |
+| Tipo de Fuente   | Frecuencia    | Ejemplo                 |
+| ---------------- | ------------- | ----------------------- |
+| Alta frecuencia  | 2-5 minutos   | Hacker News, TechCrunch |
+| Media frecuencia | 15-30 minutos | Blogs de empresas AI    |
+| Baja frecuencia  | 1-2 horas     | Medios generalistas     |
 
 ### 4.6 Paquetes Recomendados
 
@@ -306,12 +309,12 @@ Pipeline de procesamiento que transforma contenido crudo en artículos 100% SEO,
 
 ### 5.3 Pipeline de Redacción en 4 Capas
 
-| Capa | Modelo IA | Costo Est. | Función |
-|------|-----------|------------|---------|
-| 1. Clasificación | Gemini Flash / Haiku | $0.001 | ¿Nueva, actualización o duplicado? |
-| 2. Extracción | Gemini Flash | $0.002 | Extraer hechos clave, entidades, fechas |
-| 3. Redacción | Claude 3.5 Sonnet | $0.03 | Escribir artículo completo con "voz" |
-| 4. Humanización | GPT-4o-mini | $0.005 | Post-procesamiento anti-detección IA |
+| Capa             | Modelo IA            | Costo Est. | Función                                 |
+| ---------------- | -------------------- | ---------- | --------------------------------------- |
+| 1. Clasificación | Gemini Flash / Haiku | $0.001     | ¿Nueva, actualización o duplicado?      |
+| 2. Extracción    | Gemini Flash         | $0.002     | Extraer hechos clave, entidades, fechas |
+| 3. Redacción     | Claude 3.5 Sonnet    | $0.03      | Escribir artículo completo con "voz"    |
+| 4. Humanización  | GPT-4o-mini          | $0.005     | Post-procesamiento anti-detección IA    |
 
 **Costo estimado por artículo: ~$0.04**  
 **100 artículos/día = $4/día = $120/mes**
@@ -322,12 +325,12 @@ Pipeline de procesamiento que transforma contenido crudo en artículos 100% SEO,
 
 Rotar entre 3-4 personalidades de redactor (a futuro):
 
-| Voz | Tono | Uso |
-|-----|------|-----|
-| **El Analista** | Técnico, datos duros | Artículos de investigación |
-| **El Divulgador** | Accesible, analogías | Explicar conceptos complejos |
-| **El Cronista** | Narrativo, storytelling | Noticias de impacto humano |
-| **El Crítico** | Opinión fundamentada | Análisis de productos/decisiones |
+| Voz               | Tono                    | Uso                              |
+| ----------------- | ----------------------- | -------------------------------- |
+| **El Analista**   | Técnico, datos duros    | Artículos de investigación       |
+| **El Divulgador** | Accesible, analogías    | Explicar conceptos complejos     |
+| **El Cronista**   | Narrativo, storytelling | Noticias de impacto humano       |
+| **El Crítico**    | Opinión fundamentada    | Análisis de productos/decisiones |
 
 ### 5.5 Humanización Anti-Detección
 
@@ -405,13 +408,13 @@ Sistema automatizado para crear imágenes únicas y optimizadas para cada notici
 
 ### 6.3 Decisiones de Negocio (Simplificado)
 
-| Decisión | Recomendación | Razón |
-|----------|---------------|-------|
-| Estilo visual | Consistente con prompt template | Coherencia visual en todo el sitio |
-| Formato | WebP/AVIF con fallback JPEG | Optimización de carga |
-| Fallback | **FluxAPI → Placeholder SVG con diseño de marca** | Evita problemas de licencia y atribución de Unsplash |
-| Alt text | Generado por IA | Cumplimiento WCAG |
-| CDN | Cloudflare | Velocidad de carga global |
+| Decisión      | Recomendación                                     | Razón                                                |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------- |
+| Estilo visual | Consistente con prompt template                   | Coherencia visual en todo el sitio                   |
+| Formato       | WebP/AVIF con fallback JPEG                       | Optimización de carga                                |
+| Fallback      | **FluxAPI → Placeholder SVG con diseño de marca** | Evita problemas de licencia y atribución de Unsplash |
+| Alt text      | Generado por IA                                   | Cumplimiento WCAG                                    |
+| CDN           | Cloudflare                                        | Velocidad de carga global                            |
 
 ### 6.4 Prompt Template Base
 
@@ -457,11 +460,11 @@ Sistema inteligente de 3 niveles para evitar contenido redundante y detectar act
 
 ### 7.3 Los 3 Niveles de Detección
 
-| Nivel | Método | Velocidad | Precisión |
-|-------|--------|-----------|-----------|
-| 1 | Hash exacto (título+URL) | Instantáneo | 100% para duplicados exactos |
-| 2 | Similitud de texto (TF-IDF/Cosine) | Rápido | ~85% para paráfrasis |
-| 3 | IA semántica (embeddings pgvector) | Medio | ~95% para contenido similar |
+| Nivel | Método                             | Velocidad   | Precisión                    |
+| ----- | ---------------------------------- | ----------- | ---------------------------- |
+| 1     | Hash exacto (título+URL)           | Instantáneo | 100% para duplicados exactos |
+| 2     | Similitud de texto (TF-IDF/Cosine) | Rápido      | ~85% para paráfrasis         |
+| 3     | IA semántica (embeddings pgvector) | Medio       | ~95% para contenido similar  |
 
 ### 7.4 Regla de Oro (Mejorada)
 
@@ -526,22 +529,22 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 
 ### 8.4 Rate Limiting Inteligente
 
-| Regla | Límite | Razón |
-|-------|--------|-------|
-| Mismo tema/hora | Máx 2-3 artículos | No saturar audiencia |
-| Distribución | A lo largo del día | No burst de publicaciones |
-| Horas pico | Priorizar según analytics | Máximo engagement |
+| Regla           | Límite                    | Razón                     |
+| --------------- | ------------------------- | ------------------------- |
+| Mismo tema/hora | Máx 2-3 artículos         | No saturar audiencia      |
+| Distribución    | A lo largo del día        | No burst de publicaciones |
+| Horas pico      | Priorizar según analytics | Máximo engagement         |
 
 ### 8.5 Workflow de Aprobación en Filament
 
-| Estado | Descripción | Acción |
-|--------|-------------|--------|
-| `draft` | Generado por IA, pendiente | Esperando revisión |
-| `pending_review` | En cola de revisión manual | Editor revisa |
-| `approved` | Aprobado para publicación | Se publica automáticamente |
-| `published` | En vivo | Visible al público |
-| `rejected` | No cumple estándares | Se archiva o regenera |
-| `updated` | Actualización de noticia existente | Se anexa a la original |
+| Estado           | Descripción                        | Acción                     |
+| ---------------- | ---------------------------------- | -------------------------- |
+| `draft`          | Generado por IA, pendiente         | Esperando revisión         |
+| `pending_review` | En cola de revisión manual         | Editor revisa              |
+| `approved`       | Aprobado para publicación          | Se publica automáticamente |
+| `published`      | En vivo                            | Visible al público         |
+| `rejected`       | No cumple estándares               | Se archiva o regenera      |
+| `updated`        | Actualización de noticia existente | Se anexa a la original     |
 
 ---
 
@@ -551,13 +554,14 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 
 **DECISIÓN: 2 Columnas (70/30)**
 
-| Opción | Veredicto | Razón |
-|--------|-----------|-------|
-| 1 columna | ❌ No | Solo para blogs personales |
-| **2 columnas** | ✅ **ELEGIDO** | Estándar de oro para noticias |
-| 3 columnas | ⚠️ Condicional | Solo si hay MUCHO contenido + ads |
+| Opción         | Veredicto      | Razón                             |
+| -------------- | -------------- | --------------------------------- |
+| 1 columna      | ❌ No          | Solo para blogs personales        |
+| **2 columnas** | ✅ **ELEGIDO** | Estándar de oro para noticias     |
+| 3 columnas     | ⚠️ Condicional | Solo si hay MUCHO contenido + ads |
 
 **¿Por qué 2 columnas?**
+
 - **Principal (70%)**: Feed de noticias en grid/mosaico
 - **Sidebar (30%)**: Trending, categorías, newsletter, futuro espacio ads
 - En móvil: sidebar se va abajo (nativo con CSS Grid/Flexbox)
@@ -595,12 +599,12 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 
 ### 9.3 Tiempo Real con Reverb
 
-| Componente | Descripción |
-|------------|-------------|
-| Canal público | `news.feed` para el feed principal |
-| Canales por categoría | `news.{category}` para páginas de categoría |
-| Animación | "Nueva noticia disponible" banner sutil |
-| UX | No interrumpe lectura, el usuario decide si ver |
+| Componente            | Descripción                                     |
+| --------------------- | ----------------------------------------------- |
+| Canal público         | `news.feed` para el feed principal              |
+| Canales por categoría | `news.{category}` para páginas de categoría     |
+| Animación             | "Nueva noticia disponible" banner sutil         |
+| UX                    | No interrumpe lectura, el usuario decide si ver |
 
 ### 9.4 Diseño UI/UX
 
@@ -621,6 +625,7 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 ### 10.2 Checklist de Optimización (Mejorada para FrankenPHP)
 
 #### Rendimiento con FrankenPHP
+
 ```
 ✅ **FrankenPHP Worker Mode**: Aplicación siempre en memoria (como Octane)
 ✅ **HTTP/3 nativo**: QUIC protocol para menor latencia
@@ -636,6 +641,7 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 ```
 
 #### SEO On-Page
+
 ```
 ✅ Sitemap dinámico actualizado por Horizon
 ✅ **IndexNow** (notificación instantánea a Bing/Yandex/Google)
@@ -652,6 +658,7 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 ```
 
 #### Accesibilidad (ADA/WCAG)
+
 ```
 ✅ Contraste de colores AA/AAA
 ✅ Navegación por teclado
@@ -678,14 +685,14 @@ Sistema automatizado de tags que mejora SEO, navegación y descubrimiento de con
 
 ### 11.2 ¿Por qué implementar tags? (Análisis ROI)
 
-| Beneficio | Impacto | Valor para tu nicho |
-|-----------|---------|---------------------|
-| **SEO Semántico** | Alto | Google entiende mejor contenido técnico |
-| **Navegación Mejorada** | Alto | Usuarios encuentran tecnologías específicas |
-| **Internal Linking** | Alto | +150% enlaces internos automáticos |
-| **Personalización** | Medio | Recomendaciones basadas en intereses |
-| **Tendencias** | Medio | Identificar tecnologías populares en tiempo real |
-| **Organización Interna** | Medio | Mejor gestión de contenido técnico |
+| Beneficio                | Impacto | Valor para tu nicho                              |
+| ------------------------ | ------- | ------------------------------------------------ |
+| **SEO Semántico**        | Alto    | Google entiende mejor contenido técnico          |
+| **Navegación Mejorada**  | Alto    | Usuarios encuentran tecnologías específicas      |
+| **Internal Linking**     | Alto    | +150% enlaces internos automáticos               |
+| **Personalización**      | Medio   | Recomendaciones basadas en intereses             |
+| **Tendencias**           | Medio   | Identificar tecnologías populares en tiempo real |
+| **Organización Interna** | Medio   | Mejor gestión de contenido técnico               |
 
 ### 11.3 Arquitectura del Sistema de Tags
 
@@ -748,6 +755,7 @@ Schema::create('article_tag', function (Blueprint $table) {
 ### 11.5 Generación Automática de Tags con IA
 
 #### Pipeline de extracción (costo: ~$0.001 por artículo)
+
 ```php
 class TagGeneratorService
 {
@@ -756,40 +764,40 @@ class TagGeneratorService
         // 1. Extracción de entidades nombradas (NER)
         $entities = $this->extractNamedEntities($content);
         // Ej: ["OpenAI", "GPT-4", "Python", "API"]
-        
+
         // 2. Identificación de tecnologías
         $technologies = $this->identifyTechnologies($content);
         // Ej: ["tensorflow", "pytorch", "react", "docker"]
-        
+
         // 3. Extracción de conceptos clave
         $concepts = $this->extractKeyConcepts($content);
         // Ej: ["machine-learning", "nlp", "computer-vision"]
-        
+
         // 4. Normalización y limpieza
         $tags = $this->normalizeTags(array_merge(
             $entities, $technologies, $concepts
         ));
-        
+
         // 5. Limitación y scoring
         return $this->limitAndScoreTags($tags, $content);
     }
-    
+
     private function normalizeTags(array $tags): array
     {
         return array_map(function($tag) {
             // Minúsculas, sin espacios extra
             $tag = strtolower(trim($tag));
-            
+
             // Singularizar (opcional, basado en diccionario)
             if ($this->shouldBeSingular($tag)) {
                 $tag = Str::singular($tag);
             }
-            
+
             // Remover stopwords
             if ($this->isStopword($tag)) {
                 return null;
             }
-            
+
             // Validar longitud
             return (strlen($tag) >= 2 && strlen($tag) <= 50) ? $tag : null;
         }, array_filter($tags));
@@ -800,6 +808,7 @@ class TagGeneratorService
 ### 11.6 Frontend - Implementación UX/UI
 
 #### Sidebar - Cloud Tags
+
 ```blade
 {{-- Componente: Cloud de Tags Populares --}}
 <div class="tags-cloud">
@@ -810,8 +819,8 @@ class TagGeneratorService
                 $size = min(24, max(12, 12 + ($tag->article_count / 10)));
                 $color = $this->getTagColor($tag->name);
             @endphp
-            <a href="{{ route('tags.show', $tag->slug) }}" 
-               class="tag" 
+            <a href="{{ route('tags.show', $tag->slug) }}"
+               class="tag"
                style="font-size: {{ $size }}px; color: {{ $color }};">
                 {{ $tag->name }} <span class="count">({{ $tag->article_count }})</span>
             </a>
@@ -821,12 +830,14 @@ class TagGeneratorService
 ```
 
 #### Página de Tag Individual
+
 - **URL**: `/tags/{slug}` (ej: `/tags/openai`)
 - **Contenido**: Lista de artículos con ese tag + descripción generada por IA
 - **SEO**: Meta description automática, breadcrumbs, related tags
 - **Features**: Paginación, sorting (nuevo, popular), RSS feed por tag
 
 #### Artículo - Tags relacionados
+
 ```blade
 {{-- Al final de cada artículo --}}
 <div class="article-tags">
@@ -838,7 +849,7 @@ class TagGeneratorService
             </a>
         @endforeach
     </div>
-    
+
     {{-- Artículos relacionados (mismos tags) --}}
     @if($relatedArticles->count() > 0)
         <div class="related-articles">
@@ -856,6 +867,7 @@ class TagGeneratorService
 ### 11.7 SEO - Beneficios Específicos
 
 #### Sitemap de Tags
+
 ```xml
 <!-- sitemap-tags.xml -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -871,11 +883,13 @@ class TagGeneratorService
 ```
 
 #### Internal Linking Automático
+
 - Cada tag crea una página con enlaces a todos los artículos relacionados
 - Los artículos muestran tags clickeables que llevan a páginas de tag
 - Las páginas de tag muestran "related tags" basado en co-ocurrencia
 
 #### Schema.org Markup
+
 ```json
 {
   "@context": "https://schema.org",
@@ -904,6 +918,7 @@ class TagGeneratorService
 ### 11.8 Monitoreo y Mantenimiento Automático
 
 #### Sistema de Limpieza Automática
+
 ```php
 // Comando artisan: tags:cleanup
 class TagsCleanupCommand extends Command
@@ -914,10 +929,10 @@ class TagsCleanupCommand extends Command
         Tag::where('article_count', 0)
            ->where('updated_at', '<', now()->subDays(30))
            ->delete();
-        
+
         // 2. Merge tags similares (Levenshtein distance < 2)
         $this->mergeSimilarTags();
-        
+
         // 3. Actualizar contadores
         Tag::chunk(100, function ($tags) {
             foreach ($tags as $tag) {
@@ -925,7 +940,7 @@ class TagsCleanupCommand extends Command
                 $tag->save();
             }
         });
-        
+
         // 4. Generar reporte
         $this->generateCleanupReport();
     }
@@ -933,6 +948,7 @@ class TagsCleanupCommand extends Command
 ```
 
 #### Analytics de Tags
+
 - **Popularidad**: Artículos por tag, vistas por tag
 - **Engagement**: Tiempo en páginas de tag, CTR
 - **SEO**: Posiciones por keywords de tag
@@ -941,12 +957,14 @@ class TagsCleanupCommand extends Command
 ### 11.9 Roadmap de Implementación
 
 #### Fase 1 (Meses 1-2) - Básico
-- [ ] Migración de base de datos para tags
+
+- [x] Migración de base de datos para tags
 - [ ] Generación automática de tags con IA
-- [ ] Relación muchos-a-muchos articles-tags
-- [ ] Tags en frontend (sidebar y artículo)
+- [x] Relación muchos-a-muchos articles-tags
+- [x] Tags en frontend (Panel administrativo Filament)
 
 #### Fase 2 (Meses 3-4) - Avanzado
+
 - [ ] Páginas de tag individuales
 - [ ] Cloud tags con sizing proporcional
 - [ ] Sistema de normalización automática
@@ -954,6 +972,7 @@ class TagsCleanupCommand extends Command
 - [ ] Artículos relacionados por tags
 
 #### Fase 3 (Meses 5-6) - Optimización
+
 - [ ] Personalización por tags (usuarios registrados)
 - [ ] Newsletter por tags de interés
 - [ ] Analytics de performance por tag
@@ -962,22 +981,22 @@ class TagsCleanupCommand extends Command
 
 ### 11.10 KPIs Específicos para Tags
 
-| KPI | Objetivo | Métrica |
-|-----|----------|---------|
-| **Tags generados/artículo** | 3-5 | Promedio de tags por artículo |
-| **Páginas de tag indexadas** | +50% | Número de páginas de tag en índice |
-| **Internal links** | +150% | Enlaces internos generados por tags |
-| **Tiempo en páginas de tag** | >1.5 min | Engagement en páginas de tag |
-| **CTR tags** | >2% | Clics en tags desde artículos |
+| KPI                          | Objetivo | Métrica                             |
+| ---------------------------- | -------- | ----------------------------------- |
+| **Tags generados/artículo**  | 3-5      | Promedio de tags por artículo       |
+| **Páginas de tag indexadas** | +50%     | Número de páginas de tag en índice  |
+| **Internal links**           | +150%    | Enlaces internos generados por tags |
+| **Tiempo en páginas de tag** | >1.5 min | Engagement en páginas de tag        |
+| **CTR tags**                 | >2%      | Clics en tags desde artículos       |
 
 ### 11.11 Costo vs Beneficio Estimado
 
-| Aspecto | Costo | Beneficio | ROI |
-|---------|-------|-----------|-----|
-| Desarrollo | 10-15 horas | SEO mejorado, UX mejorada | Alto |
-| IA adicional | $0.001-0.002/artículo | Tags precisos, relevantes | Alto |
-| Mantenimiento | 1-2 horas/mes | Contenido mejor organizado | Medio-Alto |
-| **Total mensual** | **~$5-10** | **+50% páginas indexadas** | **Muy Alto** |
+| Aspecto           | Costo                 | Beneficio                  | ROI          |
+| ----------------- | --------------------- | -------------------------- | ------------ |
+| Desarrollo        | 10-15 horas           | SEO mejorado, UX mejorada  | Alto         |
+| IA adicional      | $0.001-0.002/artículo | Tags precisos, relevantes  | Alto         |
+| Mantenimiento     | 1-2 horas/mes         | Contenido mejor organizado | Medio-Alto   |
+| **Total mensual** | **~$5-10**            | **+50% páginas indexadas** | **Muy Alto** |
 
 **ROI estimado**: Por cada $1 gastado en tags, ganas ~100 páginas indexadas adicionales y mejor engagement.
 
@@ -991,37 +1010,40 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 ### 11.2 Plataformas Evaluadas
 
-| Plataforma | Método | Costo | ROI | Prioridad |
-|------------|--------|-------|-----|-----------|
-| Telegram Bot | API nativa | Gratis | ⭐⭐⭐⭐⭐ | ALTA |
-| Discord | Webhook | Gratis | ⭐⭐⭐⭐⭐ | ALTA |
-| Reddit | Bot + API | Gratis | ⭐⭐⭐⭐⭐ | ALTA |
-| Medium | Crosspost | Gratis | ⭐⭐⭐⭐ | MEDIA |
-| Twitter/X | API (limitada) | Gratis/Pago | ⭐⭐⭐ | BAJA |
-| LinkedIn | API limitada | Gratis | ⭐⭐⭐ | BAJA |
+| Plataforma   | Método         | Costo       | ROI        | Prioridad |
+| ------------ | -------------- | ----------- | ---------- | --------- |
+| Telegram Bot | API nativa     | Gratis      | ⭐⭐⭐⭐⭐ | ALTA      |
+| Discord      | Webhook        | Gratis      | ⭐⭐⭐⭐⭐ | ALTA      |
+| Reddit       | Bot + API      | Gratis      | ⭐⭐⭐⭐⭐ | ALTA      |
+| Medium       | Crosspost      | Gratis      | ⭐⭐⭐⭐   | MEDIA     |
+| Twitter/X    | API (limitada) | Gratis/Pago | ⭐⭐⭐     | BAJA      |
+| LinkedIn     | API limitada   | Gratis      | ⭐⭐⭐     | BAJA      |
 
 ### 11.3 Estrategia Recomendada
 
 **Fase 1 (Prioridad)**: Telegram + Discord + Reddit
+
 - Son gratis
 - Audiencia tech los usa masivamente
 - Tráfico de alta calidad
 
 **Fase 2**: Medium + Dev.to
+
 - Republicar versiones resumidas
 - Links apuntan a tu web para SEO
 
 **Fase 3**: Redes sociales
+
 - Automatización con Make.com o n8n (self-hosted en Docker)
 
 ### 11.4 Herramientas de Automatización
 
-| Herramienta | Uso | Costo |
-|-------------|-----|-------|
-| n8n (self-hosted) | Workflows de automatización | Gratis |
-| Make.com | Integraciones visuales | Freemium |
-| Telegram Bot API | Canal de noticias | Gratis |
-| Discord Webhooks | Comunidad + noticias | Gratis |
+| Herramienta       | Uso                         | Costo    |
+| ----------------- | --------------------------- | -------- |
+| n8n (self-hosted) | Workflows de automatización | Gratis   |
+| Make.com          | Integraciones visuales      | Freemium |
+| Telegram Bot API  | Canal de noticias           | Gratis   |
+| Discord Webhooks  | Comunidad + noticias        | Gratis   |
 
 ---
 
@@ -1031,13 +1053,13 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 **Inglés PRIMERO, Español SEGUNDO**
 
-| Aspecto | Inglés | Español |
-|---------|--------|---------|
-| Prioridad | Primaria | Secundaria |
-| Contenido | Artículo completo | Traducción del inglés |
-| SEO | Keywords EN (mayor volumen) | Keywords ES (menor competencia) |
-| URL structure | `/en/article-slug` | `/es/article-slug` |
-| Hreflang | Automático | Automático |
+| Aspecto       | Inglés                      | Español                         |
+| ------------- | --------------------------- | ------------------------------- |
+| Prioridad     | Primaria                    | Secundaria                      |
+| Contenido     | Artículo completo           | Traducción del inglés           |
+| SEO           | Keywords EN (mayor volumen) | Keywords ES (menor competencia) |
+| URL structure | `/en/article-slug`          | `/es/article-slug`              |
+| Hreflang      | Automático                  | Automático                      |
 
 ### 13.2 ¿Por qué inglés primero?
 
@@ -1100,31 +1122,31 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 ### 14.2 Paquetes Composer Principales (Actualizados para FrankenPHP)
 
-| Paquete | Uso | Notas para FrankenPHP |
-|---------|-----|----------------------|
-| `laravel/framework` ^12.0 | Framework principal | Compatible al 100% |
-| `filament/filament` ^3.0 | Panel de administración | Funciona sin cambios |
-| `laravel/horizon` | Gestión de colas Redis | Necesario para procesamiento async |
-| `laravel/reverb` | WebSockets en tiempo real | Corre en contenedor separado |
-| `laravel/pulse` | Monitoreo | Monitorea FrankenPHP también |
-| `vedmant/laravel-feed-reader` | Lectura RSS | Sin cambios |
-| `spatie/laravel-feed` | Generación RSS propio | Sin cambios |
-| `intervention/image` | Procesamiento de imágenes | Requiere extensiones GD |
-| `pgvector/pgvector` | Embeddings para similitud semántica | Requiere extensión pgvector |
-| `dunglas/frankenphp` | Runtime PHP + servidor web | **NUEVO: Reemplaza Nginx+PHP-FPM** |
-| `symfony/runtime` | Integración con FrankenPHP | Necesario para worker mode |
+| Paquete                       | Uso                                 | Notas para FrankenPHP              |
+| ----------------------------- | ----------------------------------- | ---------------------------------- |
+| `laravel/framework` ^12.0     | Framework principal                 | Compatible al 100%                 |
+| `filament/filament` ^3.0      | Panel de administración             | Funciona sin cambios               |
+| `laravel/horizon`             | Gestión de colas Redis              | Necesario para procesamiento async |
+| `laravel/reverb`              | WebSockets en tiempo real           | Corre en contenedor separado       |
+| `laravel/pulse`               | Monitoreo                           | Monitorea FrankenPHP también       |
+| `vedmant/laravel-feed-reader` | Lectura RSS                         | Sin cambios                        |
+| `spatie/laravel-feed`         | Generación RSS propio               | Sin cambios                        |
+| `intervention/image`          | Procesamiento de imágenes           | Requiere extensiones GD            |
+| `pgvector/pgvector`           | Embeddings para similitud semántica | Requiere extensión pgvector        |
+| `dunglas/frankenphp`          | Runtime PHP + servidor web          | **NUEVO: Reemplaza Nginx+PHP-FPM** |
+| `symfony/runtime`             | Integración con FrankenPHP          | Necesario para worker mode         |
 
 **Nota importante**: No usamos `laravel/octane` porque FrankenPHP ya proporciona optimizaciones similares y mejor integración HTTP/3.
 
 ### 14.3 Paquetes NPM Principales
 
-| Paquete | Uso |
-|---------|-----|
-| `alpinejs` | Interactividad ligera |
-| `tailwindcss` | Framework CSS |
-| `laravel-echo` | Cliente WebSockets |
-| `pusher-js` | Conexión WebSocket (compatible con Reverb) |
-| `vite` | Build tool |
+| Paquete        | Uso                                        |
+| -------------- | ------------------------------------------ |
+| `alpinejs`     | Interactividad ligera                      |
+| `tailwindcss`  | Framework CSS                              |
+| `laravel-echo` | Cliente WebSockets                         |
+| `pusher-js`    | Conexión WebSocket (compatible con Reverb) |
+| `vite`         | Build tool                                 |
 
 ---
 
@@ -1242,47 +1264,47 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 ### 15.1 KPIs Técnicos (Primeros 6 Meses)
 
-| Métrica | Objetivo |
-|---------|----------|
-| PageSpeed Mobile | >95 |
-| PageSpeed Desktop | 100 |
+| Métrica                  | Objetivo   |
+| ------------------------ | ---------- |
+| PageSpeed Mobile         | >95        |
+| PageSpeed Desktop        | 100        |
 | Tiempo RSS → Publicación | <8 minutos |
-| Uptime | 99.9% |
-| Artículos no duplicados | >98% |
+| Uptime                   | 99.9%      |
+| Artículos no duplicados  | >98%       |
 
 ### 15.2 KPIs de Contenido (Primeros 6 Meses)
 
-| Métrica | Objetivo |
-|---------|----------|
-| Score SEO promedio (Ahrefs/Moz) | >70 |
-| Tasa de humanización exitosa | >95% |
-| Artículos indexados en <24h | >80% |
-| Tasa de rechazo | <5% |
+| Métrica                         | Objetivo |
+| ------------------------------- | -------- |
+| Score SEO promedio (Ahrefs/Moz) | >70      |
+| Tasa de humanización exitosa    | >95%     |
+| Artículos indexados en <24h     | >80%     |
+| Tasa de rechazo                 | <5%      |
 
 ### 15.3 KPIs de Negocio (Meses 7-12)
 
-| Métrica | Objetivo |
-|---------|----------|
-| Crecimiento orgánico mensual | +25% |
-| Tiempo de sesión | >2 min |
-| Bounce rate | <35% |
-| Email list (suscriptores) | 5% de visitantes |
-| Ingresos mensuales | Primer $100+ |
+| Métrica                      | Objetivo         |
+| ---------------------------- | ---------------- |
+| Crecimiento orgánico mensual | +25%             |
+| Tiempo de sesión             | >2 min           |
+| Bounce rate                  | <35%             |
+| Email list (suscriptores)    | 5% de visitantes |
+| Ingresos mensuales           | Primer $100+     |
 
 ---
 
 ## 17. RIESGOS Y MITIGACIONES
 
-| Riesgo | Probabilidad | Impacto | Mitigación |
-|--------|--------------|---------|------------|
-| Google penaliza contenido AI | Media | Alto | Humanización profunda + E-E-A-T signals + valor editorial único |
-| Costos de IA escalan | Media | Medio | Cache de respuestas + modelos económicos para tareas simples + tiered model strategy |
-| Fuentes RSS cambian estructura | Alta | Medio | Parser tolerante a fallos + alertas de monitoreo + múltiples fuentes |
-| Competencia copia el modelo | Baja | Medio | Enfocarse en marca, comunidad y velocidad de innovación |
-| Problemas legales de copyright | Media | Alto | Generar contenido nuevo (no rewrites) + atribución + respetar robots.txt |
-| Servicios de IA caen | Baja | Alto | Fallback entre múltiples proveedores via OpenRouter |
-| Base de datos crece demasiado | Media | Medio | Particionado + archivado de artículos antiguos + optimización PostgreSQL |
-| Rate limiting de APIs | Alta | Medio | Backoff exponencial + múltiples API keys + cache agresivo |
+| Riesgo                         | Probabilidad | Impacto | Mitigación                                                                           |
+| ------------------------------ | ------------ | ------- | ------------------------------------------------------------------------------------ |
+| Google penaliza contenido AI   | Media        | Alto    | Humanización profunda + E-E-A-T signals + valor editorial único                      |
+| Costos de IA escalan           | Media        | Medio   | Cache de respuestas + modelos económicos para tareas simples + tiered model strategy |
+| Fuentes RSS cambian estructura | Alta         | Medio   | Parser tolerante a fallos + alertas de monitoreo + múltiples fuentes                 |
+| Competencia copia el modelo    | Baja         | Medio   | Enfocarse en marca, comunidad y velocidad de innovación                              |
+| Problemas legales de copyright | Media        | Alto    | Generar contenido nuevo (no rewrites) + atribución + respetar robots.txt             |
+| Servicios de IA caen           | Baja         | Alto    | Fallback entre múltiples proveedores via OpenRouter                                  |
+| Base de datos crece demasiado  | Media        | Medio   | Particionado + archivado de artículos antiguos + optimización PostgreSQL             |
+| Rate limiting de APIs          | Alta         | Medio   | Backoff exponencial + múltiples API keys + cache agresivo                            |
 
 ---
 
@@ -1310,13 +1332,13 @@ FASE 3 (50k+ visitas/día):
 
 ### 17.2 Ad Slots Planificados
 
-| Ubicación | Tipo | Prioridad |
-|-----------|------|-----------|
-| Entre noticia 3 y 4 del feed | Display ad | Alta |
-| Sidebar | Display ad | Alta |
-| Dentro del artículo (mid-content) | In-content ad | Media |
-| Header | Banner ad | Baja |
-| Footer | Banner ad | Baja |
+| Ubicación                         | Tipo          | Prioridad |
+| --------------------------------- | ------------- | --------- |
+| Entre noticia 3 y 4 del feed      | Display ad    | Alta      |
+| Sidebar                           | Display ad    | Alta      |
+| Dentro del artículo (mid-content) | In-content ad | Media     |
+| Header                            | Banner ad     | Baja      |
+| Footer                            | Banner ad     | Baja      |
 
 ### 17.3 Affiliate Marketing (Mejorada)
 
@@ -1411,17 +1433,17 @@ CONFIGURACIÓN ÓPTIMA FRANKENPHP PARA LARAVEL:
 
 ### 19.5 Diferenciadores vs Competencia (Mejorado con FrankenPHP)
 
-| Competencia | Su Debilidad | Tu Ventaja con FrankenPHP |
-|-------------|--------------|---------------------------|
-| Medios tradicionales | Lentos (horas/días), HTTP/1.1 | Tú: <5 minutos, **HTTP/3 nativo** |
-| Otros agregadores | Solo copian/pegan, Nginx+PHP-FPM | Tú: IA humaniza + SEO, **FrankenPHP worker mode** |
-| Blogs especializados | Publican 1-2/día, sin optimización | Tú: 20-50/día automatizado, **Server Push assets** |
-| Reddit/HN | Sin estructura SEO, sin cache | Tú: Artículos optimizados, **Redis cache + HTTP/3** |
-| Competencia técnica | Nginx config compleja | Tú: **Caddy config simple**, auto HTTPS, HTTP/3 |
+| Competencia          | Su Debilidad                       | Tu Ventaja con FrankenPHP                           |
+| -------------------- | ---------------------------------- | --------------------------------------------------- |
+| Medios tradicionales | Lentos (horas/días), HTTP/1.1      | Tú: <5 minutos, **HTTP/3 nativo**                   |
+| Otros agregadores    | Solo copian/pegan, Nginx+PHP-FPM   | Tú: IA humaniza + SEO, **FrankenPHP worker mode**   |
+| Blogs especializados | Publican 1-2/día, sin optimización | Tú: 20-50/día automatizado, **Server Push assets**  |
+| Reddit/HN            | Sin estructura SEO, sin cache      | Tú: Artículos optimizados, **Redis cache + HTTP/3** |
+| Competencia técnica  | Nginx config compleja              | Tú: **Caddy config simple**, auto HTTPS, HTTP/3     |
 
 ### 19.6 Ventajas Técnicas de FrankenPHP
 
-1. **🚀 Performance Superior**: 
+1. **🚀 Performance Superior**:
    - Hasta 30% más rápido que Nginx+PHP-FPM
    - Worker mode mantiene app en memoria
    - HTTP/3 reduce latency 50-70%
@@ -1447,6 +1469,7 @@ CONFIGURACIÓN ÓPTIMA FRANKENPHP PARA LARAVEL:
 ### 19.7 Configuración FrankenPHP para Producción
 
 #### Docker Compose para Producción
+
 ```yaml
 # docker-compose.prod.yml
 services:
@@ -1455,7 +1478,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"  # HTTP/3 QUIC
+      - "443:443/udp" # HTTP/3 QUIC
     environment:
       - SERVER_NAME=:80
       - FRANKENPHP_WORKERS=${FRANKENPHP_WORKERS:-8}
@@ -1465,7 +1488,7 @@ services:
       - ./:/app
       - ./docker/frankenphp/Caddyfile.prod:/etc/caddy/Caddyfile
     deploy:
-      replicas: 2  # Escalado horizontal
+      replicas: 2 # Escalado horizontal
       resources:
         limits:
           memory: 1G
@@ -1479,6 +1502,7 @@ services:
 ```
 
 #### Variables de entorno críticas para producción
+
 ```env
 # FrankenPHP Production
 FRANKENPHP_WORKERS=8  # CPU cores × 2
@@ -1505,6 +1529,7 @@ SESSION_ENCRYPT=false  # Redis ya es seguro
 ```
 
 #### Pruebas de validación post-deploy
+
 ```bash
 # Verificar HTTP/3
 curl --http3 -I https://tudominio.com
@@ -1524,9 +1549,10 @@ ab -n 1000 -c 100 https://tudominio.com/
 ```
 
 #### Escalado horizontal con balanceo de carga
+
 ```yaml
 # Configuración para múltiples instancias FrankenPHP
-version: '3.8'
+version: "3.8"
 services:
   loadbalancer:
     image: caddy:alpine
@@ -1570,22 +1596,23 @@ services:
 
 ## 📌 RESUMEN EJECUTIVO FINAL (Actualizado con FrankenPHP)
 
-| Decisión | Recomendación | Beneficio con FrankenPHP |
-|----------|---------------|--------------------------|
-| **Nicho** | IA y Automatización | Temática técnica que valora performance |
-| **Columnas** | 2 (70/30) | Mejor UX para lectura rápida |
-| **Idioma principal** | Inglés | Mayor audiencia global |
-| **Fuentes RSS** | 80% gratis / 20% pagas | Balance costo/calidad |
-| **Publicación** | Semi-automática → 100% auto en 6 meses | FrankenPHP maneja alta concurrencia |
-| **Monetización** | Mes 11+ (primero audiencia, luego dinero) | HTTP/3 mejora conversiones |
-| **Expansión** | 1 nicho (año 1) → 2 nichos (año 2) → 3 nichos (año 3+) | FrankenPHP escala horizontalmente |
-| **Stack Principal** | **FrankenPHP** + Laravel 12 + Filament | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
-| **Base de Datos** | PostgreSQL + pgvector + Redis | Embeddings para IA, cache ultra-rápido |
-| **Tiempo Real** | Laravel Reverb + Horizon | WebSockets + async processing |
-| **Infraestructura** | Docker + Cloudflare CDN | HTTP/3 end-to-end, edge caching |
-| **Sistema de Tags** | IA + PostgreSQL | SEO semántico, navegación mejorada |
+| Decisión             | Recomendación                                          | Beneficio con FrankenPHP                |
+| -------------------- | ------------------------------------------------------ | --------------------------------------- |
+| **Nicho**            | IA y Automatización                                    | Temática técnica que valora performance |
+| **Columnas**         | 2 (70/30)                                              | Mejor UX para lectura rápida            |
+| **Idioma principal** | Inglés                                                 | Mayor audiencia global                  |
+| **Fuentes RSS**      | 80% gratis / 20% pagas                                 | Balance costo/calidad                   |
+| **Publicación**      | Semi-automática → 100% auto en 6 meses                 | FrankenPHP maneja alta concurrencia     |
+| **Monetización**     | Mes 11+ (primero audiencia, luego dinero)              | HTTP/3 mejora conversiones              |
+| **Expansión**        | 1 nicho (año 1) → 2 nichos (año 2) → 3 nichos (año 3+) | FrankenPHP escala horizontalmente       |
+| **Stack Principal**  | **FrankenPHP** + Laravel 12 + Filament                 | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
+| **Base de Datos**    | PostgreSQL + pgvector + Redis                          | Embeddings para IA, cache ultra-rápido  |
+| **Tiempo Real**      | Laravel Reverb + Horizon                               | WebSockets + async processing           |
+| **Infraestructura**  | Docker + Cloudflare CDN                                | HTTP/3 end-to-end, edge caching         |
+| **Sistema de Tags**  | IA + PostgreSQL                                        | SEO semántico, navegación mejorada      |
 
 **Tecnología Clave**: FrankenPHP reemplaza Nginx+PHP-FPM con:
+
 - ✅ HTTP/3 nativo para menor latencia
 - ✅ Worker mode para aplicación en memoria
 - ✅ Server Push para assets críticos
@@ -1593,6 +1620,7 @@ services:
 - ✅ Métricas integradas para monitoreo
 
 **Innovación Clave**: Sistema de Tags Inteligente:
+
 - ✅ Generación automática con IA (~$0.001/artículo)
 - ✅ +50% páginas indexadas (SEO semántico)
 - ✅ +150% internal linking automático
@@ -1605,12 +1633,13 @@ services:
 ### 20.1 FASE 0: Validación y Preparación (Semanas 1-2)
 
 #### 📋 Setup Inicial y Validación de Concepto
-- [ ] **Configurar entorno de desarrollo con FrankenPHP**
-  - [ ] Instalar Docker y Docker Compose
-  - [ ] Configurar WSL2 (si es Windows)
-  - [ ] Verificar soporte HTTP/3 en sistema
-  - [ ] Configurar IDE (VS Code con extensiones PHP/Laravel)
-  - [ ] Instalar herramientas de monitoreo FrankenPHP
+
+- [x] **Configurar entorno de desarrollo con FrankenPHP**
+  - [x] Instalar Docker y Docker Compose
+  - [x] Configurar WSL2 (si es Windows)
+  - [x] Verificar soporte HTTP/3 en sistema
+  - [x] Configurar IDE (VS Code con extensiones PHP/Laravel)
+  - [x] Instalar herramientas de monitoreo FrankenPHP
 
 - [ ] **Validación manual del nicho**
   - [ ] Recopilar 20+ feeds RSS del nicho IA y Automatización
@@ -1634,34 +1663,35 @@ services:
 ### 20.2 FASE 1: Fundación con FrankenPHP (Meses 1-2)
 
 #### 📋 Infraestructura y Configuración Base con FrankenPHP
-- [ ] **Configurar proyecto Laravel 12 con FrankenPHP**
-  - [ ] Crear nuevo proyecto Laravel 12
-  - [ ] Configurar Docker con FrankenPHP (reemplaza php-fpm+nginx)
-  - [ ] Configurar PostgreSQL + pgvector + Redis
-  - [ ] Configurar entorno de desarrollo (.env, docker-compose)
-  - [ ] Configurar Vite y Tailwind CSS
-  - [ ] Configurar FrankenPHP worker mode para Laravel
 
-- [ ] **Base de datos y modelos**
-  - [ ] Diseñar esquema de base de datos completo
-  - [ ] Crear migraciones para:
-    - [ ] `sources` (fuentes RSS)
-    - [ ] `raw_articles` (artículos crudos)
-    - [ ] `articles` (artículos procesados)
-    - [ ] `categories` (categorías)
-    - [ ] `authors` (autores IA)
-    - [ ] `images` (imágenes generadas)
-    - [ ] `tags` + `article_tag` (sistema de tags)
-  - [ ] Configurar relaciones Eloquent (incluyendo many-to-many articles-tags)
-  - [ ] Crear factories y seeders para testing
+- [x] **Configurar proyecto Laravel 12 con FrankenPHP**
+  - [x] Crear nuevo proyecto Laravel 12
+  - [x] Configurar Docker con FrankenPHP (reemplaza php-fpm+nginx)
+  - [x] Configurar PostgreSQL + pgvector + Redis
+  - [x] Configurar entorno de desarrollo (.env, docker-compose)
+  - [x] Configurar Vite y Tailwind CSS
+  - [x] Configurar FrankenPHP worker mode para Laravel
 
-- [ ] **Configurar Filament Admin**
-  - [ ] Instalar y configurar Filament v3
-  - [ ] Crear recursos básicos:
-    - [ ] Resource para `sources`
-    - [ ] Resource para `articles`
-    - [ ] Resource para `categories`
-    - [ ] Dashboard con métricas básicas
+- [x] **Base de datos y modelos**
+  - [x] Diseñar esquema de base de datos completo
+  - [x] Crear migraciones para:
+    - [x] `sources` (fuentes RSS)
+    - [x] `raw_articles` (artículos crudos)
+    - [x] `articles` (artículos procesados)
+    - [x] `categories` (categorías)
+    - [x] `authors` (autores IA)
+    - [x] `images` (imágenes generadas)
+    - [x] `tags` + `article_tag` (sistema de tags)
+  - [x] Configurar relaciones Eloquent (incluyendo many-to-many articles-tags)
+  - [x] Crear factories y seeders para testing
+
+- [x] **Configurar Filament Admin**
+  - [x] Instalar y configurar Filament v3
+  - [x] Crear recursos básicos:
+    - [x] Resource para `sources`
+    - [x] Resource para `articles`
+    - [x] Resource para `categories`
+    - [x] Dashboard con métricas básicas
 
 - [ ] **Configurar sistema de colas y sesiones**
   - [ ] Instalar y configurar Laravel Horizon
@@ -1693,6 +1723,7 @@ services:
     - [ ] Validar cache headers automáticos
 
 #### 📋 Módulo 1: Motor de Ingesta RSS
+
 - [ ] **Sistema de fuentes RSS**
   - [ ] Instalar `vedmant/laravel-feed-reader`
   - [ ] Crear modelo `Source` con campos: url, frequency, score, is_active
@@ -1719,6 +1750,7 @@ services:
 ### 20.3 FASE 2: Cerebro IA (Meses 3-4)
 
 #### 📋 Integración con IA
+
 - [ ] **Configurar OpenRouter**
   - [ ] Crear servicio `OpenRouterService`
   - [ ] Implementar rotación de modelos
@@ -1757,6 +1789,7 @@ services:
   - [ ] Sistema de limpieza automática (tags sin uso)
 
 #### 📋 Generación de imágenes
+
 - [ ] **Integración con FluxAPI**
   - [ ] Crear servicio `ImageGenerationService`
   - [ ] Implementar prompt templates consistentes
@@ -1772,6 +1805,7 @@ services:
 ### 20.4 FASE 3: Frontend Público (Meses 5-6)
 
 #### 📋 Diseño y desarrollo frontend
+
 - [ ] **Diseño UI/UX**
   - [ ] Crear diseño 2 columnas (70/30)
   - [ ] Diseñar componentes con Tailwind CSS
@@ -1806,6 +1840,7 @@ services:
   - [ ] Configurar Laravel Echo en frontend
 
 #### 📋 SEO técnico
+
 - [ ] **Optimización de rendimiento con FrankenPHP**
   - [ ] Configurar FrankenPHP worker mode (reemplaza Octane)
   - [ ] Implementar cache de vistas en Redis
@@ -1822,6 +1857,7 @@ services:
 ### 20.5 FASE 4: Refinamiento (Meses 7-8)
 
 #### 📋 Workflow de aprobación
+
 - [ ] **Sistema de revisión manual**
   - [ ] Crear estados: draft, pending_review, approved, published
   - [ ] Implementar workflow en Filament
@@ -1846,6 +1882,7 @@ services:
   - [ ] Reportes automáticos
 
 #### 📋 RSS propio y distribución
+
 - [ ] **Generación de RSS**
   - [ ] Instalar `spatie/laravel-feed`
   - [ ] Crear feeds por categoría
@@ -1855,6 +1892,7 @@ services:
 ### 20.6 FASE 5: Crecimiento (Meses 9-10)
 
 #### 📋 Automatización de distribución
+
 - [ ] **Integración con plataformas**
   - [ ] Telegram Bot API
   - [ ] Discord Webhooks
@@ -1874,6 +1912,7 @@ services:
   - [ ] Actualización en tiempo real
 
 #### 📋 Optimización de costos IA
+
 - [ ] **Monitoreo de costos**
   - [ ] Dashboard de costos por modelo
   - [ ] Alertas de umbrales
@@ -1883,6 +1922,7 @@ services:
 ### 20.7 FASE 6: Monetización (Meses 11-12)
 
 #### 📋 Sistema de anuncios
+
 - [ ] **Integración con ad networks**
   - [ ] Ezoic/Adsterra integration
   - [ ] Ad slots dinámicos
@@ -1904,6 +1944,7 @@ services:
 ### 20.8 TAREAS TRANSVERSALES (Todo el proyecto)
 
 #### 📋 DevOps y Deployment
+
 - [ ] **Configuración de producción**
   - [ ] Servidor VPS/Droplet
   - [ ] Laravel Forge/Envoyer
@@ -1917,6 +1958,7 @@ services:
   - [ ] Logs centralizados
 
 #### 📋 Seguridad y Legal
+
 - [ ] **Protección del sitio**
   - [ ] HTTPS/SSL
   - [ ] Rate limiting
@@ -1930,6 +1972,7 @@ services:
   - [ ] DMCA policy
 
 #### 📋 Documentación y Mantenimiento
+
 - [ ] **Documentación técnica**
   - [ ] README del proyecto
   - [ ] Documentación de API
@@ -1948,7 +1991,7 @@ services:
 
 > Este documento es el plan maestro del proyecto.  
 > Actualizar conforme avance el desarrollo.  
-> Cada módulo debe tener su propio documento técnico detallado.  
+> Cada módulo debe tener su propio documento técnico detallado.
 
 ---
 
@@ -1961,6 +2004,7 @@ services:
 ## 🚀 CHECKLIST DE ARRANQUE - DÍA 1 (HOY)
 
 ### **Paso 1: Crear estructura inicial del proyecto**
+
 ```bash
 # 1. Navegar al directorio del proyecto
 cd /home/adminpro/noticias
@@ -1973,6 +2017,7 @@ cd noticias-platform
 ```
 
 ### **Paso 2: Configurar Docker con FrankenPHP**
+
 ```bash
 # 1. Crear estructura de directorios
 mkdir -p docker/{frankenphp,postgres}
@@ -1988,6 +2033,7 @@ mkdir -p src
 ```
 
 ### **Paso 3: Variables de entorno base**
+
 ```bash
 # 1. Copiar .env.example a .env
 cp .env.example .env
@@ -2004,6 +2050,7 @@ php artisan key:generate
 ```
 
 ### **Paso 4: Levantar entorno de desarrollo**
+
 ```bash
 # 1. Levantar contenedores
 docker compose up -d
@@ -2018,6 +2065,7 @@ curl --http3 -I http://localhost
 ```
 
 ### **Paso 5: Primer commit**
+
 ```bash
 # 1. Inicializar repositorio git
 git init
@@ -2036,13 +2084,16 @@ git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 12"
 **Recomiendo comenzar con [OPCIÓN A] 🐳 Docker + FrankenPHP listo para usar**
 
 ### **Por qué empezar con la infraestructura:**
+
 1. **Elimina bloqueos técnicos**: Tener el entorno funcionando es el mayor obstáculo
 2. **Valida decisiones técnicas**: Confirmar que FrankenPHP + HTTP/3 funciona
 3. **Crea momentum**: Ver algo funcionando motiva a continuar
 4. **Base sólida**: Todo lo demás se construye sobre esta infraestructura
 
 ### **¿Listo para comenzar?**
+
 Te proporcionaré:
+
 1. **`docker-compose.yml`** completo con FrankenPHP
 2. **`Dockerfile`** optimizado para Laravel 12
 3. **`Caddyfile`** con HTTP/3 y Server Push
