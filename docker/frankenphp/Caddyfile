@@ -1,0 +1,10 @@
+# Configuración FrankenPHP para Laravel 12
+{
+    auto_https off
+    http_port 80
+}
+
+:80 {
+    root * /app/public
+    php_server
+}
