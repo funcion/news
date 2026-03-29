@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78ed8f9aa5d6413f8ac4902175516436",
+    "content-hash": "a8da0f65c5013654a55377d2bfee04eb",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -9962,6 +9962,67 @@
             "time": "2025-12-02T11:56:42+00:00"
         },
         {
+            "name": "vedmant/laravel-feed-reader",
+            "version": "1.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vedmant/laravel-feed-reader.git",
+                "reference": "95eaaf9a8bb5c1ff09fa3ad149a8ba912634e665"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vedmant/laravel-feed-reader/zipball/95eaaf9a8bb5c1ff09fa3ad149a8ba912634e665",
+                "reference": "95eaaf9a8bb5c1ff09fa3ad149a8ba912634e665",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "illuminate/support": ">=5.5.0",
+                "php": ">=5.6.0",
+                "simplepie/simplepie": "^1.8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0",
+                "phpunit/phpunit": "^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FeedReader": "Vedmant\\FeedReader\\Facades\\FeedReader"
+                    },
+                    "providers": [
+                        "Vedmant\\FeedReader\\FeedReaderServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vedmant\\FeedReader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vedmant",
+                    "email": "vedmant@gmail.com"
+                },
+                {
+                    "name": "Andrew Judd",
+                    "email": "contact@andrewjudd.ca"
+                }
+            ],
+            "description": "A simple RSS feed reader for Laravel",
+            "support": {
+                "issues": "https://github.com/vedmant/laravel-feed-reader/issues",
+                "source": "https://github.com/vedmant/laravel-feed-reader/tree/1.6.2"
+            },
+            "time": "2025-02-25T15:36:31+00:00"
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v5.6.3",
             "source": {
@@ -12429,5 +12490,5 @@
         "ext-zip": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
