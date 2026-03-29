@@ -50,8 +50,9 @@
     46 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
     47 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     48 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
-    49 => 'App\\Providers\\AppServiceProvider',
-    50 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    49 => 'Vedmant\\FeedReader\\FeedReaderServiceProvider',
+    50 => 'App\\Providers\\AppServiceProvider',
+    51 => 'App\\Providers\\Filament\\AdminPanelProvider',
   ),
   'eager' => 
   array (
@@ -88,8 +89,9 @@
     30 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
     31 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
     32 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
-    33 => 'App\\Providers\\AppServiceProvider',
-    34 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    33 => 'Vedmant\\FeedReader\\FeedReaderServiceProvider',
+    34 => 'App\\Providers\\AppServiceProvider',
+    35 => 'App\\Providers\\Filament\\AdminPanelProvider',
   ),
   'deferred' => 
   array (

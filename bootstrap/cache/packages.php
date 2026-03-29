@@ -202,4 +202,15 @@
       0 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
     ),
   ),
+  'vedmant/laravel-feed-reader' => 
+  array (
+    'aliases' => 
+    array (
+      'FeedReader' => 'Vedmant\\FeedReader\\Facades\\FeedReader',
+    ),
+    'providers' => 
+    array (
+      0 => 'Vedmant\\FeedReader\\FeedReaderServiceProvider',
+    ),
+  ),
 );
