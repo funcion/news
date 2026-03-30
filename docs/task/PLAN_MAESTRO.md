@@ -1776,13 +1776,13 @@ services:
     - [x] **Capa 4**: Humanización (GPT-4o-mini)
   - [x] Implementar sistema de "voces editoriales"
 
-- [/] **Sistema anti-duplicados**
+- [x] **Sistema anti-duplicados**
   - [x] Implementar 3 niveles de detección:
     - [x] Nivel 1: Hash exacto (SHA256)
-    - [ ] Nivel 2: Similitud de texto (TF-IDF)
-    - [ ] Nivel 3: IA semántica (pgvector)
+    - [x] Nivel 2: Similitud de texto (TF-IDF)
+    - [x] Nivel 3: IA semántica (pgvector)
   - [x] Configurar PostgreSQL con extensión pgvector
-  - [ ] Crear sistema de "updates" para noticias existentes
+  - [x] Crear sistema de "updates" para noticias existentes
 
 - [x] **Optimización SEO automática**
   - [x] Generar meta tags automáticos
@@ -1790,35 +1790,34 @@ services:
   - [x] Implementar internal linking automático
   - [x] Generar schema.org markup
 
-- [ ] **Sistema de Tags Inteligente**
-  - [ ] Crear servicio `TagGeneratorService`
-  - [ ] Implementar extracción de tags con IA (NER)
-  - [ ] Sistema de normalización automática (minúsculas, singular/plural)
-  - [ ] Asignación automática de 3-5 tags por artículo
-  - [ ] Cache de tags en Redis para performance
-  - [ ] Sistema de limpieza automática (tags sin uso)
+- [x] **Sistema de Tags Inteligente**
+  - [x] Crear servicio `TagGeneratorService`
+  - [x] Implementar extracción de tags con IA (NER)
+  - [x] Sistema de normalización automática (minúsculas, singular/plural)
+  - [x] Asignación automática de 3-5 tags por artículo
+  - [x] Cache de tags en Redis para performance
+  - [x] Sistema de limpieza automática (tags sin uso)
 
 #### 📋 Generación de imágenes
 
-- [ ] **Integración con FluxAPI**
-  - [ ] Crear servicio `ImageGenerationService`
-  - [ ] Implementar prompt templates consistentes
-  - [ ] Crear sistema de fallback (Unsplash/placeholder)
-  - [ ] Optimizar imágenes (WebP/AVIF)
+- [x] **Integración con SiliconFlow / FluxAPI**
+  - [x] Crear servicio `ImageGenerationService`
+  - [x] Implementar prompt templates consistentes
+  - [x] Crear sistema de fallback (Unsplash/placeholder)
+  - [x] Optimizar imágenes (WebP)
 
-- [ ] **Procesamiento de imágenes**
-  - [ ] Instalar Intervention Image
-  - [ ] Implementar compresión inteligente
-  - [ ] Generar alt text con IA
-  - [ ] Configurar CDN (Cloudflare)
+- [x] **Procesamiento de imágenes**
+  - [x] Spatie MediaLibrary Configurations
+  - [x] Implementar compresión inteligente (WebP Thumbnails)
+  - [x] Generar alt text con IA
+  - [x] Colecciones Bilingües (images_en, images_es)
 
 #### 📋 Módulo: Scraping Inteligente (Jina Reader)
 
-- [ ] **Integración con Jina Reader**
-  - [ ] Crear `ScraperService` para consumo de `r.jina.ai`
-  - [ ] Implementar manejo de Rate Limits y Timeouts
-  - [ ] Configurar fallback a `spatie/browsershot` (opcional)
-  - [ ] Normalización de Markdown para el pipeline de IA
+- [x] **Integración con Jina Reader**
+  - [x] Crear `ScraperService` para consumo de `r.jina.ai`
+  - [x] Implementar manejo de Rate Limits y Timeouts
+  - [x] Normalización de Markdown para el pipeline de IA
 
 ### 20.4 FASE 3: Frontend Público (Meses 5-6)
 
