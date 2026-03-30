@@ -31,56 +31,60 @@ class ArticleResource extends Resource
     {
         return $form
             ->schema([
-                Tabs::make('Article')
-                    ->tabs([
-                        Tabs\Tab::make('Contenido')
-                            ->schema([
-                                TextInput::make('title')
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                                TextInput::make('slug')
-                                    ->required()
-                                    ->unique(Article::class, 'slug', ignoreRecord: true),
-                                Textarea::make('excerpt')
-                                    ->rows(3)
-                                    ->columnSpanFull(),
-                                RichEditor::make('content')
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
-                        Tabs\Tab::make('Metadatos')
-                            ->schema([
-                                Select::make('author_id')
-                                    ->relationship('author', 'name')
-                                    ->required(),
-                                Select::make('category_id')
-                                    ->relationship('category', 'name')
-                                    ->required(),
-                                Select::make('status')
-                                    ->options([
-                                        'draft' => 'Borrador',
-                                        'pending_review' => 'Pendiente de Revisión',
-                                        'published' => 'Publicado',
-                                    ])
-                                    ->required()
-                                    ->default('draft'),
-                                DateTimePicker::make('published_at'),
-                                TextInput::make('image_url')
-                                    ->url(),
-                                TextInput::make('image_alt'),
-                            ]),
-                        Tabs\Tab::make('SEO')
-                            ->schema([
-                                TextInput::make('meta_title'),
-                                Textarea::make('meta_description')
-                                    ->rows(3),
-                                TextInput::make('meta_keywords'),
-                                TextInput::make('seo_score')
-                                    ->numeric()
-                                    ->disabled(),
-                            ]),
-                    ])->columnSpanFull(),
+                Section::make('Muro de Producción Final')
+                    ->description('Este es tu escaparate público. Aquí gestionas el contenido final, ajustas el SEO y publicas lo que la IA ha redactado.')
+                    ->schema([
+                        Tabs::make('Article')
+                            ->tabs([
+                                Tabs\Tab::make('Contenido')
+                                    ->schema([
+                                        TextInput::make('title')
+                                            ->required()
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(fn (string $operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                                        TextInput::make('slug')
+                                            ->required()
+                                            ->unique(Article::class, 'slug', ignoreRecord: true),
+                                        Textarea::make('excerpt')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
+                                        RichEditor::make('content')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                    ]),
+                                Tabs\Tab::make('Metadatos')
+                                    ->schema([
+                                        Select::make('author_id')
+                                            ->relationship('author', 'name')
+                                            ->required(),
+                                        Select::make('category_id')
+                                            ->relationship('category', 'name')
+                                            ->required(),
+                                        Select::make('status')
+                                            ->options([
+                                                'draft' => 'Borrador',
+                                                'pending_review' => 'Pendiente de Revisión',
+                                                'published' => 'Publicado',
+                                            ])
+                                            ->required()
+                                            ->default('draft'),
+                                        DateTimePicker::make('published_at'),
+                                        TextInput::make('image_url')
+                                            ->url(),
+                                        TextInput::make('image_alt'),
+                                    ]),
+                                Tabs\Tab::make('SEO')
+                                    ->schema([
+                                        TextInput::make('meta_title'),
+                                        Textarea::make('meta_description')
+                                            ->rows(3),
+                                        TextInput::make('meta_keywords'),
+                                        TextInput::make('seo_score')
+                                            ->numeric()
+                                            ->disabled(),
+                                    ]),
+                            ])->columnSpanFull(),
+                    ]),
             ]);
     }
 
