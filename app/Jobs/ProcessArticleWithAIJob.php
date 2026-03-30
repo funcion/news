@@ -162,12 +162,20 @@ class ProcessArticleWithAIJob implements ShouldQueue
                                      ])
                                      ->toMediaCollection('images');
                     
-                    $url = $media->getUrl();
+                    $urlOriginal = $media->getUrl();
+                    $urlThumb = $media->getUrl('thumb');
+                    $urlMedium = $media->getUrl('medium');
+                    $urlLarge = $media->getUrl('large');
+                    
+                    $srcset = "{$urlThumb} 480w, {$urlMedium} 800w, {$urlLarge} 1200w";
+                    $sizes = "(max-width: 800px) 100vw, 800px";
                     $imgId = "img-" . ($index + 1) . "-" . Str::random(5);
 
-                    // HTML Semántico (WCAG 2.1 AAA & SEO 10/10)
-                    $imgTag = "<figure role=\"group\" aria-labelledby=\"caption-{$imgId}\" class=\"article-image my-10\">
-                        <img src=\"{$url}\" 
+                    // HTML Semántico (WCAG 2.1 AAA & SEO 10/10) - Responsive Ready
+                    $imgTag = "<figure role=\"group\" aria-labelledby=\"caption-{$imgId}\" class=\"article-image my-10 overflow-hidden rounded-xl border border-gray-100 shadow-2xl transition-all duration-500 hover:shadow-cyan-500/20\">
+                        <img src=\"{$urlOriginal}\" 
+                             srcset=\"{$srcset}\"
+                             sizes=\"{$sizes}\"
                              alt=\"{$altEs}\" 
                              title=\"{$titleEs}\"
                              loading=\"lazy\" 
@@ -175,8 +183,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
                              width=\"1280\" 
                              height=\"720\"
                              role=\"img\"
-                             class=\"rounded-xl shadow-2xl w-full h-auto object-cover aspect-video border border-gray-100\">
-                        <figcaption id=\"caption-{$imgId}\" class=\"text-sm text-gray-500 mt-4 text-center italic leading-relaxed px-4\">
+                             class=\"w-full h-auto object-cover aspect-video\">
+                        <figcaption id=\"caption-{$imgId}\" class=\"text-sm text-gray-500 mt-4 text-center italic leading-relaxed px-4 bg-gray-50/50 py-3 border-t border-gray-100\">
                             {$captionEs}
                         </figcaption>
                     </figure>";
@@ -186,7 +194,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
                     // JSON-LD Metadata collection
                     $imageObjectsJsonLd[] = [
                         "@type" => "ImageObject",
-                        "url" => $url,
+                        "url" => $urlOriginal,
                         "caption" => $captionEs,
                         "description" => $altEs,
                         "width" => 1280,
@@ -196,7 +204,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
                     // Set first image as featured image
                     if ($imageCount === 0) {
                         $article->update([
-                            'image_url' => $url,
+                            'image_url' => $urlOriginal,
                             'image_alt' => $altEs
                         ]);
                     }
