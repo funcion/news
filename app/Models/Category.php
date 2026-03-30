@@ -4,19 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public array $translatable = ['name', 'description'];
+
     protected $fillable = [
         'name',
-        'slug',
+        'slug_en',
+        'slug_es',
         'description',
         'parent_id',
         'order',
@@ -24,114 +23,83 @@ class Category extends Model
         'metadata',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'order' => 'integer',
         'is_active' => 'boolean',
         'metadata' => 'array',
     ];
 
-    /**
-     * Get the parent category.
-     */
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    /**
-     * Get the child categories.
-     */
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    /**
-     * Get the articles for the category.
-     */
     public function articles()
     {
         return $this->hasMany(Article::class);
     }
 
-    /**
-     * Scope a query to only include active categories.
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope a query to only include root categories (no parent).
-     */
     public function scopeRoot($query)
     {
         return $query->whereNull('parent_id');
     }
 
-    /**
-     * Scope a query to only include categories with a specific parent.
-     */
     public function scopeWithParent($query, $parentId)
     {
         return $query->where('parent_id', $parentId);
     }
 
     /**
-     * Get the URL for the category.
+     * Get the locale-aware URL for the category.
      */
     public function getUrlAttribute(): string
     {
-        return route('categories.show', $this->slug);
+        $locale = app()->getLocale();
+        $slug = $locale === 'es' ? ($this->slug_es ?? $this->slug_en) : ($this->slug_en ?? $this->slug_es);
+        return route('categories.show', ['slug' => $slug]);
     }
 
-    /**
-     * Get the breadcrumb trail for the category.
-     */
     public function getBreadcrumbAttribute(): array
     {
         $breadcrumb = [];
         $category = $this;
-        
+
         while ($category) {
             $breadcrumb[] = [
-                'name' => $category->name,
+                'name' => $category->name, // will use current locale via HasTranslations
                 'url' => $category->url,
             ];
             $category = $category->parent;
         }
-        
+
         return array_reverse($breadcrumb);
     }
 
-    /**
-     * Get all descendant categories (children, grandchildren, etc.).
-     */
     public function getAllDescendants()
     {
         $descendants = collect();
-        
+
         foreach ($this->children as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->getAllDescendants());
         }
-        
+
         return $descendants;
     }
 
-    /**
-     * Get all articles in this category and its descendants.
-     */
     public function getAllArticles()
     {
         $categoryIds = $this->getAllDescendants()->pluck('id')->push($this->id);
-        
         return Article::whereIn('category_id', $categoryIds)->published();
     }
 }

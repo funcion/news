@@ -8,20 +8,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class Article extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, HasTranslations;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * The translatable fields — stored as {"en": "...", "es": "..."} in JSONB.
      */
+    public array $translatable = [
+        'title',
+        'content',
+        'excerpt',
+        'meta_title',
+        'meta_description',
+        'image_alt',
+    ];
+
     protected $fillable = [
         'raw_article_id',
         'title',
-        'slug',
+        'slug_en',
+        'slug_es',
         'content',
         'excerpt',
         'author_id',
@@ -40,11 +49,6 @@ class Article extends Model implements HasMedia
         'embedding',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'published_at' => 'datetime',
         'views' => 'integer',
@@ -56,32 +60,29 @@ class Article extends Model implements HasMedia
     ];
 
     /**
-     * Get the raw article that this article was created from.
+     * Get the slug for the current locale.
      */
+    public function getSlugAttribute(): string
+    {
+        $locale = app()->getLocale();
+        return $locale === 'es' ? ($this->slug_es ?? $this->slug_en ?? '') : ($this->slug_en ?? '');
+    }
+
     public function rawArticle()
     {
         return $this->belongsTo(RawArticle::class);
     }
 
-    /**
-     * Get the author of the article.
-     */
     public function author()
     {
         return $this->belongsTo(Author::class);
     }
 
-    /**
-     * Get the category of the article.
-     */
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * Get the tags for the article.
-     */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'article_tag')
@@ -89,17 +90,11 @@ class Article extends Model implements HasMedia
             ->withTimestamps();
     }
 
-    /**
-     * Get the updates for this article.
-     */
     public function updates()
     {
         return $this->hasMany(ArticleUpdate::class);
     }
 
-    /**
-     * Scope a query to only include published articles.
-     */
     public function scopePublished($query)
     {
         return $query->where('status', 'published')
@@ -107,62 +102,47 @@ class Article extends Model implements HasMedia
             ->where('published_at', '<=', now());
     }
 
-    /**
-     * Scope a query to only include draft articles.
-     */
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
     }
 
-    /**
-     * Scope a query to only include pending review articles.
-     */
     public function scopePendingReview($query)
     {
         return $query->where('status', 'pending_review');
     }
 
-    /**
-     * Scope a query to only include articles with high SEO score.
-     */
     public function scopeHighSeoScore($query, $threshold = 80)
     {
         return $query->where('seo_score', '>=', $threshold);
     }
 
     /**
-     * Get the URL for the article.
+     * Get the URL for the article using locale-aware slug.
      */
     public function getUrlAttribute(): string
     {
-        return route('articles.show', $this->slug);
+        $locale = app()->getLocale();
+        $slug = $locale === 'es' ? ($this->slug_es ?? $this->slug_en) : ($this->slug_en ?? $this->slug_es);
+        return route('articles.show', ['slug' => $slug]);
     }
 
-    /**
-     * Increment the view count.
-     */
     public function incrementViews(): void
     {
         $this->increment('views');
     }
 
-    /**
-     * Calculate the reading time in minutes.
-     */
     public function calculateReadingTime(): int
     {
-        $wordCount = str_word_count(strip_tags($this->content));
-        return max(1, ceil($wordCount / 200)); // 200 words per minute
+        $content = $this->getTranslation('content', 'en') ?? $this->getTranslation('content', 'es') ?? '';
+        $wordCount = str_word_count(strip_tags($content));
+        return max(1, ceil($wordCount / 200));
     }
 
-    /**
-     * Get related articles based on tags.
-     */
     public function getRelatedArticles($limit = 5)
     {
         $tagIds = $this->tags()->pluck('tags.id');
-        
+
         return self::published()
             ->where('id', '!=', $this->id)
             ->whereHas('tags', function ($query) use ($tagIds) {
@@ -177,31 +157,17 @@ class Article extends Model implements HasMedia
     }
 
     /**
-     * Register the media conversions for the article.
-     * 
-     * We create 3 responsive sizes (480, 800, 1200) and forced WebP format
-     * to comply with Google SEO and performance standards.
+     * Register responsive media conversions (WebP, 3 sizes).
      */
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(480)
-            ->height(270)
-            ->sharpen(10)
-            ->format('webp')
-            ->nonQueued(); 
+            ->width(480)->height(270)->sharpen(10)->format('webp')->nonQueued();
 
         $this->addMediaConversion('medium')
-            ->width(800)
-            ->height(450)
-            ->sharpen(5)
-            ->format('webp')
-            ->nonQueued();
+            ->width(800)->height(450)->sharpen(5)->format('webp')->nonQueued();
 
         $this->addMediaConversion('large')
-            ->width(1200)
-            ->height(675)
-            ->format('webp')
-            ->nonQueued();
+            ->width(1200)->height(675)->format('webp')->nonQueued();
     }
 }

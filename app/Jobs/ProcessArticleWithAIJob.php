@@ -18,270 +18,329 @@ class ProcessArticleWithAIJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * The number of seconds the job can run before timing out.
-     *
-     * @var int
-     */
-    public $timeout = 240;
-
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
+    public $timeout = 300; // Slightly higher for bilingual generation
     public $tries = 3;
 
-    /**
-     * Calculate the number of seconds to wait before retrying the job.
-     *
-     * @return array<int, int>
-     */
     public function backoff(): array
     {
-        return [10, 30, 60]; 
+        return [10, 30, 60];
     }
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         protected RawArticle $rawArticle
     ) {}
 
-    /**
-     * Execute the job.
-     */
     public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService): void
     {
         $today = now()->format('l, F j, Y');
-        Log::info("Processing RawArticle: {$this->rawArticle->id} with AI Gemini 2.0 Flash at {$today}.");
+        Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
 
         if ($this->rawArticle->status !== 'pending') {
-            Log::warning("RawArticle {$this->rawArticle->id} is already processed or in error.");
+            Log::warning("RawArticle {$this->rawArticle->id} already processed.");
             return;
         }
 
-        // Layer 1 & 2: Classify and Extract
         $classification = $this->classifyAndExtract($ai);
-        
+
         if ($classification === null) {
-            throw new \Exception("La IA no respondió o el JSON es inválido.");
+            throw new \Exception("AI classification failed. Retrying...");
         }
 
         if (!($classification['is_relevant'] ?? false) && empty($classification['is_seed'])) {
             $this->rawArticle->update(['status' => 'ignored']);
-            Log::info("RawArticle {$this->rawArticle->id} ignorada por la IA.");
+            Log::info("RawArticle {$this->rawArticle->id} ignored by AI (not relevant).");
             return;
         }
 
-        // Layer 3: Redact
         $author = Author::ai()->active()->inRandomOrder()->first();
-        
+
         if (!$author) {
-            Log::warning("No active AI Author found. Creating a generic one.");
             $author = Author::create([
-                'name' => 'IA Redactor',
-                'slug' => 'ia-redactor',
-                'type' => 'ai',
-                'is_active' => true,
-                'voice_style' => 'El Divulgador',
-                'bio' => 'IA optimizada para redacción de noticias tecnológicas.',
+                'name'        => 'AI Reporter',
+                'slug'        => 'ai-reporter',
+                'type'        => 'ai',
+                'is_active'   => true,
+                'voice_style' => 'The Divulger',
+                'bio'         => 'AI optimized for tech news writing.',
             ]);
         }
 
-        $redacted = $this->redactContent($ai, $classification, $author);
+        $redacted = $this->redactBilingual($ai, $classification, $author);
 
         if (!$redacted) {
-            throw new \RuntimeException("La IA no pudo redactar el contenido.");
+            throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
         }
 
-        $slug = $redacted['slug'] ?? Str::slug($redacted['title'] ?? $this->rawArticle->title);
-        $content = $redacted['content'];
+        // --- CLEANUP: Remove AI hallucinated image attributes from BOTH lang contents ---
+        $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
+        $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
 
-        // --- LIMPIEZA PROFUNDA DE ALUCINACIONES (REGLA DE ORO) ---
-        // Eliminamos pedazos de tags que Gemini suele inventar: " alt="..." o [IMAGE_X_ALT]
-        $content = preg_replace('/\s*\"\s*alt=\"\[IMAGE_\d+_ALT\]\"\s*title=\"\[IMAGE_\d+_TITLE\]\">\s*/i', '', $content);
-        $content = preg_replace('/\[IMAGE_\d+_(ALT|TITLE|CAPTION|PROMPT)\]/i', '', $content);
-        $content = preg_replace('/\s*\"\s*alt=\"[^\"]*\"\s*title=\"[^\"]*\">\s*/i', '', $content);
-        $content = preg_replace('/\s*\"\s+alt=\"[^\"]*\"\s+title=\"[^\"]*\">\s*/i', '', $content);
-        // ---
-
-        // Determine Final Category
+        // Determine category
         $categoryId = $this->rawArticle->source->category_id ?? 1;
         if (!empty($classification['category_name'])) {
-            $matchedCat = \App\Models\Category::whereRaw('LOWER(name) = ?', [strtolower(trim($classification['category_name']))])->first();
+            $matchedCat = \App\Models\Category::whereRaw("name->>'es' ILIKE ?", [trim($classification['category_name'])])->first()
+                ?? \App\Models\Category::whereRaw("name->>'en' ILIKE ?", [trim($classification['category_name'])])->first();
             if ($matchedCat) {
                 $categoryId = $matchedCat->id;
             }
         }
 
+        // --- CREATE ARTICLE (Bilingual) ---
+        $slugEn = $redacted['slug_en'] ?? Str::slug($redacted['title_en'] ?? $this->rawArticle->title);
+        $slugEs = $redacted['slug_es'] ?? Str::slug($redacted['title_es'] ?? $this->rawArticle->title);
+
+        // Ensure unique slugs
+        $slugEn = $this->ensureUniqueSlug($slugEn, 'slug_en');
+        $slugEs = $this->ensureUniqueSlug($slugEs, 'slug_es');
+
         $article = Article::create([
-            'raw_article_id' => $this->rawArticle->id,
-            'title' => $redacted['title'] ?? $this->rawArticle->title,
-            'slug' => $slug,
-            'content' => '', // Lo guardamos vacío para inyectar imágenes después
-            'excerpt' => $redacted['excerpt'] ?? Str::words(strip_tags($content), 30),
-            'author_id' => $author->id,
-            'category_id' => $categoryId,
-            'status' => 'draft',
-            'meta_title' => $redacted['title'] ?? null,
-            'meta_description' => $redacted['excerpt'] ?? null,
-            'meta_keywords' => $redacted['keywords'] ?? [],
-            'reading_time' => $this->calculateReadingTime($content),
-            'ai_metadata' => [
-                'facts' => $classification['facts'] ?? [],
-                'voice_style' => $author->voice_style,
+            'raw_article_id'    => $this->rawArticle->id,
+            'slug_en'           => $slugEn,
+            'slug_es'           => $slugEs,
+            'author_id'         => $author->id,
+            'category_id'       => $categoryId,
+            'status'            => 'draft',
+            'meta_keywords'     => $redacted['keywords'] ?? [],
+            'reading_time'      => $this->calculateReadingTime($contentEn),
+            'ai_metadata'       => [
                 'origin_url' => $this->rawArticle->url,
                 'today_date' => $today,
-                'json_ld' => $redacted['json_ld'] ?? null,
+                'json_ld'    => $redacted['json_ld'] ?? null,
             ],
+            // Translatable fields (empty first, filled below)
+            'title'             => ['en' => '', 'es' => ''],
+            'content'           => ['en' => '', 'es' => ''],
+            'excerpt'           => ['en' => '', 'es' => ''],
+            'meta_title'        => ['en' => '', 'es' => ''],
+            'meta_description'  => ['en' => '', 'es' => ''],
         ]);
 
+        // Set translations explicitly
+        $article->setTranslation('title', 'en', $redacted['title_en'] ?? $this->rawArticle->title);
+        $article->setTranslation('title', 'es', $redacted['title_es'] ?? $this->rawArticle->title);
+        $article->setTranslation('excerpt', 'en', $redacted['excerpt_en'] ?? '');
+        $article->setTranslation('excerpt', 'es', $redacted['excerpt_es'] ?? '');
+        $article->setTranslation('meta_title', 'en', $redacted['meta_title_en'] ?? $redacted['title_en'] ?? '');
+        $article->setTranslation('meta_title', 'es', $redacted['meta_title_es'] ?? $redacted['title_es'] ?? '');
+        $article->setTranslation('meta_description', 'en', $redacted['excerpt_en'] ?? '');
+        $article->setTranslation('meta_description', 'es', $redacted['excerpt_es'] ?? '');
+        $article->save();
+
+        // --- IMAGE GENERATION (shared across languages) ---
         $imageCount = 0;
         $imageObjectsJsonLd = [];
 
         if (!empty($redacted['image_prompts']) && is_array($redacted['image_prompts'])) {
             foreach ($redacted['image_prompts'] as $index => $imgData) {
-                if ($index >= 5) break; 
-                
+                if ($index >= 5) break;
+
                 $placeholder = $imgData['id'] ?? '';
-                $promptEn = $imgData['prompt_en'] ?? '';
-                $altEs = $imgData['alt_es'] ?? '';
-                $captionEs = $imgData['caption_es'] ?? $altEs;
-                $titleEs = $imgData['title_es'] ?? $altEs;
-                
+                $promptEn    = $imgData['prompt_en'] ?? '';
+                $altEn       = $imgData['alt_en'] ?? '';
+                $altEs       = $imgData['alt_es'] ?? $altEn;
+                $captionEn   = $imgData['caption_en'] ?? $altEn;
+                $captionEs   = $imgData['caption_es'] ?? $altEs;
+                $titleEn     = $imgData['title_en'] ?? $altEn;
+                $titleEs     = $imgData['title_es'] ?? $altEs;
+
                 if (empty($placeholder) || empty($promptEn)) continue;
 
-                $path = $imageService->generateAndSave($promptEn, $slug, $index + 1);
-                
+                $path = $imageService->generateAndSave($promptEn, $slugEn, $index + 1);
+
                 if ($path && file_exists($path)) {
                     $media = $article->addMedia($path)
-                                     ->withCustomProperties([
-                                         'alt' => $altEs,
-                                         'caption' => $captionEs,
-                                         'title' => $titleEs
-                                     ])
-                                     ->toMediaCollection('images');
-                    
+                        ->withCustomProperties([
+                            'alt_en'     => $altEn,
+                            'alt_es'     => $altEs,
+                            'caption_en' => $captionEn,
+                            'caption_es' => $captionEs,
+                            'title_en'   => $titleEn,
+                            'title_es'   => $titleEs,
+                        ])
+                        ->toMediaCollection('images');
+
                     $urlOriginal = $media->getUrl();
-                    $urlThumb = $media->getUrl('thumb');
-                    $urlMedium = $media->getUrl('medium');
-                    $urlLarge = $media->getUrl('large');
-                    
-                    $srcset = "{$urlThumb} 480w, {$urlMedium} 800w, {$urlLarge} 1200w";
-                    $sizes = "(max-width: 800px) 100vw, 800px";
-                    $imgId = "img-" . ($index + 1) . "-" . Str::random(5);
+                    $urlThumb    = $media->getUrl('thumb');
+                    $urlMedium   = $media->getUrl('medium');
+                    $urlLarge    = $media->getUrl('large');
+                    $srcset      = "{$urlThumb} 480w, {$urlMedium} 800w, {$urlLarge} 1200w";
+                    $sizes       = "(max-width: 800px) 100vw, 800px";
+                    $imgId       = "img-" . ($index + 1) . "-" . Str::random(5);
 
-                    $imgTag = "<figure role=\"group\" aria-labelledby=\"caption-{$imgId}\" class=\"article-image my-10 overflow-hidden rounded-xl border border-gray-100 shadow-2xl transition-all duration-500 hover:shadow-cyan-500/20\">
-                        <img src=\"{$urlOriginal}\" 
-                             srcset=\"{$srcset}\"
-                             sizes=\"{$sizes}\"
-                             alt=\"{$altEs}\" 
-                             title=\"{$titleEs}\"
-                             loading=\"lazy\" 
-                             decoding=\"async\"
-                             width=\"1280\" 
-                             height=\"720\"
-                             role=\"img\"
-                             class=\"w-full h-auto object-cover aspect-video\">
-                        <figcaption id=\"caption-{$imgId}\" class=\"text-sm text-gray-500 mt-4 text-center italic leading-relaxed px-4 bg-gray-50/50 py-3 border-t border-gray-100\">
-                            {$captionEs}
-                        </figcaption>
-                    </figure>";
+                    // Build HTML for each language
+                    $imgTagEn = $this->buildImageTag($urlOriginal, $srcset, $sizes, $altEn, $titleEn, $captionEn, $imgId);
+                    $imgTagEs = $this->buildImageTag($urlOriginal, $srcset, $sizes, $altEs, $titleEs, $captionEs, $imgId);
 
-                    $content = str_replace($placeholder, $imgTag, $content);
+                    $contentEn = str_replace($placeholder, $imgTagEn, $contentEn);
+                    $contentEs = str_replace($placeholder, $imgTagEs, $contentEs);
 
                     $imageObjectsJsonLd[] = [
-                        "@type" => "ImageObject",
-                        "url" => $urlOriginal,
-                        "caption" => $captionEs,
-                        "description" => $altEs,
-                        "width" => 1280,
-                        "height" => 720
+                        "@type"       => "ImageObject",
+                        "url"         => $urlOriginal,
+                        "caption"     => $captionEn,
+                        "description" => $altEn,
+                        "width"       => 1280,
+                        "height"      => 720,
                     ];
 
                     if ($imageCount === 0) {
                         $article->update([
                             'image_url' => $urlOriginal,
-                            'image_alt' => $altEs
                         ]);
+                        $article->setTranslation('image_alt', 'en', $altEn);
+                        $article->setTranslation('image_alt', 'es', $altEs);
+                        $article->save();
                     }
 
                     $imageCount++;
                 } else {
-                    $content = str_replace($placeholder, '', $content);
+                    $contentEn = str_replace($placeholder, '', $contentEn);
+                    $contentEs = str_replace($placeholder, '', $contentEs);
                 }
             }
         }
-        
-        $aiMetadata = $article->ai_metadata;
+
+        // Save final bilingual content
+        $article->setTranslation('content', 'en', $contentEn);
+        $article->setTranslation('content', 'es', $contentEs);
+
+        // Update JSON-LD
         if (!empty($imageObjectsJsonLd)) {
-            $aiMetadata['json_ld']['image'] = $imageObjectsJsonLd;
-            $article->update(['ai_metadata' => $aiMetadata]);
+            $meta = $article->ai_metadata;
+            $meta['json_ld']['image'] = $imageObjectsJsonLd;
+            $article->ai_metadata = $meta;
         }
 
-        $article->update(['content' => $content]);
+        $article->save();
+
         $this->rawArticle->update(['status' => 'processed']);
-        Log::info("Article created: {$article->id} with {$imageCount} images.");
+        Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
+    }
+
+    // -------------------------------------------------------------------------
+    // HELPERS
+    // -------------------------------------------------------------------------
+
+    private function cleanHallucinatedAttributes(string $content): string
+    {
+        $content = preg_replace('/\s*\"\s*alt=\"\[IMAGE_\d+_ALT\]\"\s*title=\"\[IMAGE_\d+_TITLE\]\">\s*/i', '', $content);
+        $content = preg_replace('/\[IMAGE_\d+_(ALT|TITLE|CAPTION|PROMPT)\]/i', '', $content);
+        $content = preg_replace('/\s*\"\s*alt=\"[^\"]*\"\s*title=\"[^\"]*\">\s*/i', '', $content);
+        return $content;
+    }
+
+    private function buildImageTag(
+        string $src, string $srcset, string $sizes,
+        string $alt, string $title, string $caption, string $imgId
+    ): string {
+        return "<figure role=\"group\" aria-labelledby=\"caption-{$imgId}\" class=\"article-image my-10 overflow-hidden rounded-xl border border-gray-100 shadow-2xl transition-all duration-500 hover:shadow-cyan-500/20\">
+            <img src=\"{$src}\"
+                 srcset=\"{$srcset}\"
+                 sizes=\"{$sizes}\"
+                 alt=\"{$alt}\"
+                 title=\"{$title}\"
+                 loading=\"lazy\"
+                 decoding=\"async\"
+                 width=\"1280\"
+                 height=\"720\"
+                 role=\"img\"
+                 class=\"w-full h-auto object-cover aspect-video\">
+            <figcaption id=\"caption-{$imgId}\" class=\"text-sm text-gray-500 mt-4 text-center italic leading-relaxed px-4 bg-gray-50/50 py-3 border-t border-gray-100\">
+                {$caption}
+            </figcaption>
+        </figure>";
+    }
+
+    private function ensureUniqueSlug(string $slug, string $column, int $attempt = 0): string
+    {
+        $candidate = $attempt === 0 ? $slug : "{$slug}-{$attempt}";
+        if (Article::where($column, $candidate)->exists()) {
+            return $this->ensureUniqueSlug($slug, $column, $attempt + 1);
+        }
+        return $candidate;
     }
 
     protected function classifyAndExtract(OpenRouterService $ai): ?array
     {
         $content = trim(strip_tags($this->rawArticle->content ?? ''));
-        $categories = \App\Models\Category::active()->pluck('name')->toArray();
-        $categoriesList = empty($categories) ? 'Noticias Generales' : implode(', ', $categories);
-        
-        $today = now()->format('l, F j, Y');
-        $prompt = "ROL: Editor Jefe de Redacción Digital Nivel 10/10.
-        FECHA: {$today}
-        OBJETIVO: Clasificar y extraer hechos.
-        NOTICIA: Título: {$this->rawArticle->title} Contenido: {$this->rawArticle->content}
-        Responde JSON: {\"is_relevant\": bool, \"category_name\": string, \"content_type\": string, \"importance\": int, \"facts\": array}";
+        $today   = now()->format('l, F j, Y');
+
+        if (empty($content)) {
+            Log::info("RawArticle {$this->rawArticle->id} has no content. Treating as a Seed Idea.");
+            $categories = \App\Models\Category::active()->get()->map(fn($c) => $c->getTranslation('name', 'es'))->toArray();
+            return [
+                'is_relevant'   => true,
+                'importance'    => 8,
+                'is_seed'       => true,
+                'category_name' => $categories[0] ?? 'General',
+                'facts'         => [$this->rawArticle->title],
+            ];
+        }
+
+        $categories     = \App\Models\Category::active()->get()->map(fn($c) => $c->getTranslation('name', 'es'))->toArray();
+        $categoriesList = implode(', ', $categories) ?: 'General';
+
+        $prompt = "You are a senior editorial AI. Classify this news article.
+        DATE: {$today}
+        VALID CATEGORIES: [{$categoriesList}]
+        NEWS: Title: {$this->rawArticle->title} | Content: {$content}
+        Respond in strict JSON: {\"is_relevant\": bool, \"category_name\": string, \"content_type\": \"news|blog|guide|review|pillar\", \"importance\": int, \"facts\": [string]}";
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
         return $this->parseJson($response);
     }
 
-    protected function redactContent(OpenRouterService $ai, array $classification, Author $author): ?array
+    protected function redactBilingual(OpenRouterService $ai, array $classification, Author $author): ?array
     {
-        $today = now()->format('l, F j, Y');
+        $today       = now()->format('l, F j, Y');
+        $isSeed      = $classification['is_seed'] ?? false;
         $contentType = $classification['content_type'] ?? 'blog';
-        
-        $prompt = "ROL: Periodista Senior y Estratega SEO.
-        OBJETIVO: Redactar un artículo de alto impacto tipo {$contentType}.
-        HECHOS: " . implode(", ", $classification['facts']) . "
-        
-        REGLAS CRÍTICAS:
-        1. IMÁGENES: Usa SOLO el placeholder [IMAGE_1], [IMAGE_2], etc.
-        2. NO incluyas atributos como alt=\"...\" o title=\"...\" dentro del texto del contenido.
-        3. NO incluyas etiquetas <img>. El sistema las inyectará automáticamente.
-        4. Solo pon el placeholder en una línea nueva.
-        
-        Responde JSON Estricto:
+        $topic       = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
+
+        $prompt = "You are a bilingual Senior Journalist (EN/ES) and SEO Strategist.
+        DATE: {$today} | TYPE: {$contentType}
+
+        TOPIC/FACTS: {$topic}
+
+        CRITICAL RULES:
+        1. Write the full article in BOTH English AND Spanish simultaneously.
+        2. For images: place ONLY the bare placeholder [IMAGE_1] on its own line. NO extra HTML tags, NO alt/title attributes in the text.
+        3. Generate 2-4 photorealistic image prompts for FLUX.1.
+        4. For humans in images: require 'hyper-realistic skin, pores, natural lighting, 35mm DSLR, 8k'.
+
+        Respond STRICTLY in this JSON format (no markdown wrapping):
         {
-            \"title\": \"Título\",
-            \"slug\": \"slug\",
-            \"excerpt\": \"resumen\",
-            \"keywords\": [\"k1\"],
-            \"content\": \"HTML con placeholders [IMAGE_1]\",
+            \"title_en\": \"SEO-optimized English title\",
+            \"title_es\": \"Título en Español optimizado para SEO\",
+            \"slug_en\": \"english-url-slug\",
+            \"slug_es\": \"slug-en-espanol\",
+            \"excerpt_en\": \"English meta description (max 155 chars)\",
+            \"excerpt_es\": \"Meta descripción en Español (máx 155 chars)\",
+            \"keywords\": [\"keyword1\", \"keyword2\"],
+            \"content_en\": \"<p>Full English HTML content with [IMAGE_1] placeholders...</p>\",
+            \"content_es\": \"<p>Contenido HTML completo en Español con placeholders [IMAGE_1]...</p>\",
             \"image_prompts\": [
                 {
                     \"id\": \"[IMAGE_1]\",
-                    \"prompt_en\": \"Photorealistic style prompt... no text.\",
-                    \"alt_es\": \"Texto accesible\",
-                    \"caption_es\": \"Leyenda\",
-                    \"title_es\": \"SEO Title\"
+                    \"prompt_en\": \"Hyper-realistic editorial photo... 8k, 35mm, no text.\",
+                    \"alt_en\": \"Descriptive alt text in English\",
+                    \"alt_es\": \"Texto alternativo descriptivo en Español\",
+                    \"caption_en\": \"English caption\",
+                    \"caption_es\": \"Leyenda en Español\",
+                    \"title_en\": \"English SEO image title\",
+                    \"title_es\": \"Título SEO de imagen en Español\"
                 }
             ],
-            \"json_ld\": {\"@context\": \"https://schema.org\", \"@type\": \"NewsArticle\"}
+            \"json_ld\": {\"@context\": \"https://schema.org\", \"@type\": \"NewsArticle\", \"headline\": \"title\", \"datePublished\": \"{$today}\"}
         }";
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
-        $data = $this->parseJson($response);
+        $data     = $this->parseJson($response);
+
         if (isset($data['keywords']) && is_string($data['keywords'])) {
             $data['keywords'] = array_map('trim', explode(',', $data['keywords']));
         }
+
         return $data;
     }
 
@@ -289,7 +348,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
     {
         if (!$json) return null;
         $clean = preg_replace('/```json|```/', '', $json);
-        return json_decode(trim($clean), true);
+        $result = json_decode(trim($clean), true);
+        return $result ?: null;
     }
 
     protected function calculateReadingTime(string $content): int
@@ -301,6 +361,6 @@ class ProcessArticleWithAIJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $this->rawArticle->update(['status' => 'failed']);
-        Log::error("Job failed for RawArticle: {$this->rawArticle->id}. Error: {$exception->getMessage()}");
+        Log::error("Job failed for RawArticle {$this->rawArticle->id}: {$exception->getMessage()}");
     }
 }
