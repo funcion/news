@@ -93,37 +93,35 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $slugEn = $this->ensureUniqueSlug($slugEn, 'slug_en');
         $slugEs = $this->ensureUniqueSlug($slugEs, 'slug_es');
 
-        $article = Article::create([
-            'raw_article_id'    => $this->rawArticle->id,
-            'slug_en'           => $slugEn,
-            'slug_es'           => $slugEs,
-            'author_id'         => $author->id,
-            'category_id'       => $categoryId,
-            'status'            => 'draft',
-            'meta_keywords'     => $redacted['keywords'] ?? [],
-            'reading_time'      => $this->calculateReadingTime($contentEn),
-            'ai_metadata'       => [
-                'origin_url' => $this->rawArticle->url,
-                'today_date' => $today,
-                'json_ld'    => $redacted['json_ld'] ?? null,
-            ],
-            // Translatable fields (empty first, filled below)
-            'title'             => ['en' => '', 'es' => ''],
-            'content'           => ['en' => '', 'es' => ''],
-            'excerpt'           => ['en' => '', 'es' => ''],
-            'meta_title'        => ['en' => '', 'es' => ''],
-            'meta_description'  => ['en' => '', 'es' => ''],
-        ]);
+        // Build the article fresh — use new + setTranslation so we never
+        // pass a PHP array into a column that may still be VARCHAR(255).
+        $article = new Article();
+        $article->raw_article_id = $this->rawArticle->id;
+        $article->slug_en        = $slugEn;
+        $article->slug_es        = $slugEs;
+        $article->author_id      = $author->id;
+        $article->category_id    = $categoryId;
+        $article->status         = 'draft';
+        $article->meta_keywords  = $redacted['keywords'] ?? [];
+        $article->reading_time   = $this->calculateReadingTime($contentEn);
+        $article->ai_metadata    = [
+            'origin_url' => $this->rawArticle->url,
+            'today_date' => $today,
+            'json_ld'    => $redacted['json_ld'] ?? null,
+        ];
 
-        // Set translations explicitly
-        $article->setTranslation('title', 'en', $redacted['title_en'] ?? $this->rawArticle->title);
-        $article->setTranslation('title', 'es', $redacted['title_es'] ?? $this->rawArticle->title);
-        $article->setTranslation('excerpt', 'en', $redacted['excerpt_en'] ?? '');
-        $article->setTranslation('excerpt', 'es', $redacted['excerpt_es'] ?? '');
-        $article->setTranslation('meta_title', 'en', $redacted['meta_title_en'] ?? $redacted['title_en'] ?? '');
-        $article->setTranslation('meta_title', 'es', $redacted['meta_title_es'] ?? $redacted['title_es'] ?? '');
-        $article->setTranslation('meta_description', 'en', $redacted['excerpt_en'] ?? '');
-        $article->setTranslation('meta_description', 'es', $redacted['excerpt_es'] ?? '');
+        // Set all translatable fields via setTranslation (Spatie-aware)
+        $article->setTranslation('title',            'en', $redacted['title_en']  ?? $this->rawArticle->title);
+        $article->setTranslation('title',            'es', $redacted['title_es']  ?? $this->rawArticle->title);
+        $article->setTranslation('excerpt',          'en', $redacted['excerpt_en'] ?? '');
+        $article->setTranslation('excerpt',          'es', $redacted['excerpt_es'] ?? '');
+        $article->setTranslation('meta_title',       'en', Str::limit($redacted['meta_title_en'] ?? $redacted['title_en'] ?? '', 70));
+        $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', 70));
+        $article->setTranslation('meta_description', 'en', Str::limit($redacted['excerpt_en'] ?? '', 160));
+        $article->setTranslation('meta_description', 'es', Str::limit($redacted['excerpt_es'] ?? '', 160));
+        // content will be set after image injection
+        $article->setTranslation('content', 'en', '');
+        $article->setTranslation('content', 'es', '');
         $article->save();
 
         // --- IMAGE GENERATION (shared across languages) ---
@@ -297,42 +295,77 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $contentType = $classification['content_type'] ?? 'blog';
         $topic       = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
 
-        $prompt = "You are a bilingual Senior Journalist (EN/ES) and SEO Strategist.
-        DATE: {$today} | TYPE: {$contentType}
+        $wordTargets = [
+            'news'   => '600-900 words EN | 600-900 palabras ES',
+            'blog'   => '1200-2000 words EN | 1200-2000 palabras ES',
+            'guide'  => '1500-2500 words EN | 1500-2500 palabras ES',
+            'review' => '1500-3000 words EN | 1500-3000 palabras ES',
+            'pillar' => '2500-5000 words EN | 2500-5000 palabras ES',
+        ];
+        $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'];
 
-        TOPIC/FACTS: {$topic}
+        $prompt = <<<PROMPT
+You are a world-class bilingual Senior Journalist and SEO Strategist (15+ years experience).
+DATE: {$today} | TYPE: {$contentType} | TARGET LENGTH: {$wordTarget}
+TOPIC: {$topic}
 
-        CRITICAL RULES:
-        1. Write the full article in BOTH English AND Spanish simultaneously.
-        2. For images: place ONLY the bare placeholder [IMAGE_1] on its own line. NO extra HTML tags, NO alt/title attributes in the text.
-        3. Generate 2-4 photorealistic image prompts for FLUX.1.
-        4. For humans in images: require 'hyper-realistic skin, pores, natural lighting, 35mm DSLR, 8k'.
+=== MANDATORY QUALITY STANDARDS ===
 
-        Respond STRICTLY in this JSON format (no markdown wrapping):
+SEO - Google E-E-A-T (10/10 REQUIRED):
+- Primary keyword in title (first 60 chars), first paragraph, at least 2 H2s, meta description.
+- Use semantic LSI keywords naturally throughout.
+- Title EN and ES: max 60 chars each.
+- Excerpt/meta description EN and ES: max 155 chars each.
+- Slug: lowercase-hyphens-no-special-chars (max 6 words each).
+
+CONTENT QUALITY - Google Helpful Content:
+- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma".
+- BURSTINESS: alternate short punchy sentences (3-5 words) with complex analytical ones.
+- Include 1 real or fictional micro-story per section.
+- Use: H2 headings, <strong> for key facts, <blockquote> for quotes, <ul> or <ol> for lists.
+
+ADA/WCAG 2.1 AAA ACCESSIBILITY:
+- For images: ONLY place bare placeholder [IMAGE_1] on its own line. NO extra HTML around it.
+- All image alt texts (in image_prompts) must describe the image vividly for a blind reader.
+- Use semantic HTML throughout: h2, h3, p, ul, ol, blockquote, strong.
+
+IMAGES - FLUX.1 Ultra-Realism:
+- Generate 2 to 4 photorealistic image prompts.
+- If humans appear: add "hyper-realistic skin textures, pores, authentic facial expression, natural lighting, 35mm DSLR Nikon D850, 8k resolution, no text, no watermarks".
+
+=== OUTPUT: STRICT JSON ONLY (no markdown, no text outside JSON) ===
+{
+    "title_en": "Compelling English title max 60 chars",
+    "title_es": "Titulo en Espanol max 60 caracteres",
+    "slug_en": "english-seo-slug-max-6-words",
+    "slug_es": "slug-en-espanol-max-6-palabras",
+    "excerpt_en": "Persuasive English meta description max 155 chars",
+    "excerpt_es": "Meta descripcion en Espanol max 155 chars",
+    "keywords": ["primary keyword", "secondary kw", "lsi kw 1", "lsi kw 2"],
+    "content_en": "<p>Full English HTML article body. Place [IMAGE_1] on its own line between paragraphs.</p>",
+    "content_es": "<p>Cuerpo del articulo en Espanol. Coloca [IMAGE_1] en su propia linea entre parrafos.</p>",
+    "image_prompts": [
         {
-            \"title_en\": \"SEO-optimized English title\",
-            \"title_es\": \"Título en Español optimizado para SEO\",
-            \"slug_en\": \"english-url-slug\",
-            \"slug_es\": \"slug-en-espanol\",
-            \"excerpt_en\": \"English meta description (max 155 chars)\",
-            \"excerpt_es\": \"Meta descripción en Español (máx 155 chars)\",
-            \"keywords\": [\"keyword1\", \"keyword2\"],
-            \"content_en\": \"<p>Full English HTML content with [IMAGE_1] placeholders...</p>\",
-            \"content_es\": \"<p>Contenido HTML completo en Español con placeholders [IMAGE_1]...</p>\",
-            \"image_prompts\": [
-                {
-                    \"id\": \"[IMAGE_1]\",
-                    \"prompt_en\": \"Hyper-realistic editorial photo... 8k, 35mm, no text.\",
-                    \"alt_en\": \"Descriptive alt text in English\",
-                    \"alt_es\": \"Texto alternativo descriptivo en Español\",
-                    \"caption_en\": \"English caption\",
-                    \"caption_es\": \"Leyenda en Español\",
-                    \"title_en\": \"English SEO image title\",
-                    \"title_es\": \"Título SEO de imagen en Español\"
-                }
-            ],
-            \"json_ld\": {\"@context\": \"https://schema.org\", \"@type\": \"NewsArticle\", \"headline\": \"title\", \"datePublished\": \"{$today}\"}
-        }";
+            "id": "[IMAGE_1]",
+            "prompt_en": "Photojournalistic style, [specific scene], hyper-realistic, 35mm lens, 8k, no text, no watermarks.",
+            "alt_en": "Descriptive alt text for screen readers in English",
+            "alt_es": "Texto alt descriptivo para lectores de pantalla en Espanol",
+            "caption_en": "Informative English image caption",
+            "caption_es": "Leyenda informativa en Espanol",
+            "title_en": "English SEO image title max 70 chars",
+            "title_es": "Titulo SEO imagen en Espanol max 70 chars"
+        }
+    ],
+    "json_ld": {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": "English title here",
+        "datePublished": "{$today}",
+        "author": {"@type": "Person", "name": "{$author->name}"},
+        "description": "English meta description"
+    }
+}
+PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
         $data     = $this->parseJson($response);
