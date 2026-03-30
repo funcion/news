@@ -25,3 +25,4 @@ yarn-error.log
 /.bracket-pair-colorizer-2.json
 /auth.json
 .DS_Store
+storage/
