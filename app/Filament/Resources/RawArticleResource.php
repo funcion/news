@@ -128,17 +128,18 @@ class RawArticleResource extends Resource
             ])
             ->actions([
                 Action::make('procesar_ia')
-                    ->label('Procesar con IA')
+                    ->label(fn (RawArticle $record) => in_array($record->status, ['ignored', 'failed']) ? 'Forzar Re-procesamiento IA' : 'Procesar con IA')
                     ->icon('heroicon-o-sparkles')
-                    ->color('info')
+                    ->color(fn (RawArticle $record) => in_array($record->status, ['ignored', 'failed']) ? 'warning' : 'info')
                     ->requiresConfirmation()
-                    ->visible(fn (RawArticle $record) => $record->status === 'pending')
+                    ->visible(fn (RawArticle $record) => in_array($record->status, ['pending', 'ignored', 'failed']))
                     ->action(function (RawArticle $record) {
+                        $record->update(['status' => 'pending']);
                         ProcessArticleWithAIJob::dispatch($record);
                         
                         Notification::make()
                             ->title('Procesamiento iniciado')
-                            ->body('La noticia ha sido enviada al pipeline de IA.')
+                            ->body('La noticia se ha puesto en cola para redacción profesional.')
                             ->success()
                             ->send();
                     }),
