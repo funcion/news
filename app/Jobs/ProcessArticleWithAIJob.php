@@ -19,6 +19,13 @@ class ProcessArticleWithAIJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 240;
+
+    /**
      * The number of times the job may be attempted.
      *
      * @var int
@@ -37,7 +44,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
      */
     public function handle(OpenRouterService $ai): void
     {
-        Log::info("Processing RawArticle: {$this->rawArticle->id} with AI Gemini 3.");
+        $today = now()->format('l, F j, Y');
+        Log::info("Processing RawArticle: {$this->rawArticle->id} with AI Gemini 2.0 Flash at {$today}.");
 
         if ($this->rawArticle->status !== 'pending') {
             Log::warning("RawArticle {$this->rawArticle->id} is already processed or in error.");
@@ -79,9 +87,6 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
-        // Layer 4: Meta Generation (Gemini 3 Flash)
-        $metadata = $this->generateMetadata($ai, $redacted);
-
         // Determine Final Category
         $categoryId = $this->rawArticle->source->category_id ?? 1; // Default
         if (!empty($classification['category_name'])) {
@@ -95,22 +100,25 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article = Article::create([
             'raw_article_id' => $this->rawArticle->id,
             'title' => $redacted['title'] ?? $this->rawArticle->title,
-            'slug' => Str::slug($redacted['title'] ?? $this->rawArticle->title),
+            'slug' => $redacted['slug'] ?? Str::slug($redacted['title'] ?? $this->rawArticle->title),
             'content' => $redacted['content'],
             'excerpt' => $redacted['excerpt'] ?? Str::words(strip_tags($redacted['content']), 30),
             'author_id' => $author->id,
             'category_id' => $categoryId,
             'status' => 'draft',
-            'meta_title' => $metadata['meta_title'] ?? null,
-            'meta_description' => $metadata['meta_description'] ?? null,
-            'meta_keywords' => $metadata['meta_keywords'] ?? null,
+            'meta_title' => $redacted['title'] ?? null,
+            'meta_description' => $redacted['excerpt'] ?? null,
+            'meta_keywords' => $redacted['keywords'] ?? [],
             'reading_time' => $this->calculateReadingTime($redacted['content']),
             'ai_metadata' => [
                 'facts' => $classification['facts'] ?? [],
                 'voice_style' => $author->voice_style,
                 'origin_url' => $this->rawArticle->url,
-                'model' => OpenRouterService::MODEL_GEMINI_3_FLASH,
+                'model' => OpenRouterService::MODEL_GEMINI_LATEST,
                 'detected_category' => $classification['category_name'] ?? null,
+                'json_ld' => $redacted['json_ld'] ?? null,
+                'faq_json_ld' => $redacted['faq_json_ld'] ?? null,
+                'today_date' => $today,
             ],
         ]);
 
@@ -139,14 +147,23 @@ class ProcessArticleWithAIJob implements ShouldQueue
             ];
         }
 
-        $prompt = "Actúa como un experto editor periodístico.
-        Analiza esta noticia cruda y determina si pertenece a alguna de las siguientes categorías temáticas válidas de nuestro ecosistema informativo.
+        $today = now()->format('l, F j, Y');
+        $prompt = "ROL: Actúa como un experto Editor Jefe de Redacción Digital y Especialista en SEO Semántico de nivel 10/10.
+        FECHA ACTUAL: {$today}
+        
+        OBJETIVO: Analiza esta noticia cruda y decide si merece ser redactada como un artículo de alta calidad.
         
         CATEGORÍAS VÁLIDAS: [{$categoriesList}]
         
-        REGLAS:
-        - Si la noticia encaja en alguna de las categorías de arriba, márcala como relevante (is_relevant: true) y extrae sus hechos clave.
-        - Si la noticia NO pertenece claramente a ninguna de esas categorías, márcala como irrelevante (is_relevant: false) para que sea ignorada.
+        REGLAS DE SEGURIDAD (IMPORTANTE):
+        1. RECHAZO ESTRICTO: Di 'is_relevant: false' si el contenido es:
+           - Publicidad encubierta o spam.
+           - Listas de empleos o eventos locales menores.
+           - Noticia muy genérica o sin 'Información Ganancial' (poca carnita).
+           - Noticia desactualizada o que contradiga hechos a día de hoy ({$today}).
+        2. ACEPTE SÓLO SI: Aporta valor real al usuario, tiene potencial viral/SEO o es una noticia de impacto en el sector.
+        
+        Ahorra mis créditos: Este es el paso de seguridad. Sólo dí 'true' si estás 100% seguro de que merece un artículo de +1500 palabras.
         
         NOTICIA:
         Título: {$this->rawArticle->title}
@@ -155,97 +172,81 @@ class ProcessArticleWithAIJob implements ShouldQueue
         Responde estrictamente en formato JSON:
         {
             \"is_relevant\": bool,
-            \"category_name\": \"Nombre exacto de la categoría seleccionada (si es relevante)\",
+            \"category_name\": \"Nombre de categoría\",
+            \"content_type\": \"news | blog | guide | pillar | review\",
             \"importance\": int (1-10),
-            \"facts\": [array of strings]
+            \"facts\": [\"hechos\", \"verificados\"]
         }";
 
         $response = $ai->complete([
             ['role' => 'user', 'content' => $prompt]
-        ], OpenRouterService::MODEL_GEMINI_3_FLASH);
+        ], OpenRouterService::MODEL_GEMINI_LATEST);
 
         return $this->parseJson($response);
     }
 
     protected function redactContent(OpenRouterService $ai, array $classification, Author $author): ?array
     {
-        $voiceInstructions = [
-            'El Analista' => "Técnico, basado en datos duros y análisis profundo.",
-            'El Divulgador' => "Accesible, claro y pedagógico para el público general.",
-            'El Cronista' => "Narrativo, estilo storytelling con impacto social.",
-            'El Crítico' => "Opinión fundamentada, honesto y directo sobre errores o aciertos.",
-        ];
-
-        $instructions = $voiceInstructions[$author->voice_style] ?? "Neutral e informativo.";
-        
+        $today = now()->format('l, F j, Y');
         $isSeed = $classification['is_seed'] ?? false;
+        $contentType = $classification['content_type'] ?? 'blog';
+        
+        // Extended dynamic targets based on Search Intent (Refined 2026 Standards)
+        $targetMap = [
+            'news'      => '500 - 800 palabras (Rapidez, frescura e impacto inmediato).',
+            'blog'      => '1,000 - 2,500 palabras (Equilibrio de profundidad y retención).',
+            'guide'     => '1,500 - 2,500 palabras (Tutorial detallado, pasos y solución de problemas).',
+            'review'    => '1,500 - 3,000 palabras (Análisis de pros/contras y comparativas).',
+            'pillar'    => '2,500 - 5,000+ palabras (La autoridad definitiva pilar del dominio).',
+        ];
+        $targetStr = $targetMap[$contentType] ?? $targetMap['blog'];
 
-        if ($isSeed) {
-            $prompt = "Actúa como {$author->name}, cuya voz es: {$author->voice_style}.
-        Instrucciones de estilo: {$instructions}
+        $prompt = "ROL: Periodista Senior (15 años exp) y Estratega de SEO Semántico.
+        FECHA ACTUAL: {$today}
+        TIPO DE POST: {$contentType}
+        OBJETIVO: Satisfacer la 'INTENCIÓN DE BÚSQUEDA'. Prioriza la 'SATISFACCIÓN DEL USUARIO' sobre el conteo de palabras.
         
-        Has recibido una 'semilla' o idea para una noticia tecnológica. Tu tarea es usar tu base de conocimientos para investigar sobre este tema y redactar un artículo de noticias SEO-optimizado, original, completo y humanizado.
+        EXTENSIÓN RECOMENDADA: {$targetStr}
+        " . ($isSeed ? "TEMA/SEMILLA: {$this->rawArticle->title}" : "HECHOS CLAVE: " . implode(", ", $classification['facts'])) . "
         
-        TEMA / SEMILLA:
-        - Título: {$this->rawArticle->title}
-        - Notas adicionales: {$this->rawArticle->summary}
-        
-        Debes expandir la idea, añadir contexto de la industria y generar un artículo con carnita periodística.
-        Usa un formato HTML limpio (solo h2, p, strong, li). No uses etiquetas html, head o body.
-        Evita sonar robótico. Sé atractivo pero profesional.
-        
-        Responde estrictamente en formato JSON:
-        {
-            \"title\": \"Título atractivo y mejorado\",
-            \"excerpt\": \"Resumen descriptivo de 2 líneas\",
-            \"content\": \"Contenido HTML completo (al menos 3 o 4 párrafos)\"
-        }";
-        } else {
-            $prompt = "Actúa como {$author->name}, cuya voz es: {$author->voice_style}.
-        Instrucciones de estilo: {$instructions}
-        
-        Basado en los siguientes hechos extraídos de una noticia reciente, redacta un artículo de noticias SEO-optimizado y humanizado.
-        Usa un formato HTML limpio (solo h2, p, strong, li). No uses etiquetas html, head o body.
-        Evita sonar robótico. Sé atractivo pero profesional.
-        
-        HECHOS:
-        - " . implode("\n- ", $classification['facts']) . "
+        REGLAS DE ESCRITURA (HUMAN-LIKE & SEO 10/10):
+        1. ALMA HUMANA (ANTI-CLICHÉ): PROHIBIDO usar: 'cambio de paradigma', 'fuerza innegable', 'vasto campo', 'en el mundo de hoy', 'salto cualitativo'.
+        2. RITMO (BURSTINESS): Alterna frases de 3-5 palabras con oraciones complejas. Impacto puro.
+        3. GANCHO (LEAD): Empieza con un dato agresivo o anécdota. Olvida la introducción institucional.
+        4. MICRO-STORYTELLING: Incluye un ejemplo o testimonio corto de una persona ficticia pero realista para humanizar el tema.
+        5. VERACIDAD E-E-A-T: Usa cifras específicas (%, fechas). Si no hay fuente real, usa 'Reportes del sector'. NO INVENTES EXPERTOS.
+        6. FORMATEO: 5-10 líneas por párrafo, <strong> para LSI keywords, [IMAGEN: descripción] con ALT cada 500 palabras.
+        7. CIERRE (CTA): Conclusión punzante y Llamado a la Acción (CTA) claro.
+        8. FAQ: Al final, añade 3 FAQs con Schema para fragmentos destacados.
         
         Responde estrictamente en formato JSON:
         {
-            \"title\": \"Título atractivo\",
-            \"excerpt\": \"Resumen de 2 líneas\",
-            \"content\": \"Contenido HTML completo\"
+            \"title\": \"Título ClickMagnet\",
+            \"slug\": \"slug-url-optimizado\",
+            \"excerpt\": \"Meta descripción persuasiva (120-155 chars)\",
+            \"content\": \"Cuerpo HTML completo (H2, p, <strong>, blockquote, FAQ, marcadores imagen)\",
+            \"json_ld\": {
+                \"@context\": \"https://schema.org\",
+                \"@type\": \"NewsArticle\",
+                \"headline\": \"Título\",
+                \"datePublished\": \"{$today}\",
+                \"author\": {\"@type\": \"Person\", \"name\": \"{$author->name}\"}
+            },
+            \"faq_json_ld\": {
+                \"@context\": \"https://schema.org\",
+                \"@type\": \"FAQPage\",
+                \"mainEntity\": [array of microdata for 3 FAQs]
+            }
         }";
-        }
 
         $response = $ai->complete([
             ['role' => 'user', 'content' => $prompt]
-        ], OpenRouterService::MODEL_GEMINI_3_FLASH);
+        ], OpenRouterService::MODEL_GEMINI_LATEST);
 
         return $this->parseJson($response);
     }
 
-    protected function generateMetadata(OpenRouterService $ai, array $redacted): array
-    {
-        $prompt = "Basado en este título y contenido, genera metadatos SEO.
-        
-        Título: {$redacted['title']}
-        Contenido: " . Str::limit($redacted['content'], 500) . "
-        
-        Responde estrictamente en formato JSON:
-        {
-            \"meta_title\": \"Máximo 60 carac\",
-            \"meta_description\": \"Máximo 160 carac\",
-            \"meta_keywords\": \"separado, por, comas\"
-        }";
 
-        $response = $ai->complete([
-            ['role' => 'user', 'content' => $prompt]
-        ], OpenRouterService::MODEL_GEMINI_3_FLASH);
-
-        return $this->parseJson($response) ?? [];
-    }
 
     protected function parseJson(?string $json): ?array
     {
