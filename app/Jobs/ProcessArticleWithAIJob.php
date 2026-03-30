@@ -30,7 +30,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         protected RawArticle $rawArticle
     ) {}
 
-    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService): void
+    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker): void
     {
         $today = now()->format('l, F j, Y');
         Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
@@ -50,6 +50,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
             $this->rawArticle->update(['status' => 'ignored']);
             Log::info("RawArticle {$this->rawArticle->id} ignored by AI (not relevant).");
             return;
+        }
+
+        // --- NEW: DUPLICATE CHECK LEVEL 2 & 3 ---
+        $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
+             $this->rawArticle->title, 
+             $this->rawArticle->content, 
+             $this->rawArticle->url, 
+             $this->rawArticle->id
+        );
+
+        if ($isDuplicate) {
+             $this->rawArticle->update(['status' => 'processed']);
+             return;
         }
 
         $author = Author::ai()->active()->inRandomOrder()->first();
@@ -248,7 +261,23 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         $article->save();
 
+        // --- Generate Embedding ---
+        $duplicateChecker->generateAndStoreEmbedding($article, $contentEn);
+
+        // --- Generate and sync Tags ---
+        $extractedTags = $tagService->generateTags($contentEn);
+        if (!empty($extractedTags)) {
+            $tagService->syncTagsToArticle($article, $extractedTags);
+            Log::info("Tags generated for Article {$article->id}: " . implode(', ', $extractedTags));
+        }
+
         $this->rawArticle->update(['status' => 'processed']);
+        
+        // --- Publish Realtime Event ---
+        if ($article->status === 'published' || $article->status === 'draft') {
+            event(new \App\Events\ArticlePublished($article));
+        }
+        
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
     }
 
