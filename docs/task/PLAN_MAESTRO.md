@@ -380,31 +380,34 @@ Cada artículo generado debe incluir:
 
 Sistema automatizado para crear imágenes únicas y optimizadas para cada noticia.
 
-### 6.2 Flujo Lógico
+### 6.2 Flujo Lógico y Gestión Bilingüe
 
 ```
-[Artículo Procesado]
+[Artículo Procesado (Bilingüe)]
          ↓
 [Extractor de Keywords Visuales]
          ↓
-[Prompt Builder (Template Consistente)]
-         ↓
-[FluxAPI.ai Request]
+[SiliconFlow API Request (1 llamada)]
          ↓
     ┌────┴────┐
     ↓         ↓
- [Éxito]    [Fallo]
-    ↓         ↓
- [Optimizar] [Fallback: Unsplash API]
-                  ↓
-              [Fallback: Placeholder SVG]
+ [Éxito]    [Fallo/Fallback]
          ↓
-[Compresión WebP/AVIF + CDN]
+[Spatie MediaLibrary - Inserción Dual]
+    ├── Colección EN (`images_en`):
+    │   - Naming SEO: {slug_en}-{num}.webp
+    │   - Alt/Title/Caption en Inglés
+    │   - Uso de `preservingOriginal()`
+    └── Colección ES (`images_es`):
+        - Naming SEO: {slug_es}-{num}.webp
+        - Alt/Title/Caption en Español
          ↓
-[Alt Text Generado por IA]
+[Reemplazo de placeholders por <figure> semántico y WCAG bilingüe]
          ↓
-[Almacenamiento con naming SEO-friendly]
+[Inyección JSON-LD ImageObject]
 ```
+
+**Nota Operativa**: Se hace 1 sola llamada de generación de imagen por artículo para ahorrar recursos, pero el archivo es copiado e inyectado con metadatos contextuales para los dos idiomas mediante Spatie MediaLibrary.
 
 ### 6.3 Decisiones de Negocio (Simplificado)
 
@@ -416,12 +419,11 @@ Sistema automatizado para crear imágenes únicas y optimizadas para cada notici
 | Alt text      | Generado por IA                                   | Cumplimiento WCAG                                    |
 | CDN           | Cloudflare                                        | Velocidad de carga global                            |
 
-### 6.4 Prompt Template Base
+### 6.4 SEO Visual y WCAG
 
-```
-"Minimalist editorial illustration, flat design, [colores de marca],
-[tema del artículo], clean lines, professional, no text"
-```
+- Construcción por idioma de un string `<figure>` con `<img srcset="...">` y `<figcaption>`.
+- Generación limpia: El scraper limpia alucinaciones en los tags HTML y usa etiquetas puras.
+- Soporte total `srcset` de Spatie: Se registran en el modelo con los tamaños thumb (480w), medium (800w) y large (1200w).
 
 ---
 
@@ -1069,13 +1071,15 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 4. La IA es mejor redactando en inglés (más datos de entrenamiento)
 5. El mercado hispano es un "plus" que te diferencia
 
-### 13.3 Implementación
+### 13.3 Implementación (Actualizada)
 
-- Cada artículo se genera primero en inglés
-- Pipeline de traducción automática al español (misma IA)
-- URLs con prefijo de idioma
-- Hreflang tags para SEO internacional
-- Selector de idioma en el frontend
+- **Spatie Laravel Translatable**: Implementado para manejar traducciones en una sola tabla usando columnas JSONB.
+- **Campos Translatables**: `title`, `content`, `excerpt`, `meta_title`, `meta_description`, `image_alt`.
+- **Estructura de Slugs**: Slugs independientes por idioma (`slug_en`, `slug_es`) para optimización SEO local.
+- **Media Library**: Uso de `spatie/laravel-medialibrary` con colecciones separadas por idioma (`images_en`, `images_es`).
+- **Filament Integration**: Plugin de Spatie Translatable para edición lado a lado en el panel administrativo.
+- **Hreflang tags**: Generados automáticamente para SEO internacional.
+- **Detección de Idioma**: Basada en URL (`/en/`, `/es/`) y fallback al idioma del navegador.
 
 ---
 
@@ -1124,17 +1128,20 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 | Paquete                       | Uso                                 | Notas para FrankenPHP              |
 | ----------------------------- | ----------------------------------- | ---------------------------------- |
-| `laravel/framework` ^12.0     | Framework principal                 | Compatible al 100%                 |
-| `filament/filament` ^3.0      | Panel de administración             | Funciona sin cambios               |
-| `laravel/horizon`             | Gestión de colas Redis              | Necesario para procesamiento async |
-| `laravel/reverb`              | WebSockets en tiempo real           | Corre en contenedor separado       |
-| `laravel/pulse`               | Monitoreo                           | Monitorea FrankenPHP también       |
-| `vedmant/laravel-feed-reader` | Lectura RSS                         | Sin cambios                        |
-| `spatie/laravel-feed`         | Generación RSS propio               | Sin cambios                        |
-| `intervention/image`          | Procesamiento de imágenes           | Requiere extensiones GD            |
-| `pgvector/pgvector`           | Embeddings para similitud semántica | Requiere extensión pgvector        |
-| `dunglas/frankenphp`          | Runtime PHP + servidor web          | **NUEVO: Reemplaza Nginx+PHP-FPM** |
-| `symfony/runtime`             | Integración con FrankenPHP          | Necesario para worker mode         |
+| `laravel/framework` ^12.0               | Framework principal                 | Compatible al 100%                 |
+| `filament/filament` ^3.0                | Panel de administración             | Funciona sin cambios               |
+| `spatie/laravel-translatable` ^6.13     | Sistema multidioma                  | Almacenamiento JSONB               |
+| `spatie/laravel-medialibrary` ^11.0     | Gestión de media y conversiones      | Soporte WebP y SEO filenames       |
+| `filament/spatie-laravel-translatable-plugin` | UI de traducción en Filament     | Edición lado a lado                |
+| `laravel/horizon`                       | Gestión de colas Redis              | Necesario para procesamiento async |
+| `laravel/reverb`                        | WebSockets en tiempo real           | Corre en contenedor separado       |
+| `laravel/pulse`                         | Monitoreo                           | Monitorea FrankenPHP también       |
+| `vedmant/laravel-feed-reader`           | Lectura RSS                         | Sin cambios                        |
+| `spatie/laravel-feed`                   | Generación RSS propio               | Sin cambios                        |
+| `intervention/image` ^2.7               | Procesamiento de imágenes           | Requiere extensiones GD            |
+| `pgvector/pgvector`                     | Embeddings para similitud semántica | Requiere extensión pgvector        |
+| `dunglas/frankenphp`                    | Runtime PHP + servidor web          | **NUEVO: Reemplaza Nginx+PHP-FPM** |
+| `symfony/runtime`                       | Integración con FrankenPHP          | Necesario para worker mode         |
 
 **Nota importante**: No usamos `laravel/octane` porque FrankenPHP ya proporciona optimizaciones similares y mejor integración HTTP/3.
 
@@ -1677,19 +1684,22 @@ services:
   - [x] Crear migraciones para:
     - [x] `sources` (fuentes RSS)
     - [x] `raw_articles` (artículos crudos)
-    - [x] `articles` (artículos procesados)
+    - [x] `articles` (artículos procesados con JSONB para traducciones)
     - [x] `categories` (categorías)
     - [x] `authors` (autores IA)
-    - [x] `images` (imágenes generadas)
+    - [x] `media` (tabla de Spatie MediaLibrary)
     - [x] `tags` + `article_tag` (sistema de tags)
   - [x] Configurar relaciones Eloquent (incluyendo many-to-many articles-tags)
+  - [x] Implementar Trait `HasTranslations` en modelo Article
+  - [x] Configurar colecciones de media multidioma (`images_en`, `images_es`)
   - [x] Crear factories y seeders para testing
 
 - [x] **Configurar Filament Admin**
   - [x] Instalar y configurar Filament v3
+  - [x] Instalar `filament/spatie-laravel-translatable-plugin`
   - [x] Crear recursos básicos:
     - [x] Resource para `sources`
-    - [x] Resource para `articles`
+    - [x] Resource para `articles` (con soporte Translatable)
     - [x] Resource para `categories`
     - [x] Dashboard con métricas básicas
 
