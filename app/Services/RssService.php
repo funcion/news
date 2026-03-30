@@ -42,6 +42,17 @@ class RssService
             }
 
             $content = $item->get_content();
+            
+            // Jina Reader Fallback for truncated content
+            if (strlen(strip_tags($content)) < 300) {
+                /** @var \App\Services\ScraperService $scraper */
+                $scraper = app(\App\Services\ScraperService::class);
+                $scrapedContent = $scraper->scrape($url);
+                if ($scrapedContent) {
+                    $content = $scrapedContent;
+                }
+            }
+
             $description = $item->get_description();
             $authorItem = $item->get_author();
             $author = $authorItem ? $authorItem->get_name() : null;
