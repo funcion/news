@@ -65,6 +65,41 @@ class OpenRouterService
     }
 
     /**
+     * Get embeddings from OpenRouter.
+     *
+     * @param string $input
+     * @param string $model
+     * @return array|null The embedding vector (e.g. 1536 floats)
+     */
+    public function embeddings(string $input, string $model = 'openai/text-embedding-3-small'): ?array
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'X-Title' => 'Noticias Platform',
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => config('app.url'),
+            ])
+            ->timeout(60)
+            ->post($this->baseUrl . '/embeddings', [
+                'model' => $model,
+                'input' => $input,
+            ]);
+
+            if ($response->failed()) {
+                Log::error("OpenRouter Embeddings Error: " . $response->status() . " - " . $response->body());
+                return null;
+            }
+
+            $data = $response->json();
+            return $data['data'][0]['embedding'] ?? null;
+        } catch (\Exception $e) {
+            Log::error("OpenRouter Embeddings Error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Models recommended for the AI Pipeline.
      */
     public const MODEL_GEMINI_LATEST = 'google/gemini-2.5-flash';
