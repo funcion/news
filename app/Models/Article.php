@@ -157,17 +157,35 @@ class Article extends Model implements HasMedia
     }
 
     /**
-     * Register responsive media conversions (WebP, 3 sizes).
+     * Register responsive media conversions for BOTH language collections.
+     *
+     * images_en → SEO filenames in English: {slug_en}-1.webp
+     * images_es → SEO filenames in Spanish: {slug_es}-1.webp
+     * Each collection generates: thumb (480px), medium (800px), large (1200px) in WebP.
+     * Single API call to SiliconFlow → saved twice via preservingOriginal().
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->width(480)->height(270)->sharpen(10)->format('webp')->nonQueued();
+        foreach (['images_en', 'images_es'] as $collection) {
+            $this->addMediaConversion('thumb')
+                ->width(480)->height(270)
+                ->sharpen(10)
+                ->format('webp')
+                ->performOnCollections($collection)
+                ->nonQueued();
 
-        $this->addMediaConversion('medium')
-            ->width(800)->height(450)->sharpen(5)->format('webp')->nonQueued();
+            $this->addMediaConversion('medium')
+                ->width(800)->height(450)
+                ->sharpen(5)
+                ->format('webp')
+                ->performOnCollections($collection)
+                ->nonQueued();
 
-        $this->addMediaConversion('large')
-            ->width(1200)->height(675)->format('webp')->nonQueued();
+            $this->addMediaConversion('large')
+                ->width(1200)->height(675)
+                ->format('webp')
+                ->performOnCollections($collection)
+                ->nonQueued();
+        }
     }
 }
