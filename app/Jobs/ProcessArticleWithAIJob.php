@@ -30,7 +30,17 @@ class ProcessArticleWithAIJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 2;
+    public $tries = 3;
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [10, 30, 60]; // wait 10s, then 30s, then 60s
+    }
 
     /**
      * Create a new job instance.
@@ -83,8 +93,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $redacted = $this->redactContent($ai, $classification, $author);
 
         if (!$redacted) {
-            $this->rawArticle->update(['status' => 'failed']);
-            return;
+            throw new \RuntimeException("La IA no pudo redactar el contenido. Reintentando Job (Intento {$this->attempts()})");
         }
 
         // Create the final Article without images
@@ -127,6 +136,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         // --- MÓDULO 3: GENERACIÓN MULTI-IMAGEN CON SILICONFLOW Y SPATIE MEDIA LIBRARY ---
         $imageCount = 0;
+        $imageObjectsJsonLd = [];
+
         if (!empty($redacted['image_prompts']) && is_array($redacted['image_prompts'])) {
             foreach ($redacted['image_prompts'] as $index => $imgData) {
                 if ($index >= 5) break; 
@@ -134,6 +145,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
                 $placeholder = $imgData['id'] ?? '';
                 $promptEn = $imgData['prompt_en'] ?? '';
                 $altEs = $imgData['alt_es'] ?? '';
+                $captionEs = $imgData['caption_es'] ?? $altEs;
+                $titleEs = $imgData['title_es'] ?? $altEs;
                 
                 if (empty($placeholder) || empty($promptEn)) continue;
 
@@ -142,12 +155,43 @@ class ProcessArticleWithAIJob implements ShouldQueue
                 if ($path && file_exists($path)) {
                     // Add to Spatie Media Library
                     $media = $article->addMedia($path)
-                                     ->withCustomProperties(['alt' => $altEs])
+                                     ->withCustomProperties([
+                                         'alt' => $altEs,
+                                         'caption' => $captionEs,
+                                         'title' => $titleEs
+                                     ])
                                      ->toMediaCollection('images');
                     
                     $url = $media->getUrl();
-                    $imgTag = "<figure class=\"article-image my-6\"><img src=\"{$url}\" alt=\"{$altEs}\" loading=\"lazy\" class=\"rounded-lg shadow-lg w-full h-auto object-cover aspect-video\"><figcaption class=\"text-sm text-gray-500 mt-2 text-center\">{$altEs}</figcaption></figure>";
+                    $imgId = "img-" . ($index + 1) . "-" . Str::random(5);
+
+                    // HTML Semántico (WCAG 2.1 AAA & SEO 10/10)
+                    $imgTag = "<figure role=\"group\" aria-labelledby=\"caption-{$imgId}\" class=\"article-image my-10\">
+                        <img src=\"{$url}\" 
+                             alt=\"{$altEs}\" 
+                             title=\"{$titleEs}\"
+                             loading=\"lazy\" 
+                             decoding=\"async\"
+                             width=\"1280\" 
+                             height=\"720\"
+                             role=\"img\"
+                             class=\"rounded-xl shadow-2xl w-full h-auto object-cover aspect-video border border-gray-100\">
+                        <figcaption id=\"caption-{$imgId}\" class=\"text-sm text-gray-500 mt-4 text-center italic leading-relaxed px-4\">
+                            {$captionEs}
+                        </figcaption>
+                    </figure>";
+
                     $content = str_replace($placeholder, $imgTag, $content);
+
+                    // JSON-LD Metadata collection
+                    $imageObjectsJsonLd[] = [
+                        "@type" => "ImageObject",
+                        "url" => $url,
+                        "caption" => $captionEs,
+                        "description" => $altEs,
+                        "width" => 1280,
+                        "height" => 720
+                    ];
 
                     // Set first image as featured image
                     if ($imageCount === 0) {
@@ -164,6 +208,13 @@ class ProcessArticleWithAIJob implements ShouldQueue
             }
         }
         
+        // Final JSON-LD Update (Inyectamos la galería completa en el esquema)
+        $aiMetadata = $article->ai_metadata;
+        if (!empty($imageObjectsJsonLd)) {
+            $aiMetadata['json_ld']['image'] = $imageObjectsJsonLd;
+            $article->update(['ai_metadata' => $aiMetadata]);
+        }
+
         // Update the article with the final injected HTML content
         $article->update(['content' => $content]);
         // --------------------------------------------------------------------------------
@@ -250,17 +301,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $prompt = "ROL: Periodista Senior (15 años exp) y Estratega de SEO Semántico.
         FECHA ACTUAL: {$today}
         TIPO DE POST: {$contentType}
-        OBJETIVO: Satisfacer la 'INTENCIÓN DE BÚSQUEDA'. Prioriza la 'SATISFACCIÓN DEL USUARIO' sobre el conteo de palabras.
+        OBJETIVO: Satisfacer la 'INTENCIÓN DE BÚSQUEDA' y cumplimiento de ACCESIBILIDAD (ADA/WCAG).
         
         EXTENSIÓN RECOMENDADA: {$targetStr}
         " . ($isSeed ? "TEMA/SEMILLA: {$this->rawArticle->title}" : "HECHOS CLAVE: " . implode(", ", $classification['facts'])) . "
         
-        REGLAS DE ESCRITURA (HUMAN-LIKE & SEO 10/10):
+        REGLAS DE ESCRITURA (HUMAN-LIKE, SEO 10/10 & ADA):
         1. ALMA HUMANA (ANTI-CLICHÉ): PROHIBIDO usar: 'cambio de paradigma', 'fuerza innegable', 'vasto campo'.
         2. RITMO (BURSTINESS): Alterna frases de 3-5 palabras con oraciones complejas. Impacto puro.
         3. MICRO-STORYTELLING: Incluye un ejemplo o testimonio corto ficticio o realista.
-        4. IMÁGENES AUTOMÁTICAS: Inserta de 1 a 5 placeholders [IMAGE_1], [IMAGE_2] en tu HTML. [IMAGE_1] debe ir después del primer o segundo párrafo (imagen de portada). El resto debajo de H2 clave.
-        5. PROMPTS PARA FLUX: Para cada imagen, crea un prompt en INGLÉS súper descriptivo, fotorrealista, estilo periodístico, limpio, para FLUX.1. Adicionalmente genera un texto Alt en ESPAÑOL.
+        4. IMÁGENES AUTOMÁTICAS: Inserta de 1 a 5 placeholders [IMAGE_1], [IMAGE_2] en tu HTML. [IMAGE_1] debe ir después del primer o segundo párrafo (portada).
+        5. ACCESIBILIDAD (WCAG): Describe cada imagen pensando en una persona ciega. Sé descriptivo pero conciso.
+        6. PROMPTS PARA FLUX (ULTRA-REALISMO): Para cada imagen, crea un prompt en INGLÉS súper descriptivo, fotorrealista, estilo periodístico.
+           IMPORTANTE: Si aparecen personas, exige 'hyper-realistic skin textures', 'pores', 'natural lighting', 'realistic human eyes', 'avoid smooth plastic skin'. Estilo cine 8k, DSLR.
         
         Responde estrictamente en formato JSON:
         {
@@ -272,8 +325,10 @@ class ProcessArticleWithAIJob implements ShouldQueue
             \"image_prompts\": [
                 {
                     \"id\": \"[IMAGE_1]\",
-                    \"prompt_en\": \"A hyper-realistic editorial photo of... cyberpunk lighting, DSLR, 8k resolution, highly detailed, no text.\",
-                    \"alt_es\": \"Texto alternativo descriptivo con palabras clave para SEO\"
+                    \"prompt_en\": \"A hyper-realistic editorial photo of [SUBJECT]... detailed facial features, realistic skin texture, 8k resolution, shot on 35mm lens, cinematic natural lighting, no text.\",
+                    \"alt_es\": \"Texto alternativo descriptivo ACCESIBLE (para lectores de pantalla)\",
+                    \"caption_es\": \"Leyenda informativa y con contexto para el pie de foto\",
+                    \"title_es\": \"Título SEO para el atributo title de la imagen\"
                 }
             ],
             \"json_ld\": {
@@ -315,5 +370,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
     {
         $wordCount = str_word_count(strip_tags($content));
         return max(1, ceil($wordCount / 200));
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        $this->rawArticle->update(['status' => 'failed']);
+        Log::error("ProcessArticleWithAIJob failed after all attempts for RawArticle: {$this->rawArticle->id}. Error: {$exception->getMessage()}");
     }
 }
