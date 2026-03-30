@@ -47,6 +47,7 @@ class Article extends Model
         'views' => 'integer',
         'reading_time' => 'integer',
         'seo_score' => 'integer',
+        'meta_keywords' => 'array',
         'ai_metadata' => 'array',
         'embedding' => 'array',
     ];
