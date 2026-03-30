@@ -32,16 +32,20 @@ class FetchRssFeedJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(RssService $rssService): void
+    public function handle(\App\Services\RssService $rssService, \App\Services\ScraperService $scraperService): void
     {
         try {
-            Log::info("Fetching feed for source: {$this->source->name} ({$this->source->url})");
+            Log::info("Fetching content for source: {$this->source->name} (Type: {$this->source->type})");
             
-            $count = $rssService->fetchSource($this->source);
+            if ($this->source->type === 'scraping') {
+                $count = $scraperService->fetchSource($this->source);
+            } else {
+                $count = $rssService->fetchSource($this->source);
+            }
             
-            Log::info("Fetched {$count} new articles for source: {$this->source->name}");
+            Log::info("Fetched {$count} new items for source: {$this->source->name}");
         } catch (\Exception $e) {
-            Log::error("Error fetching feed for source {$this->source->name}: " . $e->getMessage());
+            Log::error("Error fetching source {$this->source->name}: " . $e->getMessage());
             $this->source->increment('score', -1);
             throw $e;
         }

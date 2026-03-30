@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\RawArticle;
 use App\Models\Source;
 use Carbon\Carbon;
-use Vedmant\FeedReader\Facades\FeedReader;
+use SimplePie\SimplePie;
 
 class RssService
 {
@@ -17,8 +17,12 @@ class RssService
      */
     public function fetchSource(Source $source): int
     {
-        $feed = FeedReader::read($source->url);
-        
+        $feed = new SimplePie();
+        $feed->set_feed_url($source->url);
+        $feed->set_cache_location(storage_path('framework/cache'));
+        $feed->init();
+        $feed->handle_content_type();
+
         if ($feed->error()) {
             $source->increment('score', -5); // Penalty for error
             return 0;
@@ -38,8 +42,9 @@ class RssService
             }
 
             $content = $item->get_content();
-            $summary = $item->get_description();
-            $author = $item->get_author() ? $item->get_author()->get_name() : null;
+            $description = $item->get_description();
+            $authorItem = $item->get_author();
+            $author = $authorItem ? $authorItem->get_name() : null;
             $publishedAt = $item->get_date('Y-m-d H:i:s');
 
             // Find image
@@ -50,7 +55,7 @@ class RssService
                 'title' => $title,
                 'url' => $url,
                 'content' => $content,
-                'summary' => $summary,
+                'summary' => strip_tags($description),
                 'author' => $author,
                 'published_at' => $publishedAt ? Carbon::parse($publishedAt) : now(),
                 'hash' => $hash,
@@ -89,8 +94,6 @@ class RssService
             }
         }
 
-        // 2. Try media:content or media:thumbnail (SimplePie handles some of this)
-        // This is a basic fallback for now
         return null;
     }
 }
