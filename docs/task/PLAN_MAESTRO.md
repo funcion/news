@@ -1608,8 +1608,8 @@ services:
 | **Stack Principal**  | **FrankenPHP** + Laravel 12 + Filament                 | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
 | **Base de Datos**    | PostgreSQL + pgvector + Redis                          | Embeddings para IA, cache ultra-rápido  |
 | **Tiempo Real**      | Laravel Reverb + Horizon                               | WebSockets + async processing           |
-| **Infraestructura**  | Docker + Cloudflare CDN                                | HTTP/3 end-to-end, edge caching         |
-| **Sistema de Tags**  | IA + PostgreSQL                                        | SEO semántico, navegación mejorada      |
+| **Sistema de Scrapping** | **Jina Reader (r.jina.ai)**            | Scraping optimizado para LLMs           |
+| **Sistema de Tags**  | IA + PostgreSQL                          | SEO semántico, navegación mejorada      |
 
 **Tecnología Clave**: FrankenPHP reemplaza Nginx+PHP-FPM con:
 
@@ -1641,24 +1641,24 @@ services:
   - [x] Configurar IDE (VS Code con extensiones PHP/Laravel)
   - [x] Instalar herramientas de monitoreo FrankenPHP
 
-- [ ] **Validación manual del nicho**
-  - [ ] Recopilar 20+ feeds RSS del nicho IA y Automatización
-  - [ ] Crear documento con lista de fuentes verificadas
-  - [ ] Analizar competencia directa (3-5 sitios principales)
-  - [ ] Validar volumen de contenido disponible (>100 artículos/día)
+- [x] **Validación manual del nicho**
+  - [x] Recopilar 20+ feeds RSS del nicho IA y Automatización
+  - [x] Crear documento con lista de fuentes verificadas
+  - [x] Analizar competencia directa (3-5 sitios principales)
+  - [x] Validar volumen de contenido disponible (>100 artículos/día)
 
-- [ ] **Pruebas de concepto IA**
-  - [ ] Crear cuenta en OpenRouter
-  - [ ] Desarrollar 10-20 prompts de redacción manual
-  - [ ] Generar 5 artículos de prueba con diferentes modelos
-  - [ ] Evaluar calidad y humanización del contenido
-  - [ ] Documentar "Prompt Library" inicial
+- [x] **Pruebas de concepto IA**
+  - [x] Crear cuenta en OpenRouter
+  - [x] Desarrollar 10-20 prompts de redacción manual
+  - [x] Generar 5 artículos de prueba con diferentes modelos
+  - [x] Evaluar calidad y humanización del contenido
+  - [x] Documentar "Prompt Library" inicial
 
-- [ ] **Validación de mercado**
-  - [ ] Publicar 5 artículos en Medium/subdominio
-  - [ ] Medir engagement (CTR, tiempo de lectura)
-  - [ ] Validar interés real del público objetivo
-  - [ ] Ajustar estrategia según feedback
+- [x] **Validación de mercado**
+  - [x] Publicar 5 artículos en Medium/subdominio
+  - [x] Medir engagement (CTR, tiempo de lectura)
+  - [x] Validar interés real del público objetivo
+  - [x] Ajustar estrategia según feedback
 
 ### 20.2 FASE 1: Fundación con FrankenPHP (Meses 1-2)
 
@@ -1693,15 +1693,15 @@ services:
     - [x] Resource para `categories`
     - [x] Dashboard con métricas básicas
 
-- [ ] **Configurar sistema de colas y sesiones**
-  - [ ] Instalar y configurar Laravel Horizon
-  - [ ] Configurar Redis para colas
-  - [ ] **Configurar sesiones en Redis** (crítico para FrankenPHP worker mode)
-    - [ ] `SESSION_DRIVER=redis` en .env
-    - [ ] Configurar conexión Redis para sesiones
-    - [ ] Validar que sesiones persisten entre requests
-  - [ ] Crear workers básicos
-  - [ ] Configurar supervisord para producción
+- [x] **Configurar sistema de colas y sesiones**
+  - [x] Instalar y conﬁgurar Laravel Horizon
+  - [x] Configurar Redis para colas
+  - [x] **Configurar sesiones en Redis** (crítico para FrankenPHP worker mode)
+    - [x] `SESSION_DRIVER=redis` en .env
+    - [x] Configurar conexión Redis para sesiones
+    - [x] Validar que sesiones persisten entre requests
+  - [x] Crear workers básicos
+  - [x] Configurar supervisord para producción
 
 - [ ] **Configurar FrankenPHP específicamente**
   - [ ] Crear Dockerfile para FrankenPHP con todas las extensiones
@@ -1724,61 +1724,61 @@ services:
 
 #### 📋 Módulo 1: Motor de Ingesta RSS
 
-- [ ] **Sistema de fuentes RSS**
-  - [ ] Instalar `vedmant/laravel-feed-reader`
-  - [ ] Crear modelo `Source` con campos: url, frequency, score, is_active
-  - [ ] Implementar sistema de scoring automático
-  - [ ] Crear interfaz en Filament para gestionar fuentes
+- [x] **Sistema de fuentes RSS**
+  - [x] Instalar `vedmant/laravel-feed-reader`
+  - [x] Crear modelo `Source` con campos: url, frequency, score, is_active
+  - [x] Implementar sistema de scoring automático
+  - [x] Crear interfaz en Filament para gestionar fuentes
 
-- [ ] **Worker de ingesta**
-  - [ ] Crear comando Artisan `rss:fetch`
-  - [ ] Implementar polling dinámico según frecuencia
-  - [ ] Crear job `FetchRssFeedJob`
-  - [ ] Implementar manejo de errores y retries
+- [x] **Worker de ingesta**
+  - [x] Crear comando Artisan `rss:fetch`
+  - [x] Implementar polling dinámico según frecuencia
+  - [x] Crear job `FetchRssFeedJob`
+  - [x] Implementar manejo de errores y retries
 
-- [ ] **Parser y validación**
-  - [ ] Crear parser para extraer metadatos
-  - [ ] Validar estructura de artículos
-  - [ ] Extraer título, contenido, fecha, autor, URL
-  - [ ] Almacenar en tabla `raw_articles`
+- [x] **Parser y validación**
+  - [x] Crear parser para extraer metadatos
+  - [x] Validar estructura de artículos
+  - [x] Extraer título, contenido, fecha, autor, URL
+  - [x] Almacenar en tabla `raw_articles`
 
-- [ ] **Sistema de monitoreo**
-  - [ ] Configurar Laravel Pulse para monitoreo
-  - [ ] Crear alertas para fuentes fallidas
-  - [ ] Dashboard de métricas de ingesta
+- [x] **Sistema de monitoreo**
+  - [x] Configurar Laravel Pulse para monitoreo
+  - [x] Crear alertas para fuentes fallidas
+  - [x] Dashboard de métricas de ingesta
 
 ### 20.3 FASE 2: Cerebro IA (Meses 3-4)
 
 #### 📋 Integración con IA
 
-- [ ] **Configurar OpenRouter**
-  - [ ] Crear servicio `OpenRouterService`
-  - [ ] Implementar rotación de modelos
-  - [ ] Configurar cache de respuestas
-  - [ ] Implementar rate limiting y backoff
+- [x] **Configurar OpenRouter**
+  - [x] Crear servicio `OpenRouterService`
+  - [x] Implementar rotación de modelos
+  - [x] Configurar cache de respuestas
+  - [x] Implementar rate limiting y backoff
 
-- [ ] **Pipeline de procesamiento IA**
-  - [ ] Crear job `ProcessArticleWithAIJob`
-  - [ ] Implementar 4 capas de procesamiento:
-    - [ ] **Capa 1**: Clasificación (Gemini Flash)
-    - [ ] **Capa 2**: Extracción de hechos (Gemini Flash)
-    - [ ] **Capa 3**: Redacción (Claude 3.5 Sonnet)
-    - [ ] **Capa 4**: Humanización (GPT-4o-mini)
-  - [ ] Implementar sistema de "voces editoriales"
+- [x] **Pipeline de procesamiento IA**
+  - [x] Crear job `ProcessArticleWithAIJob`
+  - [x] Implementar 4 capas de procesamiento:
+    - [x] **Capa 1**: Clasificación (Gemini Flash)
+    - [x] **Capa 2**: Extracción de hechos (Gemini Flash)
+    - [x] **Capa 3**: Redacción (Claude 3.5 Sonnet)
+    - [x] **Capa 4**: Humanización (GPT-4o-mini)
+  - [x] Implementar sistema de "voces editoriales"
 
-- [ ] **Sistema anti-duplicados**
-  - [ ] Implementar 3 niveles de detección:
-    - [ ] Nivel 1: Hash exacto (SHA256)
+- [/] **Sistema anti-duplicados**
+  - [x] Implementar 3 niveles de detección:
+    - [x] Nivel 1: Hash exacto (SHA256)
     - [ ] Nivel 2: Similitud de texto (TF-IDF)
     - [ ] Nivel 3: IA semántica (pgvector)
-  - [ ] Configurar PostgreSQL con extensión pgvector
+  - [x] Configurar PostgreSQL con extensión pgvector
   - [ ] Crear sistema de "updates" para noticias existentes
 
-- [ ] **Optimización SEO automática**
-  - [ ] Generar meta tags automáticos
-  - [ ] Crear estructura H1-H3 optimizada
-  - [ ] Implementar internal linking automático
-  - [ ] Generar schema.org markup
+- [x] **Optimización SEO automática**
+  - [x] Generar meta tags automáticos
+  - [x] Crear estructura H1-H3 optimizada
+  - [x] Implementar internal linking automático
+  - [x] Generar schema.org markup
 
 - [ ] **Sistema de Tags Inteligente**
   - [ ] Crear servicio `TagGeneratorService`
@@ -1801,6 +1801,14 @@ services:
   - [ ] Implementar compresión inteligente
   - [ ] Generar alt text con IA
   - [ ] Configurar CDN (Cloudflare)
+
+#### 📋 Módulo: Scraping Inteligente (Jina Reader)
+
+- [ ] **Integración con Jina Reader**
+  - [ ] Crear `ScraperService` para consumo de `r.jina.ai`
+  - [ ] Implementar manejo de Rate Limits y Timeouts
+  - [ ] Configurar fallback a `spatie/browsershot` (opcional)
+  - [ ] Normalización de Markdown para el pipeline de IA
 
 ### 20.4 FASE 3: Frontend Público (Meses 5-6)
 

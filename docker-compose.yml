@@ -1,10 +1,10 @@
 services:
   # Servidor web con FrankenPHP
-  frankenphp:
+  app:
     build:
       context: .
       dockerfile: ./docker/frankenphp/Dockerfile
-    container_name: noticias_frankenphp
+    container_name: noticias_app
     restart: unless-stopped
     working_dir: /app
     volumes:
@@ -33,6 +33,9 @@ services:
       - QUEUE_CONNECTION=redis
     networks:
       - noticias_network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
   # Base de datos PostgreSQL con pgvector
   postgres:
@@ -100,6 +103,9 @@ services:
     command: php artisan horizon
     networks:
       - noticias_network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
   # Reverb para WebSockets
   reverb:
@@ -150,6 +156,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  mailpit_data:
 
 networks:
   noticias_network:
