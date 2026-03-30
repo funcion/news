@@ -54,9 +54,9 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         // --- NEW: DUPLICATE CHECK LEVEL 2 & 3 ---
         $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
-             $this->rawArticle->title, 
-             $this->rawArticle->content, 
-             $this->rawArticle->url, 
+             $this->rawArticle->title ?? '',
+             $this->rawArticle->content ?? '',
+             $this->rawArticle->url ?? '',
              $this->rawArticle->id
         );
 
@@ -114,7 +114,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->slug_es        = $slugEs;
         $article->author_id      = $author->id;
         $article->category_id    = $categoryId;
-        $article->status         = 'draft';
+        $article->status         = 'published';
+        $article->published_at   = now();
         $article->seo_score      = $redacted['seo_score'] ?? 85; 
         $article->meta_keywords  = $redacted['keywords'] ?? [];
         $article->reading_time   = $this->calculateReadingTime($contentEn);
@@ -210,8 +211,15 @@ class ProcessArticleWithAIJob implements ShouldQueue
                         $mediaEs->getUrl(), $srcsetEs, $sizes, $altEs, $titleEs, $captionEs, $imgId
                     );
 
-                    $contentEn = str_replace($placeholder, $imgTagEn, $contentEn);
-                    $contentEs = str_replace($placeholder, $imgTagEs, $contentEs);
+                    // --- NEW: Featured image ([IMAGE_1]) should NOT be in the body content ---
+                    if ($placeholder !== '[IMAGE_1]') {
+                        $contentEn = str_replace($placeholder, $imgTagEn, $contentEn);
+                        $contentEs = str_replace($placeholder, $imgTagEs, $contentEs);
+                    } else {
+                        // Safety: remove [IMAGE_1] if AI placed it in content anyway
+                        $contentEn = str_replace($placeholder, '', $contentEn);
+                        $contentEs = str_replace($placeholder, '', $contentEs);
+                    }
 
                     // ── JSON-LD Schema.org ImageObject (Google SEO) ──
                     $imageObjectsJsonLd[] = [
@@ -229,7 +237,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
                     // ── Set featured image on first image only ──
                     if ($imageCount === 0) {
-                        $article->image_url = $mediaEn->getUrl('large'); // use large for og:image
+                        $article->image_url = $article->getBestImageUrl('images_en', 'large');
+                        $article->save();
                         $article->setTranslation('image_alt', 'en', $altEn);
                         $article->setTranslation('image_alt', 'es', $altEs);
                         $article->save();
@@ -242,9 +251,25 @@ class ProcessArticleWithAIJob implements ShouldQueue
                     // Image generation failed — remove placeholder from both languages
                     $contentEn = str_replace($placeholder, '', $contentEn);
                     $contentEs = str_replace($placeholder, '', $contentEs);
-                    Log::warning("Image {$index} generation failed for article. Placeholder removed.");
+                    Log::warning("Image generation failed for placeholder {$placeholder}.");
+
+                    // --- HARD STOP: Featured image [IMAGE_1] is mandatory ---
+                    if ($placeholder === '[IMAGE_1]') {
+                        $article->delete(); // rollback article creation
+                        throw new \RuntimeException(
+                            "Featured image generation failed for RawArticle {$this->rawArticle->id}. Article rolled back."
+                        );
+                    }
                 }
             }
+        }
+
+        // --- SAFETY NET: No images at all → abort ---
+        if ($imageCount === 0) {
+            $article->delete();
+            throw new \RuntimeException(
+                "No images were generated for RawArticle {$this->rawArticle->id}. Article rolled back."
+            );
         }
 
 
@@ -317,10 +342,17 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
     private function ensureUniqueSlug(string $slug, string $column, int $attempt = 0): string
     {
-        $candidate = $attempt === 0 ? $slug : "{$slug}-{$attempt}";
-        if (Article::where($column, $candidate)->exists()) {
+        $candidate = $attempt === 0 ? $slug : "{$slug}-" . ($attempt + 1);
+        
+        // We must check BOTH columns to ensure a slug is truly unique across the whole site
+        $exists = Article::where('slug_en', $candidate)
+            ->orWhere('slug_es', $candidate)
+            ->exists();
+
+        if ($exists) {
             return $this->ensureUniqueSlug($slug, $column, $attempt + 1);
         }
+
         return $candidate;
     }
 
@@ -450,12 +482,14 @@ CONTENT ARCHITECTURE - Google Helpful Content:
 - Use: H2 headings to break logic, <strong> for key facts, <blockquote> for crucial quotes or insights, <ul> or <ol> for readability.
 
 ADA/WCAG 2.1 AAA ACCESSIBILITY:
-- For images: ONLY place bare placeholder [IMAGE_1] on its own line. NO extra HTML around it.
-- All image alt texts (in image_prompts) MUST describe the visual content vividly for a blind reader (not just keywords).
+- IMAGES: Place [IMAGE_1] ONLY for the meta-data/featured image. DO NOT use [IMAGE_1] inside content_en or content_es.
+- INTERIOR IMAGES: Use [IMAGE_2], [IMAGE_3], etc., for images within the article body. Always place them on their own line.
+- ALT TEXT: All image alt texts MUST be descriptive but CONCISE (maximum 150 characters). Do not exceed this limit.
 - Use semantic HTML strictly: h2, h3, p, ul, ol, blockquote, strong. Don't use bold just for styling.
-
+ 
 IMAGERY - FLUX.1 Ultra-Realism:
-- Generate 2 to 4 photorealistic image prompts.
+- Generate 3 to 5 photorealistic image prompts.
+- [IMAGE_1] will be the Hero/Featured image. [IMAGE_2] and further will be inside the text.
 - If humans appear: add "hyper-realistic skin textures, pores, authentic facial expression, natural lighting, 35mm DSLR Nikon D850, 8k resolution, cinematic composition, no text".
 
 SELF-EVALUATION:

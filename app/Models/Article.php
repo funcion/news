@@ -86,8 +86,7 @@ class Article extends Model implements HasMedia
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'article_tag')
-            ->withPivot('relevance_score')
-            ->withTimestamps();
+            ->withPivot('relevance_score');
     }
 
     public function updates()
@@ -166,26 +165,38 @@ class Article extends Model implements HasMedia
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        $collections = ['images_en', 'images_es'];
+        $collections = ['images_en', 'images_es', 'default'];
 
         $this->addMediaConversion('thumb')
             ->width(480)->height(270)
             ->sharpen(10)
             ->format('webp')
-            ->performOnCollections($collections)
+            ->performOnCollections(...$collections)
             ->nonQueued();
 
         $this->addMediaConversion('medium')
             ->width(800)->height(450)
             ->sharpen(5)
             ->format('webp')
-            ->performOnCollections($collections)
+            ->performOnCollections(...$collections)
             ->nonQueued();
 
         $this->addMediaConversion('large')
             ->width(1200)->height(675)
             ->format('webp')
-            ->performOnCollections($collections)
+            ->performOnCollections(...$collections)
             ->nonQueued();
+    }
+
+    /**
+     * Helper to get best available image URL (conversion or original).
+     */
+    public function getBestImageUrl(string $collection = 'images_en', string $conversion = 'large'): string
+    {
+        $media = $this->getFirstMedia($collection);
+        if (!$media) return '';
+
+        // Spatie will return original URL if conversion is missing
+        return $media->getUrl($conversion);
     }
 }

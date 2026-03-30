@@ -41,6 +41,10 @@ class ArticlePublished implements ShouldBroadcast
             'id' => $this->article->id,
             'title_en' => $this->article->getTranslation('title', 'en', false),
             'title_es' => $this->article->getTranslation('title', 'es', false),
+            'slug_en' => $this->article->slug_en,
+            'slug_es' => $this->article->slug_es,
+            'image_url' => $this->article->image_url,
+            'published_at' => $this->article->published_at?->diffForHumans(),
         ];
     }
 }
