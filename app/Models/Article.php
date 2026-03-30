@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Article extends Model implements HasMedia
 {
@@ -173,5 +174,34 @@ class Article extends Model implements HasMedia
             ->orderByDesc('common_tags_count')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Register the media conversions for the article.
+     * 
+     * We create 3 responsive sizes (480, 800, 1200) and forced WebP format
+     * to comply with Google SEO and performance standards.
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(480)
+            ->height(270)
+            ->sharpen(10)
+            ->format('webp')
+            ->nonQueued(); 
+
+        $this->addMediaConversion('medium')
+            ->width(800)
+            ->height(450)
+            ->sharpen(5)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('large')
+            ->width(1200)
+            ->height(675)
+            ->format('webp')
+            ->nonQueued();
     }
 }
