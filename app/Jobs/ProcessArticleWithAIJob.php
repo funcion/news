@@ -102,6 +102,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->author_id      = $author->id;
         $article->category_id    = $categoryId;
         $article->status         = 'draft';
+        $article->seo_score      = $redacted['seo_score'] ?? 85; 
         $article->meta_keywords  = $redacted['keywords'] ?? [];
         $article->reading_time   = $this->calculateReadingTime($contentEn);
         $article->ai_metadata    = [
@@ -134,69 +135,105 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
                 $placeholder = $imgData['id'] ?? '';
                 $promptEn    = $imgData['prompt_en'] ?? '';
-                $altEn       = $imgData['alt_en'] ?? '';
-                $altEs       = $imgData['alt_es'] ?? $altEn;
-                $captionEn   = $imgData['caption_en'] ?? $altEn;
-                $captionEs   = $imgData['caption_es'] ?? $altEs;
-                $titleEn     = $imgData['title_en'] ?? $altEn;
-                $titleEs     = $imgData['title_es'] ?? $altEs;
+                $altEn       = trim($imgData['alt_en'] ?? '');
+                $altEs       = trim($imgData['alt_es'] ?? $altEn);
+                $captionEn   = trim($imgData['caption_en'] ?? $altEn);
+                $captionEs   = trim($imgData['caption_es'] ?? $altEs);
+                $titleEn     = Str::limit(trim($imgData['title_en'] ?? $altEn), 70);
+                $titleEs     = Str::limit(trim($imgData['title_es'] ?? $altEs), 70);
 
                 if (empty($placeholder) || empty($promptEn)) continue;
 
+                // ── 1 API call to SiliconFlow ─────────────────────────────
                 $path = $imageService->generateAndSave($promptEn, $slugEn, $index + 1);
 
                 if ($path && file_exists($path)) {
-                    $media = $article->addMedia($path)
+
+                    $imgNum  = $index + 1;
+                    $imgId   = "img-{$imgNum}-" . Str::random(5);
+                    $sizes   = "(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px";
+
+                    // ── Save EN copy (preservingOriginal keeps the file for ES) ──
+                    $fileNameEn = "{$slugEn}-{$imgNum}.webp";
+                    $mediaEn = $article->addMedia($path)
+                        ->usingFileName($fileNameEn)
+                        ->usingName(Str::limit($titleEn, 70))
                         ->withCustomProperties([
-                            'alt_en'     => $altEn,
-                            'alt_es'     => $altEs,
-                            'caption_en' => $captionEn,
-                            'caption_es' => $captionEs,
-                            'title_en'   => $titleEn,
-                            'title_es'   => $titleEs,
+                            'lang'    => 'en',
+                            'alt'     => $altEn,
+                            'title'   => $titleEn,
+                            'caption' => $captionEn,
                         ])
-                        ->toMediaCollection('images');
+                        ->preservingOriginal()                  // keeps the source file for ES
+                        ->toMediaCollection('images_en');
 
-                    $urlOriginal = $media->getUrl();
-                    $urlThumb    = $media->getUrl('thumb');
-                    $urlMedium   = $media->getUrl('medium');
-                    $urlLarge    = $media->getUrl('large');
-                    $srcset      = "{$urlThumb} 480w, {$urlMedium} 800w, {$urlLarge} 1200w";
-                    $sizes       = "(max-width: 800px) 100vw, 800px";
-                    $imgId       = "img-" . ($index + 1) . "-" . Str::random(5);
+                    // ── Save ES copy (moves the file, nothing left on disk) ──
+                    $fileNameEs = "{$slugEs}-{$imgNum}.webp";
+                    $mediaEs = $article->addMedia($path)
+                        ->usingFileName($fileNameEs)
+                        ->usingName(Str::limit($titleEs, 70))
+                        ->withCustomProperties([
+                            'lang'    => 'es',
+                            'alt'     => $altEs,
+                            'title'   => $titleEs,
+                            'caption' => $captionEs,
+                        ])
+                        ->toMediaCollection('images_es');
 
-                    // Build HTML for each language
-                    $imgTagEn = $this->buildImageTag($urlOriginal, $srcset, $sizes, $altEn, $titleEn, $captionEn, $imgId);
-                    $imgTagEs = $this->buildImageTag($urlOriginal, $srcset, $sizes, $altEs, $titleEs, $captionEs, $imgId);
+                    // ── Build srcset for EACH language from its own collection ──
+                    $srcsetEn = $mediaEn->getUrl('thumb') . " 480w, "
+                              . $mediaEn->getUrl('medium') . " 800w, "
+                              . $mediaEn->getUrl('large')  . " 1200w";
+
+                    $srcsetEs = $mediaEs->getUrl('thumb') . " 480w, "
+                              . $mediaEs->getUrl('medium') . " 800w, "
+                              . $mediaEs->getUrl('large')  . " 1200w";
+
+                    // ── Build semantic, WCAG-compliant <figure> for each language ──
+                    $imgTagEn = $this->buildImageTag(
+                        $mediaEn->getUrl(), $srcsetEn, $sizes, $altEn, $titleEn, $captionEn, $imgId
+                    );
+                    $imgTagEs = $this->buildImageTag(
+                        $mediaEs->getUrl(), $srcsetEs, $sizes, $altEs, $titleEs, $captionEs, $imgId
+                    );
 
                     $contentEn = str_replace($placeholder, $imgTagEn, $contentEn);
                     $contentEs = str_replace($placeholder, $imgTagEs, $contentEs);
 
+                    // ── JSON-LD Schema.org ImageObject (Google SEO) ──
                     $imageObjectsJsonLd[] = [
                         "@type"       => "ImageObject",
-                        "url"         => $urlOriginal,
+                        "url"         => $mediaEn->getUrl('large'),
+                        "thumbnail"   => $mediaEn->getUrl('thumb'),
                         "caption"     => $captionEn,
                         "description" => $altEn,
-                        "width"       => 1280,
-                        "height"      => 720,
+                        "name"        => $titleEn,
+                        "width"       => 1200,
+                        "height"      => 675,
+                        "encodingFormat" => "image/webp",
+                        "inLanguage"  => "en",
                     ];
 
+                    // ── Set featured image on first image only ──
                     if ($imageCount === 0) {
-                        $article->update([
-                            'image_url' => $urlOriginal,
-                        ]);
+                        $article->image_url = $mediaEn->getUrl('large'); // use large for og:image
                         $article->setTranslation('image_alt', 'en', $altEn);
                         $article->setTranslation('image_alt', 'es', $altEs);
                         $article->save();
                     }
 
+                    Log::info("Image {$imgNum} saved: EN={$fileNameEn}, ES={$fileNameEs}");
                     $imageCount++;
+
                 } else {
+                    // Image generation failed — remove placeholder from both languages
                     $contentEn = str_replace($placeholder, '', $contentEn);
                     $contentEs = str_replace($placeholder, '', $contentEs);
+                    Log::warning("Image {$index} generation failed for article. Placeholder removed.");
                 }
             }
         }
+
 
         // Save final bilingual content
         $article->setTranslation('content', 'en', $contentEn);
@@ -265,95 +302,158 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         if (empty($content)) {
             Log::info("RawArticle {$this->rawArticle->id} has no content. Treating as a Seed Idea.");
-            $categories = \App\Models\Category::active()->get()->map(fn($c) => $c->getTranslation('name', 'es'))->toArray();
+            // Try to get category in both languages
+            $categories = \App\Models\Category::active()->get()->map(function ($c) {
+                $en = $c->getTranslation('name', 'en');
+                $es = $c->getTranslation('name', 'es');
+                return $en ?: $es;
+            })->filter()->toArray();
+
             return [
-                'is_relevant'   => true,
-                'importance'    => 8,
-                'is_seed'       => true,
-                'category_name' => $categories[0] ?? 'General',
-                'facts'         => [$this->rawArticle->title],
+                'is_relevant'     => true,
+                'importance'      => 8,
+                'is_seed'         => true,
+                'source_language' => 'unknown', // will be inferred by redactBilingual from topic
+                'category_name'   => $categories[0] ?? 'General',
+                'facts'           => [$this->rawArticle->title],
             ];
         }
 
-        $categories     = \App\Models\Category::active()->get()->map(fn($c) => $c->getTranslation('name', 'es'))->toArray();
-        $categoriesList = implode(', ', $categories) ?: 'General';
+        // Get categories showing both EN and ES names for better matching
+        $categories     = \App\Models\Category::active()->get()->map(function ($c) {
+            $en = $c->getTranslation('name', 'en');
+            $es = $c->getTranslation('name', 'es');
+            return $en ? "{$en} / {$es}" : $es;
+        })->filter()->toArray();
+        $categoriesList = implode(', ', $categories) ?: 'General / General';
 
-        $prompt = "You are a senior editorial AI. Classify this news article.
-        DATE: {$today}
-        VALID CATEGORIES: [{$categoriesList}]
-        NEWS: Title: {$this->rawArticle->title} | Content: {$content}
-        Respond in strict JSON: {\"is_relevant\": bool, \"category_name\": string, \"content_type\": \"news|blog|guide|review|pillar\", \"importance\": int, \"facts\": [string]}";
+        $prompt = <<<PROMPT
+You are a senior multilingual editorial AI. Analyze the following news article and respond in STRICT JSON only.
+
+DATE: {$today}
+VALID CATEGORIES: [{$categoriesList}]
+ARTICLE TITLE: {$this->rawArticle->title}
+ARTICLE CONTENT: {$content}
+
+Detect the SOURCE LANGUAGE of the article automatically (it may be English, Spanish, French, Portuguese, or any other language).
+
+Respond in STRICT JSON (no markdown):
+{
+    "is_relevant": true,
+    "source_language": "en",
+    "category_name": "AI / IA",
+    "content_type": "news",
+    "importance": 8,
+    "facts": ["key fact 1", "key fact 2", "key fact 3"]
+}
+
+Rules:
+- source_language: ISO 639-1 code of the article's source language (e.g., "en", "es", "pt", "fr")
+- category_name: must match one of the valid categories above (use the English name part before the slash)
+- content_type: one of: news, blog, guide, review, pillar
+- importance: 1-10 based on editorial relevance
+- facts: 3-7 concise key facts extracted from the article IN ENGLISH (always translate facts to English)
+PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
-        return $this->parseJson($response);
+        $result   = $this->parseJson($response);
+
+        if ($result) {
+            Log::info("RawArticle {$this->rawArticle->id} classified. Source language: " . ($result['source_language'] ?? 'unknown'));
+        }
+
+        return $result;
     }
 
     protected function redactBilingual(OpenRouterService $ai, array $classification, Author $author): ?array
     {
-        $today       = now()->format('l, F j, Y');
-        $isSeed      = $classification['is_seed'] ?? false;
-        $contentType = $classification['content_type'] ?? 'blog';
-        $topic       = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
+        $today          = now()->format('l, F j, Y');
+        $isSeed         = $classification['is_seed'] ?? false;
+        $contentType    = $classification['content_type'] ?? 'blog';
+        $topic          = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
+        $sourceLang     = $classification['source_language'] ?? 'unknown';
+        $sourceLangName = match($sourceLang) {
+            'en'    => 'English',
+            'es'    => 'Spanish',
+            'pt'    => 'Portuguese',
+            'fr'    => 'French',
+            'de'    => 'German',
+            'it'    => 'Italian',
+            default => 'an automatically detected language',
+        };
 
         $wordTargets = [
-            'news'   => '600-900 words EN | 600-900 palabras ES',
-            'blog'   => '1200-2000 words EN | 1200-2000 palabras ES',
+            'news'   => '1000-1500 words EN | 1000-1500 palabras ES',
+            'blog'   => '1500-2000 words EN | 1500-2000 palabras ES',
             'guide'  => '1500-2500 words EN | 1500-2500 palabras ES',
             'review' => '1500-3000 words EN | 1500-3000 palabras ES',
             'pillar' => '2500-5000 words EN | 2500-5000 palabras ES',
         ];
         $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'];
 
+
         $prompt = <<<PROMPT
-You are a world-class bilingual Senior Journalist and SEO Strategist (15+ years experience).
+You are a world-class bilingual Senior Print Journalist and elite SEO copywriter (15+ years experience) working for a premium tech publication.
 DATE: {$today} | TYPE: {$contentType} | TARGET LENGTH: {$wordTarget}
-TOPIC: {$topic}
+SOURCE LANGUAGE OF THE RAW ARTICLE: {$sourceLangName} (ISO: {$sourceLang})
+TOPIC (key facts already translated to English): {$topic}
+
+IMPORTANT: The raw source article may be in {$sourceLangName}. You must ALWAYS produce the final article in BOTH English AND Spanish. This is mandatory — never skip either language.
 
 === MANDATORY QUALITY STANDARDS ===
+
+SEDUCTIVE COPYWRITING & INTRIGUE:
+- Craft magnetic headlines (title_en, title_es) that create an irresistible curiosity gap without being clickbait.
+- The first paragraph MUST start with a hook (a bold statement, a surprising stat, or a rhetorical question) that grabs the reader instantly.
+- Maintain an authoritative yet conversational tone (persuasive, intelligent, and engaging).
 
 SEO - Google E-E-A-T (10/10 REQUIRED):
 - Primary keyword in title (first 60 chars), first paragraph, at least 2 H2s, meta description.
 - Use semantic LSI keywords naturally throughout.
 - Title EN and ES: max 60 chars each.
-- Excerpt/meta description EN and ES: max 155 chars each.
+- Excerpt/meta description EN and ES: persuasive, max 155 chars each. Formulate them as a teaser.
 - Slug: lowercase-hyphens-no-special-chars (max 6 words each).
 
-CONTENT QUALITY - Google Helpful Content:
-- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma".
+CONTENT ARCHITECTURE - Google Helpful Content:
+- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma", "en conclusión".
 - BURSTINESS: alternate short punchy sentences (3-5 words) with complex analytical ones.
-- Include 1 real or fictional micro-story per section.
-- Use: H2 headings, <strong> for key facts, <blockquote> for quotes, <ul> or <ol> for lists.
+- STORYTELLING: Include 1 real or fictional micro-story/analogy per section to explain complex concepts cleanly.
+- Use: H2 headings to break logic, <strong> for key facts, <blockquote> for crucial quotes or insights, <ul> or <ol> for readability.
 
 ADA/WCAG 2.1 AAA ACCESSIBILITY:
 - For images: ONLY place bare placeholder [IMAGE_1] on its own line. NO extra HTML around it.
-- All image alt texts (in image_prompts) must describe the image vividly for a blind reader.
-- Use semantic HTML throughout: h2, h3, p, ul, ol, blockquote, strong.
+- All image alt texts (in image_prompts) MUST describe the visual content vividly for a blind reader (not just keywords).
+- Use semantic HTML strictly: h2, h3, p, ul, ol, blockquote, strong. Don't use bold just for styling.
 
-IMAGES - FLUX.1 Ultra-Realism:
+IMAGERY - FLUX.1 Ultra-Realism:
 - Generate 2 to 4 photorealistic image prompts.
-- If humans appear: add "hyper-realistic skin textures, pores, authentic facial expression, natural lighting, 35mm DSLR Nikon D850, 8k resolution, no text, no watermarks".
+- If humans appear: add "hyper-realistic skin textures, pores, authentic facial expression, natural lighting, 35mm DSLR Nikon D850, 8k resolution, cinematic composition, no text".
+
+SELF-EVALUATION:
+- Provide an unbiased SEO Score (1-100) based on your execution of keyword placement, readability, and structural optimization.
 
 === OUTPUT: STRICT JSON ONLY (no markdown, no text outside JSON) ===
 {
-    "title_en": "Compelling English title max 60 chars",
-    "title_es": "Titulo en Espanol max 60 caracteres",
+    "title_en": "Compelling, curiosity-inducing English title (max 60 chars)",
+    "title_es": "Titulo persuasivo y magnetico en Espanol (max 60 chars)",
     "slug_en": "english-seo-slug-max-6-words",
-    "slug_es": "slug-en-espanol-max-6-palabras",
-    "excerpt_en": "Persuasive English meta description max 155 chars",
-    "excerpt_es": "Meta descripcion en Espanol max 155 chars",
+    "slug_es": "slug-seo-espanol-max-6-palabras",
+    "excerpt_en": "Persuasive English teaser meta description (max 155 chars)",
+    "excerpt_es": "Teaser meta descripcion persuasiva en Espanol (max 155 chars)",
     "keywords": ["primary keyword", "secondary kw", "lsi kw 1", "lsi kw 2"],
-    "content_en": "<p>Full English HTML article body. Place [IMAGE_1] on its own line between paragraphs.</p>",
-    "content_es": "<p>Cuerpo del articulo en Espanol. Coloca [IMAGE_1] en su propia linea entre parrafos.</p>",
+    "seo_score": 95,
+    "content_en": "<p>Magnetic hook paragraph.</p><p>Full English HTML article. Place [IMAGE_1] on its own line between paragraphs.</p>",
+    "content_es": "<p>Parrafo gancho magnetico.</p><p>Cuerpo del articulo en Espanol HTML. Coloca [IMAGE_1] en su propia linea entre parrafos.</p>",
     "image_prompts": [
         {
             "id": "[IMAGE_1]",
-            "prompt_en": "Photojournalistic style, [specific scene], hyper-realistic, 35mm lens, 8k, no text, no watermarks.",
-            "alt_en": "Descriptive alt text for screen readers in English",
-            "alt_es": "Texto alt descriptivo para lectores de pantalla en Espanol",
-            "caption_en": "Informative English image caption",
-            "caption_es": "Leyenda informativa en Espanol",
-            "title_en": "English SEO image title max 70 chars",
-            "title_es": "Titulo SEO imagen en Espanol max 70 chars"
+            "prompt_en": "Photojournalistic style, [specific scene], cinematic lighting, 35mm lens, 8k, no text.",
+            "alt_en": "Vivid descriptive alt text for screen readers in English",
+            "alt_es": "Texto alt descriptivo vivido para lectores de pantalla en Espanol",
+            "caption_en": "Informative and engaging English caption",
+            "caption_es": "Leyenda informativa y persuasiva en Espanol",
+            "title_en": "SEO Keyword image title in English (max 70 chars)",
+            "title_es": "Titulo SEO imagen en Espanol (max 70 chars)"
         }
     ],
     "json_ld": {
