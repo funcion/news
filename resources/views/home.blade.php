@@ -1,4 +1,55 @@
 <x-layouts.app>
+    <!-- Real-time Notifier -->
+    <div x-data="{ 
+            newArticle: null, 
+            showBanner: false,
+            init() {
+                if (window.Echo) {
+                    window.Echo.channel('public-news')
+                        .listen('ArticlePublished', (e) => {
+                            console.log('New article broadcast received:', e);
+                            this.newArticle = e;
+                            this.showBanner = true;
+                            // Auto-hide after 30 seconds
+                            setTimeout(() => this.showBanner = false, 30000);
+                        });
+                }
+            }
+         }"
+         x-show="showBanner"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity-0 -translate-y-full"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-full"
+         class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 pointer-events-none"
+         style="display: none;">
+        <div class="pointer-events-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl shadow-cyan-500/20 p-4 flex items-center gap-4 overflow-hidden">
+            <template x-if="newArticle">
+                 <div class="flex items-center gap-4 w-full">
+                    <img :src="newArticle.image_url" class="h-14 w-14 rounded-xl object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
+                    <div class="flex-1 min-w-0">
+                        <span class="inline-flex items-center rounded-md bg-cyan-100 dark:bg-cyan-900/40 px-2 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 mb-1">
+                            JUST PUBLISHED
+                        </span>
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate" 
+                            x-text="{{ app()->getLocale() === 'es' ? 'newArticle.title_es' : 'newArticle.title_en' }}">
+                        </h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5" x-text="newArticle.published_at"></p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button @click="window.location.reload()" class="p-2 rounded-full bg-cyan-500 text-white hover:bg-cyan-600 transition-colors shadow-lg shadow-cyan-500/30">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </button>
+                        <button @click="showBanner = false" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 transition-colors">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                 </div>
+            </template>
+        </div>
+    </div>
     <x-slot:title>
         @if(isset($category))
             {{ $category->name }} | {{ config('app.name') }}
