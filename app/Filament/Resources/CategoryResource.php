@@ -10,8 +10,12 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use App\Services\AI\OpenRouterService;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -48,7 +52,35 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('name', 'en'));
                                                 }
                                             })
-                                            ->afterStateUpdated(fn ($state, $set) => $set('slug_en', Str::slug($state ?? ''))),
+                                            ->afterStateUpdated(fn ($state, $set) => $set('slug_en', Str::slug($state ?? '')))
+                                            ->suffixAction(
+                                                Action::make('generate_ai_desc')
+                                                    ->icon('heroicon-m-sparkles')
+                                                    ->tooltip('✨ Generar nombre ES y descripciones con IA')
+                                                    ->action(function ($state, $set, OpenRouterService $ai) {
+                                                        if (empty($state)) {
+                                                            Notification::make()->warning()->title('Ingresa un Nombre en Inglés primero')->send();
+                                                            return;
+                                                        }
+                                                        
+                                                        $prompt = "You are an elite bilingual SEO copywriter. Generate a Spanish name and 30-70 word SEO descriptions in both English and Spanish for the category: '{$state}'. Response STRICTLY in JSON: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\" } without markdown.";
+                                                        
+                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+                                                        
+                                                        $clean = preg_replace('/```json|```/', '', $response ?? '');
+                                                        $data = json_decode(trim($clean), true);
+                                                        
+                                                        if ($data && isset($data['name_es'])) {
+                                                            $set('name_es', $data['name_es']);
+                                                            $set('slug_es', Str::slug($data['name_es']));
+                                                            $set('description_en', $data['description_en'] ?? '');
+                                                            $set('description_es', $data['description_es'] ?? '');
+                                                            Notification::make()->success()->title('✨ ¡Contenido generado!')->send();
+                                                        } else {
+                                                            Notification::make()->danger()->title('La IA no pudo procesar la solicitud.')->send();
+                                                        }
+                                                    })
+                                            ),
                                         TextInput::make('slug_en')
                                             ->label('Slug (EN)')
                                             ->required()
@@ -63,6 +95,13 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('description', 'en'));
                                                 }
                                             }),
+                                        SpatieMediaLibraryFileUpload::make('image_en')
+                                            ->label('Cover Image (EN) - 100% AI Generated')
+                                            ->collection('images_en')
+                                            ->image()
+                                            ->disabled() // Impide subida manual, solo visualización
+                                            ->deletable(false)
+                                            ->columnSpanFull(),
                                     ]),
 
                                 Tabs\Tab::make('🇪🇸 Español')
@@ -76,7 +115,35 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('name', 'es'));
                                                 }
                                             })
-                                            ->afterStateUpdated(fn ($state, $set) => $set('slug_es', Str::slug($state ?? ''))),
+                                            ->afterStateUpdated(fn ($state, $set) => $set('slug_es', Str::slug($state ?? '')))
+                                            ->suffixAction(
+                                                Action::make('generate_ai_desc_es')
+                                                    ->icon('heroicon-m-sparkles')
+                                                    ->tooltip('✨ Generar nombre EN y descripciones con IA')
+                                                    ->action(function ($state, $set, OpenRouterService $ai) {
+                                                        if (empty($state)) {
+                                                            Notification::make()->warning()->title('Ingresa un Nombre en Español primero')->send();
+                                                            return;
+                                                        }
+                                                        
+                                                        $prompt = "You are an elite bilingual SEO copywriter. Generate an English name and 30-70 word SEO descriptions in both English and Spanish for the Spanish category: '{$state}'. Response STRICTLY in JSON: { \"name_en\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\" } without markdown.";
+                                                        
+                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+                                                        
+                                                        $clean = preg_replace('/```json|```/', '', $response ?? '');
+                                                        $data = json_decode(trim($clean), true);
+                                                        
+                                                        if ($data && isset($data['name_en'])) {
+                                                            $set('name_en', $data['name_en']);
+                                                            $set('slug_en', Str::slug($data['name_en']));
+                                                            $set('description_en', $data['description_en'] ?? '');
+                                                            $set('description_es', $data['description_es'] ?? '');
+                                                            Notification::make()->success()->title('✨ ¡Contenido generado desde Español!')->send();
+                                                        } else {
+                                                            Notification::make()->danger()->title('La IA no pudo procesar la solicitud.')->send();
+                                                        }
+                                                    })
+                                            ),
                                         TextInput::make('slug_es')
                                             ->label('Slug (ES)')
                                             ->required()
@@ -91,6 +158,13 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('description', 'es'));
                                                 }
                                             }),
+                                        SpatieMediaLibraryFileUpload::make('image_es')
+                                            ->label('Imagen de Portada (ES) - 100% IA')
+                                            ->collection('images_es')
+                                            ->image()
+                                            ->disabled() // Impide subida manual
+                                            ->deletable(false)
+                                            ->columnSpanFull(),
                                     ]),
                             ])->columnSpanFull(),
 

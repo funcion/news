@@ -166,26 +166,26 @@ class Article extends Model implements HasMedia
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        foreach (['images_en', 'images_es'] as $collection) {
-            $this->addMediaConversion('thumb')
-                ->width(480)->height(270)
-                ->sharpen(10)
-                ->format('webp')
-                ->performOnCollections($collection)
-                ->nonQueued();
+        $collections = ['images_en', 'images_es'];
 
-            $this->addMediaConversion('medium')
-                ->width(800)->height(450)
-                ->sharpen(5)
-                ->format('webp')
-                ->performOnCollections($collection)
-                ->nonQueued();
+        $this->addMediaConversion('thumb')
+            ->width(480)->height(270)
+            ->sharpen(10)
+            ->format('webp')
+            ->performOnCollections($collections)
+            ->nonQueued();
 
-            $this->addMediaConversion('large')
-                ->width(1200)->height(675)
-                ->format('webp')
-                ->performOnCollections($collection)
-                ->nonQueued();
-        }
+        $this->addMediaConversion('medium')
+            ->width(800)->height(450)
+            ->sharpen(5)
+            ->format('webp')
+            ->performOnCollections($collections)
+            ->nonQueued();
+
+        $this->addMediaConversion('large')
+            ->width(1200)->height(675)
+            ->format('webp')
+            ->performOnCollections($collections)
+            ->nonQueued();
     }
 }

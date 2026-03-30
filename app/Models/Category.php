@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Category extends Model
+class Category extends Model implements HasMedia
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, InteractsWithMedia;
 
     public array $translatable = ['name', 'description'];
 
@@ -83,6 +86,31 @@ class Category extends Model
         }
 
         return array_reverse($breadcrumb);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $collections = ['images_en', 'images_es'];
+
+        $this->addMediaConversion('thumb')
+             ->width(480)->height(270)
+             ->sharpen(10)
+             ->format('webp')
+             ->performOnCollections($collections)
+             ->nonQueued();
+
+        $this->addMediaConversion('medium')
+             ->width(800)->height(450)
+             ->sharpen(5)
+             ->format('webp')
+             ->performOnCollections($collections)
+             ->nonQueued();
+
+        $this->addMediaConversion('large')
+             ->width(1280)->height(720)
+             ->format('webp')
+             ->performOnCollections($collections)
+             ->nonQueued();
     }
 
     public function getAllDescendants()
