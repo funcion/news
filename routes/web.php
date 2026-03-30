@@ -22,25 +22,16 @@ Route::group([
 ], function () {
 
     // --- PUBLIC ROUTES ---
-    Route::get('/', function () {
-        return view('welcome');
-    })->name('home');
+    Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
     // Articles
-    Route::get('/news/{slug}', function (string $slug) {
-        // Controller to be created when the public frontend is built
-        return response()->json(['slug' => $slug, 'locale' => app()->getLocale()]);
-    })->name('articles.show');
+    Route::get('/news/{slug}', [\App\Http\Controllers\FrontendController::class, 'article'])->name('articles.show');
 
     // Categories
-    Route::get('/category/{slug}', function (string $slug) {
-        return response()->json(['slug' => $slug, 'locale' => app()->getLocale()]);
-    })->name('categories.show');
+    Route::get('/category/{slug}', [\App\Http\Controllers\FrontendController::class, 'category'])->name('categories.show');
 
     // Tags
-    Route::get('/tag/{slug}', function (string $slug) {
-        return response()->json(['slug' => $slug, 'locale' => app()->getLocale()]);
-    })->name('tags.show');
+    Route::get('/tag/{slug}', [\App\Http\Controllers\FrontendController::class, 'tag'])->name('tags.show');
 
 });
 
