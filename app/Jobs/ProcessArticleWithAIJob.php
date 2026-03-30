@@ -42,7 +42,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(OpenRouterService $ai): void
+    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService): void
     {
         $today = now()->format('l, F j, Y');
         Log::info("Processing RawArticle: {$this->rawArticle->id} with AI Gemini 2.0 Flash at {$today}.");
@@ -59,7 +59,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
             throw new \Exception("La IA no respondió o el JSON es inválido. Reintentando Job...");
         }
 
-        if (!($classification['is_relevant'] ?? false)) {
+        if (!($classification['is_relevant'] ?? false) && empty($classification['is_seed'])) {
             $this->rawArticle->update(['status' => 'ignored']);
             Log::info("RawArticle {$this->rawArticle->id} ignorada por la IA (no relevante).");
             return;
@@ -87,6 +87,10 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
+        // Create the final Article without images
+        $slug = $redacted['slug'] ?? Str::slug($redacted['title'] ?? $this->rawArticle->title);
+        $content = $redacted['content'];
+
         // Determine Final Category
         $categoryId = $this->rawArticle->source->category_id ?? 1; // Default
         if (!empty($classification['category_name'])) {
@@ -96,20 +100,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
             }
         }
 
-        // Create the final Article
         $article = Article::create([
             'raw_article_id' => $this->rawArticle->id,
             'title' => $redacted['title'] ?? $this->rawArticle->title,
-            'slug' => $redacted['slug'] ?? Str::slug($redacted['title'] ?? $this->rawArticle->title),
-            'content' => $redacted['content'],
-            'excerpt' => $redacted['excerpt'] ?? Str::words(strip_tags($redacted['content']), 30),
+            'slug' => $slug,
+            'content' => $content,
+            'excerpt' => $redacted['excerpt'] ?? Str::words(strip_tags($content), 30),
             'author_id' => $author->id,
             'category_id' => $categoryId,
             'status' => 'draft',
             'meta_title' => $redacted['title'] ?? null,
             'meta_description' => $redacted['excerpt'] ?? null,
             'meta_keywords' => $redacted['keywords'] ?? [],
-            'reading_time' => $this->calculateReadingTime($redacted['content']),
+            'reading_time' => $this->calculateReadingTime($content),
             'ai_metadata' => [
                 'facts' => $classification['facts'] ?? [],
                 'voice_style' => $author->voice_style,
@@ -122,8 +125,51 @@ class ProcessArticleWithAIJob implements ShouldQueue
             ],
         ]);
 
+        // --- MÓDULO 3: GENERACIÓN MULTI-IMAGEN CON SILICONFLOW Y SPATIE MEDIA LIBRARY ---
+        $imageCount = 0;
+        if (!empty($redacted['image_prompts']) && is_array($redacted['image_prompts'])) {
+            foreach ($redacted['image_prompts'] as $index => $imgData) {
+                if ($index >= 5) break; 
+                
+                $placeholder = $imgData['id'] ?? '';
+                $promptEn = $imgData['prompt_en'] ?? '';
+                $altEs = $imgData['alt_es'] ?? '';
+                
+                if (empty($placeholder) || empty($promptEn)) continue;
+
+                $path = $imageService->generateAndSave($promptEn, $slug, $index + 1);
+                
+                if ($path && file_exists($path)) {
+                    // Add to Spatie Media Library
+                    $media = $article->addMedia($path)
+                                     ->withCustomProperties(['alt' => $altEs])
+                                     ->toMediaCollection('images');
+                    
+                    $url = $media->getUrl();
+                    $imgTag = "<figure class=\"article-image my-6\"><img src=\"{$url}\" alt=\"{$altEs}\" loading=\"lazy\" class=\"rounded-lg shadow-lg w-full h-auto object-cover aspect-video\"><figcaption class=\"text-sm text-gray-500 mt-2 text-center\">{$altEs}</figcaption></figure>";
+                    $content = str_replace($placeholder, $imgTag, $content);
+
+                    // Set first image as featured image
+                    if ($imageCount === 0) {
+                        $article->update([
+                            'image_url' => $url,
+                            'image_alt' => $altEs
+                        ]);
+                    }
+
+                    $imageCount++;
+                } else {
+                    $content = str_replace($placeholder, '', $content);
+                }
+            }
+        }
+        
+        // Update the article with the final injected HTML content
+        $article->update(['content' => $content]);
+        // --------------------------------------------------------------------------------
+
         $this->rawArticle->update(['status' => 'processed']);
-        Log::info("RawArticle processed successfully. Article created: {$article->id}.");
+        Log::info("RawArticle processed successfully. Article created: {$article->id} with {$imageCount} images.");
     }
 
     protected function classifyAndExtract(OpenRouterService $ai): ?array
@@ -193,11 +239,11 @@ class ProcessArticleWithAIJob implements ShouldQueue
         
         // Extended dynamic targets based on Search Intent (Refined 2026 Standards)
         $targetMap = [
-            'news'      => '500 - 800 palabras (Rapidez, frescura e impacto inmediato).',
-            'blog'      => '1,000 - 2,500 palabras (Equilibrio de profundidad y retención).',
-            'guide'     => '1,500 - 2,500 palabras (Tutorial detallado, pasos y solución de problemas).',
-            'review'    => '1,500 - 3,000 palabras (Análisis de pros/contras y comparativas).',
-            'pillar'    => '2,500 - 5,000+ palabras (La autoridad definitiva pilar del dominio).',
+            'news'      => '500 - 800 palabras',
+            'blog'      => '1,000 - 2,500 palabras',
+            'guide'     => '1,500 - 2,500 palabras',
+            'review'    => '1,500 - 3,000 palabras',
+            'pillar'    => '2,500 - 5,000+ palabras',
         ];
         $targetStr = $targetMap[$contentType] ?? $targetMap['blog'];
 
@@ -210,32 +256,32 @@ class ProcessArticleWithAIJob implements ShouldQueue
         " . ($isSeed ? "TEMA/SEMILLA: {$this->rawArticle->title}" : "HECHOS CLAVE: " . implode(", ", $classification['facts'])) . "
         
         REGLAS DE ESCRITURA (HUMAN-LIKE & SEO 10/10):
-        1. ALMA HUMANA (ANTI-CLICHÉ): PROHIBIDO usar: 'cambio de paradigma', 'fuerza innegable', 'vasto campo', 'en el mundo de hoy', 'salto cualitativo'.
+        1. ALMA HUMANA (ANTI-CLICHÉ): PROHIBIDO usar: 'cambio de paradigma', 'fuerza innegable', 'vasto campo'.
         2. RITMO (BURSTINESS): Alterna frases de 3-5 palabras con oraciones complejas. Impacto puro.
-        3. GANCHO (LEAD): Empieza con un dato agresivo o anécdota. Olvida la introducción institucional.
-        4. MICRO-STORYTELLING: Incluye un ejemplo o testimonio corto de una persona ficticia pero realista para humanizar el tema.
-        5. VERACIDAD E-E-A-T: Usa cifras específicas (%, fechas). Si no hay fuente real, usa 'Reportes del sector'. NO INVENTES EXPERTOS.
-        6. FORMATEO: 5-10 líneas por párrafo, <strong> para LSI keywords, [IMAGEN: descripción] con ALT cada 500 palabras.
-        7. CIERRE (CTA): Conclusión punzante y Llamado a la Acción (CTA) claro.
-        8. FAQ: Al final, añade 3 FAQs con Schema para fragmentos destacados.
+        3. MICRO-STORYTELLING: Incluye un ejemplo o testimonio corto ficticio o realista.
+        4. IMÁGENES AUTOMÁTICAS: Inserta de 1 a 5 placeholders [IMAGE_1], [IMAGE_2] en tu HTML. [IMAGE_1] debe ir después del primer o segundo párrafo (imagen de portada). El resto debajo de H2 clave.
+        5. PROMPTS PARA FLUX: Para cada imagen, crea un prompt en INGLÉS súper descriptivo, fotorrealista, estilo periodístico, limpio, para FLUX.1. Adicionalmente genera un texto Alt en ESPAÑOL.
         
         Responde estrictamente en formato JSON:
         {
-            \"title\": \"Título ClickMagnet\",
-            \"slug\": \"slug-url-optimizado\",
-            \"excerpt\": \"Meta descripción persuasiva (120-155 chars)\",
-            \"content\": \"Cuerpo HTML completo (H2, p, <strong>, blockquote, FAQ, marcadores imagen)\",
+            \"title\": \"Título ClickMagnet, SEO optimizado y corto\",
+            \"slug\": \"titulo-corto-seo\",
+            \"excerpt\": \"Meta descripción persuasiva (max 155 chars)\",
+            \"keywords\": [\"keyword1\", \"keyword2\", \"keyword3\"],
+            \"content\": \"Cuerpo HTML completo con H2, p, <strong>, blockquote y los placeholders [IMAGE_1], [IMAGE_2], etc. intercalados\",
+            \"image_prompts\": [
+                {
+                    \"id\": \"[IMAGE_1]\",
+                    \"prompt_en\": \"A hyper-realistic editorial photo of... cyberpunk lighting, DSLR, 8k resolution, highly detailed, no text.\",
+                    \"alt_es\": \"Texto alternativo descriptivo con palabras clave para SEO\"
+                }
+            ],
             \"json_ld\": {
                 \"@context\": \"https://schema.org\",
                 \"@type\": \"NewsArticle\",
                 \"headline\": \"Título\",
                 \"datePublished\": \"{$today}\",
                 \"author\": {\"@type\": \"Person\", \"name\": \"{$author->name}\"}
-            },
-            \"faq_json_ld\": {
-                \"@context\": \"https://schema.org\",
-                \"@type\": \"FAQPage\",
-                \"mainEntity\": [array of microdata for 3 FAQs]
             }
         }";
 
@@ -243,7 +289,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
             ['role' => 'user', 'content' => $prompt]
         ], OpenRouterService::MODEL_GEMINI_LATEST);
 
-        return $this->parseJson($response);
+        $data = $this->parseJson($response);
+
+        // Safety: Ensure keywords is an array
+        if (isset($data['keywords']) && is_string($data['keywords'])) {
+            $data['keywords'] = array_map('trim', explode(',', $data['keywords']));
+        }
+
+        return $data;
     }
 
 
