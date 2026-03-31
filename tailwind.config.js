@@ -51,6 +51,30 @@ export default {
             typography: (theme) => ({
                 DEFAULT: {
                     css: {
+                        color: theme('colors.gray.700'),
+                        h1: { color: theme('colors.gray.900') },
+                        h2: { color: theme('colors.gray.900') },
+                        h3: { color: theme('colors.gray.800') },
+                        h4: { color: theme('colors.gray.800') },
+                        strong: { color: theme('colors.cyan.600') },
+                        a: {
+                            color: theme('colors.cyan.600'),
+                            '&:hover': { color: theme('colors.cyan.700') },
+                        },
+                        blockquote: {
+                            color: theme('colors.gray.600'),
+                            borderLeftColor: theme('colors.cyan.500'),
+                        },
+                        code: {
+                            color: theme('colors.cyan.600'),
+                            backgroundColor: theme('colors.gray.100'),
+                            borderRadius: '0.25rem',
+                            padding: '0.125rem 0.25rem',
+                        },
+                    },
+                },
+                dark: {
+                    css: {
                         color: theme('colors.gray.300'),
                         h1: { color: theme('colors.gray.100') },
                         h2: { color: theme('colors.gray.100') },
