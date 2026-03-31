@@ -110,17 +110,17 @@ export class PerformanceOptimizer {
         // Agregar resource hints dinámicamente
         const hints = [
             // Preconectar a dominios externos críticos
-            { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-            { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
+            // { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+            // { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
             
-            // Precargar fuentes críticas
-            { rel: 'preload', href: '/assets/fonts/inter-var.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
+            // Precargar fuentes críticas (comentado temporalmente)
+            // { rel: 'preload', href: '/assets/fonts/inter-var.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
             
             // Precargar CSS crítico (ya inline)
             // { rel: 'preload', href: '/assets/app.css', as: 'style' },
             
-            // Precargar JS crítico
-            { rel: 'preload', href: '/assets/app.js', as: 'script' },
+            // Precargar JS crítico (comentado temporalmente)
+            // { rel: 'preload', href: '/assets/app.js', as: 'script' },
         ];
 
         hints.forEach(hint => {
@@ -336,14 +336,16 @@ export class PerformanceOptimizer {
         };
 
         // Enviar a analytics si está configurado
-        if (window.axios) {
-            window.axios.post('/api/performance-metrics', logData).catch(() => {
-                // Fallback a console
-                console.log('Performance Metric:', logData);
-            });
-        } else {
-            console.log('Performance Metric:', logData);
-        }
+        // Comentado temporalmente para evitar errores 404
+        // if (window.axios) {
+        //     window.axios.post('/api/performance-metrics', logData).catch(() => {
+        //         // Fallback a console
+        //         console.log('Performance Metric:', logData);
+        //     });
+        // } else {
+        //     console.log('Performance Metric:', logData);
+        // }
+        console.log('Performance Metric:', logData);
     }
 
     /**
@@ -354,7 +356,7 @@ export class PerformanceOptimizer {
         document.querySelectorAll('[x-transition], [x-show]').forEach(el => {
             if (el.__x) {
                 // Asegurar que Alpine use propiedades de performance
-                const originalShow = el.__x.$data.show;
+                let originalShow = el.__x.$data.show;
                 Object.defineProperty(el.__x.$data, 'show', {
                     get() {
                         return originalShow;
@@ -380,43 +382,44 @@ export class PerformanceOptimizer {
      * Prefetch de rutas probables
      */
     static prefetchLikelyRoutes() {
-        // Prefetch de enlaces visibles
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const link = entry.target;
-                    if (link.href && link.href.startsWith(window.location.origin)) {
-                        const prefetchLink = document.createElement('link');
-                        prefetchLink.rel = 'prefetch';
-                        prefetchLink.href = link.href;
-                        prefetchLink.as = 'document';
-                        document.head.appendChild(prefetchLink);
-                    }
-                    observer.unobserve(link);
-                }
-            });
-        }, { rootMargin: '200px' });
+        // Prefetch de enlaces visibles (comentado temporalmente)
+        // const observer = new IntersectionObserver((entries) => {
+        //     entries.forEach(entry => {
+        //         if (entry.isIntersecting) {
+        //             const link = entry.target;
+        //             if (link.href && link.href.startsWith(window.location.origin)) {
+        //                 const prefetchLink = document.createElement('link');
+        //                 prefetchLink.rel = 'prefetch';
+        //                 prefetchLink.href = link.href;
+        //                 prefetchLink.as = 'document';
+        //                 document.head.appendChild(prefetchLink);
+        //             }
+        //             observer.unobserve(link);
+        //         }
+        //     });
+        // }, { rootMargin: '200px' });
 
-        // Observar enlaces en el viewport
-        document.querySelectorAll('a[href^="/"]').forEach(link => {
-            observer.observe(link);
-        });
+        // Observar enlaces en el viewport (comentado temporalmente)
+        // document.querySelectorAll('a[href^="/"]').forEach(link => {
+        //     observer.observe(link);
+        // });
     }
 }
 
 // Inicializar automáticamente
 document.addEventListener('DOMContentLoaded', () => {
-    const optimizer = new PerformanceOptimizer();
+    // Comentado temporalmente para evitar errores
+    // const optimizer = new PerformanceOptimizer();
     
     // Optimizar animaciones después de que Alpine se inicialice
-    setTimeout(() => {
-        PerformanceOptimizer.optimizeAnimations();
-        PerformanceOptimizer.prefetchLikelyRoutes();
-    }, 1000);
+    // setTimeout(() => {
+    //     PerformanceOptimizer.optimizeAnimations();
+    //     PerformanceOptimizer.prefetchLikelyRoutes();
+    // }, 1000);
     
     // Exponer globalmente
-    window.PerformanceOptimizer = PerformanceOptimizer;
-    window.performanceOptimizer = optimizer;
+    // window.PerformanceOptimizer = PerformanceOptimizer;
+    // window.performanceOptimizer = optimizer;
 });
 
 // Utilidades para Alpine.js
