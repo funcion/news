@@ -1,50 +1,30 @@
 /* resources/css/utilities/performance.css */
-/* Utilidades CSS para optimización de performance */
+/* Utilidades CSS para optimización de performance - Solo lo que no tiene equivalente en Tailwind */
 
-/* 1. Optimización de imágenes */
+/* 1. Optimización de imágenes (no tiene equivalente Tailwind) */
 .img-optimized {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   -ms-interpolation-mode: nearest-neighbor;
 }
 
-/* 2. Contenido crítico above-the-fold */
+/* 2. Contenido crítico above-the-fold (no tiene equivalente Tailwind) */
 .critical-content {
   content-visibility: auto;
   contain-intrinsic-size: 1px 5000px;
 }
 
-/* 3. Optimización de fuentes */
-.font-optimized {
-  font-display: swap;
-  text-rendering: optimizeLegibility;
-}
+/* 3. Optimización de fuentes - USAR 'antialiased' de Tailwind en su lugar */
+/* .font-optimized eliminado - usar clase 'antialiased' de Tailwind */
 
-/* 4. Mejora de animaciones para performance */
-.animate-gpu {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: transform;
-}
+/* 4. Mejora de animaciones para performance - USAR 'transform-gpu' de Tailwind en su lugar */
+/* .animate-gpu eliminado - usar clase 'transform-gpu' de Tailwind */
 
-/* 5. Optimización de scroll */
-.smooth-scroll {
-  scroll-behavior: smooth;
-}
+/* 5. Optimización de scroll - USAR 'scroll-smooth' de Tailwind en su lugar */
+/* .smooth-scroll eliminado - usar clase 'scroll-smooth' de Tailwind */
 
-@media (prefers-reduced-motion: reduce) {
-  .smooth-scroll {
-    scroll-behavior: auto;
-  }
-}
-
-/* 6. Mejora de renderizado de texto */
-.text-optimized {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-size-adjust: 100%;
-}
+/* 6. Mejora de renderizado de texto - USAR 'antialiased' de Tailwind en su lugar */
+/* .text-optimized eliminado - usar clase 'antialiased' de Tailwind */
 
 /* 7. Optimización de layout */
 .layout-optimized {

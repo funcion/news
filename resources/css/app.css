@@ -1,16 +1,13 @@
-/* ===== CSS CRÍTICO INLINE (máximo 14KB) ===== */
-/* Este CSS se carga inline para above-the-fold rendering */
+/* ===== CSS PRINCIPAL CON TAILWIND ===== */
+/* Usamos principalmente clases Tailwind CSS nativas */
 
-/* 1. Variables CSS dinámicas */
-@import './base/variables.css';
-
-/* 2. Reset moderno y accesible */
+/* 1. Reset moderno y accesible */
 @import './base/reset.css';
 
-/* 3. Componentes modulares - cada uno con sus propios estilos */
-@import './components/article-card.css';
+/* 2. Variables CSS mínimas para funcionalidades específicas */
+@import './base/variables.css';
 
-/* 4. Utilidades de performance */
+/* 3. Utilidades de performance */
 @import './utilities/performance.css';
 
 /* 4. Tailwind base styles */
@@ -30,21 +27,13 @@
   }
   
   html {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-sans, 'Inter', system-ui, -apple-system, sans-serif);
     font-size: 16px;
     scroll-behavior: smooth;
   }
   
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
-    min-height: 100vh;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans text-base leading-normal min-h-screen antialiased;
   }
   
   /* Mejora de contraste para modo alto contraste */

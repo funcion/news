@@ -1,103 +1,27 @@
-/* Variables CSS Dinámicas - Nunca Hardcodeadas */
+/* Variables CSS Esenciales - Usamos principalmente Tailwind CSS */
 
 :root {
-  /* ===== COLORES DINÁMICOS ===== */
-  /* Colores primarios - configurados desde backend/API */
-  --color-primary: rgb(var(--primary-r, 59), var(--primary-g, 130), var(--primary-b, 246));
-  --color-primary-light: rgb(var(--primary-light-r, 147), var(--primary-light-g, 197), var(--primary-light-b, 253));
-  --color-primary-dark: rgb(var(--primary-dark-r, 29), var(--primary-dark-g, 78), var(--primary-dark-b, 216));
+  /* ===== VARIABLES ESENCIALES ===== */
+  /* Configuración dinámica desde backend */
+  --primary-r: 59;
+  --primary-g: 130;
+  --primary-b: 246;
   
-  /* Colores secundarios */
-  --color-secondary: rgb(var(--secondary-r, 107), var(--secondary-g, 114), var(--secondary-b, 128));
-  --color-secondary-light: rgb(var(--secondary-light-r, 209), var(--secondary-light-g, 213), var(--secondary-light-b, 219));
-  --color-secondary-dark: rgb(var(--secondary-dark-r, 55), var(--secondary-dark-g, 65), var(--secondary-dark-b, 81));
-  
-  /* Colores semánticos */
-  --color-success: rgb(var(--success-r, 34), var(--success-g, 197), var(--success-b, 94));
-  --color-warning: rgb(var(--warning-r, 245), var(--warning-g, 158), var(--warning-b, 11));
-  --color-error: rgb(var(--error-r, 239), var(--error-g, 68), var(--error-b, 68));
-  --color-info: rgb(var(--info-r, 59), var(--info-g, 130), var(--info-b, 246));
-  
-  /* Colores de texto - contraste mínimo 4.5:1 */
-  --color-text-primary: rgb(var(--text-primary-r, 17), var(--text-primary-g, 24), var(--text-primary-b, 39));
-  --color-text-secondary: rgb(var(--text-secondary-r, 75), var(--text-secondary-g, 85), var(--text-secondary-b, 99));
-  --color-text-inverse: rgb(var(--text-inverse-r, 255), var(--text-inverse-g, 255), var(--text-inverse-b, 255));
-  
-  /* Colores de fondo */
-  --color-bg-primary: rgb(var(--bg-primary-r, 255), var(--bg-primary-g, 255), var(--bg-primary-b, 255));
-  --color-bg-secondary: rgb(var(--bg-secondary-r, 249), var(--bg-secondary-g, 250), var(--bg-secondary-b, 251));
-  --color-bg-inverse: rgb(var(--bg-inverse-r, 17), var(--bg-inverse-g, 24), var(--bg-inverse-b, 39));
-  
-  /* ===== TIPOGRAFÍA RESPONSIVE ===== */
-  /* Familias de fuentes - configuradas dinámicamente */
-  --font-family-sans: var(--font-sans, 'Inter', system-ui, -apple-system, sans-serif);
-  --font-family-serif: var(--font-serif, 'Georgia', serif);
-  --font-family-mono: var(--font-mono, 'JetBrains Mono', monospace);
-  
-  /* Tamaños de fuente fluidos */
-  --font-size-xs: clamp(0.75rem, 1vw, 0.875rem);    /* 12-14px */
-  --font-size-sm: clamp(0.875rem, 1.5vw, 1rem);     /* 14-16px */
-  --font-size-base: clamp(1rem, 2vw, 1.125rem);     /* 16-18px */
-  --font-size-md: clamp(1.125rem, 2.5vw, 1.25rem);  /* 18-20px */
-  --font-size-lg: clamp(1.25rem, 3vw, 1.5rem);      /* 20-24px */
-  --font-size-xl: clamp(1.5rem, 4vw, 1.875rem);     /* 24-30px */
-  --font-size-2xl: clamp(1.875rem, 5vw, 2.25rem);   /* 30-36px */
-  --font-size-3xl: clamp(2.25rem, 6vw, 3rem);       /* 36-48px */
-  
-  /* Line heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  
-  /* ===== ESPACIADO RESPONSIVE ===== */
-  --spacing-0: 0;
-  --spacing-px: 1px;
-  --spacing-0_5: clamp(0.125rem, 0.25vw, 0.25rem);  /* 2-4px */
-  --spacing-1: clamp(0.25rem, 0.5vw, 0.5rem);       /* 4-8px */
-  --spacing-2: clamp(0.5rem, 1vw, 1rem);            /* 8-16px */
-  --spacing-3: clamp(0.75rem, 1.5vw, 1.5rem);       /* 12-24px */
-  --spacing-4: clamp(1rem, 2vw, 2rem);              /* 16-32px */
-  --spacing-5: clamp(1.25rem, 2.5vw, 2.5rem);       /* 20-40px */
-  --spacing-6: clamp(1.5rem, 3vw, 3rem);            /* 24-48px */
-  --spacing-8: clamp(2rem, 4vw, 4rem);              /* 32-64px */
-  --spacing-10: clamp(2.5rem, 5vw, 5rem);           /* 40-80px */
-  
-  /* ===== BORDES Y SOMBRAS ===== */
-  --border-radius-none: 0;
-  --border-radius-sm: clamp(0.125rem, 0.25vw, 0.25rem);
-  --border-radius-md: clamp(0.25rem, 0.5vw, 0.5rem);
-  --border-radius-lg: clamp(0.5rem, 1vw, 1rem);
-  --border-radius-xl: clamp(1rem, 2vw, 2rem);
-  --border-radius-full: 9999px;
-  
-  --border-width-thin: 1px;
-  --border-width-medium: 2px;
-  --border-width-thick: 4px;
-  
-  /* Sombras dinámicas */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* ===== Z-INDEX ===== */
-  --z-index-dropdown: 1000;
-  --z-index-sticky: 1020;
-  --z-index-fixed: 1030;
-  --z-index-modal-backdrop: 1040;
-  --z-index-modal: 1050;
-  --z-index-popover: 1060;
-  --z-index-tooltip: 1070;
-  
-  /* ===== TRANSICIONES Y ANIMACIONES ===== */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Fuentes dinámicas */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   
   /* ===== ACCESIBILIDAD ===== */
   --focus-ring-width: 3px;
-  --focus-ring-color: rgb(var(--focus-ring-r, 59), var(--focus-ring-g, 130), var(--focus-ring-b, 246));
+  --focus-ring-color: rgb(var(--primary-r, 59), var(--primary-g, 130), var(--primary-b, 246));
   --focus-ring-offset: 2px;
+  
+  /* ===== BORDES REDONDEADOS ===== */
+  /* Todos los border radius a 5px (rounded-lg) */
+  --border-radius-sm: 5px;
+  --border-radius-md: 5px;
+  --border-radius-lg: 5px;
+  --border-radius-xl: 5px;
+  --border-radius-full: 9999px;
   
   /* ===== BREAKPOINTS DINÁMICOS ===== */
   --breakpoint-sm: 640px;
