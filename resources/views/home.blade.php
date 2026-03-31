@@ -60,118 +60,131 @@
         @endif
     </x-slot>
 
-    <!-- Page Header -->
-    <div class="mb-10 pb-6 border-b border-gray-200 dark:border-gray-800">
+    <!-- Page Header (Magazine Style) -->
+    <div class="mb-14 pb-8 border-b border-gray-100 dark:border-white/5 relative">
+        <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-full opacity-0 lg:opacity-100"></div>
         @if(isset($category))
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">Browsing Category</p>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
                 {{ $category->name }}
             </h1>
             @if($category->description)
-                <p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
+                <p class="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
                     {{ $category->description }}
                 </p>
             @endif
         @elseif(isset($tag))
-            <h1 class="text-3xl font-bold tracking-tight text-cyan-500 sm:text-4xl">
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">Topic</p>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
                 #{{ $tag->name }}
             </h1>
-            <p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
-                Articles tagged with {{ $tag->name }}
-            </p>
         @else
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                The Latest in AI & Tech
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">The Editorial</p>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
+                The Future of AI <br class="hidden md:block"> & Technology.
             </h1>
-            <p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
-                Stay ahead of the curve with our 100% AI-curated and drafted insights.
+            <p class="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed font-medium">
+                Deep dives and real-time insights into the world of artificial intelligence, curated for the modern professional.
             </p>
         @endif
     </div>
 
-    <!-- Feed Grid -->
+    <!-- Feed Grid with Featured Item -->
     @if($articles->isEmpty())
-        <div class="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No articles found</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Check back later for fresh content.</p>
+        <div class="text-center py-16 bg-gray-50 dark:bg-white/[0.02] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-white/10">
+            <h3 class="text-sm font-black uppercase tracking-widest text-slate-400">Archives are empty</h3>
+            <p class="mt-2 text-xs text-slate-500">Expect new insights very soon.</p>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-10">
-            @foreach($articles as $article)
-                <article class="flex flex-col items-start justify-between bg-white dark:bg-[#111827] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 group">
-                    <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}" class="block w-full overflow-hidden aspect-video relative">
+        <!-- Featured Hero (First Article) -->
+        @php $featured = $articles->first(); @endphp
+        <article class="relative group mb-10 overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 transition-all duration-500">
+            <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $featured->slug_es : $featured->slug_en) }}" class="flex flex-col lg:flex-row min-h-[320px]">
+                <div class="lg:w-1/2 relative overflow-hidden">
+                    <img src="{{ $featured->image_url ?? '/placeholder.webp' }}" 
+                         alt="{{ $featured->image_alt }}" 
+                         class="w-full h-full object-cover">
+                </div>
+                <div class="lg:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+                    <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-4 w-fit">Featured</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tighter group-hover:text-cyan-500 transition-colors">
+                        {{ $featured->title }}
+                    </h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6 line-clamp-2">
+                        {{ $featured->excerpt }}
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $featured->author?->name ?? 'Staff' }}</span>
+                    </div>
+                </div>
+            </a>
+        </article>
+
+        <!-- Dynamic Grid (Compact) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            @foreach($articles->skip(1) as $article)
+                <article class="flex flex-col group">
+                    <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}" 
+                       class="block overflow-hidden rounded-2xl aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-4 group-hover:border-cyan-500/30 transition-all">
                         <img src="{{ $article->image_url ?? '/placeholder.webp' }}" 
                              alt="{{ $article->image_alt }}" 
-                             loading="{{ $loop->iteration <= 4 ? 'eager' : 'lazy' }}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                             class="w-full h-full object-cover">
                     </a>
-                    <div class="p-6 sm:p-8 flex flex-col flex-1">
-                        <div class="flex items-center gap-x-4 text-xs mb-4">
-                            <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-gray-500 dark:text-gray-400">
-                                {{ $article->published_at?->diffForHumans() }}
-                            </time>
-                            @if($article->category)
-                                <a href="{{ route('categories.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($article->category->slug_es ?? $article->category->slug) : ($article->category->slug_en ?? $article->category->slug)) }}" class="relative z-10 rounded-full bg-gray-50 dark:bg-gray-800 px-3 py-1.5 font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    {{ $article->category->name }}
-                                </a>
-                            @endif
-                        </div>
-                        <div class="group relative">
-                            <h3 class="mt-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-3 group-hover:text-cyan-500 transition-colors">
-                                <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}">
-                                    <span class="absolute inset-0"></span>
-                                    {{ $article->title }}
-                                </a>
-                            </h3>
-                            <p class="mt-4 line-clamp-3 text-sm leading-6 text-gray-600 dark:text-gray-400">
-                                {{ $article->excerpt }}
-                            </p>
-                        </div>
-                        <div class="relative mt-auto pt-6 flex items-center gap-x-4">
-                            <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" alt="{{ $article->author?->name }}" class="h-10 w-10 min-w-10 rounded-full bg-gray-50 border border-gray-200 dark:border-gray-700 object-cover">
-                            <div class="text-sm leading-6">
-                                <p class="font-semibold text-gray-900 dark:text-white">
-                                    {{ $article->author?->name ?? 'AI Reporter' }}
-                                </p>
-                                <p class="text-gray-600 dark:text-gray-400">{{ $article->reading_time ?? 5 }} min read</p>
-                            </div>
-                        </div>
+                    
+                    <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-400 mb-3">
+                        <span class="text-cyan-500">{{ $article->category?->name }}</span>
+                        <div class="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+                        <span>{{ $article->published_at?->diffForHumans() }}</span>
+                    </div>
+
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-3 tracking-tighter group-hover:text-cyan-500 transition-colors">
+                        <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}">
+                            {{ $article->title }}
+                        </a>
+                    </h3>
+                    
+                    <p class="text-slate-500 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2 mb-4">
+                        {{ $article->excerpt }}
+                    </p>
+
+                    <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-50 dark:border-white/5">
+                         <span class="text-[9px] font-bold uppercase text-slate-400">{{ $article->author?->name ?? 'Reporter' }}</span>
+                         <span class="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase ml-auto">{{ $article->reading_time ?? 5 }} min</span>
                     </div>
                 </article>
             @endforeach
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-8">
+        <!-- Elegant Pagination -->
+        <div class="mt-20 border-t border-gray-100 dark:border-white/5 pt-8">
             {{ $articles->links() }}
         </div>
     @endif
 
     <x-slot:sidebar>
-        <!-- Trending Tags Widget -->
-        <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
-            <h3 class="text-sm font-bold tracking-wider uppercase text-gray-900 dark:text-white mb-6">Trending Tags</h3>
+        <!-- Trending Widget (More Compact) -->
+        <div class="relative">
+            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8 flex items-center gap-3">
+                <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                Trending Topics
+            </h3>
             <div class="flex flex-wrap gap-2">
                 @foreach($trendingTags ?? [] as $ttag)
-                    <a href="{{ route('tags.show', $ttag->slug) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/80 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-900/30 dark:hover:text-cyan-400 transition-all border border-transparent hover:border-cyan-100 dark:hover:border-cyan-800/50">
+                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-500 hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
                         #{{ $ttag->name }}
-                        <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ $ttag->article_count }}</span>
                     </a>
                 @endforeach
             </div>
         </div>
 
-        <!-- Newsletter Widget -->
-        <div class="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-6 sm:p-8 shadow-lg shadow-cyan-500/20 text-white">
-            <h3 class="text-xl font-bold mb-2">Join the Future</h3>
-            <p class="text-cyan-50 text-sm mb-6">Get our top AI-curated tech news delivered to your inbox weekly.</p>
-            <form class="flex flex-col gap-3">
-                <input type="email" placeholder="Your email address" class="w-full rounded-xl border-0 bg-white/10 px-4 py-3 text-white placeholder-cyan-100 focus:bg-white/20 focus:ring-2 focus:ring-white transition-all">
-                <button type="submit" class="w-full rounded-xl bg-white text-cyan-600 px-4 py-3 font-bold hover:bg-cyan-50 transition-colors">
-                    Subscribe
-                </button>
+        <!-- Newsletter (Premium) -->
+        <div class="p-8 rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden group border border-white/5">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
+            <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">AI Insights Weekly</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-8 relative z-10">Get the most important tech updates directly to your inbox. No fluff, just value.</p>
+            <form class="relative z-10 flex flex-col gap-4">
+                <input type="email" placeholder="Email address" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-2xl transition-all shadow-lg shadow-cyan-500/20">Subscribe Now</button>
             </form>
         </div>
     </x-slot>
