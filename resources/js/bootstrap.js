@@ -3,6 +3,18 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+// Importar utilidades de accesibilidad
+import { AccessibilityManager, accessibilityAlpine } from './utils/accessibility.js';
+
+// Importar utilidades de performance
+import { PerformanceOptimizer, performanceAlpine } from './utils/performance.js';
+
+// Exponer utilidades globalmente
+window.AccessibilityManager = AccessibilityManager;
+window.accessibilityAlpine = accessibilityAlpine;
+window.PerformanceOptimizer = PerformanceOptimizer;
+window.performanceAlpine = performanceAlpine;
+
 /**
  * Echo exposure for Reverb
  */
