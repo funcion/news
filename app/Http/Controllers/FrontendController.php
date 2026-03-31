@@ -31,7 +31,12 @@ class FrontendController extends Controller
                 $query->where('slug_en', $slug)
                       ->orWhere('slug_es', $slug);
             })
-            ->firstOrFail();
+            ->first();
+
+        // If not found as an article, try as a category
+        if (!$article) {
+            return $this->category($slug);
+        }
 
         $article->increment('views');
 
