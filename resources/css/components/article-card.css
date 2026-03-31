@@ -1,0 +1,172 @@
+/* resources/css/components/article-card.css */
+/* Estilos CSS modular para componente Article Card */
+
+.article-card {
+    --card-bg: var(--color-bg-primary);
+    --card-text: var(--color-text-primary);
+    --card-border: var(--color-secondary-light);
+    --card-shadow: var(--shadow-md);
+    --card-radius: var(--border-radius-lg);
+    --card-padding: var(--spacing-4);
+    --card-gap: var(--spacing-3);
+    
+    background-color: var(--card-bg);
+    color: var(--card-text);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: var(--card-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.article-card:hover {
+    --card-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+}
+
+.article-card__image-container {
+    --aspect-ratio: 16/9;
+    position: relative;
+    width: 100%;
+    padding-bottom: calc(100% / var(--aspect-ratio));
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    background-color: var(--color-bg-secondary);
+}
+
+.article-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.article-card__image--loaded {
+    opacity: 1;
+}
+
+.article-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex: 1;
+}
+
+.article-card__title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.article-card__title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.article-card__title a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.article-card__excerpt {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-secondary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-card__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: auto;
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--color-border);
+}
+
+.article-card__category {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    padding: var(--spacing-0_5) var(--spacing-2);
+    border-radius: var(--border-radius-full);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+/* Estados de accesibilidad */
+.article-card:focus-within {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+.article-card__image:focus {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .article-card {
+        --card-bg: var(--color-bg-secondary);
+        --card-border: var(--color-secondary-dark);
+    }
+    
+    .article-card__category {
+        background-color: var(--color-primary-dark);
+        color: var(--color-primary-light);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .article-card {
+        --card-padding: var(--spacing-3);
+        --card-gap: var(--spacing-2);
+    }
+    
+    .article-card__title {
+        font-size: var(--font-size-md);
+    }
+    
+    .article-card__meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-1);
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .article-card {
+        --card-border: #000000;
+        border-width: 2px;
+    }
+    
+    .article-card__title {
+        font-weight: 700;
+    }
+    
+    .article-card__category {
+        border: 2px solid #000000;
+    }
+}
