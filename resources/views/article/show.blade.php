@@ -52,7 +52,7 @@
             
             <div class="flex items-center gap-6 border-y border-gray-100 dark:border-white/5 py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-full border border-gray-100 dark:border-white/10 shadow-sm">
+                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-100 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
                          <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->author?->name ?? 'Reporter AI' }}</span>
                     </div>
@@ -80,7 +80,7 @@
 
         <!-- Main Featured Image -->
         @if($featuredMedia)
-            <figure class="mb-16 rounded-[2.5rem] overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
+            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
                 <img src="{{ $featuredMedia->getUrl('large') }}" 
                      srcset="{{ $featuredMedia->getSrcset('large') ?? ($featuredMedia->getUrl('thumb') . ' 480w, ' . $featuredMedia->getUrl('medium') . ' 800w, ' . $featuredMedia->getUrl('large') . ' 1200w') }}"
                      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px"
@@ -90,18 +90,18 @@
                      loading="eager">
             </figure>
         @elseif($article->image_url)
-            <figure class="mb-16 rounded-[2.5rem] overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
+            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
                 <img src="{{ $article->image_url }}" alt="{{ $article->image_alt ?? $article->title }}" class="w-full h-auto object-cover aspect-video" loading="eager">
             </figure>
         @endif
 
         <!-- Article Body -->
-        <div class="prose prose-xl prose-cyan dark:prose-invert max-w-none prose-headings:font-black prose-img:rounded-[2rem] prose-a:text-cyan-500 hover:prose-a:text-cyan-600 dark:hover:prose-a:text-cyan-400 leading-relaxed text-gray-700 dark:text-gray-300">
+        <div class="prose prose-xl prose-cyan dark:prose-invert max-w-none prose-headings:font-black prose-img:rounded-lg prose-a:text-cyan-500 hover:prose-a:text-cyan-600 dark:hover:prose-a:text-cyan-400 leading-relaxed text-gray-700 dark:text-gray-300">
             {!! $article->content !!}
         </div>
 
         <!-- Social Share Bar (Moved to End) -->
-        <div class="mt-20 mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-100 dark:border-white/10 overflow-hidden relative">
+        <div class="mt-20 mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-100 dark:border-white/10 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 pointer-events-none"></div>
             <h3 class="text-xl font-black text-gray-900 dark:text-white relative z-10">Share This Story</h3>
             <div class="flex flex-wrap items-center justify-center gap-3 relative z-10">
@@ -119,7 +119,7 @@
 
                 @foreach($platforms as $p)
                     <a href="{{ $p['url'] }}" target="_blank" 
-                       class="{{ $p['bg'] }} h-12 w-12 flex items-center justify-center rounded-2xl text-white hover:scale-110 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-black/10 group" 
+                       class="{{ $p['bg'] }} h-12 w-12 flex items-center justify-center rounded-lg text-white hover:scale-110 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-black/10 group" 
                        title="{{ $p['id'] }}">
                         <svg class="h-6 w-6 {{ $p['id'] === 'em' ? '' : 'fill-current' }} group-hover:drop-shadow-md" {!! $p['id'] === 'em' ? 'fill="none" stroke="currentColor"' : '' !!} viewBox="0 0 24 24">
                             {!! $p['icon'] !!}
@@ -130,15 +130,15 @@
         </div>
 
         <div class="mt-12 pt-10 border-t border-gray-100 dark:border-gray-800/50">
-            <div class="bg-white dark:bg-white/[0.02] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-100 dark:border-white/5 relative overflow-hidden group">
+            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-100 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
                     <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
-                         class="relative h-20 w-20 rounded-2xl border-2 border-white dark:border-gray-800 object-cover shadow-xl">
+                         class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">
-                    <span class="px-2 py-0.5 rounded-md bg-cyan-500/10 text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-3 inline-block">Verified Author</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-3 inline-block">Verified Author</span>
                     <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
                         {{ $article->author?->name ?? 'AI Reporter' }}
                     </h3>
@@ -154,7 +154,7 @@
             <div class="mt-12 flex flex-wrap items-center gap-3 justify-start">
                 @foreach($article->tags as $atag)
                     <a href="{{ route('tags.show', $atag->slug) }}" 
-                       class="px-5 py-2.5 rounded-2xl bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-100 dark:border-transparent">
+                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-100 dark:border-transparent">
                         #{{ $atag->name }}
                     </a>
                 @endforeach
@@ -166,7 +166,7 @@
         @if($relatedArticles->count() > 0)
             <div class="flex flex-col gap-8">
                 <div class="flex items-center gap-4 mb-2">
-                    <span class="w-8 h-1 bg-cyan-500 rounded-full"></span>
+                    <span class="w-8 h-1 bg-cyan-500 rounded-lg"></span>
                     <h3 class="text-xs font-black tracking-widest uppercase text-gray-400 dark:text-gray-500">
                         Recommended
                     </h3>
@@ -176,7 +176,7 @@
                     @foreach($relatedArticles as $related)
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $related->slug_es : $related->slug_en) }}" 
                            class="group flex gap-5 items-center">
-                            <div class="w-20 h-20 shrink-0 overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                            <div class="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
                                 <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             </div>
                             <div class="flex-1 min-w-0">

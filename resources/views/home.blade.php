@@ -23,14 +23,13 @@
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-full"
-         class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 pointer-events-none"
-         style="display: none;">
-        <div class="pointer-events-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl shadow-cyan-500/20 p-4 flex items-center gap-4 overflow-hidden">
+         class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 pointer-events-none">
+        <div class="pointer-events-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-lg shadow-2xl shadow-cyan-500/20 p-4 flex items-center gap-4 overflow-hidden">
             <template x-if="newArticle">
                  <div class="flex items-center gap-4 w-full">
-                    <img :src="newArticle.image_url" class="h-14 w-14 rounded-xl object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
+                    <img :src="newArticle.image_url" class="h-14 w-14 rounded-lg object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
                     <div class="flex-1 min-w-0">
-                        <span class="inline-flex items-center rounded-md bg-cyan-100 dark:bg-cyan-900/40 px-2 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 mb-1">
+                        <span class="inline-flex items-center rounded-lg bg-cyan-100 dark:bg-cyan-900/40 px-2 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 mb-1">
                             JUST PUBLISHED
                         </span>
                         <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate" 
@@ -39,10 +38,10 @@
                         <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5" x-text="newArticle.published_at"></p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <button @click="window.location.reload()" class="p-2 rounded-full bg-cyan-500 text-white hover:bg-cyan-600 transition-colors shadow-lg shadow-cyan-500/30">
+                        <button @click="window.location.reload()" class="p-2 rounded-lg bg-cyan-500 text-white hover:bg-cyan-600 transition-colors shadow-lg shadow-cyan-500/30">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         </button>
-                        <button @click="showBanner = false" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 transition-colors">
+                        <button @click="showBanner = false" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 transition-colors">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -62,7 +61,7 @@
 
     <!-- Page Header (Magazine Style) -->
     <div class="mb-14 pb-8 border-b border-gray-100 dark:border-white/5 relative">
-        <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-full opacity-0 lg:opacity-100"></div>
+        <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-lg opacity-0 lg:opacity-100"></div>
         @if(isset($category))
             <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">Browsing Category</p>
             <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
@@ -91,14 +90,14 @@
 
     <!-- Feed Grid with Featured Item -->
     @if($articles->isEmpty())
-        <div class="text-center py-16 bg-gray-50 dark:bg-white/[0.02] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-white/10">
+        <div class="text-center py-16 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-dashed border-gray-200 dark:border-white/10">
             <h3 class="text-sm font-black uppercase tracking-widest text-slate-400">Archives are empty</h3>
             <p class="mt-2 text-xs text-slate-500">Expect new insights very soon.</p>
         </div>
     @else
         <!-- Featured Hero (First Article) -->
         @php $featured = $articles->first(); @endphp
-        <article class="relative group mb-10 overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 transition-all duration-500">
+        <article class="relative group mb-10 overflow-hidden rounded-lg bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 transition-all duration-500">
             <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $featured->slug_es : $featured->slug_en) }}" class="flex flex-col lg:flex-row min-h-[320px]">
                 <div class="lg:w-1/2 relative overflow-hidden">
                     <img src="{{ $featured->image_url ?? '/placeholder.webp' }}" 
@@ -125,7 +124,7 @@
             @foreach($articles->skip(1) as $article)
                 <article class="flex flex-col group">
                     <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}" 
-                       class="block overflow-hidden rounded-2xl aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-4 group-hover:border-cyan-500/30 transition-all">
+                       class="block overflow-hidden rounded-lg aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-4 group-hover:border-cyan-500/30 transition-all">
                         <img src="{{ $article->image_url ?? '/placeholder.webp' }}" 
                              alt="{{ $article->image_alt }}" 
                              class="w-full h-full object-cover">
@@ -133,7 +132,7 @@
                     
                     <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-400 mb-3">
                         <span class="text-cyan-500">{{ $article->category?->name }}</span>
-                        <div class="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+                        <div class="w-1 h-1 rounded-lg bg-slate-200 dark:bg-slate-800"></div>
                         <span>{{ $article->published_at?->diffForHumans() }}</span>
                     </div>
 
@@ -165,12 +164,12 @@
         <!-- Trending Widget (More Compact) -->
         <div class="relative">
             <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8 flex items-center gap-3">
-                <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                <span class="w-1.5 h-1.5 bg-cyan-500 rounded-lg"></span>
                 Trending Topics
             </h3>
             <div class="flex flex-wrap gap-2">
                 @foreach($trendingTags ?? [] as $ttag)
-                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-2xl text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-500 hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
+                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-lg text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-500 hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
                         #{{ $ttag->name }}
                     </a>
                 @endforeach
@@ -178,13 +177,13 @@
         </div>
 
         <!-- Newsletter (Premium) -->
-        <div class="p-8 rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden group border border-white/5">
-            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
+        <div class="p-8 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
             <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">AI Insights Weekly</h3>
             <p class="text-slate-400 text-sm leading-relaxed mb-8 relative z-10">Get the most important tech updates directly to your inbox. No fluff, just value.</p>
             <form class="relative z-10 flex flex-col gap-4">
-                <input type="email" placeholder="Email address" class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
-                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-2xl transition-all shadow-lg shadow-cyan-500/20">Subscribe Now</button>
+                <input type="email" placeholder="Email address" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">Subscribe Now</button>
             </form>
         </div>
     </x-slot>
