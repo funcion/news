@@ -4,10 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Translatable\HasTranslations;
 
 class Author extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    /**
+     * The translatable attributes.
+     *
+     * @var array<int, string>
+     */
+    public array $translatable = ['name', 'bio'];
 
     /**
      * The attributes that are mass assignable.
