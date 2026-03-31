@@ -32,7 +32,7 @@
 
     {{ $head ?? '' }}
 </head>
-<body class="font-sans antialiased bg-gray-50 text-gray-900 dark:bg-[#0B1120] dark:text-gray-100 flex flex-col min-h-screen relative overflow-x-hidden"
+<body class="font-sans antialiased bg-gray-50 text-gray-900 dark:bg-[#020617] dark:text-slate-100 flex flex-col min-h-screen relative overflow-x-hidden"
     x-data="{
         newArticles: 0,
         latestTitle: '',
@@ -55,73 +55,95 @@
         }
     }">
     
-    <!-- Header -->
-    <header class="sticky top-0 z-50 w-full backdrop-blur flex-none transition-colors duration-500 lg:border-b lg:border-gray-900/10 dark:border-gray-50/[0.06] bg-white/90 dark:bg-[#0B1120]/90">
+    <!-- Premium Header -->
+    <header class="sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 border-b border-gray-100 dark:border-white/5 bg-white/80 dark:bg-slate-950/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="py-4 flex items-center justify-between">
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group" aria-label="Home page">
-                    <svg class="w-8 h-8 text-cyan-500 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
-                    </svg>
-                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase italic">Tech News <span class="text-cyan-500">AI</span></span>
+                    <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center transform group-hover:rotate-6 transition-transform shadow-lg shadow-cyan-500/20">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col -gap-1">
+                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">Tech AI</span>
+                        <span class="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.2em] ml-0.5">Magazine</span>
+                    </div>
                 </a>
                 
                 <div class="flex items-center gap-6">
                     <!-- Lang Switcher -->
-                    <div class="flex gap-3 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                        <a hreflang="en" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" class="hover:text-cyan-500 {{ app()->getLocale() === 'en' ? 'text-cyan-500 underline underline-offset-4 decoration-2' : '' }}">EN</a>
-                        <span class="opacity-20">|</span>
-                        <a hreflang="es" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" class="hover:text-cyan-500 {{ app()->getLocale() === 'es' ? 'text-cyan-500 underline underline-offset-4 decoration-2' : '' }}">ES</a>
+                    <div class="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                        <a hreflang="en" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'en' ? 'text-cyan-500' : '' }}">English</a>
+                        <div class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-800"></div>
+                        <a hreflang="es" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'es' ? 'text-cyan-500' : '' }}">Español</a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Grid -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div class="flex flex-col lg:flex-row gap-12">
-            <!-- 70% Primary Content -->
-            <div class="w-full lg:w-[70%] lg:shrink-0 overflow-hidden">
+    <!-- Indestructible Magazine Layout Styles -->
+    <style>
+        .magazine-grid { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+        @media (min-width: 960px) {
+            .magazine-grid { grid-template-columns: minmax(0, 1fr) 300px; }
+        }
+        @media (min-width: 1280px) {
+            .magazine-grid { grid-template-columns: minmax(0, 1fr) 320px; }
+        }
+    </style>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        <div class="magazine-grid">
+            <!-- Left Column (Primary) -->
+            <div class="min-w-0">
                 {{ $slot }}
             </div>
             
-            <!-- 30% Sidebar -->
-            <aside class="w-full lg:w-[30%] shrink-0">
-                <div class="sticky top-28 flex flex-col gap-10">
+            <!-- Right Column (Sidebar) -->
+            <aside class="w-full lg:shrink-0 sticky top-24">
+                <div class="flex flex-col gap-8">
                     {{ $sidebar ?? '' }}
                 </div>
             </aside>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12">
+    <!-- Minimalist Footer -->
+    <footer class="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-white/5 py-16">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-[0.2em] opacity-60">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. 100% AI-Generated Tech News.
-            </p>
+            <div class="flex flex-col items-center gap-6">
+                <div class="flex items-center gap-2 opacity-40grayscale pointer-events-none">
+                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Tech AI</span>
+                </div>
+                <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] max-w-xs leading-relaxed">
+                    &copy; {{ date('Y') }} {{ config('app.name') }}. 100% AI-Generated News Platform.
+                </p>
+            </div>
         </div>
     </footer>
 
-    <!-- Global Broadcast Notification (Fixed at Bottom Right) -->
+    <!-- Breaking News Banner (Bottom Right, Fixed) -->
     <div x-show="showBanner" 
-         x-transition:enter="transition ease-out duration-300 transform"
-         x-transition:enter-start="translate-y-10 opacity-0"
+         x-transition:enter="transition ease-out duration-500 transform"
+         x-transition:enter-start="translate-y-20 opacity-0"
          x-transition:enter-end="translate-y-0 opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         class="fixed bottom-8 right-8 z-[100] max-w-sm w-full">
-        <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-5 rounded-[2rem] shadow-2xl border border-white/10 dark:border-gray-200 flex items-center gap-4 relative overflow-hidden group">
-            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 pointer-events-none"></div>
-            <div class="w-12 h-12 shrink-0 bg-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                <svg class="w-6 h-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+         x-transition:leave="transition ease-in duration-300 transform"
+         x-transition:leave-end="translate-y-20 opacity-0"
+         class="fixed bottom-8 right-8 z-[100] max-w-sm w-[calc(100%-4rem)] md:w-full"
+         style="display: none;">
+        <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-6 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(255,255,255,0.1)] border border-white/10 dark:border-gray-200 flex items-center gap-5 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 pointer-events-none"></div>
+            <div class="w-12 h-12 shrink-0 bg-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-[10px] font-black uppercase tracking-widest text-cyan-500 mb-1">Breaking News</p>
-                <h4 x-text="latestTitle" class="text-sm font-bold truncate pr-6"></h4>
-                <div class="mt-2 flex items-center gap-3">
-                    <button @click="window.location.reload()" class="text-[10px] font-black uppercase tracking-widest hover:underline">Refresh Now</button>
-                    <button @click="showBanner = false" class="text-[10px] font-black uppercase tracking-widest opacity-50">Dismiss</button>
+            <div class="flex-1 min-w-0 relative z-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 dark:text-cyan-600 mb-1">New Update</p>
+                <h4 x-text="latestTitle" class="text-sm font-bold truncate mb-3"></h4>
+                <div class="flex items-center gap-4">
+                    <button @click="window.location.reload()" class="text-[10px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors underline underline-offset-4 decoration-2">Read Now</button>
+                    <button @click="showBanner = false" class="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Dismiss</button>
                 </div>
             </div>
         </div>
