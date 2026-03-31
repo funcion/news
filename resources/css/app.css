@@ -10,6 +10,9 @@
 /* 3. Utilidades de performance */
 @import './utilities/performance.css';
 
+/* 4. Componentes específicos */
+@import './components/header.css';
+
 /* 4. Tailwind base styles */
 @tailwind base;
 @tailwind components;
@@ -23,7 +26,7 @@
     --primary-g: 130;
     --primary-b: 246;
     
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
   
   html {
