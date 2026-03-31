@@ -39,6 +39,8 @@
         isScrolled: false,
         showBanner: false,
         latestTitle: '',
+        newArticles: 0,
+        newArticleData: null,
         init() {
             // Check for saved dark mode preference
             const savedDarkMode = localStorage.getItem('darkMode');
@@ -58,6 +60,21 @@
             // Handle scroll effect
             this.handleScroll();
             window.addEventListener('scroll', () => this.handleScroll());
+
+            // Restore Live Updates (Echo)
+            const pollEcho = setInterval(() => {
+                if (typeof window.Echo !== 'undefined') {
+                    clearInterval(pollEcho);
+                    window.Echo.channel('public-news')
+                        .listen('ArticlePublished', (e) => {
+                            console.log('Live broadcast received:', e);
+                            this.newArticles++;
+                            this.newArticleData = e;
+                            this.latestTitle = '{{ app()->getLocale() }}' === 'es' ? e.title_es : e.title_en;
+                            this.showBanner = true;
+                        });
+                }
+            }, 1000);
         },
         toggleDarkMode() {
             this.isDarkMode = !this.isDarkMode;
@@ -94,122 +111,102 @@
                     </div>
                 </a>
                 
-                <!-- Desktop Navigation (hidden on mobile) -->
-                <nav class="hidden lg:flex items-center gap-8">
-                    <!-- Home Link -->
-                    <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
-                        {{ __('Home') }}
-                    </a>
-                    
-                    <!-- Categories Dropdown -->
-                    <div class="relative group nav-item" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                        <button class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2">
-                            {{ __('Categories') }}
-                            <svg class="w-4 h-4 transition-transform duration-200 dropdown-arrow" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                <!-- Right Side: Navigation & Actions -->
+                <div class="flex items-center gap-4 lg:gap-8">
+                    <!-- Desktop Navigation (hidden on mobile) -->
+                    <nav class="hidden lg:flex items-center gap-8">
+                        <!-- Home Link -->
+                        <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
+                            {{ __('Home') }}
+                        </a>
+                        
+                        <!-- Categories Dropdown -->
+                        <div class="relative group nav-item" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <button class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2">
+                                {{ __('Categories') }}
+                                <svg class="w-4 h-4 transition-transform duration-200 dropdown-arrow" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-xl categories-dropdown border border-gray-200 dark:border-slate-800 py-2 z-50"
+                                 @click.away="open = false">
+                                @php
+                                    $categories = \App\Models\Category::whereNull('parent_id')->get();
+                                @endphp
+                                
+                                @foreach($categories as $category)
+                                    <a href="{{ $category->url }}" 
+                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
+                                        {{ $category->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Latest News -->
+                        <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
+                            {{ __('Latest News') }}
+                        </a>
+                        
+                        <div class="h-6 w-px bg-gray-200 dark:bg-white/10 mx-2"></div>
+                        
+                        <!-- Lang Switcher (Desktop) -->
+                        <div class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                            <a hreflang="en" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'en' ? 'text-cyan-500 underline underline-offset-4 decoration-2' : '' }}">EN</a>
+                            <div class="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+                            <a hreflang="es" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'es' ? 'text-cyan-500 underline underline-offset-4 decoration-2' : '' }}">ES</a>
+                        </div>
+                    </nav>
+
+                    <!-- Actions -->
+                    <div class="flex items-center gap-2 sm:gap-4 border-l border-gray-100 dark:border-white/5 pl-4 sm:pl-8">
+                        <!-- Dark Mode Toggle -->
+                        <button @click="toggleDarkMode()" 
+                                class="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                            <svg x-show="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                            <svg x-show="isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        </button>
+
+                        <!-- Hamburger Button (Standard SVG for reliability) -->
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                                class="lg:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                            <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div x-show="open" 
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 scale-100"
-                             x-transition:leave-end="opacity-0 scale-95"
-                             class="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-xl categories-dropdown border border-gray-200 dark:border-slate-800 py-2 z-50"
-                             @click.away="open = false">
-                            @php
-                                // Obtener categorías principales (sin parent_id)
-                                $categories = \App\Models\Category::whereNull('parent_id')->get();
-                            @endphp
-                            
-                            @foreach($categories as $category)
-                                <a href="{{ $category->url }}" 
-                                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
-                                    {{ $category->name }}
-                                </a>
-                            @endforeach
-                            
-                            @if($categories->isEmpty())
-                                <div class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 italic">
-                                    {{ __('No categories available') }}
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <!-- Latest News -->
-                    <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
-                        {{ __('Latest News') }}
-                    </a>
-                    
-                    <!-- Search (placeholder) -->
-                    <a href="#search" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
-                        {{ __('Search') }}
-                    </a>
-                    
-                    <!-- About (placeholder) -->
-                    <a href="#about" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
-                        {{ __('About') }}
-                    </a>
-                </nav>
-                
-                <!-- Right Side Actions -->
-                <div class="flex items-center gap-4">
-                    <!-- Dark/Light Mode Toggle -->
-                    <button @click="toggleDarkMode()" 
-                            class="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                            aria-label="Toggle dark mode">
-                        <svg x-show="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                        <svg x-show="isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </button>
-                    
-                    <!-- Mobile Menu Button - Hamburguesa mejorada -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" 
-                            class="lg:hidden relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 group"
-                            aria-label="Toggle mobile menu">
-                        <!-- Línea superior -->
-                        <span class="block w-6 h-0.5 bg-gray-700 dark:bg-gray-300 rounded-full transition-all duration-300"
-                              x-bind:class="mobileMenuOpen ? 'rotate-45 translate-y-2' : ''"></span>
-                        <!-- Línea central -->
-                        <span class="block w-6 h-0.5 bg-gray-700 dark:bg-gray-300 rounded-full transition-all duration-300"
-                              x-bind:class="mobileMenuOpen ? 'opacity-0' : ''"></span>
-                        <!-- Línea inferior -->
-                        <span class="block w-6 h-0.5 bg-gray-700 dark:bg-gray-300 rounded-full transition-all duration-300"
-                              x-bind:class="mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''"></span>
-                    </button>
-                    
-                    <!-- Lang Switcher -->
-                    <div class="hidden md:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                        <a hreflang="en" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'en' ? 'text-cyan-500' : '' }}">EN</a>
-                        <div class="w-1 h-1 rounded-lg bg-slate-300 dark:bg-slate-800"></div>
-                        <a hreflang="es" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'es' ? 'text-cyan-500' : '' }}">ES</a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Mobile Menu (dentro del flujo HTML, debajo del header) -->
-            <div x-show="mobileMenuOpen" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 max-h-0"
-                 x-transition:enter-end="opacity-100 max-h-[400px]"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 max-h-[400px]"
-                 x-transition:leave-end="opacity-0 max-h-0"
-                 class="lg:hidden overflow-hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+        </header>
+
+        <!-- Mobile Menu (dentro del flujo HTML, debajo del header) -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 max-h-0"
+             x-transition:enter-end="opacity-100 max-h-[100vh]"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 max-h-[400px]"
+             x-transition:leave-end="opacity-0 max-h-0"
+             class="lg:hidden overflow-hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         
         <!-- Contenido del menú -->
         <div class="px-4 py-4 space-y-4 max-h-[350px] overflow-y-auto">
                     <!-- Navegación principal -->
                     <div class="space-y-3">
                         <a href="{{ url('/') }}" 
-                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2 {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}"
+                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1 {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}"
                            @click="mobileMenuOpen = false">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -220,7 +217,7 @@
                         <!-- Categories Accordion -->
                         <div x-data="{ categoriesOpen: false }" class="border-t border-gray-100 dark:border-slate-800 pt-3">
                             <button @click="categoriesOpen = !categoriesOpen" 
-                                    class="flex items-center justify-between w-full text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2">
+                                    class="flex items-center justify-between w-full text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1">
                                 <div class="flex items-center gap-3">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -239,14 +236,14 @@
                                 
                                 @foreach($mobileCategories as $category)
                                     <a href="{{ $category->url }}" 
-                                       class="block text-xs text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1.5"
+                                       class="block text-xs text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1"
                                        @click="mobileMenuOpen = false">
                                         {{ $category->name }}
                                     </a>
                                 @endforeach
                                 
                                 @if($mobileCategories->isEmpty())
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 italic py-1.5">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 italic py-1">
                                         {{ __('No categories available') }}
                                     </div>
                                 @endif
@@ -254,7 +251,7 @@
                         </div>
                         
                         <a href="{{ url('/') }}" 
-                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2 {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}"
+                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1 {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}"
                            @click="mobileMenuOpen = false">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -263,7 +260,7 @@
                         </a>
                         
                         <a href="#search" 
-                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2"
+                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1"
                            @click="mobileMenuOpen = false">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -272,7 +269,7 @@
                         </a>
                         
                         <a href="#about" 
-                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2"
+                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1"
                            @click="mobileMenuOpen = false">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -286,7 +283,7 @@
                         <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{{ __('Preferences') }}</h3>
                         
                         <!-- Dark/Light Mode Toggle -->
-                        <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center justify-between py-1">
                             <div class="flex items-center gap-3">
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -316,11 +313,27 @@
                                    href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
                                    class="flex-1 flex flex-col items-center p-3 rounded-lg border transition-all duration-200 {{ app()->getLocale() === 'en' ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-gray-50 dark:hover:bg-slate-800' }}"
                                    @click="mobileMenuOpen = false">
-                                    <div class="w-8 h-6 mb-2 rounded overflow-hidden shadow-sm bg-blue-900 relative">
-                                        <div class="absolute inset-0 flex flex-col">
-                                            <div class="h-2 bg-red-600"></div>
-                                            <div class="h-2 bg-white"></div>
-                                            <div class="h-2 bg-red-600"></div>
+                                    <div class="w-8 h-6 mb-2 rounded overflow-hidden shadow-sm relative bg-white border border-gray-100 dark:border-white/10">
+                                        <!-- Stripes -->
+                                        <div class="flex flex-col h-full">
+                                            <div class="h-[14%] bg-red-600"></div>
+                                            <div class="h-[14%] bg-white"></div>
+                                            <div class="h-[14%] bg-red-600"></div>
+                                            <div class="h-[14%] bg-white"></div>
+                                            <div class="h-[14%] bg-red-600"></div>
+                                            <div class="h-[14%] bg-white"></div>
+                                            <div class="h-[16%] bg-red-600"></div>
+                                        </div>
+                                        <!-- Blue Canton -->
+                                        <div class="absolute top-0 left-0 w-4 h-3 bg-blue-700 flex items-center justify-center">
+                                            <div class="grid grid-cols-3 gap-0.5 scale-75 opacity-60">
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                                <div class="w-0.5 h-0.5 bg-white rounded-full"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <span class="text-sm font-medium {{ app()->getLocale() === 'en' ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-700 dark:text-gray-300' }}">English</span>
@@ -351,12 +364,11 @@
                             <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
                                 {{ __('100% AI-Generated News Platform') }}
                             </p>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 </div>
 <!-- End Header Wrapper -->
 
