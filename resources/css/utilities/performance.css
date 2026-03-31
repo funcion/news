@@ -1,0 +1,370 @@
+/* resources/css/utilities/performance.css */
+/* Utilidades CSS para optimización de performance */
+
+/* 1. Optimización de imágenes */
+.img-optimized {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+/* 2. Contenido crítico above-the-fold */
+.critical-content {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 5000px;
+}
+
+/* 3. Optimización de fuentes */
+.font-optimized {
+  font-display: swap;
+  text-rendering: optimizeLegibility;
+}
+
+/* 4. Mejora de animaciones para performance */
+.animate-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* 5. Optimización de scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-scroll {
+    scroll-behavior: auto;
+  }
+}
+
+/* 6. Mejora de renderizado de texto */
+.text-optimized {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+}
+
+/* 7. Optimización de layout */
+.layout-optimized {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* 8. Mejora de performance en hover */
+.hover-performance {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 9. Optimización de imágenes de fondo */
+.bg-optimized {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* 10. Mejora de performance en modales */
+.modal-performance {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* 11. Optimización de formularios */
+.form-performance input,
+.form-performance select,
+.form-performance textarea {
+  will-change: transform;
+}
+
+/* 12. Mejora de performance en listas */
+.list-performance {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 5000px;
+}
+
+/* 13. Optimización de tablas */
+.table-performance {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* 14. Mejora de performance en grids */
+.grid-performance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: var(--spacing-4);
+}
+
+/* 15. Optimización de flex containers */
+.flex-performance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+/* 16. Mejora de performance en carousels */
+.carousel-performance {
+  scroll-snap-type: x mandatory;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.carousel-performance > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* 17. Optimización de videos */
+.video-performance {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* 18. Mejora de performance en iframes */
+.iframe-performance {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+/* 19. Optimización de SVG */
+.svg-optimized {
+  width: 100%;
+  height: auto;
+  fill: currentColor;
+}
+
+/* 20. Utilidades de performance responsive */
+@media (max-width: 768px) {
+  .mobile-performance {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-2);
+  }
+  
+  .mobile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tablet-performance {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-3);
+  }
+}
+
+@media (min-width: 1025px) {
+  .desktop-performance {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-4);
+  }
+}
+
+/* 21. Utilidades de performance para impresión */
+@media print {
+  .print-performance {
+    color: #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* 22. Utilidades de performance para conexiones lentas */
+@media (prefers-reduced-data: reduce) {
+  .data-performance {
+    background-image: none !important;
+    font-display: block;
+  }
+  
+  .data-performance img {
+    display: none;
+  }
+  
+  .data-performance video {
+    display: none;
+  }
+}
+
+/* 23. Utilidades de performance para alto contraste */
+@media (prefers-contrast high) {
+  .contrast-performance {
+    border: 2px solid currentColor !important;
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+}
+
+/* 24. Utilidades de performance para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .dark-performance {
+    background-color: var(--color-bg-secondary) !important;
+    color: var(--color-text-inverse) !important;
+  }
+}
+
+/* 25. Utilidades de performance para dispositivos táctiles */
+.touch-performance {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 26. Utilidades de performance para animaciones */
+.animation-performance {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animation-performance {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* 27. Utilidades de performance para scroll snapping */
+.scroll-snap-performance {
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+}
+
+.scroll-snap-performance > * {
+  scroll-snap-align: start;
+}
+
+/* 28. Utilidades de performance para lazy loading */
+.lazy-performance {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.lazy-performance.loaded {
+  opacity: 1;
+}
+
+/* 29. Utilidades de performance para imágenes responsivas */
+.responsive-img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* 30. Utilidades de performance para tipografía */
+.typography-performance {
+  font-display: swap;
+  font-optical-sizing: auto;
+  font-variation-settings: normal;
+}
+
+/* 31. Utilidades de performance para modales y overlays */
+.overlay-performance {
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 32. Utilidades de performance para transiciones */
+.transition-performance {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* 33. Utilidades de performance para sombras */
+.shadow-performance {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 34. Utilidades de performance para bordes */
+.border-performance {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+}
+
+/* 35. Utilidades de performance para gradientes */
+.gradient-performance {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-primary-light),
+    var(--color-primary)
+  );
+}
+
+/* 36. Utilidades de performance para efectos de hover */
+.hover-effect-performance {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-effect-performance:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 37. Utilidades de performance para focus states */
+.focus-performance {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-performance:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 38. Utilidades de performance para active states */
+.active-performance {
+  transition: transform 0.1s ease-in-out;
+}
+
+.active-performance:active {
+  transform: scale(0.98);
+}
+
+/* 39. Utilidades de performance para disabled states */
+.disabled-performance {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 40. Utilidades de performance para loading states */
+.loading-performance {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-performance::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
