@@ -69,7 +69,7 @@ class Category extends Model implements HasMedia
     {
         $locale = app()->getLocale();
         $slug = $locale === 'es' ? ($this->slug_es ?? $this->slug_en) : ($this->slug_en ?? $this->slug_es);
-        return route('categories.show', ['slug' => $slug]);
+        return route('articles.show', ['slug' => $slug]);
     }
 
     public function getBreadcrumbAttribute(): array
