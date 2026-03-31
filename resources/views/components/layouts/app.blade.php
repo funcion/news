@@ -75,7 +75,7 @@
                     <!-- Lang Switcher -->
                     <div class="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                         <a hreflang="en" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'en' ? 'text-cyan-500' : '' }}">English</a>
-                        <div class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-800"></div>
+                        <div class="w-1 h-1 rounded-lg bg-slate-300 dark:bg-slate-800"></div>
                         <a hreflang="es" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" class="transition-colors hover:text-cyan-500 {{ app()->getLocale() === 'es' ? 'text-cyan-500' : '' }}">Español</a>
                     </div>
                 </div>
@@ -83,19 +83,8 @@
         </div>
     </header>
 
-    <!-- Indestructible Magazine Layout Styles -->
-    <style>
-        .magazine-grid { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
-        @media (min-width: 960px) {
-            .magazine-grid { grid-template-columns: minmax(0, 1fr) 300px; }
-        }
-        @media (min-width: 1280px) {
-            .magazine-grid { grid-template-columns: minmax(0, 1fr) 320px; }
-        }
-    </style>
-
     <main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        <div class="magazine-grid">
+        <div class="grid grid-cols-1 gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
             <!-- Left Column (Primary) -->
             <div class="min-w-0">
                 {{ $slot }}
@@ -114,7 +103,7 @@
     <footer class="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-white/5 py-16">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="flex flex-col items-center gap-6">
-                <div class="flex items-center gap-2 opacity-40grayscale pointer-events-none">
+                <div class="flex items-center gap-2 opacity-40 grayscale pointer-events-none">
                     <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Tech AI</span>
                 </div>
                 <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] max-w-xs leading-relaxed">
@@ -131,11 +120,10 @@
          x-transition:enter-end="translate-y-0 opacity-100"
          x-transition:leave="transition ease-in duration-300 transform"
          x-transition:leave-end="translate-y-20 opacity-0"
-         class="fixed bottom-8 right-8 z-[100] max-w-sm w-[calc(100%-4rem)] md:w-full"
-         style="display: none;">
-        <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-6 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(255,255,255,0.1)] border border-white/10 dark:border-gray-200 flex items-center gap-5 relative overflow-hidden group">
+         class="fixed bottom-8 right-8 z-[100] max-w-sm w-[calc(100%-4rem)] md:w-full">
+        <div class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-6 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(255,255,255,0.1)] border border-white/10 dark:border-gray-200 flex items-center gap-5 relative overflow-hidden group">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 pointer-events-none"></div>
-            <div class="w-12 h-12 shrink-0 bg-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <div class="w-12 h-12 shrink-0 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
                 <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
             <div class="flex-1 min-w-0 relative z-10">
