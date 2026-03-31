@@ -37,3 +37,8 @@ Route::group([
 Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
+
+// Test route for Alpine.js
+Route::get('/test-alpine', function () {
+    return view('test-alpine');
+});
