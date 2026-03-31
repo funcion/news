@@ -6,14 +6,14 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // Importar utilidades de accesibilidad
 import { AccessibilityManager, accessibilityAlpine } from './utils/accessibility.js';
 
-// Importar utilidades de performance
-import { PerformanceOptimizer, performanceAlpine } from './utils/performance.js';
+// Importar utilidades de performance (comentado temporalmente)
+// import { PerformanceOptimizer, performanceAlpine } from './utils/performance.js';
 
 // Exponer utilidades globalmente
 window.AccessibilityManager = AccessibilityManager;
 window.accessibilityAlpine = accessibilityAlpine;
-window.PerformanceOptimizer = PerformanceOptimizer;
-window.performanceAlpine = performanceAlpine;
+// window.PerformanceOptimizer = PerformanceOptimizer;
+// window.performanceAlpine = performanceAlpine;
 
 /**
  * Echo exposure for Reverb
@@ -36,4 +36,9 @@ window.Echo = new Echo({
 // Importar y configurar Alpine.js
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
-Alpine.start();
+
+// Iniciar Alpine.js cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    Alpine.start();
+    console.log('Alpine.js started successfully');
+});
