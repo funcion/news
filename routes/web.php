@@ -24,14 +24,12 @@ Route::group([
     // --- PUBLIC ROUTES ---
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
-    // Articles
-    Route::get('/news/{slug}', [\App\Http\Controllers\FrontendController::class, 'article'])->name('articles.show');
-
-    // Categories
-    Route::get('/category/{slug}', [\App\Http\Controllers\FrontendController::class, 'category'])->name('categories.show');
-
-    // Tags
+    // Tags (Must be before root slugs to avoid collisions)
     Route::get('/tag/{slug}', [\App\Http\Controllers\FrontendController::class, 'tag'])->name('tags.show');
+
+    // Root-level slugs (Articles & Categories)
+    // The FrontendController intelligently resolves if the slug belongs to an article or a category
+    Route::get('/{slug}', [\App\Http\Controllers\FrontendController::class, 'article'])->name('articles.show');
 
 });
 
