@@ -6,7 +6,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // Importar utilidades de accesibilidad
 import { AccessibilityManager, accessibilityAlpine } from './utils/accessibility.js';
 
-// Importar utilidades de performance (comentado temporalmente)
+// Importar utilidades de performance (comentado temporalmente para evitar errores)
 // import { PerformanceOptimizer, performanceAlpine } from './utils/performance.js';
 
 // Exponer utilidades globalmente
@@ -23,19 +23,36 @@ import Pusher from 'pusher-js';
 
 window.Pusher = Pusher;
 
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: window.laravelConfig?.reverb?.appKey ?? import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: window.laravelConfig?.reverb?.host ?? import.meta.env.VITE_REVERB_HOST,
-    wsPort: (window.laravelConfig?.reverb?.port ?? import.meta.env.VITE_REVERB_PORT ?? 80),
-    wssPort: (window.laravelConfig?.reverb?.port ?? import.meta.env.VITE_REVERB_PORT ?? 443),
-    forceTLS: (window.laravelConfig?.reverb?.scheme ?? import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
-    enabledTransports: ['ws', 'wss'],
-});
+// Configurar Echo solo si hay configuración disponible
+if (window.laravelConfig?.reverb?.appKey || import.meta.env.VITE_REVERB_APP_KEY) {
+    window.Echo = new Echo({
+        broadcaster: 'reverb',
+        key: window.laravelConfig?.reverb?.appKey ?? import.meta.env.VITE_REVERB_APP_KEY,
+        wsHost: window.laravelConfig?.reverb?.host ?? import.meta.env.VITE_REVERB_HOST,
+        wsPort: (window.laravelConfig?.reverb?.port ?? import.meta.env.VITE_REVERB_PORT ?? 80),
+        wssPort: (window.laravelConfig?.reverb?.port ?? import.meta.env.VITE_REVERB_PORT ?? 443),
+        forceTLS: (window.laravelConfig?.reverb?.scheme ?? import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+        enabledTransports: ['ws', 'wss'],
+    });
+} else {
+    console.warn('Reverb configuration not found. WebSocket connections disabled.');
+    window.Echo = {
+        // Echo mock para evitar errores
+        channel: () => ({ listen: () => ({}) }),
+        private: () => ({ listen: () => ({}) }),
+        join: () => ({ listen: () => ({}) }),
+        leave: () => {},
+        socketId: () => null,
+    };
+}
 
 // Importar y configurar Alpine.js
 import Alpine from 'alpinejs';
+import focus from '@alpinejs/focus';
+
+// Configurar Alpine.js
 window.Alpine = Alpine;
+Alpine.plugin(focus);
 
 // Iniciar Alpine.js cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
