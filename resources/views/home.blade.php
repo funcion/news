@@ -30,7 +30,7 @@
                     <img :src="newArticle.image_url" class="h-14 w-14 rounded-lg object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
                     <div class="flex-1 min-w-0">
                         <span class="inline-flex items-center rounded-lg bg-cyan-100 dark:bg-cyan-900/40 px-2 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 mb-1">
-                            JUST PUBLISHED
+                            {{ __('ui.just_published') }}
                         </span>
                         <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate" 
                             x-text="{{ app()->getLocale() === 'es' ? 'newArticle.title_es' : 'newArticle.title_en' }}">
@@ -55,7 +55,7 @@
         @elseif(isset($tag))
             #{{ $tag->name }} | {{ config('app.name') }}
         @else
-            Latest News | {{ config('app.name') }}
+            {{ __('ui.latest_news') }} | {{ config('app.name') }}
         @endif
     </x-slot>
 
@@ -63,7 +63,7 @@
     <div class="mb-14 pb-8 border-b border-gray-100 dark:border-white/5 relative">
         <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-lg opacity-0 lg:opacity-100"></div>
         @if(isset($category))
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">Browsing Category</p>
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.browsing_category') }}</p>
             <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
                 {{ $category->name }}
             </h1>
@@ -73,17 +73,17 @@
                 </p>
             @endif
         @elseif(isset($tag))
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">Topic</p>
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.topic') }}</p>
             <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
                 #{{ $tag->name }}
             </h1>
         @else
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">The Editorial</p>
+            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.the_editorial') }}</p>
             <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
-                The Future of AI <br class="hidden md:block"> & Technology.
+                {{ __('ui.editorial_title') }}
             </h1>
             <p class="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed font-medium">
-                Deep dives and real-time insights into the world of artificial intelligence, curated for the modern professional.
+                {{ __('ui.editorial_subtitle') }}
             </p>
         @endif
     </div>
@@ -91,8 +91,8 @@
     <!-- Feed Grid with Featured Item -->
     @if($articles->isEmpty())
         <div class="text-center py-16 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-dashed border-gray-200 dark:border-white/10">
-            <h3 class="text-sm font-black uppercase tracking-widest text-slate-400">Archives are empty</h3>
-            <p class="mt-2 text-xs text-slate-500">Expect new insights very soon.</p>
+            <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ __('ui.archives_empty') }}</h3>
+            <p class="mt-2 text-xs text-slate-600 dark:text-slate-500">{{ __('ui.expect_insights') }}</p>
         </div>
     @else
         <!-- Featured Hero (First Article) -->
@@ -105,15 +105,15 @@
                          class="w-full h-full object-cover">
                 </div>
                 <div class="lg:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                    <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-4 w-fit">Featured</span>
+                    <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-4 w-fit">{{ __('ui.featured') }}</span>
                     <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tighter group-hover:text-cyan-500 transition-colors">
                         {{ $featured->title }}
                     </h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-6 line-clamp-2">
+                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-6 line-clamp-2">
                         {{ $featured->excerpt }}
                     </p>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $featured->author?->name ?? 'Staff' }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ $featured->author?->name ?? __('ui.staff') }}</span>
                     </div>
                 </div>
             </a>
@@ -130,9 +130,9 @@
                              class="w-full h-full object-cover">
                     </a>
                     
-                    <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-400 mb-3">
-                        <span class="text-cyan-500">{{ $article->category?->name }}</span>
-                        <div class="w-1 h-1 rounded-lg bg-slate-200 dark:bg-slate-800"></div>
+                    <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3">
+                        <span class="text-cyan-600 dark:text-cyan-500">{{ $article->category?->name }}</span>
+                        <div class="w-1 h-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
                         <span>{{ $article->published_at?->diffForHumans() }}</span>
                     </div>
 
@@ -142,13 +142,13 @@
                         </a>
                     </h3>
                     
-                    <p class="text-slate-500 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2 mb-4">
+                    <p class="text-slate-600 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2 mb-4">
                         {{ $article->excerpt }}
                     </p>
 
-                    <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-50 dark:border-white/5">
-                         <span class="text-[9px] font-bold uppercase text-slate-400">{{ $article->author?->name ?? 'Reporter' }}</span>
-                         <span class="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase ml-auto">{{ $article->reading_time ?? 5 }} min</span>
+                    <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-white/5">
+                         <span class="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->author?->name ?? __('ui.reporter') }}</span>
+                         <span class="text-[9px] font-black text-slate-600 dark:text-slate-500 uppercase ml-auto">{{ $article->reading_time ?? 5 }} min</span>
                     </div>
                 </article>
             @endforeach
@@ -163,13 +163,13 @@
     <x-slot:sidebar>
         <!-- Trending Widget (More Compact) -->
         <div class="relative">
-            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8 flex items-center gap-3">
-                <span class="w-1.5 h-1.5 bg-cyan-500 rounded-lg"></span>
-                Trending Topics
+            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-8 flex items-center gap-3">
+                <span class="w-1.5 h-1.5 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
+                {{ __('ui.trending_topics') }}
             </h3>
             <div class="flex flex-wrap gap-2">
                 @foreach($trendingTags ?? [] as $ttag)
-                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 rounded-lg text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-500 hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
+                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/5 rounded-lg text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-600 hover:text-cyan-600 dark:hover:border-cyan-500 dark:hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
                         #{{ $ttag->name }}
                     </a>
                 @endforeach
@@ -179,11 +179,11 @@
         <!-- Newsletter (Premium) -->
         <div class="p-8 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5">
             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
-            <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">AI Insights Weekly</h3>
-            <p class="text-slate-400 text-sm leading-relaxed mb-8 relative z-10">Get the most important tech updates directly to your inbox. No fluff, just value.</p>
+            <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">{{ __('ui.newsletter_title') }}</h3>
+            <p class="text-slate-300 dark:text-slate-400 text-sm leading-relaxed mb-8 relative z-10">{{ __('ui.newsletter_desc') }}</p>
             <form class="relative z-10 flex flex-col gap-4">
-                <input type="email" placeholder="Email address" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
-                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">Subscribe Now</button>
+                <input type="email" placeholder="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>
     </x-slot>

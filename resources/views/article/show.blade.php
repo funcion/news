@@ -29,20 +29,20 @@
 
     <article class="max-w-4xl">
         <!-- Breadcrumbs (Minimalist) -->
-        <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-10">
-            <a href="{{ url('/') }}" class="hover:text-cyan-500 transition-colors">Home</a>
-            <svg class="w-3 h-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-10">
+            <a href="{{ url('/') }}" class="hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors">{{ __('ui.home') }}</a>
+            <svg class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             @if($article->category)
-                <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($article->category->slug_es ?? $article->category->slug) : ($article->category->slug_en ?? $article->category->slug)) }}" class="hover:text-cyan-500 transition-colors">{{ $article->category->name }}</a>
-                <svg class="w-3 h-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($article->category->slug_es ?? $article->category->slug) : ($article->category->slug_en ?? $article->category->slug)) }}" class="hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors">{{ $article->category->name }}</a>
+                <svg class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             @endif
-            <span class="text-slate-300 dark:text-slate-600 truncate max-w-[150px]">Current Post</span>
+            <span class="text-slate-600 dark:text-slate-400 truncate max-w-[150px]">{{ __('ui.current_post') }}</span>
         </nav>
 
         <!-- Header Section (Impactful) -->
         <header class="mb-12">
             @if($article->category)
-                <span class="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-lg mb-6 leading-none">
+                <span class="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-lg mb-6 leading-none">
                     {{ $article->category->name }}
                 </span>
             @endif
@@ -50,23 +50,23 @@
                 {{ $article->title }}
             </h1>
             
-            <div class="flex items-center gap-6 border-y border-gray-100 dark:border-white/5 py-4">
+            <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-100 dark:border-white/10 shadow-sm">
+                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
-                         <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->author?->name ?? 'Reporter AI' }}</span>
+                         <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->author?->name ?? __('ui.reporter') }}</span>
                     </div>
                 </div>
-                <div class="h-6 w-px bg-gray-100 dark:bg-white/5 hidden sm:block"></div>
+                <div class="h-6 w-px bg-gray-200 dark:bg-white/5 hidden sm:block"></div>
                 <div class="flex items-center gap-4">
-                    <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                    <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">
                         {{ $article->published_at?->format('M d, Y') }}
                     </time>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest opacity-50">{{ $article->reading_time ?? 5 }} MIN READ</span>
+                    <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('ui.min_read', ['count' => $article->reading_time ?? 5]) }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <svg class="h-4 w-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> 
-                    <span class="font-bold text-gray-900 dark:text-gray-200">{{ number_format($article->views ?? 0) }} views</span>
+                    <svg class="h-4 w-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> 
+                    <span class="font-bold text-gray-900 dark:text-gray-200">{{ __('ui.views_count', ['count' => number_format($article->views ?? 0)]) }}</span>
                 </div>
             </div>
         </header>
@@ -96,14 +96,14 @@
         @endif
 
         <!-- Article Body -->
-        <div class="prose prose-xl prose-cyan dark:prose-invert max-w-none prose-headings:font-black prose-img:rounded-lg prose-a:text-cyan-500 hover:prose-a:text-cyan-600 dark:hover:prose-a:text-cyan-400 leading-relaxed text-gray-700 dark:text-gray-300">
+        <div class="prose prose-xl prose-cyan dark:prose-dark max-w-none prose-headings:font-black prose-img:rounded-lg prose-a:text-cyan-600 hover:prose-a:text-cyan-700 dark:prose-a:text-cyan-400 dark:hover:prose-a:text-cyan-300 leading-relaxed text-gray-700 dark:text-gray-300">
             {!! $article->content !!}
         </div>
 
         <!-- Social Share Bar (Moved to End) -->
-        <div class="mt-20 mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-100 dark:border-white/10 overflow-hidden relative">
+        <div class="mt-20 mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-200 dark:border-white/10 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 pointer-events-none"></div>
-            <h3 class="text-xl font-black text-gray-900 dark:text-white relative z-10">Share This Story</h3>
+            <h3 class="text-xl font-black text-gray-900 dark:text-white relative z-10">{{ __('ui.share_post') }}</h3>
             <div class="flex flex-wrap items-center justify-center gap-3 relative z-10">
                 @php
                     $platforms = [
@@ -129,8 +129,8 @@
             </div>
         </div>
 
-        <div class="mt-12 pt-10 border-t border-gray-100 dark:border-gray-800/50">
-            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-100 dark:border-white/5 relative overflow-hidden group">
+        <div class="mt-12 pt-10 border-t border-gray-200 dark:border-gray-800/50">
+            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
                     <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
@@ -138,11 +138,11 @@
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">
-                    <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-3 inline-block">Verified Author</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-700 dark:text-cyan-500 uppercase tracking-widest mb-3 inline-block">{{ __('ui.verified_author') }}</span>
                     <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
                         {{ $article->author?->name ?? 'AI Reporter' }}
                     </h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
                         {{ $article->author?->bio ?? 'Analyzing and curating the most relevant technology and artificial intelligence news.' }}
                     </p>
                 </div>
@@ -154,7 +154,7 @@
             <div class="mt-12 flex flex-wrap items-center gap-3 justify-start">
                 @foreach($article->tags as $atag)
                     <a href="{{ route('tags.show', $atag->slug) }}" 
-                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-100 dark:border-transparent">
+                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
                         #{{ $atag->name }}
                     </a>
                 @endforeach
@@ -166,9 +166,9 @@
         @if($relatedArticles->count() > 0)
             <div class="flex flex-col gap-8">
                 <div class="flex items-center gap-4 mb-2">
-                    <span class="w-8 h-1 bg-cyan-500 rounded-lg"></span>
-                    <h3 class="text-xs font-black tracking-widest uppercase text-gray-400 dark:text-gray-500">
-                        Recommended
+                    <span class="w-8 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
+                    <h3 class="text-xs font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
+                        {{ __('ui.recommended') }}
                     </h3>
                 </div>
                 
@@ -176,15 +176,15 @@
                     @foreach($relatedArticles as $related)
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $related->slug_es : $related->slug_en) }}" 
                            class="group flex gap-5 items-center">
-                            <div class="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm relative">
+                            <div class="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm relative">
                                 <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-500 transition-colors">
+                                <h4 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
                                     {{ $related->title }}
                                 </h4>
                                 <div class="mt-2 flex items-center gap-2">
-                                    <span class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{{ $related->published_at?->format('M d') }}</span>
+                                    <span class="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{{ $related->published_at?->format('M d') }}</span>
                                 </div>
                             </div>
                         </a>

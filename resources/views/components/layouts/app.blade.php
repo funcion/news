@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -106,8 +106,8 @@
                         </svg>
                     </div>
                     <div class="flex flex-col -gap-1">
-                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">Tech AI</span>
-                        <span class="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.2em] ml-0.5">Magazine</span>
+                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">{{ __('ui.tech_ai_magazine') }}</span>
+                        <span class="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.2em] ml-0.5">{{ __('Magazine') }}</span>
                     </div>
                 </a>
                 
@@ -117,13 +117,13 @@
                     <nav class="hidden lg:flex items-center gap-8">
                         <!-- Home Link -->
                         <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
-                            {{ __('Home') }}
+                            {{ __('ui.home') }}
                         </a>
                         
                         <!-- Categories Dropdown -->
                         <div class="relative group nav-item" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                             <button class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2">
-                                {{ __('Categories') }}
+                                {{ __('ui.categories') }}
                                 <svg class="w-4 h-4 transition-transform duration-200 dropdown-arrow" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -154,7 +154,7 @@
 
                         <!-- Latest News -->
                         <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
-                            {{ __('Latest News') }}
+                            {{ __('ui.latest_news') }}
                         </a>
                         
                         <div class="h-6 w-px bg-gray-200 dark:bg-white/10 mx-2"></div>
@@ -211,7 +211,7 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
-                            {{ __('Home') }}
+                            {{ __('ui.home') }}
                         </a>
                         
                         <!-- Categories Accordion -->
@@ -222,7 +222,7 @@
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
-                                    {{ __('Categories') }}
+                                    {{ __('ui.categories') }}
                                 </div>
                                 <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': categoriesOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -256,7 +256,7 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
-                            {{ __('Latest News') }}
+                            {{ __('ui.latest_news') }}
                         </a>
                         
                         <a href="#search" 
@@ -265,7 +265,7 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            {{ __('Search') }}
+                            {{ __('ui.search') }}
                         </a>
                         
                         <a href="#about" 
@@ -274,13 +274,13 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {{ __('About') }}
+                            {{ __('ui.about') }}
                         </a>
                     </div>
                     
                     <!-- Separador -->
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-4">
-                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{{ __('Preferences') }}</h3>
+                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{{ __('ui.preferences') }}</h3>
                         
                         <!-- Dark/Light Mode Toggle -->
                         <div class="flex items-center justify-between py-1">
@@ -288,7 +288,7 @@
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                                 </svg>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Theme') }}</span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ui.theme') }}</span>
                             </div>
                             <button @click="toggleDarkMode()" 
                                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-slate-700 transition-colors"
@@ -304,7 +304,7 @@
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                                 </svg>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Language') }}</span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('ui.language') }}</span>
                             </div>
                             
                             <div class="flex gap-3">
@@ -359,10 +359,10 @@
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-4">
                         <div class="text-center">
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ __('Tech AI Magazine') }} &copy; {{ date('Y') }}
+                                {{ __('ui.tech_ai_magazine') }} &copy; {{ date('Y') }}
                             </p>
                             <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-                                {{ __('100% AI-Generated News Platform') }}
+                                {{ __('ui.ai_generated_platform') }}
                             </p>
                     </div>
                 </div>
@@ -393,10 +393,10 @@
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="flex flex-col items-center gap-6">
                 <div class="flex items-center gap-2 opacity-40 grayscale pointer-events-none">
-                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">Tech AI</span>
+                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.tech_ai_magazine') }}</span>
                 </div>
                 <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] max-w-xs leading-relaxed">
-                    &copy; {{ date('Y') }} {{ config('app.name') }}. 100% AI-Generated News Platform.
+                    &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('ui.ai_generated_platform') }}
                 </p>
             </div>
         </div>
@@ -416,11 +416,11 @@
                 <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
             <div class="flex-1 min-w-0 relative z-10">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 dark:text-cyan-600 mb-1">New Update</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 dark:text-cyan-600 mb-1">{{ __('ui.new_update') }}</p>
                 <h4 x-text="latestTitle" class="text-sm font-bold truncate mb-3"></h4>
                 <div class="flex items-center gap-4">
-                    <button @click="window.location.reload()" class="text-[10px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors underline underline-offset-4 decoration-2">Read Now</button>
-                    <button @click="showBanner = false" class="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Dismiss</button>
+                    <button @click="window.location.reload()" class="text-[10px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors underline underline-offset-4 decoration-2">{{ __('ui.read_now') }}</button>
+                    <button @click="showBanner = false" class="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">{{ __('ui.dismiss') }}</button>
                 </div>
             </div>
         </div>
