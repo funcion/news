@@ -69,12 +69,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         if (!$author) {
             $author = Author::create([
-                'name'        => 'AI Reporter',
-                'slug'        => 'ai-reporter',
-                'type'        => 'ai',
+                'name'        => config('global.editorial.default_author.name'),
+                'slug'        => Str::slug(config('global.editorial.default_author.name')),
+                'type'        => 'staff',
                 'is_active'   => true,
-                'voice_style' => 'The Divulger',
-                'bio'         => 'AI optimized for tech news writing.',
+                'voice_style' => config('global.editorial.default_author.voice_style'),
+                'bio'         => ($classification['source_language'] ?? 'en') === 'es' 
+                                 ? config('global.editorial.default_author.bio.es') 
+                                 : config('global.editorial.default_author.bio.en'),
             ]);
         }
 
@@ -443,21 +445,20 @@ PROMPT;
             default => 'an automatically detected language',
         };
 
-        $wordTargets = [
-            'news'   => '1000-1500 words EN | 1000-1500 palabras ES',
-            'blog'   => '1500-2000 words EN | 1500-2000 palabras ES',
-            'guide'  => '1500-2500 words EN | 1500-2500 palabras ES',
-            'review' => '1500-3000 words EN | 1500-3000 palabras ES',
-            'pillar' => '2500-5000 words EN | 2500-5000 palabras ES',
-        ];
+        $wordTargets = config('global.editorial.word_targets');
         $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'];
 
 
+        $persona = config('global.editorial.persona');
+        $rules   = config('global.editorial.focus_rules');
+
         $prompt = <<<PROMPT
-You are a world-class bilingual Senior Print Journalist and elite SEO copywriter (15+ years experience) working for a premium tech publication.
+You are a {$persona}
 DATE: {$today} | TYPE: {$contentType} | TARGET LENGTH: {$wordTarget}
 SOURCE LANGUAGE OF THE RAW ARTICLE: {$sourceLangName} (ISO: {$sourceLang})
 TOPIC (key facts already translated to English): {$topic}
+
+IMPORTANT: {$rules}
 
 IMPORTANT: The raw source article may be in {$sourceLangName}. You must ALWAYS produce the final article in BOTH English AND Spanish. This is mandatory — never skip either language.
 
@@ -476,9 +477,10 @@ SEO - Google E-E-A-T (10/10 REQUIRED):
 - Slug: lowercase-hyphens-no-special-chars (max 6 words each).
 
 CONTENT ARCHITECTURE - Google Helpful Content:
-- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma", "en conclusión".
+- NO ERROR: {$rules}
+- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma", "en conclusión", "the digital landscape".
 - BURSTINESS: alternate short punchy sentences (3-5 words) with complex analytical ones.
-- STORYTELLING: Include 1 real or fictional micro-story/analogy per section to explain complex concepts cleanly.
+- ANALOGY: Use 1 existing real-world analogy to explain complex concepts, but never invent fictional stories.
 - Use: H2 headings to break logic, <strong> for key facts, <blockquote> for crucial quotes or insights, <ul> or <ol> for readability.
 
 ADA/WCAG 2.1 AAA ACCESSIBILITY:
