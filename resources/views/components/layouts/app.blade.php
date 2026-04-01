@@ -106,7 +106,7 @@
                         </svg>
                     </div>
                     <div class="flex flex-col -gap-1">
-                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">{{ __('ui.tech_ai_magazine') }}</span>
+                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
                         <span class="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.2em] ml-0.5">{{ __('Magazine') }}</span>
                     </div>
                 </a>
@@ -359,10 +359,7 @@
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-4">
                         <div class="text-center">
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ __('ui.tech_ai_magazine') }} &copy; {{ date('Y') }}
-                            </p>
-                            <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-                                {{ __('ui.ai_generated_platform') }}
+                                {{ __('ui.site_name') }} &copy; {{ date('Y') }}
                             </p>
                     </div>
                 </div>
@@ -393,10 +390,10 @@
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="flex flex-col items-center gap-6">
                 <div class="flex items-center gap-2 opacity-40 grayscale pointer-events-none">
-                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.tech_ai_magazine') }}</span>
+                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
                 </div>
                 <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] max-w-xs leading-relaxed">
-                    &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('ui.ai_generated_platform') }}
+                    &copy; {{ date('Y') }} {{ __('ui.site_name') }}
                 </p>
             </div>
         </div>

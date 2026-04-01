@@ -30,14 +30,14 @@ return [
     'browsing_category' => 'Browsing Category',
     'topic'             => 'Topic',
     'the_editorial'     => 'The Editorial',
-    'editorial_title'   => 'The Future of AI & Technology.',
-    'editorial_subtitle'=> 'Deep dives and real-time insights into the world of artificial intelligence, curated for the modern professional.',
+    'editorial_title'   => 'The Future of Tech & Innovation.',
+    'editorial_subtitle'=> config('global.tagline') . ': Deep analysis and real-time news on world-changing trends.',
     'archives_empty'    => 'Archives are empty',
     'expect_insights'   => 'Expect new insights very soon.',
     'trending_topics'   => 'Trending Topics',
 
     // Newsletter
-    'newsletter_title'  => 'AI Insights Weekly',
+    'newsletter_title'  => config('global.site_name') . ' Weekly',
     'newsletter_desc'   => 'Get the most important tech updates directly to your inbox. No fluff, just value.',
     'email_address'     => 'Email address',
     'subscribe_now'     => 'Subscribe Now',
@@ -57,6 +57,9 @@ return [
     'current_lang'  => 'English',
 
     // SEO defaults
-    'site_name'     => config('app.name', 'AI News'),
-    'meta_desc'     => 'The latest AI and technology news, curated and written by artificial intelligence.',
+    'site_name'     => config('global.site_name', 'Glodaxia'),
+    'meta_desc'     => 'The latest technology, innovation and global trends news, written by experts at ' . config('global.site_name') . '.',
+
+    // E-E-A-T & Transparency
+    'read_original_source' => 'Read original source',
 ];
