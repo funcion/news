@@ -80,18 +80,34 @@
 
         <!-- Main Featured Image -->
         @if($featuredMedia)
-            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
+            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
                 <img src="{{ $featuredMedia->getUrl('large') }}" 
                      srcset="{{ $featuredMedia->getSrcset('large') ?? ($featuredMedia->getUrl('thumb') . ' 480w, ' . $featuredMedia->getUrl('medium') . ' 800w, ' . $featuredMedia->getUrl('large') . ' 1200w') }}"
                      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px"
                      alt="{{ $article->image_alt ?? $article->title }}" 
                      title="{{ $article->title }}"
-                     class="w-full h-auto object-cover aspect-video"
+                     class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700"
                      loading="eager">
+                @if(config('global.features.show_ai_disclaimers'))
+                <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-white/90 flex items-center gap-1.5">
+                        <svg class="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        {{ __('ui.ai_generated_image') }}
+                    </span>
+                </div>
+                @endif
             </figure>
         @elseif($article->image_url)
-            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50">
-                <img src="{{ $article->image_url }}" alt="{{ $article->image_alt ?? $article->title }}" class="w-full h-auto object-cover aspect-video" loading="eager">
+            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
+                <img src="{{ $article->image_url }}" alt="{{ $article->image_alt ?? $article->title }}" class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700" loading="eager">
+                @if(config('global.features.show_ai_disclaimers'))
+                <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-white/90 flex items-center gap-1.5">
+                        <svg class="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        {{ __('ui.ai_generated_image') }}
+                    </span>
+                </div>
+                @endif
             </figure>
         @endif
 
@@ -143,7 +159,7 @@
                         {{ $article->author?->name ?? 'AI Reporter' }}
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
-                        {{ $article->author?->bio ?? 'Analyzing and curating the most relevant technology and artificial intelligence news.' }}
+                        {{ $article->author?->bio ?? 'Analizando y curando las noticias tecnológicas más relevantes del mundo.' }}
                     </p>
                 </div>
             </div>
@@ -160,6 +176,23 @@
                 @endforeach
             </div>
         @endif
+
+        <!-- Source & AI Disclosure -->
+        <div class="mt-16 pt-8 border-t border-gray-100 dark:border-white/5">
+            <p class="text-[10px] text-gray-400 dark:text-gray-500 italic mb-6 leading-relaxed max-w-2xl">
+                {{ __('ui.content_disclaimer') }}
+            </p>
+            
+            @if(!empty($article->ai_metadata['origin_url']))
+                <a href="{{ $article->ai_metadata['origin_url'] }}" target="_blank" rel="noopener noreferrer" 
+                   class="inline-flex items-center gap-3 bg-slate-100 dark:bg-white/5 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 group shadow-sm">
+                    <svg class="w-4 h-4 text-cyan-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    {{ __('ui.read_original_source') }}
+                </a>
+            @endif
+        </div>
     </article>
 
     <x-slot:sidebar>
