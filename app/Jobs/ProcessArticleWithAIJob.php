@@ -47,6 +47,23 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
+        // --- Guard against incomplete/failed previous attempts ---
+        $existing = Article::where('raw_article_id', $this->rawArticle->id)->first();
+        if ($existing) {
+            $contentEn = $existing->getTranslation('content', 'en');
+            $contentEs = $existing->getTranslation('content', 'es');
+            
+            if ($existing->status === 'published' && !empty($contentEn) && !empty($contentEs)) {
+                Log::warning("RawArticle {$this->rawArticle->id} has already been fully processed and published (Article {$existing->id}). Skipping.");
+                $this->rawArticle->update(['status' => 'processed']);
+                return;
+            }
+            
+            // If it exists but is incomplete (e.g. empty content or still draft), delete it so we can start fresh
+            Log::info("Found incomplete/failed Article {$existing->id} for RawArticle {$this->rawArticle->id}. Deleting to retry fresh.");
+            $existing->delete();
+        }
+
         $classification = $this->classifyAndExtract($ai);
 
         if ($classification === null) {
@@ -93,6 +110,15 @@ class ProcessArticleWithAIJob implements ShouldQueue
             throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
         }
 
+        // --- VALIDATE: Programmatic checks on AI output before creating Article ---
+        $validationErrors = $this->validateRedactedOutput($redacted);
+        if (!empty($validationErrors)) {
+            Log::warning("redactBilingual validation failed for RawArticle {$this->rawArticle->id}", $validationErrors);
+            throw new \RuntimeException(
+                "AI output failed validation: " . implode('; ', $validationErrors) . " (attempt {$this->attempts()})"
+            );
+        }
+
         // --- CLEANUP: Remove AI hallucinated image attributes from BOTH lang contents ---
         $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
         $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
@@ -123,9 +149,9 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->slug_es        = $slugEs;
         $article->author_id      = $author->id;
         $article->category_id    = $categoryId;
-        $article->status         = 'published';
+        $article->status         = 'draft'; // Keep as draft during processing so it is hidden from the public frontend until complete
         $article->published_at   = now();
-        $article->seo_score      = $redacted['seo_score'] ?? 85; 
+        $article->seo_score      = 85; // Static default — self-reported AI scores are unreliable, use Filament for manual override
         $article->meta_keywords  = $redacted['keywords'] ?? [];
         $article->reading_time   = $this->calculateReadingTime($contentEn);
         $article->ai_metadata    = [
@@ -293,6 +319,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
             $article->ai_metadata = $meta;
         }
 
+        $article->status = 'published'; // Set to published now that drafting and image injection is complete
         $article->save();
 
         // --- Generate Embedding ---
@@ -309,7 +336,11 @@ class ProcessArticleWithAIJob implements ShouldQueue
         
         // --- Publish Realtime Event ---
         if ($article->status === 'published' || $article->status === 'draft') {
-            event(new \App\Events\ArticlePublished($article));
+            try {
+                event(new \App\Events\ArticlePublished($article));
+            } catch (\Exception $e) {
+                Log::error("Realtime event broadcasting failed for Article {$article->id}: " . $e->getMessage());
+            }
         }
         
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
@@ -460,116 +491,152 @@ PROMPT;
         $rules   = config('global.editorial.focus_rules');
 
         $prompt = <<<PROMPT
-You are a {$persona}
-DATE: {$today} | TYPE: {$contentType} | TARGET LENGTH: {$wordTarget}
-SOURCE LANGUAGE OF THE RAW ARTICLE: {$sourceLangName} (ISO: {$sourceLang})
-TOPIC (key facts already translated to English): {$topic}
+You are a {$persona}. Your job: write a compelling, deeply human OPINION COLUMN.
 
-IMPORTANT: {$rules}
+DATE: {$today} | TYPE: {$contentType} | TARGET: {$wordTarget}
+SOURCE LANGUAGE: {$sourceLangName} (ISO: {$sourceLang})
+VERIFIED FACTS FROM SOURCE: {$topic}
 
-IMPORTANT: The raw source article may be in {$sourceLangName}. You must ALWAYS produce the final article in BOTH English AND Spanish. This is mandatory — never skip either language.
+NON-NEGOTIABLE: {$rules}
+NON-NEGOTIABLE: You MUST produce the final article in BOTH English AND Spanish.
 
-=== MANDATORY QUALITY STANDARDS ===
+═══ 1. VOICE & AUTHENTICITY (HIGHEST PRIORITY) ═══
 
-SEDUCTIVE COPYWRITING & INTRIGUE:
-- Craft magnetic headlines (title_en, title_es) that create an irresistible curiosity gap without being clickbait.
-- The first paragraph MUST start with a hook (a bold statement, a surprising stat, or a rhetorical question) that grabs the reader instantly.
-- Write like a seasoned tech journalist from Wired or The Verge. Use first-person plural ("we tested", "our industry") occasionally to show perspective. Inject a sense of realistic skepticism or genuine enthusiasm. NOT corporate tone.
+TAKE A CLEAR STANCE. Every column needs a thesis: is this overhyped? Dangerous? Quietly brilliant? Reckless? State it by paragraph 2. Commit fully. A columnist who hedges on everything is a columnist nobody reads. When claims from the source are unverified, flag them honestly ("reports suggest", "if confirmed") — but your analytical OPINION about those claims must still be sharp and decisive.
 
-OPINION COLUMN VOICE (CRITICAL — THIS IS NOT A PRESS RELEASE):
-- Write as if you ARE a respected tech columnist at The Verge, TechCrunch, or Wired with 15+ years of industry experience and a strong personal point of view.
-- You have a clear THESIS: a subjective opinion about whether the news is good, bad, dangerous, overhyped, or genuinely transformative. State it directly. Do not straddle the fence.
-- Use rhetorical devices: irony, sarcasm (when appropriate), direct addresses to the reader ("Look, we need to talk about..."), humor when it fits.
-- Express DOUBT when claims are unverified ("if the leaked specs are accurate"). Challenge PR spin. Question vague marketing language.
-- Weave in analogies from everyday life, pop culture, or historical events to explain complex tech — these make writing feel human, not algorithmic.
-- Reference real people (CEO names, engineers, researchers) and real moments (keynotes, incidents, lawsuits) to ground your opinions.
-- NEVER write in a neutral, encyclopedic tone. Every paragraph must carry your emotional temperature: excitement, skepticism, concern, amusement, urgency.
+MANDATORY ANCHORS OF REALITY & E-E-A-T (NON-NEGOTIABLE):
+- MANDATORY UNCERTAINTY: Include EXACTLY ONE sentence in each language version where the author admits uncertainty, a limitation of their argument, or a confession of doubt. Example: "Look, I could be wrong about the timeline. Maybe the Jevons paradox doesn't apply cleanly to software labor. But..." This humanizes the text (AIs never admit doubt).
+- MANDATORY EXTERNAL SOURCES: Include at least 3 to 5 real, verifiable external sources with contextual links in both languages (e.g., "according to Stack Overflow's 2024 survey [LINK]", "as a Microsoft Research study found [LINK]", "based on the GitHub Octoverse report [LINK]"). Use real studies and actual URLs (never fabricate URLs or sources).
+- MANDATORY PERSONAL EXPERIENCE: Write from a first-person perspective ("I", "we") that includes ONE specific personal/professional experience (e.g., "I've been using Cursor daily since Q3 2024 and here's what I've learned...", "When pairing with a junior developer María last month..."). If no real experience exists in the raw article context, frame it as a direct professional observation.
 
-OPINION COLUMN STRUCTURE (MANDATORY):
-1. GANCHO (Hook): A recent fact — a launch, a law, a tech failure, a surprising statement. 1-2 sentences MAX. Dark, punchy, or surprising.
-2. TESIS (Thesis): Your clear, opinionated stance on WHY this fact matters. "This is the most overhyped product of the year." or "We might be witnessing the beginning of the end for [X]." State your verdict early.
-3. CONTEXTO (Context): Data, industry history, or trends that ARM your argument. Cite real numbers when possible. Contradict competitor claims. Reference how we got here.
-4. CUERPO (Body): 2-3 analytical sections with H2 headings. Each section advances your thesis with evidence, analogies, and expert reasoning.
-5. CIERRE (Closing): A warning, prediction, or call to action. End with a sentence that echoes in the reader's mind — something they'd quote to a friend.
+WRITE WITH GENUINE PERSONALITY:
+- Use contractions naturally: "don't", "isn't", "we've", "they're"
+- Use em dashes — like this — for dramatic asides or mid-thought clarifications
+- Allow yourself strong adjectives: "reckless", "lazy", "alarming", "brilliant" — not safe ones like "interesting" or "notable"
+- Vary sentence rhythm organically. A short punch. Then a longer analytical sentence that unpacks the implications with genuine nuance, subordinate clauses, and informed context.
+- Vary paragraph lengths naturally: include at least ONE very short paragraph (1 sentence, 5-10 words) for high rhetorical punch, and at least ONE long paragraph (6-8 sentences) in both language contents.
+- Occasionally address the reader directly when it serves the argument
+- Weave in 1 real-world analogy (historical event, pop culture, everyday life) to explain a complex concept — never invent fictional scenarios
+- Challenge PR spin and vague marketing language with specific counter-evidence
 
-TONE CALIBRATION:
-- Write in FIRST PERSON OCCASIONALLY ("I've tested dozens of similar tools", "We covered this exact scenario last year") to create human presence.
-- Use CONTRACTIONS naturally: "don't", "isn't", "we've", "they're" — this signals human writing.
-- Mix sentence lengths ORGANICALLY. A 5-word punch ("Nobody saw this coming.") followed by a 40-word analytical sentence with subordinate clauses.
-- Use EM DASHES (—) for dramatic asides. Use PARENTHESES sparingly for witty parentheticals.
-- Allow yourself to use STRONG ADJECTIVES: "reckless", "brilliant", "lazy", "alarming" — not neutral ones like "interesting" or "notable".
+═══ 2. ANTI-AI DETECTION PATTERNS (CRITICAL) ═══
 
-HUMAN FINGERPRINTS TO INCLUDE (pick 2-3 per article):
-- A personal anecdote or hypothetical ("Last week I was talking to a developer who...")
-- A direct reader question ("Remember when [X] promised the same thing?")
-- Industry insider knowledge ("Between you and me, the real story is...")
-- Admitting uncertainty ("I'm not 100% sure about this, but...")
-- Pop culture reference ("This feels like the Theranos playbook all over again.")
-- Contrarian take ("Here's the thing nobody in the press release is saying...")
+These are the structural tells that flag machine-generated text. NEVER DO THEM:
+- Open mid-article paragraphs with rhetorical questions ("But what does this mean for X?")
+- Use balanced "on one hand / on the other hand" framing in every section
+- Start 3+ consecutive sentences with identical syntactic pattern (Subject-Verb-Object)
+- End sections with hollow wrap-up lines ("This will certainly be worth watching", "Only time will tell")
+- Chain 3+ consecutive single-sentence paragraphs for artificial dramatic effect
+- Repeat the same analogy or metaphor twice in one article
+- Start an article with a sweeping generalization about "the state of" or "in today's rapidly evolving"
 
-SEO - Google E-E-A-T (10/10 REQUIRED):
-- Primary keyword in title (first 60 chars), first paragraph, at least 2 H2s, meta description.
-- Use semantic LSI keywords naturally throughout.
-- Title EN and ES: max 60 chars each.
-- Excerpt/meta description EN and ES: persuasive, max 155 chars each. Formulate them as a teaser.
-- Slug: lowercase-hyphens-no-special-chars (max 6 words each).
+BLOCKED PHRASES (AI fingerprints — using ANY of these fails the article):
+EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "trajectory points toward", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "raises important questions", "a bold step forward", "double-edged sword", "the implications are profound", "a testament to"
+ES: "cambio de paradigma", "en conclusión", "sin lugar a dudas", "cabe destacar", "queda por ver", "un arma de doble filo", "marca un antes y un después", "las implicaciones son profundas"
 
-CONTENT ARCHITECTURE - Google Helpful Content:
-- NO ERROR: {$rules}
-- NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma", "en conclusión", "the digital landscape".
-- BURSTINESS: Alternate short punchy sentences with complex analytical ones. BUT: NEVER chain more than two ultra-short sentences back-to-back. Sentences must vary ORGANICALLY in length — mix a 5-word sentence with a 25-word one using commas, connectors ("although", "meanwhile", "however"). Avoid mechanical SVO repetition (Subject-Verb-Object with identical 4-6 word structure 3+ times in a row).
-- ROBOTIC TRANSITIONS FORBIDDEN: NEVER start a mid-paragraph with a rhetorical question like "How does X become Y?" or "What does this mean for Z?". Humans rarely open intermediate paragraphs with textbook rhetorical questions. Use direct statements, quotes, or anecdotes instead.
-- AI VOCABULARY BLOCKLIST: NEVER use "democratization of", "inflection point", "trajectory points toward", "high-fidelity", "unprecedented scale", "seamlessly integrate", "robust ecosystem". These are AI fingerprint words that delatate machine authorship.
-- ANALOGY: Use 1 existing real-world analogy to explain complex concepts, but never invent fictional stories.
-- Use: H2 headings to break logic, <strong> for key facts, <blockquote> for crucial quotes or insights, <ul> or <ol> for readability.
+═══ 3. ARTICLE STRUCTURE ═══
 
-ADA/WCAG 2.1 AAA ACCESSIBILITY:
-- IMAGES: Place [IMAGE_1] ONLY for the meta-data/featured image. DO NOT use [IMAGE_1] inside content_en or content_es.
-- INTERIOR IMAGES: Use [IMAGE_2], [IMAGE_3], etc., for images within the article body. Always place them on their own line.
-- ALT TEXT: All image alt texts MUST be descriptive but CONCISE (maximum 150 characters). Do not exceed this limit.
-- Use semantic HTML strictly: h2, h3, p, ul, ol, blockquote, strong. Don't use bold just for styling.
- 
-IMAGERY - FLUX.1 Ultra-Realism:
-- Generate 3 to 5 photorealistic image prompts.
-- [IMAGE_1] will be the Hero/Featured image. [IMAGE_2] and further will be inside the text.
-- If humans appear: add "hyper-realistic skin textures, pores, authentic facial expression, natural lighting, 35mm DSLR Nikon D850, 8k resolution, cinematic composition, no text".
+1. HOOK (1-2 sentences): A specific, concrete fact — a number, a launch date, a CEO quote, a technical failure. Not a vague observation.
+2. THESIS (paragraph 2): Your clear, opinionated stance on why this fact matters. State it directly.
+3. BODY (2-3 sections with H2 headings): Each section advances your argument. You MUST alternate your text blocks with structural image tokens. A section cannot contain more than two consecutive paragraphs without being separated by an `[IMAGE_N]` token on its own standalone line. Use <strong> for key data points, <blockquote> for critical insights or notable quotes, <ul>/<ol> for scannable information.
+4. CLOSE (1 paragraph): A prediction, warning, or provocation. End with a sentence the reader would quote to a colleague.
 
-SELF-EVALUATION:
-- Provide an unbiased SEO Score (1-100) based on your execution of keyword placement, readability, and structural optimization.
+ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>. NEVER use <h1>, <h3>, <h4>, <div>, <span>, or markdown bold (**) inside the HTML content strings.
 
-=== OUTPUT: STRICT JSON ONLY (no markdown, no text outside JSON) ===
+═══ 4. SEO & E-E-A-T ═══
+
+- Title: max 60 chars, primary keyword naturally integrated. Must spark genuine curiosity.
+- Meta title: max 70 chars, SEO-optimized variant of the title.
+- Excerpt: max 155 chars, a teaser that creates urgency — not a summary.
+- Slug: lowercase-hyphenated, max 6 words.
+- Primary keyword must appear in: title, first paragraph, at least 1 H2, and excerpt.
+- Weave semantic LSI keywords naturally. Never stuff.
+- Schema.org JSON-LD: NewsArticle with accurate date, real author name, and description.
+
+═══ 5. IMAGE PLACEMENT (CRITICAL — READ CAREFULLY) ═══
+
+Generate 3 to 5 photorealistic image prompts (FLUX.1 style: 35mm DSLR Nikon D850, cinematic natural lighting, shallow depth of field, 8k resolution, hyper-realistic, no text overlay, no watermark).
+
+- [IMAGE_1] = Hero/featured image ONLY. Do NOT place [IMAGE_1] inside content_en or content_es.
+- [IMAGE_2], [IMAGE_3], etc. = Interior images. You MUST place the literal string token (e.g., [IMAGE_2]) on its OWN STANDALONE LINE between paragraphs. NEVER replace the token with the caption text or a quote inside the content_en/content_es strings. The token string must appear raw and intact so the backend parser can replace it. Never embed them inside a <p> tag. Never skip them.
+- SYNCHRONIZATION RULE: Every [IMAGE_N] token placed in content_en/content_es MUST have a corresponding object in the "image_prompts" array with the exact same "id". Never place an image token without its prompt object. Never generate a prompt object without using its token in the text.
+- Alt text: descriptive and concise, max 125 characters each.
+- If humans appear in the image: add "hyper-realistic skin textures, authentic facial expression" to the prompt.
+
+═══ 6. BILINGUAL REQUIREMENT ═══
+
+The Spanish version must NOT be a literal translation. It must read as if a native Spanish-speaking columnist wrote it independently — with natural phrasing, idiomatic expressions, and equivalent rhetorical impact. Both versions must feel like premium journalism.
+
+═══ OUTPUT: STRICT JSON ONLY (no markdown fences, no commentary, no text outside the JSON object) ═══
+
+CRITICAL JSON FORMATTING RULES:
+1. Inside HTML content strings, use single quotes (') for speech or attribute quotes. NEVER use unescaped double quotes (") inside text values — they break JSON parsing.
+2. Use literal "\n" for newlines inside content strings. Do NOT insert actual line breaks inside a JSON string value.
+3. Only use the allowed HTML tags listed above (<p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>).
+4. Every interior image token must be isolated like this: `\n\n[IMAGE_2]\n\n` inside the HTML content string. Do not append text or caption sentences to that line.
+
 {
-    "title_en": "Compelling, curiosity-inducing English title (max 60 chars)",
-    "title_es": "Titulo persuasivo y magnetico en Espanol (max 60 chars)",
-    "slug_en": "english-seo-slug-max-6-words",
-    "slug_es": "slug-seo-espanol-max-6-palabras",
-    "excerpt_en": "Persuasive English teaser meta description (max 155 chars)",
-    "excerpt_es": "Teaser meta descripcion persuasiva en Espanol (max 155 chars)",
-    "keywords": ["primary keyword", "secondary kw", "lsi kw 1", "lsi kw 2"],
-    "seo_score": 95,
-    "content_en": "<p>Magnetic hook paragraph.</p><p>Full English HTML article. Place [IMAGE_1] on its own line between paragraphs.</p>",
-    "content_es": "<p>Parrafo gancho magnetico.</p><p>Cuerpo del articulo en Espanol HTML. Coloca [IMAGE_1] en su propia linea entre parrafos.</p>",
+    "title_en": "Punchy headline with primary keyword (max 60 chars)",
+    "title_es": "Titular magnetico con palabra clave (max 60 chars)",
+    "slug_en": "seo-slug-max-six-words",
+    "slug_es": "slug-seo-espanol-max-seis",
+    "excerpt_en": "Compelling teaser, not a summary (max 155 chars)",
+    "excerpt_es": "Teaser persuasivo, no un resumen (max 155 chars)",
+    "meta_title_en": "SEO optimized title variant (max 70 chars)",
+    "meta_title_es": "Titulo optimizado SEO variante (max 70 chars)",
+    "keywords": ["primary keyword", "secondary kw", "lsi term 1", "lsi term 2"],
+    "content_en": "<p>Concrete hook grounded in a specific fact from the source.</p>\n<p>Your thesis stated directly and decisively.</p>\n<h2>First Analytical Section</h2>\n<p>Evidence, context, and reasoning that advances the argument...</p>\n<p>Continued analysis with data points and industry comparison...</p>\n[IMAGE_2]\n<p>Deeper exploration after the image, building on the visual context...</p>\n<h2>Second Section with Different Angle</h2>\n<p>Further argument development with counter-evidence or historical parallel...</p>\n[IMAGE_3]\n<p>Analysis connecting this section to the broader thesis...</p>\n<h2>What This Actually Means</h2>\n<p>Implications grounded in evidence, not speculation...</p>\n<p>Closing paragraph with a memorable, quotable final sentence.</p>",
+    "content_es": "<p>Gancho concreto basado en un hecho especifico de la fuente.</p>\n<p>Tu tesis expresada de forma directa y decidida.</p>\n<h2>Primera Seccion Analitica</h2>\n<p>Evidencia, contexto y razonamiento que avanza el argumento...</p>\n<p>Analisis continuado con datos y comparacion de industria...</p>\n[IMAGE_2]\n<p>Exploracion mas profunda despues de la imagen...</p>\n<h2>Segunda Seccion con Angulo Diferente</h2>\n<p>Desarrollo del argumento con contra-evidencia o paralelo historico...</p>\n[IMAGE_3]\n<p>Analisis conectando esta seccion con la tesis general...</p>\n<h2>Lo Que Esto Realmente Significa</h2>\n<p>Implicaciones basadas en evidencia, no especulacion...</p>\n<p>Parrafo de cierre con una frase memorable y citable.</p>",
     "image_prompts": [
         {
             "id": "[IMAGE_1]",
-            "prompt_en": "Photojournalistic style, [specific scene], cinematic lighting, 35mm lens, 8k, no text.",
-            "alt_en": "Vivid descriptive alt text for screen readers in English",
-            "alt_es": "Texto alt descriptivo vivido para lectores de pantalla en Espanol",
-            "caption_en": "Informative and engaging English caption",
-            "caption_es": "Leyenda informativa y persuasiva en Espanol",
-            "title_en": "SEO Keyword image title in English (max 70 chars)",
-            "title_es": "Titulo SEO imagen en Espanol (max 70 chars)"
+            "prompt_en": "Photojournalistic style, [specific visual scene directly related to the article topic], shot on 35mm Nikon D850, cinematic natural lighting, shallow depth of field, 8k resolution, no text overlay, no watermark",
+            "alt_en": "Descriptive alt text (max 125 chars)",
+            "alt_es": "Texto alt descriptivo (max 125 chars)",
+            "caption_en": "Caption connecting the image to the article context",
+            "caption_es": "Leyenda conectando la imagen con el contexto del articulo",
+            "title_en": "SEO image title (max 70 chars)",
+            "title_es": "Titulo SEO de imagen (max 70 chars)"
+        },
+        {
+            "id": "[IMAGE_2]",
+            "prompt_en": "Photojournalistic style, [different scene supporting the argument], 35mm lens, natural lighting, 8k, no text",
+            "alt_en": "Alt text (max 125 chars)",
+            "alt_es": "Texto alt (max 125 chars)",
+            "caption_en": "Contextual caption",
+            "caption_es": "Leyenda contextual",
+            "title_en": "Image title (max 70 chars)",
+            "title_es": "Titulo imagen (max 70 chars)"
+        },
+        {
+            "id": "[IMAGE_3]",
+            "prompt_en": "Photojournalistic style, [third visual angle on the topic], 35mm lens, cinematic composition, 8k, no text",
+            "alt_en": "Alt text (max 125 chars)",
+            "alt_es": "Texto alt (max 125 chars)",
+            "caption_en": "Contextual caption",
+            "caption_es": "Leyenda contextual",
+            "title_en": "Image title (max 70 chars)",
+            "title_es": "Titulo imagen (max 70 chars)"
         }
     ],
     "json_ld": {
         "@context": "https://schema.org",
         "@type": "NewsArticle",
-        "headline": "English title here",
+        "headline": "Same as title_en",
         "datePublished": "{$today}",
         "author": {"@type": "Person", "name": "{$author->name}"},
-        "description": "English meta description"
+        "description": "Same as excerpt_en"
     }
 }
+
+FINAL SELF-CHECK (verify ALL before outputting):
+1. Every [IMAGE_N] (N>=2) appears on its OWN LINE in BOTH content_en AND content_es
+2. [IMAGE_1] does NOT appear anywhere inside content_en or content_es
+3. Date used is EXACTLY: {$today}
+4. Zero fabricated quotes, conversations, or personal experiences
+5. Zero phrases from the BLOCKED PHRASES list above
+6. Spanish reads as native writing, not as a translation
+7. Title is max 60 chars | Excerpt is max 155 chars | Slug is max 6 words
 PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
@@ -598,10 +665,11 @@ PROMPT;
         if (!$json) return null;
 
         // Remove <think> blocks (reasoning models like DeepSeek R1, Qwen3)
-        $clean = preg_replace('~</think>.*?</think>~s', '', $json);
+        $clean = preg_replace('~<think>.*?</think>~s', '', $json);
 
-        // Remove markdown code fences
-        $clean = preg_replace('/```json|```/', '', $clean);
+        // Remove markdown code fences (multiline-safe)
+        $clean = preg_replace('~^```json\s*|\s*```$~m', '', $clean);
+        $clean = preg_replace('~^```\s*|\s*```$~m', '', $clean);
 
         // Extract only the JSON portion between first { and last }
         $start = strpos($clean, '{');
@@ -613,10 +681,119 @@ PROMPT;
         $clean = substr($clean, $start, $end - $start + 1);
 
         $result = json_decode(trim($clean), true);
-        if (!$result) {
-            Log::warning("parseJson: JSON decode failed", ['error' => json_last_error_msg(), 'raw' => substr($clean, 0, 300)]);
+
+        // If still failing, attempt repair of common AI JSON mistakes
+        if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
+            Log::warning("parseJson: initial decode failed, attempting repair", [
+                'error' => json_last_error_msg(),
+                'preview' => substr($clean, 0, 500),
+            ]);
+
+            $repaired = $clean;
+
+            // 1. Escape unescaped control characters (newlines, tabs) inside string literals
+            $repaired = preg_replace_callback('/"(?:[^"\\\\]|\\\\.)*"/s', function ($matches) {
+                $str = $matches[0];
+                $inner = substr($str, 1, -1);
+                // Replace actual raw carriage returns and newlines with literal "\n"
+                $inner = str_replace(["\r\n", "\r", "\n"], '\n', $inner);
+                // Replace raw tabs with literal "\t"
+                $inner = str_replace("\t", '\t', $inner);
+                return '"' . $inner . '"';
+            }, $repaired);
+
+            // 2. Fix trailing commas before closing braces/brackets
+            $repaired = preg_replace('/,\s*}/', '}', $repaired);
+            $repaired = preg_replace('/,\s*]/', ']', $repaired);
+
+            $result = json_decode(trim($repaired), true);
+
+            if ($result) {
+                Log::info("parseJson: repair succeeded");
+            } else {
+                Log::warning("parseJson: JSON decode failed after repair", [
+                    'error' => json_last_error_msg(),
+                    'raw' => substr($repaired, 0, 500),
+                ]);
+            }
         }
+
         return $result ?: null;
+    }
+
+    /**
+     * Programmatic validation of AI-generated content.
+     * Returns empty array if valid, or array of error messages.
+     */
+    protected function validateRedactedOutput(array $data): array
+    {
+        $errors = [];
+
+        $contentEn = $data['content_en'] ?? '';
+        $contentEs = $data['content_es'] ?? '';
+
+        // 1. [IMAGE_1] must NOT appear inside content
+        if (str_contains($contentEn, '[IMAGE_1]')) {
+            $errors[] = '[IMAGE_1] found inside content_en (should only be in image_prompts)';
+        }
+        if (str_contains($contentEs, '[IMAGE_1]')) {
+            $errors[] = '[IMAGE_1] found inside content_es (should only be in image_prompts)';
+        }
+
+        // 2. Every [IMAGE_N] in content must have a matching image_prompts entry
+        $promptIds = collect($data['image_prompts'] ?? [])->pluck('id')->toArray();
+        preg_match_all('/\[IMAGE_(\d+)\]/', $contentEn, $matchesEn);
+        foreach ($matchesEn[0] ?? [] as $token) {
+            if (!in_array($token, $promptIds)) {
+                $errors[] = "Token {$token} in content_en has no matching image_prompts entry";
+            }
+        }
+
+        // 3. Image tokens in EN must also exist in ES (synchronized placement)
+        foreach ($matchesEn[0] ?? [] as $token) {
+            if (!str_contains($contentEs, $token)) {
+                $errors[] = "Token {$token} exists in content_en but missing from content_es";
+            }
+        }
+
+        // 4. Must have image_prompts with at least [IMAGE_1]
+        if (!in_array('[IMAGE_1]', $promptIds)) {
+            $errors[] = 'Missing [IMAGE_1] in image_prompts array (hero image required)';
+        }
+
+        // 5. Title length check
+        if (mb_strlen($data['title_en'] ?? '') > 80) {
+            $errors[] = 'title_en exceeds 80 characters';
+        }
+        if (mb_strlen($data['title_es'] ?? '') > 80) {
+            $errors[] = 'title_es exceeds 80 characters';
+        }
+
+        // 6. Content must not be empty
+        if (strlen(strip_tags($contentEn)) < 200) {
+            $errors[] = 'content_en is too short (less than 200 chars stripped)';
+        }
+        if (strlen(strip_tags($contentEs)) < 200) {
+            $errors[] = 'content_es is too short (less than 200 chars stripped)';
+        }
+
+        // 7. Check for blocked AI-fingerprint phrases
+        $blockedPhrases = [
+            'paradigm shift', 'game-changer', 'revolutionary', 'democratization of',
+            'inflection point', 'unprecedented scale', 'seamlessly integrate',
+            'robust ecosystem', 'the digital landscape', 'it remains to be seen',
+            'only time will tell', 'it\'s worth noting', 'in today\'s rapidly evolving',
+            'raises important questions', 'the implications are profound',
+        ];
+        $contentEnLower = strtolower($contentEn);
+        foreach ($blockedPhrases as $phrase) {
+            if (str_contains($contentEnLower, $phrase)) {
+                $errors[] = "Blocked AI-fingerprint phrase detected in content_en: '{$phrase}'";
+                break; // One is enough to flag
+            }
+        }
+
+        return $errors;
     }
 
     protected function calculateReadingTime(string $content): int
