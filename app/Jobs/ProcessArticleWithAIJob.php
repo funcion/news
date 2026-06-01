@@ -32,6 +32,13 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
     public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker): void
     {
+        // Guard: require API key before processing
+        if (empty(config('openai.api_key')) && empty(env('OPENROUTER_API_KEY'))) {
+            Log::error("ProcessArticleWithAIJob: OPENROUTER_API_KEY is not set. Pausing job until configured.");
+            $this->release(300); // retry in 5 minutes
+            return;
+        }
+
         $today = now()->format('l, F j, Y');
         Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
 

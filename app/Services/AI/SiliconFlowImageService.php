@@ -10,17 +10,17 @@ use Intervention\Image\Facades\Image;
 
 class SiliconFlowImageService
 {
-    protected string $apiKey;
+    protected string $apiKey = '';
     protected string $model;
     protected string $apiUrl = 'https://api.siliconflow.com/v1/images/generations';
 
     public function __construct()
     {
-        $this->apiKey = env('SILICONFLOW_API_KEY');
+        $this->apiKey = env('SILICONFLOW_API_KEY', '');
         $this->model = env('SILICONFLOW_IMAGE_MODEL', 'black-forest-labs/FLUX.1-schnell');
 
         if (empty($this->apiKey)) {
-            Log::error("SiliconFlow API Key is missing in .env (SILICONFLOW_API_KEY)");
+            Log::warning("SiliconFlow API Key is missing in .env (SILICONFLOW_API_KEY) — image generation will be disabled for this job.");
         }
     }
 

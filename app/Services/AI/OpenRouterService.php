@@ -12,7 +12,7 @@ class OpenRouterService
 
     public function __construct()
     {
-        $this->apiKey = env('OPENROUTER_API_KEY');
+        $this->apiKey = env('OPENROUTER_API_KEY', '');
         $this->baseUrl = env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1');
     }
 

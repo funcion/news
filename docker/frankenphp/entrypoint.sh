@@ -1,6 +1,19 @@
 #!/bin/bash
 set -e
 
+# Asegurar symlink correcto para storage (Sirve Media Library)
+if [ ! -L /app/public/storage ]; then
+    ln -sfn ../storage/app/public /app/public/storage
+    echo "Created storage symlink"
+else
+    # Verificar que no sea un symlink roto
+    if [ ! -d /app/public/storage/ ]; then
+        rm -f /app/public/storage
+        ln -sfn ../storage/app/public /app/public/storage
+        echo "Repaired storage symlink"
+    fi
+fi
+
 # Configurar permisos
 chown -R www-data:www-data /app/storage /app/bootstrap/cache
 chmod -R 775 /app/storage /app/bootstrap/cache
