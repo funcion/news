@@ -110,22 +110,32 @@ class OpenRouterService
      * ═══════════════════════════════════════════════════════════════════
      */
 
-    // --- Google ---
-    // public const MODEL_ACTIVE = 'google/gemini-2.5-flash';    // Rápido, barato (DEFAULT)
-    // public const MODEL_ACTIVE = 'google/gemini-2.5-pro';      // Más inteligente
-
-    // --- Xiaomi ---
-    // public const MODEL_ACTIVE = 'xiaomi/mimo-v2.5-pro';       // Xiaomi MiMo v2.5 Pro
-
-    // --- Qwen (Alibaba) ---
-    // public const MODEL_ACTIVE = 'qwen/qwen3-235b-a22b';      // Qwen3 235B
-
-    // --- DeepSeek ---
-    // public const MODEL_ACTIVE = 'deepseek/deepseek-chat-v4-0324';  // DeepSeek V4 Flash
-    // public const MODEL_ACTIVE = 'deepseek/deepseek-r1-0528';       // DeepSeek V4 Pro / R1
-
-    // ═══════════════════════════════════════════════════════════════════
-    //  >>> MODELO ACTIVO (descomenta otro arriba, comenta éste) <<<
-    // ═══════════════════════════════════════════════════════════════════
-    public const MODEL_ACTIVE = 'google/gemini-2.5-flash';
+    /**
+     * ═══════════════════════════════════════════════════════════════════
+     *  MODELOS DISPONIBLES PARA EL PIPELINE DE REDACCIÓN
+     * ═══════════════════════════════════════════════════════════════════
+     *
+     *  Para cambiar de modelo: edita MODEL_ACTIVE abajo.
+     *  Copia el string del modelo que quieras usar.
+     *
+     *  Modelos:
+     *  ─────────────────────────────────────────────────────────────────
+     *  google/gemini-2.5-flash        Rápido, barato (default)
+     *  google/gemini-2.5-pro          Más inteligente
+     *  deepseek/deepseek-v4-flash     DeepSeek V4 Flash (barato)
+     *  deepseek/deepseek-v4-pro       DeepSeek V4 Pro (más potente)
+     *  qwen/qwen3.6-plus              Qwen 3.6 Plus (Alibaba)
+     *  minimax/minimax-m2.7           MiniMax M2.7
+     *  ─────────────────────────────────────────────────────────────────
+     *
+     *  URLs de referencia:
+     *  https://openrouter.ai/google/gemini-2.5-flash
+     *  https://openrouter.ai/google/gemini-2.5-pro
+     *  https://openrouter.ai/deepseek/deepseek-v4-flash
+     *  https://openrouter.ai/deepseek/deepseek-v4-pro
+     *  https://openrouter.ai/qwen/qwen3.6-plus
+     *  https://openrouter.ai/minimax/minimax-m2.7
+     * ═══════════════════════════════════════════════════════════════════
+     */
+    public const MODEL_ACTIVE = 'qwen/qwen3.6-plus  ';
 }
