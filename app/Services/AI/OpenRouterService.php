@@ -104,56 +104,34 @@ class OpenRouterService
      *  MODELOS DISPONIBLES PARA EL PIPELINE DE REDACCIÓN
      * ═══════════════════════════════════════════════════════════════════
      *
-     *  Para cambiar de modelo, comenta/descomenta la línea
-     *  MODEL_ACTIVE en la sección de abajo.
+     *  Para cambiar de modelo, edita MODEL_ACTIVE abajo.
+     *  Copia el string del modelo que quieras usar.
      *
-     *  Solo UNA línea MODEL_ACTIVE debe estar activa.
      * ═══════════════════════════════════════════════════════════════════
      */
 
     // --- Google ---
-    public const MODEL_GEMINI_25_FLASH  = 'google/gemini-2.5-flash';
-    public const MODEL_GEMINI_25_PRO    = 'google/gemini-2.5-pro';
+    // public const MODEL_ACTIVE = 'google/gemini-2.5-flash';    // Rápido, barato (DEFAULT)
+    // public const MODEL_ACTIVE = 'google/gemini-2.5-pro';      // Más inteligente
 
     // --- Xiaomi ---
-    public const MODEL_XIAOMI_V25_PRO   = 'xiaomi/mimo-v2.5-pro';
+    // public const MODEL_ACTIVE = 'xiaomi/mimo-v2.5-pro';       // Xiaomi MiMo v2.5 Pro
 
     // --- Qwen (Alibaba) ---
-    public const MODEL_QWEN3_PLUS       = 'qwen/qwen3-235b-a22b';
+    // public const MODEL_ACTIVE = 'qwen/qwen3-235b-a22b';      // Qwen3 235B
 
     // --- DeepSeek ---
-    public const MODEL_DEEPSEEK_V4_FLASH = 'deepseek/deepseek-chat-v4-0324';
-    public const MODEL_DEEPSEEK_V4_PRO   = 'deepseek/deepseek-r1-0528';
-
-    // --- OpenAI ---
-    public const MODEL_GPT_41           = 'openai/gpt-4.1';
-    public const MODEL_GPT_41_MINI      = 'openai/gpt-4.1-mini';
-    public const MODEL_O3               = 'openai/o3';
-
-    // --- Anthropic ---
-    public const MODEL_CLAUDE_SONNET4   = 'anthropic/claude-sonnet-4';
-    public const MODEL_CLAUDE_HAIKU     = 'anthropic/claude-3.5-haiku';
+    // public const MODEL_ACTIVE = 'deepseek/deepseek-chat-v4-0324';  // DeepSeek V4 Flash
+    // public const MODEL_ACTIVE = 'deepseek/deepseek-r1-0528';       // DeepSeek V4 Pro / R1
 
     // ═══════════════════════════════════════════════════════════════════
-    //  >>> MODELO ACTIVO — Comenta/descomenta para cambiar <<<
+    //  >>> MODELO ACTIVO (descomenta otro arriba, comenta éste) <<<
     // ═══════════════════════════════════════════════════════════════════
-
-    public const MODEL_ACTIVE =
-        // self::MODEL_GEMINI_25_FLASH     // Google Gemini 2.5 Flash (rápido, barato)
-        // self::MODEL_GEMINI_25_PRO        // Google Gemini 2.5 Pro (más inteligente)
-        // self::MODEL_XIAOMI_V25_PRO        // Xiaomi MiMo v2.5 Pro
-        // self::MODEL_QWEN3_PLUS            // Qwen3 235B (Alibaba)
-        // self::MODEL_DEEPSEEK_V4_FLASH     // DeepSeek V4 Flash
-        // self::MODEL_DEEPSEEK_V4_PRO       // DeepSeek V4 Pro / R1
-        // self::MODEL_GPT_41                // OpenAI GPT-4.1
-        // self::MODEL_GPT_41_MINI           // OpenAI GPT-4.1 Mini
-        // self::MODEL_O3                    // OpenAI o3
-        // self::MODEL_CLAUDE_SONNET4        // Anthropic Claude Sonnet 4
-        // self::MODEL_CLAUDE_HAIKU          // Anthropic Claude 3.5 Haiku
-        self::MODEL_GEMINI_25_FLASH;       // ← DEFAULT (descomenta otro arriba y comenta esta)
+    public const MODEL_ACTIVE = 'google/gemini-2.5-flash';
 
     /**
-     * Alias legacy para compatibilidad con código existente.
+     * Alias legacy — todos los Jobs usan MODEL_GEMINI_LATEST.
+     * Al cambiar MODEL_ACTIVE arriba, todos se actualizan.
      */
-    public const MODEL_GEMINI_LATEST = self::MODEL_ACTIVE;
+    public const MODEL_GEMINI_LATEST = 'google/gemini-2.5-flash';
 }
