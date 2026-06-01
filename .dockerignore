@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+
+# Node (will be installed fresh for production build)
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Laravel
+.env
+.env.backup
+.env.production
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+/storage/debugbar
+.phpunit.result.cache
+.phpunit.cache
+
+# Build assets (will be generated fresh)
+/public/build
+/public/hot
+/public/storage
+
+# IDE
+/.idea
+/.vscode
+/.fleet
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Docs & Tests
+/docs
+/tests
+*.log
