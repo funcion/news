@@ -100,7 +100,7 @@ services:
       - HORIZON_MEMORY_LIMIT=256
       - HORIZON_BALANCE_MAX_SHIFT=1
       - HORIZON_BALANCE_COOLDOWN=3
-    command: php artisan horizon
+    command: /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
     networks:
       - noticias_network
     dns:
