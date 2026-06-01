@@ -567,7 +567,7 @@ PROMPT;
         if (!$json) return null;
 
         // Remove <think> blocks (reasoning models like DeepSeek R1, Qwen3)
-        $clean = preg_replace('/</think>.*?</think>/s', '', $json);
+        $clean = preg_replace('~</think>.*?</think>~s', '', $json);
 
         // Remove markdown code fences
         $clean = preg_replace('/```json|```/', '', $clean);
