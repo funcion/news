@@ -128,10 +128,4 @@ class OpenRouterService
     //  >>> MODELO ACTIVO (descomenta otro arriba, comenta éste) <<<
     // ═══════════════════════════════════════════════════════════════════
     public const MODEL_ACTIVE = 'google/gemini-2.5-flash';
-
-    /**
-     * Alias legacy — todos los Jobs usan MODEL_GEMINI_LATEST.
-     * Al cambiar MODEL_ACTIVE arriba, todos se actualizan.
-     */
-    public const MODEL_GEMINI_LATEST = 'google/gemini-2.5-flash';
 }

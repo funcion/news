@@ -65,7 +65,7 @@ class CategoryResource extends Resource
                                                         
                                                         $prompt = "You are an elite bilingual SEO copywriter. Generate a Spanish name and 30-70 word SEO descriptions in both English and Spanish for the category: '{$state}'. Response STRICTLY in JSON: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\" } without markdown.";
                                                         
-                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
                                                         
                                                         $clean = preg_replace('/```json|```/', '', $response ?? '');
                                                         $data = json_decode(trim($clean), true);
@@ -128,7 +128,7 @@ class CategoryResource extends Resource
                                                         
                                                         $prompt = "You are an elite bilingual SEO copywriter. Generate an English name and 30-70 word SEO descriptions in both English and Spanish for the Spanish category: '{$state}'. Response STRICTLY in JSON: { \"name_en\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\" } without markdown.";
                                                         
-                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
                                                         
                                                         $clean = preg_replace('/```json|```/', '', $response ?? '');
                                                         $data = json_decode(trim($clean), true);

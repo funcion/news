@@ -28,7 +28,7 @@ class TagGeneratorService
         try {
             $response = $this->ai->complete(
                 [['role' => 'user', 'content' => $prompt]],
-                OpenRouterService::MODEL_GEMINI_LATEST
+                OpenRouterService::MODEL_ACTIVE
             );
 
             if (!$response) {

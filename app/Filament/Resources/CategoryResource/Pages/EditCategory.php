@@ -33,7 +33,7 @@ class EditCategory extends EditRecord
 
                     // 1. Generate prompt with OpenRouter
                     $promptToAi = "You are an elite creative director. Write a highly detailed, professional, photorealistic image prompt for a news category named '{$titleEn}'. Context: {$descEn}. The prompt must be exclusively in English. Only return the prompt text, no markdown, no quotes.";
-                    $imagePrompt = $ai->complete([['role' => 'user', 'content' => $promptToAi]], \App\Services\AI\OpenRouterService::MODEL_GEMINI_LATEST);
+                    $imagePrompt = $ai->complete([['role' => 'user', 'content' => $promptToAi]], \App\Services\AI\OpenRouterService::MODEL_ACTIVE);
                     $imagePrompt = "Photorealistic, highly aesthetic, minimalist editorial style, 8k resolution, " . trim($imagePrompt) . ", no text, no watermarks, professional focus";
 
                     // 2. Clear old images
