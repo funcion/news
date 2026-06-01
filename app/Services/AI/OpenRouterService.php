@@ -100,7 +100,60 @@ class OpenRouterService
     }
 
     /**
-     * Models recommended for the AI Pipeline.
+     * ═══════════════════════════════════════════════════════════════════
+     *  MODELOS DISPONIBLES PARA EL PIPELINE DE REDACCIÓN
+     * ═══════════════════════════════════════════════════════════════════
+     *
+     *  Para cambiar de modelo, comenta/descomenta la línea
+     *  MODEL_ACTIVE en la sección de abajo.
+     *
+     *  Solo UNA línea MODEL_ACTIVE debe estar activa.
+     * ═══════════════════════════════════════════════════════════════════
      */
-    public const MODEL_GEMINI_LATEST = 'google/gemini-2.5-flash';
+
+    // --- Google ---
+    public const MODEL_GEMINI_25_FLASH  = 'google/gemini-2.5-flash';
+    public const MODEL_GEMINI_25_PRO    = 'google/gemini-2.5-pro';
+
+    // --- Xiaomi ---
+    public const MODEL_XIAOMI_V25_PRO   = 'xiaomi/mimo-v2.5-pro';
+
+    // --- Qwen (Alibaba) ---
+    public const MODEL_QWEN3_PLUS       = 'qwen/qwen3-235b-a22b';
+
+    // --- DeepSeek ---
+    public const MODEL_DEEPSEEK_V4_FLASH = 'deepseek/deepseek-chat-v4-0324';
+    public const MODEL_DEEPSEEK_V4_PRO   = 'deepseek/deepseek-r1-0528';
+
+    // --- OpenAI ---
+    public const MODEL_GPT_41           = 'openai/gpt-4.1';
+    public const MODEL_GPT_41_MINI      = 'openai/gpt-4.1-mini';
+    public const MODEL_O3               = 'openai/o3';
+
+    // --- Anthropic ---
+    public const MODEL_CLAUDE_SONNET4   = 'anthropic/claude-sonnet-4';
+    public const MODEL_CLAUDE_HAIKU     = 'anthropic/claude-3.5-haiku';
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  >>> MODELO ACTIVO — Comenta/descomenta para cambiar <<<
+    // ═══════════════════════════════════════════════════════════════════
+
+    public const MODEL_ACTIVE =
+        // self::MODEL_GEMINI_25_FLASH     // Google Gemini 2.5 Flash (rápido, barato)
+        // self::MODEL_GEMINI_25_PRO        // Google Gemini 2.5 Pro (más inteligente)
+        // self::MODEL_XIAOMI_V25_PRO        // Xiaomi MiMo v2.5 Pro
+        // self::MODEL_QWEN3_PLUS            // Qwen3 235B (Alibaba)
+        // self::MODEL_DEEPSEEK_V4_FLASH     // DeepSeek V4 Flash
+        // self::MODEL_DEEPSEEK_V4_PRO       // DeepSeek V4 Pro / R1
+        // self::MODEL_GPT_41                // OpenAI GPT-4.1
+        // self::MODEL_GPT_41_MINI           // OpenAI GPT-4.1 Mini
+        // self::MODEL_O3                    // OpenAI o3
+        // self::MODEL_CLAUDE_SONNET4        // Anthropic Claude Sonnet 4
+        // self::MODEL_CLAUDE_HAIKU          // Anthropic Claude 3.5 Haiku
+        self::MODEL_GEMINI_25_FLASH;       // ← DEFAULT (descomenta otro arriba y comenta esta)
+
+    /**
+     * Alias legacy para compatibilidad con código existente.
+     */
+    public const MODEL_GEMINI_LATEST = self::MODEL_ACTIVE;
 }

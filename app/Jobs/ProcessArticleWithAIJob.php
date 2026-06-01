@@ -425,7 +425,7 @@ Rules:
 - facts: 3-7 concise key facts extracted from the article IN ENGLISH (always translate facts to English)
 PROMPT;
 
-        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
         $result   = $this->parseJson($response);
 
         if ($result) {
@@ -539,7 +539,7 @@ SELF-EVALUATION:
 }
 PROMPT;
 
-        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_GEMINI_LATEST);
+        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
         $data     = $this->parseJson($response);
 
         if (isset($data['keywords']) && is_string($data['keywords'])) {
