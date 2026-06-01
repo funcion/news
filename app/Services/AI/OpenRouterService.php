@@ -35,7 +35,7 @@ class OpenRouterService
                 'Content-Type' => 'application/json',
                 'HTTP-Referer' => config('app.url'), // Recommended by OpenRouter
             ])
-            ->timeout(60)
+            ->timeout(120)
             ->post($this->baseUrl . '/chat/completions', array_merge([
                 'model' => $model,
                 'messages' => $messages,
@@ -137,5 +137,5 @@ class OpenRouterService
      *  https://openrouter.ai/minimax/minimax-m2.7
      * ═══════════════════════════════════════════════════════════════════
      */
-    public const MODEL_ACTIVE = 'qwen/qwen3.6-plus  ';
+    public const MODEL_ACTIVE = 'deepseek/deepseek-v4-pro';
 }

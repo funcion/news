@@ -474,7 +474,7 @@ IMPORTANT: The raw source article may be in {$sourceLangName}. You must ALWAYS p
 SEDUCTIVE COPYWRITING & INTRIGUE:
 - Craft magnetic headlines (title_en, title_es) that create an irresistible curiosity gap without being clickbait.
 - The first paragraph MUST start with a hook (a bold statement, a surprising stat, or a rhetorical question) that grabs the reader instantly.
-- Maintain an authoritative yet conversational tone (persuasive, intelligent, and engaging).
+- Write like a seasoned tech journalist from Wired or The Verge. Use first-person plural ("we tested", "our industry") occasionally to show perspective. Inject a sense of realistic skepticism or genuine enthusiasm. NOT corporate tone.
 
 SEO - Google E-E-A-T (10/10 REQUIRED):
 - Primary keyword in title (first 60 chars), first paragraph, at least 2 H2s, meta description.
@@ -486,7 +486,9 @@ SEO - Google E-E-A-T (10/10 REQUIRED):
 CONTENT ARCHITECTURE - Google Helpful Content:
 - NO ERROR: {$rules}
 - NO cliches: forbidden = "paradigm shift", "game-changer", "revolutionary", "cambio de paradigma", "en conclusión", "the digital landscape".
-- BURSTINESS: alternate short punchy sentences (3-5 words) with complex analytical ones.
+- BURSTINESS: Alternate short punchy sentences with complex analytical ones. BUT: NEVER chain more than two ultra-short sentences back-to-back. Sentences must vary ORGANICALLY in length — mix a 5-word sentence with a 25-word one using commas, connectors ("although", "meanwhile", "however"). Avoid mechanical SVO repetition (Subject-Verb-Object with identical 4-6 word structure 3+ times in a row).
+- ROBOTIC TRANSITIONS FORBIDDEN: NEVER start a mid-paragraph with a rhetorical question like "How does X become Y?" or "What does this mean for Z?". Humans rarely open intermediate paragraphs with textbook rhetorical questions. Use direct statements, quotes, or anecdotes instead.
+- AI VOCABULARY BLOCKLIST: NEVER use "democratization of", "inflection point", "trajectory points toward", "high-fidelity", "unprecedented scale", "seamlessly integrate", "robust ecosystem". These are AI fingerprint words that delatate machine authorship.
 - ANALOGY: Use 1 existing real-world analogy to explain complex concepts, but never invent fictional stories.
 - Use: H2 headings to break logic, <strong> for key facts, <blockquote> for crucial quotes or insights, <ul> or <ol> for readability.
 
@@ -552,8 +554,26 @@ PROMPT;
     protected function parseJson(?string $json): ?array
     {
         if (!$json) return null;
-        $clean = preg_replace('/```json|```/', '', $json);
+
+        // Remove <think> blocks (reasoning models like DeepSeek R1, Qwen3)
+        $clean = preg_replace('/</think>.*?</think>/s', '', $json);
+
+        // Remove markdown code fences
+        $clean = preg_replace('/```json|```/', '', $clean);
+
+        // Extract only the JSON portion between first { and last }
+        $start = strpos($clean, '{');
+        $end   = strrpos($clean, '}');
+        if ($start === false || $end === false || $end <= $start) {
+            Log::warning("parseJson: no JSON object found in response", ['raw' => substr($json, 0, 300)]);
+            return null;
+        }
+        $clean = substr($clean, $start, $end - $start + 1);
+
         $result = json_decode(trim($clean), true);
+        if (!$result) {
+            Log::warning("parseJson: JSON decode failed", ['error' => json_last_error_msg(), 'raw' => substr($clean, 0, 300)]);
+        }
         return $result ?: null;
     }
 
