@@ -961,17 +961,17 @@ class TagsCleanupCommand extends Command
 #### Fase 1 (Meses 1-2) - Básico
 
 - [x] Migración de base de datos para tags
-- [ ] Generación automática de tags con IA
+- [x] Generación automática de tags con IA (`TagGeneratorService` con OpenRouter)
 - [x] Relación muchos-a-muchos articles-tags
 - [x] Tags en frontend (Panel administrativo Filament)
 
 #### Fase 2 (Meses 3-4) - Avanzado
 
-- [ ] Páginas de tag individuales
+- [ ] Páginas de tag individuales (ruta `/tags/{slug}` — Falta crear vista)
 - [ ] Cloud tags con sizing proporcional
-- [ ] Sistema de normalización automática
+- [x] Sistema de normalización automática (`Tag::normalizeName()`)
 - [ ] Sitemap para tags populares
-- [ ] Artículos relacionados por tags
+- [x] Artículos relacionados por tags (`Article::getRelatedArticles()`)
 
 #### Fase 3 (Meses 5-6) - Optimización
 
@@ -2012,9 +2012,9 @@ services:
 
 ---
 
-**Última actualización**: 29 de Marzo de 2026  
-**Versión**: 4.1 (Optimizado con feedback de IA - Correcciones de consistencia + mejoras técnicas)  
-**Estado**: ✅ **APROBADO PARA EJECUCIÓN INMEDIATA** - Plan enterprise listo para desarrollo
+**Última actualización**: 1 de Junio 2026  
+**Versión**: 5.0 (Producción funcional — pipeline completo end-to-end)  
+**Estado**: ✅ **OPERACIONAL** — Fases 1-3 completadas, publicando artículos con IA
 
 ---
 
