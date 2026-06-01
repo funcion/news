@@ -35,7 +35,7 @@ class OpenRouterService
                 'Content-Type' => 'application/json',
                 'HTTP-Referer' => config('app.url'), // Recommended by OpenRouter
             ])
-            ->timeout(120)
+            ->timeout(420)
             ->post($this->baseUrl . '/chat/completions', array_merge([
                 'model' => $model,
                 'messages' => $messages,
@@ -59,7 +59,11 @@ class OpenRouterService
 
             return $content;
         } catch (\Exception $e) {
-            Log::error("OpenRouter Error: " . $e->getMessage());
+            $isTimeout = str_contains($e->getMessage(), 'timed out') || str_contains($e->getMessage(), 'timeout');
+            Log::error("OpenRouter Error [" . ($isTimeout ? 'TIMEOUT' : 'EXCEPTION') . "]: " . $e->getMessage(), [
+                'model' => $model,
+                'timeout_seconds' => 300,
+            ]);
             return null;
         }
     }

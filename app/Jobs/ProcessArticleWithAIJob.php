@@ -18,12 +18,12 @@ class ProcessArticleWithAIJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 300; // Slightly higher for bilingual generation
-    public $tries = 3;
+    public $timeout = 600; // 10 minutes — reasoning models (DeepSeek V4 Pro) take 3-5min per bilingual draft
+    public $tries = 2;
 
     public function backoff(): array
     {
-        return [10, 30, 60];
+        return [30, 120];
     }
 
     public function __construct(
@@ -542,7 +542,18 @@ SELF-EVALUATION:
 PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
+        if (!$response) {
+            Log::warning("redactBilingual: AI returned null response for RawArticle {$this->rawArticle->id} (likely timeout)");
+            return null;
+        }
         $data     = $this->parseJson($response);
+
+        if (!$data) {
+            Log::warning("redactBilingual: AI returned invalid JSON for RawArticle {$this->rawArticle->id}", [
+                'response_preview' => substr($response, 0, 500),
+            ]);
+            return null;
+        }
 
         if (isset($data['keywords']) && is_string($data['keywords'])) {
             $data['keywords'] = array_map('trim', explode(',', $data['keywords']));
