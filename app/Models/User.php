@@ -7,15 +7,25 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Spatie\Translatable\HasTranslations;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasTranslations;
+
+    /**
+     * The translatable attributes.
+     */
+    public array $translatable = ['name', 'bio'];
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'slug',
+        'bio',
+        'avatar_url',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -28,6 +38,8 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'bio' => 'array',
         ];
     }
 
@@ -35,4 +47,13 @@ class User extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
+    /**
+     * Get the articles for the user/author.
+     */
+    public function articles()
+    {
+        return $this->hasMany(Article::class, 'user_id');
+    }
 }
+

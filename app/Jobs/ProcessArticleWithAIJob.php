@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Article;
-use App\Models\Author;
+use App\Models\User;
 use App\Models\RawArticle;
 use App\Services\AI\OpenRouterService;
 use Illuminate\Bus\Queueable;
@@ -89,18 +89,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
              return;
         }
 
-        $author = Author::ai()->active()->inRandomOrder()->first();
+        $author = User::where('is_active', true)->inRandomOrder()->first() ?: User::first();
 
         if (!$author) {
-            $author = Author::create([
-                'name'        => config('global.editorial.default_author.name'),
-                'slug'        => Str::slug(config('global.editorial.default_author.name')),
-                'type'        => 'staff',
-                'is_active'   => true,
-                'voice_style' => config('global.editorial.default_author.voice_style'),
-                'bio'         => ($classification['source_language'] ?? 'en') === 'es' 
-                                 ? config('global.editorial.default_author.bio.es') 
-                                 : config('global.editorial.default_author.bio.en'),
+            $author = User::create([
+                'name'      => ['en' => 'Luis Figuera', 'es' => 'Luis Figuera'],
+                'email'     => 'luis@glodaxia.com',
+                'password'  => bcrypt(Str::random(16)),
+                'slug'      => 'luis-figuera',
+                'is_active' => true,
+                'bio'       => [
+                    'es' => '¡Hola! Soy Luis Figuera. Me especializo en escribir textos digitales y tradicionales, asegurando que cada palabra cumpla un objetivo comercial.',
+                    'en' => 'Hello! I\'m Luis Figuera. I specialize in writing digital and traditional copy, ensuring that every word serves a commercial goal.',
+                ],
             ]);
         }
 
@@ -147,7 +148,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->raw_article_id = $this->rawArticle->id;
         $article->slug_en        = $slugEn;
         $article->slug_es        = $slugEs;
-        $article->author_id      = $author->id;
+        $article->user_id        = $author->id;
         $article->category_id    = $categoryId;
         $article->status         = 'draft'; // Keep as draft during processing so it is hidden from the public frontend until complete
         $article->published_at   = now();
@@ -466,7 +467,7 @@ PROMPT;
         return $result;
     }
 
-    protected function redactBilingual(OpenRouterService $ai, array $classification, Author $author): ?array
+    protected function redactBilingual(OpenRouterService $ai, array $classification, User $author): ?array
     {
         $today          = now()->format('l, F j, Y');
         $isSeed         = $classification['is_seed'] ?? false;
@@ -486,6 +487,8 @@ PROMPT;
         $wordTargets = config('global.editorial.word_targets');
         $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'];
 
+        $authorNameEn = $author->getTranslation('name', 'en') ?: $author->getTranslation('name', 'es') ?: $author->name;
+        $authorBioEn  = $author->getTranslation('bio', 'en') ?: $author->getTranslation('bio', 'es') ?: $author->bio;
 
         $persona = config('global.editorial.persona');
         $rules   = config('global.editorial.focus_rules');
@@ -501,6 +504,15 @@ NON-NEGOTIABLE: {$rules}
 NON-NEGOTIABLE: You MUST produce the final article in BOTH English AND Spanish.
 
 ═══ 1. VOICE & AUTHENTICITY (HIGHEST PRIORITY) ═══
+
+AUTHOR PERSONA:
+- Name: {$authorNameEn}
+- Bio/Background: {$authorBioEn}
+
+You MUST adopt the professional persona, opinions, and expertise of {$authorNameEn} based on their background. 
+
+DYNAMIC EDITORIAL VOICE (CRITICAL):
+Rather than sticking to a single rigid tone of voice, you must dynamically blend multiple tones of voice (e.g., analytical, inquisitive, provocative, informative, skeptical, visionary) to perfectly fit the specific topic and gravity of the news. The writing style must feel like an organic, living human voice that responds organically to the nuances of the events.
 
 TAKE A CLEAR STANCE. Every column needs a thesis: is this overhyped? Dangerous? Quietly brilliant? Reckless? State it by paragraph 2. Commit fully. A columnist who hedges on everything is a columnist nobody reads. When claims from the source are unverified, flag them honestly ("reports suggest", "if confirmed") — but your analytical OPINION about those claims must still be sharp and decisive.
 

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Author;
 use App\Models\Category;
 use App\Models\Source;
 use App\Models\Tag;
@@ -16,26 +15,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
+        // Create admin user (Luis Figuera)
+        $bioEs = "¡Hola! Soy Luis Figuera. Me especializo en escribir textos digitales y tradicionales, asegurando que cada palabra cumpla un objetivo comercial.\nConecto marcas con audiencias a través de mensajes claros, atractivos y adaptados a cualquier formato o canal de comunicación.\n\nMis especialidades:\n- Redacción de todo tipo de contenidos: Artículos de blog, textos web (copywriting), publicaciones para redes sociales, newsletters y guiones.\n- Optimización SEO: Estructuro textos basados en la intención de búsqueda para posicionar tu web orgánicamente en Google.\n- Redacción SEM: Creo copys persuasivos de alto impacto para campañas de anuncios pagados en Google Ads.\n- Estrategias de comunicación: Adapto el tono de voz de tu marca según el canal y el público objetivo.\n\n## Mi filosofía\n\nNo existen temas difíciles, sino textos mal enfocados. Mi meta es transformar ideas complejas en mensajes sencillos que informen, eduquen y generen confianza en el usuario.";
+
+        $bioEn = "Hello! I'm Luis Figuera. I specialize in writing digital and traditional copy, ensuring that every word serves a commercial goal.\nI connect brands with audiences through clear, engaging messages tailored to any format or communication channel.\n\nMy specialties:\n- Copywriting & Content Creation: Blog posts, web copy, social media updates, newsletters, and scripts.\n- SEO Optimization: Structuring content based on search intent to rank organically on Google.\n- SEM Copywriting: Crafting high-impact, persuasive copy for Google Ads campaigns.\n- Communication Strategy: Adapting brand voice and tone across channels and target audiences.\n\n## My Philosophy\n\nThere are no difficult topics, only poorly focused copy. My goal is to turn complex ideas into simple, clear messages that inform, educate, and build trust with readers.";
+
         User::create([
-            'name' => 'Admin Glodaxia',
+            'name' => [
+                'en' => 'Luis Figuera',
+                'es' => 'Luis Figuera',
+            ],
             'email' => 'admin@glodaxia.com',
             'password' => bcrypt('password'),
-        ]);
-
-        // Create default AI Author
-        Author::create([
-            'name' => [
-                'en' => 'Glodaxia Editorial Team',
-                'es' => 'Equipo Editorial Glodaxia',
-            ],
-            'slug' => 'glodaxia-editorial-team',
+            'slug' => 'luis-figuera',
             'bio' => [
-                'en' => 'Expert editorial team focused on technology, innovation, and digital trends from Glodaxia.',
-                'es' => 'Equipo editorial experto en tecnología, innovación y tendencias digitales de Glodaxia.',
+                'en' => $bioEn,
+                'es' => $bioEs,
             ],
-            'type' => 'ai',
-            'voice_style' => 'Analytical',
             'is_active' => true,
         ]);
 

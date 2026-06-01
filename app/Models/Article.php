@@ -33,7 +33,7 @@ class Article extends Model implements HasMedia
         'slug_es',
         'content',
         'excerpt',
-        'author_id',
+        'user_id',
         'category_id',
         'image_url',
         'image_alt',
@@ -73,9 +73,9 @@ class Article extends Model implements HasMedia
         return $this->belongsTo(RawArticle::class);
     }
 
-    public function author()
+    public function user()
     {
-        return $this->belongsTo(Author::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function category()

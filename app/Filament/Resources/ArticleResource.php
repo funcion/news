@@ -123,8 +123,8 @@ class ArticleResource extends Resource
                                 // ─── METADATA ────────────────────────────────
                                 Tabs\Tab::make('Metadata')
                                     ->schema([
-                                        Select::make('author_id')
-                                            ->relationship('author', 'name')
+                                        Select::make('user_id')
+                                            ->relationship('user', 'name')
                                             ->required(),
                                         Select::make('category_id')
                                             ->relationship('category', 'name')
@@ -218,7 +218,9 @@ class ArticleResource extends Resource
                               ->orWhereRaw("title->>'es' ILIKE ?", ["%{$search}%"]);
                     })
                     ->limit(50),
-                TextColumn::make('author.name')
+                TextColumn::make('user.name')
+                    ->label('Usuario')
+                    ->formatStateUsing(fn ($record) => $record->user?->getTranslation('name', 'es') ?: $record->user?->getTranslation('name', 'en') ?: '—')
                     ->sortable(),
                 TextColumn::make('category.name')
                     ->formatStateUsing(fn ($record) => $record->category?->getTranslation('name', 'en') ?? '—')

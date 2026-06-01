@@ -52,9 +52,9 @@
             
             <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
+                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
-                         <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->author?->name ?? __('ui.reporter') }}</span>
+                         <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                     </div>
                 </div>
                 <div class="h-6 w-px bg-gray-200 dark:bg-white/5 hidden sm:block"></div>
@@ -149,17 +149,17 @@
             <div class="bg-white dark:bg-white/[0.02] rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
-                    <img src="{{ $article->author?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
+                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
                          class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">
                     <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-700 dark:text-cyan-500 uppercase tracking-widest mb-3 inline-block">{{ __('ui.verified_author') }}</span>
                     <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
-                        {{ $article->author?->name ?? 'AI Reporter' }}
+                        {{ $article->user?->name ?? 'AI Reporter' }}
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
-                        {{ $article->author?->bio ?? 'Analizando y curando las noticias tecnológicas más relevantes del mundo.' }}
+                        {{ $article->user?->bio ?? 'Analizando y curando las noticias tecnológicas más relevantes del mundo.' }}
                     </p>
                 </div>
             </div>

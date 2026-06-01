@@ -113,7 +113,7 @@
                         {{ $featured->excerpt }}
                     </p>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ $featured->author?->name ?? __('ui.staff') }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ $featured->user?->name ?? __('ui.staff') }}</span>
                     </div>
                 </div>
             </a>
@@ -147,7 +147,7 @@
                     </p>
 
                     <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-white/5">
-                         <span class="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->author?->name ?? __('ui.reporter') }}</span>
+                         <span class="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                          <span class="text-[9px] font-black text-slate-600 dark:text-slate-500 uppercase ml-auto">{{ $article->reading_time ?? 5 }} min</span>
                     </div>
                 </article>
