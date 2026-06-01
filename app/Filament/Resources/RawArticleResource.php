@@ -82,6 +82,7 @@ class RawArticleResource extends Resource
                             ->label('Estado de Procesamiento')
                             ->options([
                                 'pending' => 'Pendiente',
+                                'processing' => 'Procesando',
                                 'processed' => 'Procesada',
                                 'ignored' => 'Ignorada',
                                 'failed' => 'Fallida',
@@ -109,6 +110,7 @@ class RawArticleResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'gray',
+                        'processing' => 'info',
                         'processed' => 'success',
                         'ignored' => 'warning',
                         'failed' => 'danger',
@@ -121,6 +123,7 @@ class RawArticleResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pendiente',
+                        'processing' => 'Procesando',
                         'processed' => 'Procesada',
                         'ignored' => 'Ignorada',
                         'failed' => 'Fallida',
