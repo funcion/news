@@ -78,6 +78,34 @@ class FrontendController extends Controller
 
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
 
-        return view('home', compact('articles', 'tag', 'trendingTags'));
+        return view('tag.show', compact('articles', 'tag', 'trendingTags'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $articles = collect();
+        $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
+
+        if (strlen($query) >= 2) {
+            $articles = Article::where('status', 'published')
+                ->where(function ($q) use ($query) {
+                    $q->whereRaw("title->>'en' ILIKE ?", ["%{$query}%"])
+                      ->orWhereRaw("title->>'es' ILIKE ?", ["%{$query}%"])
+                      ->orWhereRaw("excerpt->>'en' ILIKE ?", ["%{$query}%"])
+                      ->orWhereRaw("excerpt->>'es' ILIKE ?", ["%{$query}%"]);
+                })
+                ->orderByDesc('published_at')
+                ->paginate(20);
+        }
+
+        return view('search', compact('articles', 'query', 'trendingTags'));
+    }
+
+    public function metodologia()
+    {
+        $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
+        return view('pages.metodologia-editorial', compact('trendingTags'));
     }
 }

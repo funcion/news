@@ -14,6 +14,35 @@
     @if(isset($metaKeywords))
         <meta name="keywords" content="{{ is_array($metaKeywords) ? implode(', ', $metaKeywords) : $metaKeywords }}">
     @endif
+    
+    <!-- Canonical URL (avoids duplicate content) -->
+    <link rel="canonical" href="{{ url()->current() }}" />
+    
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:site_name" content="{{ config('app.name', 'Glodaxia') }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    @if(isset($ogTitle))
+        <meta property="og:title" content="{{ $ogTitle }}" />
+    @endif
+    @if(isset($ogDescription))
+        <meta property="og:description" content="{{ $ogDescription }}" />
+    @endif
+    @if(isset($ogImage))
+        <meta property="og:image" content="{{ $ogImage }}" />
+    @endif
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="{{ isset($ogImage) ? 'summary_large_image' : 'summary' }}" />
+    <meta name="twitter:url" content="{{ url()->current() }}" />
+    @if(isset($ogTitle))
+        <meta name="twitter:title" content="{{ $ogTitle }}" />
+    @endif
+    @if(isset($ogDescription))
+        <meta name="twitter:description" content="{{ $ogDescription }}" />
+    @endif
+    @if(isset($ogImage))
+        <meta name="twitter:image" content="{{ $ogImage }}" />
+    @endif
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -38,7 +38,10 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
-// Test route for Alpine.js
-Route::get('/test-alpine', function () {
-    return view('test-alpine');
-});
+// Sitemap XML
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-articles.xml', [\App\Http\Controllers\SitemapController::class, 'articles'])->name('sitemap.articles');
+Route::get('/sitemap-tags.xml', [\App\Http\Controllers\SitemapController::class, 'tags'])->name('sitemap.tags');
+
+// IndexNow (SEO - Bing/Yandex indexación instantánea)
+Route::post('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handle'])->name('indexnow');
