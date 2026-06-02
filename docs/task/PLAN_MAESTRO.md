@@ -956,10 +956,10 @@ class TagsCleanupCommand extends Command
 
 #### Fase 2 (Meses 3-4) - Avanzado
 
-- [ ] Páginas de tag individuales (ruta `/tags/{slug}` — Falta crear vista)
+- [x] Páginas de tag individuales (ruta `/tags/{slug}` — Falta crear vista)
 - [ ] Cloud tags con sizing proporcional
 - [x] Sistema de normalización automática (`Tag::normalizeName()`)
-- [ ] Sitemap para tags populares
+- [x] Sitemap para tags populares
 - [x] Artículos relacionados por tags (`Article::getRelatedArticles()`)
 
 #### Fase 3 (Meses 5-6) - Optimización
@@ -1702,11 +1702,11 @@ services:
   - [x] Crear workers básicos
   - [x] Configurar supervisord para producción
 
-- [ ] **Configurar FrankenPHP específicamente**
-  - [ ] Crear Dockerfile para FrankenPHP con todas las extensiones
-  - [ ] Configurar Caddyfile para Laravel + HTTP/3
-  - [ ] Configurar worker mode (4-8 workers según CPU)
-  - [ ] Configurar opcache y JIT para máximo performance
+- [x] **Configurar FrankenPHP específicamente**
+  - [x] Crear Dockerfile para FrankenPHP con todas las extensiones
+  - [x] Configurar Caddyfile para Laravel + HTTP/3
+  - [x] Configurar worker mode (4-8 workers según CPU)
+  - [x] Configurar opcache y JIT para máximo performance
   - [ ] Habilitar Brotli/Zstd compression
   - [ ] Configurar Server Push para assets críticos
   - [ ] Configurar métricas y monitoreo FrankenPHP
