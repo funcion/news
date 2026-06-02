@@ -37,5 +37,8 @@ fi
 # así que solo necesitamos el scheduler aquí
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
 
-# Iniciar FrankenPHP
+# Iniciar Supervisor (gestiona scheduler de RSS + otros workers) en background
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
+
+# Iniciar FrankenPHP (el servidor web)
 exec frankenphp run --config /etc/caddy/Caddyfile

@@ -32,7 +32,7 @@ COPY docker/frankenphp/entrypoint.sh /entrypoint.sh
 COPY docker/frankenphp/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
 COPY docker/frankenphp/supervisord.conf /etc/supervisor/supervisord.conf
-COPY docker/frankenphp/conf.d/horizon.conf /etc/supervisor/conf.d/horizon.conf
+COPY docker/frankenphp/conf.d/ /etc/supervisor/conf.d/
 
 RUN chmod +x /entrypoint.sh
 
