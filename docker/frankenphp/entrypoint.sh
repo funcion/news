@@ -32,5 +32,10 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
+# Iniciar HorizSupervisor en background (scheduler para rss:fetch)
+# Horizon se ejecuta en su propio container (docker-compose), 
+# así que solo necesitamos el scheduler aquí
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
+
 # Iniciar FrankenPHP
 exec frankenphp run --config /etc/caddy/Caddyfile
