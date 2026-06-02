@@ -120,9 +120,11 @@ class ProcessArticleWithAIJob implements ShouldQueue
             );
         }
 
-        // --- CLEANUP: Remove AI hallucinated image attributes from BOTH lang contents ---
+        // --- CLEANUP: Remove AI hallucinated image attributes + inline URLs ---
         $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
         $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
+        $contentEn = $this->cleanInlineUrls($contentEn);
+        $contentEs = $this->cleanInlineUrls($contentEs);
 
         // Determine category
         $categoryId = $this->rawArticle->source->category_id ?? 1;
@@ -359,6 +361,20 @@ class ProcessArticleWithAIJob implements ShouldQueue
         return $content;
     }
 
+    /**
+     * Strip any inline external URLs from the HTML content.
+     * The AI is instructed not to place URLs, but safety net catches any
+     * that slip through. References are stored in ai_metadata['origin_url'].
+     */
+    private function cleanInlineUrls(string $content): string
+    {
+        // Remove <a href="...">...</a> links — keep the visible text
+        $content = preg_replace('/<a\s+[^>]*href=["\']https?:\/\/[^"\']*["\'][^>]*>(.*?)<\/a>/is', '$1', $content);
+        // Remove bare https://... URLs (not inside tags)
+        $content = preg_replace('/(?<!["\'=])https?:\/\/[^\s<>"\')\]]+/', 'una fuente verificada', $content);
+        return $content;
+    }
+
     private function buildImageTag(
         string $src, string $srcset, string $sizes,
         string $alt, string $title, string $caption, string $imgId
@@ -518,8 +534,9 @@ TAKE A CLEAR STANCE. Every column needs a thesis: is this overhyped? Dangerous? 
 
 MANDATORY ANCHORS OF REALITY & E-E-A-T (NON-NEGOTIABLE):
 - MANDATORY UNCERTAINTY: Include EXACTLY ONE sentence in each language version where the author admits uncertainty, a limitation of their argument, or a confession of doubt. Example: "Look, I could be wrong about the timeline. Maybe the Jevons paradox doesn't apply cleanly to software labor. But..." This humanizes the text (AIs never admit doubt).
-- MANDATORY EXTERNAL SOURCES: Include at least 3 to 5 real, verifiable external sources with contextual links in both languages (e.g., "according to Stack Overflow's 2024 survey [LINK]", "as a Microsoft Research study found [LINK]", "based on the GitHub Octoverse report [LINK]"). Use real studies and actual URLs (never fabricate URLs or sources).
-- MANDATORY PERSONAL EXPERIENCE: Write from a first-person perspective ("I", "we") that includes ONE specific personal/professional experience (e.g., "I've been using Cursor daily since Q3 2024 and here's what I've learned...", "When pairing with a junior developer María last month..."). If no real experience exists in the raw article context, frame it as a direct professional observation.
+- NO EXTERNAL URLS IN CONTENT: NEVER include any URLs, hyperlinks, or external links inside the article body (content_en or content_es). Do NOT reference external studies, surveys, or reports with URLs. Your analysis must rely solely on the verified facts provided and your own expert reasoning. Cite sources by name only (e.g., "a 2024 Stack Overflow survey found..." without a link).
+
+- MANDATORY PERSONAL EXPERIENCE: Write from a first-person perspective ("I", "we") that includes ONE specific personal/professional observation framed as a direct professional reflection (e.g., "In my experience writing about AI tools since 2023...", "When I analyzed similar products last quarter..."). Never fabricate meetings, conversations, or specific incidents.
 
 WRITE WITH GENUINE PERSONALITY:
 - Use contractions naturally: "don't", "isn't", "we've", "they're"
