@@ -102,10 +102,4 @@ class FrontendController extends Controller
 
         return view('search', compact('articles', 'query', 'trendingTags'));
     }
-
-    public function metodologia()
-    {
-        $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
-        return view('pages.metodologia-editorial', compact('trendingTags'));
-    }
 }

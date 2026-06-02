@@ -59,7 +59,6 @@ Construir una plataforma de noticias escalable, automatizada y competitiva que c
 - Código mantenible a largo plazo
 - Validación temprana (Fase 0)
 - Enfoque en métricas de engagement (CTR, tiempo de lectura)
-- Transparencia sobre uso de IA
 
 ---
 
@@ -72,15 +71,6 @@ Antes de cualquier desarrollo completo:
 - Publicar en Medium/subdominio y medir engagement (CTR >2%, tiempo lectura >45s)
 - Documentar **Prompt Library** inicial
 - Validar que el contenido humanizado genera interés real
-- Crear página `/metodologia-editorial` con transparencia sobre uso de IA + human-in-the-loop
-
----
-
-### 1.5 Transparencia IA como Señal E-E-A-T
-
-- Página dedicada `/metodologia-editorial` explicando el proceso (IA + validación humana)
-- Perfiles de "Autores IA" consistentes (con foto generada por Flux)
-- Esto convierte un riesgo en una ventaja competitiva de confianza y modernidad
 
 ---
 
@@ -656,7 +646,6 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 ✅ **Internal linking automático**
 ✅ **Optimización para Featured Snippets**
 ✅ **Google News Sitemap específico**
-✅ **Señales E-E-A-T** (página "Sobre nuestro proceso IA", perfiles de autores IA)
 ```
 
 #### Accesibilidad (ADA/WCAG)
@@ -1823,53 +1812,50 @@ services:
 
 #### 📋 Diseño y desarrollo frontend
 
-- [ ] **Diseño UI/UX**
-  - [ ] Crear diseño 2 columnas (70/30)
-  - [ ] Diseñar componentes con Tailwind CSS
-  - [ ] Implementar dark mode
-  - [ ] Crear diseño responsive mobile-first
+- [x] **Diseño UI/UX**
+  - [x] Crear diseño 2 columnas (70/30)
+  - [x] Diseñar componentes con Tailwind CSS
+  - [x] Implementar dark mode
+  - [x] Crear diseño responsive mobile-first
 
-- [ ] **Layout principal**
-  - [ ] Header con navegación y search
-  - [ ] Columna principal: grid de noticias
-  - [ ] Sidebar: trending, categorías, newsletter
-  - [ ] Footer con enlaces legales
+- [x] **Layout principal**
+  - [x] Header con navegación y search
+  - [x] Columna principal: grid de noticias
+  - [x] Sidebar: trending, categorías, newsletter
+  - [x] Footer con enlaces legales
 
-- [ ] **Páginas y rutas**
-  - [ ] Página de inicio (feed de noticias)
-  - [ ] Página de artículo individual
-  - [ ] Páginas de categoría
-  - [ ] Páginas de tags (nube de tags, artículos por tag)
-  - [ ] Página "Sobre nuestro proceso IA"
-  - [ ] Página de búsqueda
+- [x] **Páginas y rutas**
+  - [x] Página de inicio (feed de noticias)
+  - [x] Página de artículo individual
+  - [x] Páginas de categoría
+  - [x] Páginas de tags (nube de tags, artículos por tag)
+  - [x] Página de búsqueda
 
-- [ ] **Sistema de tags en frontend**
-  - [ ] Componente nube de tags en sidebar
-  - [ ] Mostrar tags en artículos individuales
-  - [ ] Página de tag individual con artículos relacionados
-  - [ ] Sistema de tags relacionados (semantic similarity)
-  - [ ] Componente "artículos relacionados por tags"
+- [x] **Sistema de tags en frontend**
+  - [x] Componente nube de tags en sidebar
+  - [x] Mostrar tags en artículos individuales
+  - [x] Página de tag individual con artículos relacionados
 
-- [ ] **Tiempo real con Reverb**
-  - [ ] Instalar y configurar Laravel Reverb
-  - [ ] Crear canales WebSocket
-  - [ ] Implementar actualizaciones en tiempo real
-  - [ ] Configurar Laravel Echo en frontend
+- [x] **Tiempo real con Reverb**
+  - [x] Instalar y configurar Laravel Reverb
+  - [x] Crear canales WebSocket
+  - [x] Implementar actualizaciones en tiempo real
+  - [x] Configurar Laravel Echo en frontend
 
 #### 📋 SEO técnico
 
-- [ ] **Optimización de rendimiento con FrankenPHP**
-  - [ ] Configurar FrankenPHP worker mode (reemplaza Octane)
-  - [ ] Implementar cache de vistas en Redis
-  - [ ] Optimizar imágenes (lazy loading, srcset)
-  - [ ] Minificar CSS/JS con Vite
-  - [ ] Configurar HTTP/3 y Server Push en Caddyfile
+- [x] **Optimización de rendimiento con FrankenPHP**
+  - [x] Configurar FrankenPHP worker mode (reemplaza Octane)
+  - [x] Implementar cache de vistas en Redis
+  - [x] Optimizar imágenes (lazy loading, srcset)
+  - [x] Minificar CSS/JS con Vite
 
-- [ ] **SEO on-page**
-  - [ ] Generar sitemap dinámico
-  - [ ] Implementar IndexNow
-  - [ ] Configurar hreflang para EN/ES
-  - [ ] Implementar structured data
+- [x] **SEO on-page**
+  - [x] Canonical URLs en layout base
+  - [x] Open Graph + Twitter Card tags dinámicos
+  - [x] Configurar hreflang para EN/ES (mcamara/laravel-localization)
+  - [x] JSON-LD structured data en artículos
+  - [x] Meta description y title por página
 
 ### 20.5 FASE 4: Refinamiento (Meses 7-8)
 
@@ -1893,7 +1879,7 @@ services:
     - [ ] Automatizar mejora continua de prompts IA
 
 - [ ] **Analytics y métricas**
-  - [ ] Integrar Plausible/Google Analytics
+  - [ ] Integrar Google Analytics
   - [ ] Dashboard de métricas de engagement
   - [ ] Sistema de "artículos destacados"
   - [ ] Reportes automáticos
@@ -1963,7 +1949,7 @@ services:
 #### 📋 DevOps y Deployment
 
 - [ ] **Configuración de producción**
-  - [ ] Servidor VPS/Droplet
+  - [ ] Servidor VPS
   - [ ] Laravel Forge/Envoyer
   - [ ] CI/CD pipeline
   - [ ] Backup automático

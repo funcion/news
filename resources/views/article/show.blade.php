@@ -88,26 +88,10 @@
                      title="{{ $article->title }}"
                      class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700"
                      loading="eager">
-                @if(config('global.features.show_ai_disclaimers'))
-                <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/90 flex items-center gap-1.5">
-                        <svg class="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        {{ __('ui.ai_generated_image') }}
-                    </span>
-                </div>
-                @endif
             </figure>
         @elseif($article->image_url)
             <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
                 <img src="{{ $article->image_url }}" alt="{{ $article->image_alt ?? $article->title }}" class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700" loading="eager">
-                @if(config('global.features.show_ai_disclaimers'))
-                <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/90 flex items-center gap-1.5">
-                        <svg class="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        {{ __('ui.ai_generated_image') }}
-                    </span>
-                </div>
-                @endif
             </figure>
         @endif
 

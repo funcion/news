@@ -6,12 +6,6 @@
         <changefreq>hourly</changefreq>
         <priority>1.0</priority>
     </url>
-    <!-- Metodología -->
-    <url>
-        <loc>{{ url('/metodologia-editorial') }}</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
     @foreach($articles as $article)
     <!-- Article: {{ $article->getTranslation('title', 'en') }} -->
     <url>
