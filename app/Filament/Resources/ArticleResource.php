@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
+use App\Mail\ArticleStatusChanged;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -19,6 +20,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
@@ -254,6 +256,38 @@ class ArticleResource extends Resource
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
+                \Filament\Actions\Action::make('approve')
+                    ->label('Aprobar')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
+                    ->requiresConfirmation()
+                    ->action(function (Article $record) {
+                        $old = $record->status;
+                        $record->update(['status' => 'published', 'published_at' => now()]);
+                        static::sendNotification($record, $old, 'published');
+                    }),
+                \Filament\Actions\Action::make('reject')
+                    ->label('Rechazar')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
+                    ->requiresConfirmation()
+                    ->action(function (Article $record) {
+                        $old = $record->status;
+                        $record->update(['status' => 'rejected']);
+                        static::sendNotification($record, $old, 'rejected');
+                    }),
+                \Filament\Actions\Action::make('review')
+                    ->label('Enviar a Revisión')
+                    ->icon('heroicon-o-clock')
+                    ->color('warning')
+                    ->visible(fn (Article $record) => $record->status === 'draft')
+                    ->action(function (Article $record) {
+                        $old = $record->status;
+                        $record->update(['status' => 'pending_review']);
+                        static::sendNotification($record, $old, 'pending_review');
+                    }),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
@@ -274,5 +308,19 @@ class ArticleResource extends Resource
             'create' => Pages\CreateArticle::route('/create'),
             'edit'   => Pages\EditArticle::route('/{record}/edit'),
         ];
+    }
+
+    protected static function sendNotification(Article $article, string $oldStatus, string $newStatus): void
+    {
+        try {
+            $editors = \App\Models\User::where('is_active', true)->pluck('email')->filter();
+            if ($editors->isEmpty()) {
+                return;
+            }
+            $changedBy = auth()->user()?->name ?? 'Sistema';
+            Mail::to($editors)->send(new ArticleStatusChanged($article, $oldStatus, $newStatus, $changedBy));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to send article status notification: ' . $e->getMessage());
+        }
     }
 }

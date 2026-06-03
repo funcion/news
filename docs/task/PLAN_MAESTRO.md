@@ -1851,11 +1851,11 @@ services:
 
 #### 📋 Workflow de aprobación
 
-- [ ] **Sistema de revisión manual**
-  - [ ] Crear estados: draft, pending_review, approved, published
-  - [ ] Implementar workflow en Filament
-  - [ ] Crear dashboard de revisión
-  - [ ] Sistema de notificaciones para editores
+- [x] **Sistema de revisión manual**
+  - [x] Crear estados: draft, pending_review, approved, published
+  - [x] Implementar workflow en Filament
+  - [x] Crear dashboard de revisión
+  - [x] Sistema de notificaciones para editores
 
 - [ ] **A/B testing y feedback loop**
   - [ ] Implementar testing de titulares

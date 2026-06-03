@@ -26,6 +26,7 @@
         "livewire/livewire": "^4.0",
         "mcamara/laravel-localization": "^2.4",
         "openai-php/client": "^0.10.0",
+        "resend/resend-php": "*",
         "simplepie/simplepie": "^1.8",
         "spatie/laravel-ignition": "^2.0",
         "spatie/laravel-medialibrary": "^11.0",
