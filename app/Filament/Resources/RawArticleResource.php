@@ -7,10 +7,11 @@ use App\Models\RawArticle;
 use App\Jobs\ProcessArticleWithAIJob;
 use Filament\Forms;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 
 class RawArticleResource extends Resource
@@ -29,7 +30,7 @@ class RawArticleResource extends Resource
     {
         return $form
             ->components([
-                Forms\Components\Section::make('Laboratorio de Ideas y Entradas')
+                Section::make('Laboratorio de Ideas y Entradas')
                     ->description('Aquí llegan las noticias automáticas del RSS o puedes "Sembrar una Idea" para que la IA la procese.')
                     ->schema([
                         Forms\Components\Select::make('source_id')
@@ -43,7 +44,7 @@ class RawArticleResource extends Resource
                             ->columnSpanFull(),
                     ])->columns(2),
                 
-                Forms\Components\Section::make('Contenido para Procesar')
+                Section::make('Contenido para Procesar')
                     ->description('Escribe un título o un pequeño resumen. Si solo pones un título y le das a "Procesar con IA", el sistema investigará el tema.')
                     ->schema([
                         Forms\Components\TextInput::make('title')
@@ -62,7 +63,7 @@ class RawArticleResource extends Resource
                             ->columnSpanFull(),
                     ]),
                 
-                Forms\Components\Section::make('Estado y Metadatos')
+                Section::make('Estado y Metadatos')
                     ->schema([
                         Forms\Components\Placeholder::make('ai_status_alert')
                             ->label('')
@@ -146,11 +147,11 @@ class RawArticleResource extends Resource
                             ->success()
                             ->send();
                     }),
-                Tables\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
