@@ -109,8 +109,40 @@ class FrontendController extends Controller
             ->limit(50)
             ->get();
 
-        return response()
-            ->view('feed', compact('articles'))
-            ->header('Content-Type', 'application/xml');
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">' . "\n";
+        $xml .= '<channel>' . "\n";
+        $xml .= '    <title>' . e(config('app.name', 'Glodaxia')) . '</title>' . "\n";
+        $xml .= '    <link>' . url('/') . '</link>' . "\n";
+        $xml .= '    <description>Tech &amp; News Magazine</description>' . "\n";
+        $xml .= '    <language>' . str_replace('_', '-', app()->getLocale()) . '</language>' . "\n";
+        $xml .= '    <lastBuildDate>' . now()->toRssString() . '</lastBuildDate>' . "\n";
+        $xml .= '    <atom:link href="' . url('/feed.xml') . '" rel="self" type="application/rss+xml"/>' . "\n";
+
+        foreach ($articles as $article) {
+            $title = e($article->getTranslation('title', 'en'));
+            $link = url('/' . ($article->slug_en ?? $article->slug_es));
+            $excerpt = e(strip_tags($article->getTranslation('excerpt', 'en') ?? ''));
+            $pubDate = $article->published_at?->toRssString() ?? '';
+
+            $xml .= '    <item>' . "\n";
+            $xml .= '        <title>' . $title . '</title>' . "\n";
+            $xml .= '        <link>' . $link . '</link>' . "\n";
+            $xml .= '        <guid isPermaLink="true">' . $link . '</guid>' . "\n";
+            $xml .= '        <description>' . $excerpt . '</description>' . "\n";
+            $xml .= '        <pubDate>' . $pubDate . '</pubDate>' . "\n";
+            if ($article->user) {
+                $xml .= '        <author>' . e($article->user->email ?? 'editorial@glodaxia.com') . '</author>' . "\n";
+            }
+            foreach ($article->tags as $tag) {
+                $xml .= '        <category>' . e($tag->getTranslation('name', 'en') ?? $tag->name) . '</category>' . "\n";
+            }
+            $xml .= '    </item>' . "\n";
+        }
+
+        $xml .= '</channel>' . "\n";
+        $xml .= '</rss>';
+
+        return response($xml, 200)->header('Content-Type', 'application/xml');
     }
 }
