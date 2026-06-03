@@ -7,7 +7,7 @@ use App\Models\Source;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -18,11 +18,11 @@ class SourceResource extends Resource
 {
     protected static ?string $model = Source::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rss';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rss';
     
-    protected static ?string $navigationGroup = 'Ingesta';
+    protected static string|\UnitEnum|null $navigationGroup = 'Ingesta';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([

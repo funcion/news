@@ -6,7 +6,7 @@ use App\Filament\Resources\RawArticleResource\Pages;
 use App\Models\RawArticle;
 use App\Jobs\ProcessArticleWithAIJob;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,15 +17,15 @@ class RawArticleResource extends Resource
 {
     protected static ?string $model = RawArticle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-magnifying-glass';
     
     protected static ?string $navigationLabel = 'Noticias Crudas';
     
     protected static ?string $pluralLabel = 'Noticias Crudas';
 
-    protected static ?string $navigationGroup = 'Gestión de Contenido';
+    protected static string|\UnitEnum|null $navigationGroup = 'Gestión de Contenido';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([

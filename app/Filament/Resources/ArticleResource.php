@@ -13,7 +13,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -25,9 +25,9 @@ class ArticleResource extends Resource
 {
     protected static ?string $model = Article::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Contenido';
+    protected static string|\UnitEnum|null $navigationGroup = 'Contenido';
 
     /**
      * The form uses a custom EN/ES tab layout instead of the Filament
@@ -35,7 +35,7 @@ class ArticleResource extends Resource
      * Each translatable field has explicit _en / _es virtual inputs that
      * read/write via getState/setMutatedAttributeValue hooks.
      */
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
