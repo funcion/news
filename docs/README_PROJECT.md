@@ -1,6 +1,6 @@
 # Glodaxia — Plataforma de Noticias Automatizadas con IA
 
-> **Stack:** Laravel 12 + PostgreSQL + Redis + Horizon + Reverb + FrankenPHP  
+> **Stack:** Laravel 13 + PostgreSQL + Redis + Horizon + Reverb + FrankenPHP  
 > **Dominio:** IA y Automatización (Tech News)  
 > **Idiomas:** EN (primario) + ES | Pathless default → `/`, Spanish → `/es/`
 
@@ -41,8 +41,9 @@ php artisan storage:link
 | Capa | Tech | Version |
 |------|------|---------|
 | PHP | FrankenPHP | 8.3 |
-| Framework | Laravel | 12 |
-| Admin | Filament | 3.x |
+| Framework | Laravel | 13 |
+| Admin | Filament | 5.x |
+| Livewire | Livewire | 4.x |
 | DB | PostgreSQL + pgvector | 17 |
 | Cache/Queue | Redis | 7 |
 | Queue Workers | Laravel Horizon | 5.x |

@@ -1,7 +1,7 @@
 # 🗞️ PLAN MAESTRO - Plataforma de Noticias Automatizada con IA
 
 > **Proyecto**: Plataforma de noticias automatizada con IA y RSS  
-> **Stack**: Laravel 12, Filament, Docker, Redis, PostgreSQL, Horizon, Reverb  
+> **Stack**: Laravel 13, Filament v5, Livewire v4, Docker, Redis, PostgreSQL, Horizon, Reverb  
 > **Fecha de creación**: 29 de Marzo 2026  
 > **Estado**: En desarrollo
 
@@ -36,7 +36,7 @@
 
 ### 1.1 Objetivo del Proyecto
 
-Construir una plataforma de noticias escalable, automatizada y competitiva que combine **RSS feeds + IA generativa + SEO técnico avanzado**, con arquitectura Laravel 12, diseñada para crecer y competir con grandes medios digitales.
+Construir una plataforma de noticias escalable, automatizada y competitiva que combine **RSS feeds + IA generativa + SEO técnico avanzado**, con arquitectura Laravel 13, diseñada para crecer y competir con grandes medios digitales.
 
 ### 1.2 Pilares Fundamentales
 
@@ -55,7 +55,7 @@ Construir una plataforma de noticias escalable, automatizada y competitiva que c
 - Consistencia en el código
 - Sencillez sobre complejidad innecesaria
 - Escalabilidad horizontal
-- Mejores prácticas de Laravel 12
+- Mejores prácticas de Laravel 13
 - Código mantenible a largo plazo
 - Validación temprana (Fase 0)
 - Enfoque en métricas de engagement (CTR, tiempo de lectura)
@@ -172,8 +172,8 @@ FASE 3 (Año 3+): Agregar "Finanzas Tech" → Plataforma multi-nicho
 | Capa                   | Tecnología                         | Justificación                                       | Beneficios con FrankenPHP                                           |
 | ---------------------- | ---------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
 | **Servidor Web + PHP** | **FrankenPHP** (PHP 8.3 + Caddy)   | PHP + servidor web integrado, HTTP/3 nativo         | ⚡ **20-30% más rápido**, 🚀 **HTTP/3**, 🔧 **Menos configuración** |
-| Backend                | Laravel 12                         | Framework robusto, comunidad activa                 | Compatibilidad total, worker mode optimizado                        |
-| Admin                  | Filament v3                        | Panel de administración rápido y potente            | Sin cambios, funciona perfectamente                                 |
+| Backend                | Laravel 13                         | Framework robusto, comunidad activa                 | Compatibilidad total, worker mode optimizado                        |
+| Admin                  | Filament v5 + Livewire v4          | Panel de administración rápido y potente            | Schema API (reemplaza Form), Container Queries                      |
 | DB Principal           | PostgreSQL + pgvector              | JSONB para metadatos, embeddings para IA            | pgvector para similitud semántica                                   |
 | Cache                  | Redis                              | Cache ultra-rápido, colas de trabajos               | Sesiones en Redis para mejor performance                            |
 | Colas                  | Laravel Horizon                    | Gestión visual de colas para procesamiento IA       | Procesamiento async de IA sin bloquear servidor                     |
@@ -280,7 +280,7 @@ Pipeline de procesamiento que transforma contenido crudo en artículos 100% SEO,
 ```
 [Noticia Cruda desde Cola]
          ↓
-[Clasificador IA Barato (Gemini Flash)]
+[Clasificador IA (DeepSeek V4 Pro)]
          ↓
     ┌────┼────┐
     ↓    ↓    ↓
@@ -297,14 +297,14 @@ Pipeline de procesamiento que transforma contenido crudo en artículos 100% SEO,
  [Cola de Publicación]
 ```
 
-### 5.3 Pipeline de Redacción en 4 Capas
+### 5.3 Pipeline de Redacción (Actualizado - DeepSeek V4 Pro)
 
 | Capa             | Modelo IA            | Costo Est. | Función                                 |
 | ---------------- | -------------------- | ---------- | --------------------------------------- |
-| 1. Clasificación | Gemini Flash / Haiku | $0.001     | ¿Nueva, actualización o duplicado?      |
-| 2. Extracción    | Gemini Flash         | $0.002     | Extraer hechos clave, entidades, fechas |
-| 3. Redacción     | Claude 3.5 Sonnet    | $0.03      | Escribir artículo completo con "voz"    |
-| 4. Humanización  | GPT-4o-mini          | $0.005     | Post-procesamiento anti-detección IA    |
+| 1. Clasificación | DeepSeek V4 Pro      | $0.001     | ¿Nueva, actualización o duplicado?      |
+| 2. Extracción    | DeepSeek V4 Pro      | $0.002     | Extraer hechos clave, entidades, fechas |
+| 3. Redacción     | DeepSeek V4 Pro      | $0.03      | Escribir artículo completo con "voz"    |
+| 4. Humanización  | DeepSeek V4 Pro      | $0.005     | Post-procesamiento anti-detección IA    |
 
 **Costo estimado por artículo: ~$0.04**  
 **100 artículos/día = $4/día = $120/mes**
@@ -349,7 +349,7 @@ Cada artículo generado debe incluir:
 
 ### 5.7 Validación de Hechos / Fact-Checking (Nuevo - Crítico)
 
-- Paso rápido con IA económica (Gemini Flash) que compara borrador vs fuente original
+- Paso rápido con DeepSeek V4 Pro que compara borrador vs fuente original
 - Verifica nombres, fechas, cifras y URLs
 - Marca discrepancias para revisión humana
 - Solo publica si discrepancia <5%
@@ -694,7 +694,7 @@ Sistema automatizado de tags que mejora SEO, navegación y descubrimiento de con
                        ↓
 ┌─────────────────────────────────────────────────┐
 │       EXTRACCIÓN DE TAGS CON IA (NER)           │
-│  [Gemini Flash] → [Entidades Nombradas]         │
+│  [DeepSeek V4 Pro] → [Entidades Nombradas]      │
 │  [Tecnologías] → [Conceptos Clave] → [Topics]   │
 └──────────────────────┬──────────────────────────┘
                        ↓
@@ -1085,7 +1085,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 │  FrankenPHP (PHP 8.3 + Caddy + HTTP/3)         │
 ├─────────────────────────────────────────────────┤
 │                  BACKEND                         │
-│  Laravel 12 + Filament v3                       │
+│  Laravel 13 + Filament v5 + Livewire v4        │
 ├─────────────────────────────────────────────────┤
 │                  TIEMPO REAL                     │
 │  Laravel Reverb (WebSockets)                    │
@@ -1097,7 +1097,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 │  PostgreSQL + pgvector + Redis                  │
 ├─────────────────────────────────────────────────┤
 │                  IA                              │
-│  OpenRouter (Claude, GPT-4o, Gemini)            │
+│  OpenRouter (DeepSeek V4 Pro, Gemini, Qwen)     │
 ├─────────────────────────────────────────────────┤
 │                  IMÁGENES                        │
 │  FluxAPI.ai + Unsplash + libvips                │
@@ -1353,28 +1353,18 @@ FASE 3 (50k+ visitas/día):
 ```
 ESTRATEGIA DE 4 TIERS + ALERTAS + ALTERNATIVAS ECONÓMICAS:
 
-Tier 1 (Clasificación): Gemini Flash → $0.001/operación
-Tier 2 (Extracción): Gemini Flash → $0.002/operación
-Tier 3 (Redacción): Claude 3.5 Sonnet → $0.03/operación
-Tier 4 (Humanización): GPT-4o-mini → $0.005/operación
+Tier 1 (Clasificación): DeepSeek V4 Pro → $0.001/operación
+Tier 2 (Extracción): DeepSeek V4 Pro → $0.002/operación
+Tier 3 (Redacción): DeepSeek V4 Pro → $0.03/operación
+Tier 4 (Humanización): DeepSeek V4 Pro → $0.005/operación
 
 Costo estimado por artículo: ~$0.04
 100 artículos/día = $4/día = $120/mes
 
-**ALTERNATIVAS MÁS ECONÓMICAS (Optimización de costos):**
-- **DeepSeek V3**: Hasta 10x más barato que Claude, similar calidad
-- **Gemini 3.1 Pro**: 30-40% más barato que Claude 3.5, mejor rendimiento en razonamiento
-- **GPT-4o-mini para redacción**: $0.015/operación (50% más barato que Claude)
+**Modelo activo actual**: `deepseek/deepseek-v4-pro` (vía OpenRouterService::MODEL_ACTIVE)
+**Modelos disponibles para rotación**: Gemini 2.5 Flash, Gemini 2.5 Pro, DeepSeek V4 Flash, Qwen 3.6++, MiniMax M2.7
 
-**Estrategia de costos optimizada:**
-1. **Fase inicial**: Claude 3.5 Sonnet (calidad máxima)
-2. **Fase crecimiento**: Gemini 3.1 Pro (balance costo/calidad)
-3. **Fase escala**: DeepSeek V3 (máxima eficiencia de costos)
-
-**Costo optimizado por artículo: ~$0.028** (usando alternativas económicas)
-100 artículos/día = $2.8/día = $84/mes (30% de ahorro)
-
-**Umbral máximo**: $0.06 por artículo. Laravel Pulse debe alertar si se supera durante 3 días consecutivos. Activar "modo degradado" automático (cambiar a modelos económicos).
+**Umbral máximo**: $0.06 por artículo.
 ```
 
 ### 19.2 Legalidad (NO LO IGNORES)
@@ -1388,7 +1378,7 @@ Costo estimado por artículo: ~$0.04
 
 ### 19.3 Observabilidad Obligatoria (Mejorada con FrankenPHP)
 
-- **Laravel Pulse**: Monitoreo nativo de Laravel 12 + métricas FrankenPHP
+- **Laravel Pulse**: Monitoreo nativo de Laravel 13 + métricas FrankenPHP
 - **Horizon Dashboard**: Estado de colas en tiempo real
 - **FrankenPHP Metrics**: Request timing, memory usage, worker status
 - **Alertas**: Si un worker falla más de 3 veces, notificación inmediata
@@ -1601,7 +1591,7 @@ services:
 | **Publicación**      | Semi-automática → 100% auto en 6 meses                 | FrankenPHP maneja alta concurrencia     |
 | **Monetización**     | Mes 11+ (primero audiencia, luego dinero)              | HTTP/3 mejora conversiones              |
 | **Expansión**        | 1 nicho (año 1) → 2 nichos (año 2) → 3 nichos (año 3+) | FrankenPHP escala horizontalmente       |
-| **Stack Principal**  | **FrankenPHP** + Laravel 12 + Filament                 | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
+| **Stack Principal**  | **FrankenPHP** + Laravel 13 + Filament v5 + Livewire v4  | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
 | **Base de Datos**    | PostgreSQL + pgvector + Redis                          | Embeddings para IA, cache ultra-rápido  |
 | **Tiempo Real**      | Laravel Reverb + Horizon                               | WebSockets + async processing           |
 | **Sistema de Scrapping** | **Jina Reader (r.jina.ai)**            | Scraping optimizado para LLMs           |
@@ -1660,8 +1650,8 @@ services:
 
 #### 📋 Infraestructura y Configuración Base con FrankenPHP
 
-- [x] **Configurar proyecto Laravel 12 con FrankenPHP**
-  - [x] Crear nuevo proyecto Laravel 12
+- [x] **Configurar proyecto Laravel 13 con FrankenPHP**
+  - [x] Crear nuevo proyecto Laravel 13
   - [x] Configurar Docker con FrankenPHP (reemplaza php-fpm+nginx)
   - [x] Configurar PostgreSQL + pgvector + Redis
   - [x] Configurar entorno de desarrollo (.env, docker-compose)
@@ -1684,7 +1674,7 @@ services:
   - [x] Crear factories y seeders para testing
 
 - [x] **Configurar Filament Admin**
-  - [x] Instalar y configurar Filament v3
+  - [x] Instalar y configurar Filament v5 + Livewire v4
   - [x] Instalar `filament/spatie-laravel-translatable-plugin`
   - [x] Crear recursos básicos:
     - [x] Resource para `sources`
@@ -1759,10 +1749,10 @@ services:
 - [x] **Pipeline de procesamiento IA**
   - [x] Crear job `ProcessArticleWithAIJob`
   - [x] Implementar 4 capas de procesamiento:
-    - [x] **Capa 1**: Clasificación (Gemini Flash)
-    - [x] **Capa 2**: Extracción de hechos (Gemini Flash)
-    - [x] **Capa 3**: Redacción (Claude 3.5 Sonnet)
-    - [x] **Capa 4**: Humanización (GPT-4o-mini)
+    - [x] **Capa 1**: Clasificación (DeepSeek V4 Pro)
+    - [x] **Capa 2**: Extracción de hechos (DeepSeek V4 Pro)
+    - [x] **Capa 3**: Redacción (DeepSeek V4 Pro)
+    - [x] **Capa 4**: Humanización (DeepSeek V4 Pro)
   - [x] Implementar sistema de "voces editoriales"
 
 - [x] **Sistema anti-duplicados**
@@ -2012,7 +2002,7 @@ services:
 # 1. Navegar al directorio del proyecto
 cd /home/adminpro/noticias
 
-# 2. Crear proyecto Laravel 12
+# 2. Crear proyecto Laravel 13
 composer create-project laravel/laravel:^12.0 noticias-platform --prefer-dist
 
 # 3. Entrar al directorio del proyecto
@@ -2077,7 +2067,7 @@ git init
 git add .
 
 # 3. Primer commit
-git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 12"
+git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 13"
 ```
 
 ---
@@ -2098,7 +2088,7 @@ git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 12"
 Te proporcionaré:
 
 1. **`docker-compose.yml`** completo con FrankenPHP
-2. **`Dockerfile`** optimizado para Laravel 12
+2. **`Dockerfile`** optimizado para Laravel 13
 3. **`Caddyfile`** con HTTP/3 y Server Push
 4. **Scripts de validación** para HTTP/3 y performance
 

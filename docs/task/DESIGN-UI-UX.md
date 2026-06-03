@@ -2,7 +2,7 @@
 
 **Última actualización:** 31 de marzo de 2026  
 **Estado:** ✅ Implementado y funcionando  
-**Stack:** Laravel 12 + Blade + Alpine.js + Tailwind CSS + Vite
+**Stack:** Laravel 13 + Blade + Alpine.js + Tailwind CSS + Vite
 
 ## 1. Principios Fundamentales de Diseño
 

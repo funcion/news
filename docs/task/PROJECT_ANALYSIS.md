@@ -13,10 +13,10 @@ graph TD
     A[RSS Feeds & Scraping] -->|FetchRssFeedJob| B[(Raw Articles DB)]
     B -->|ProcessArticleWithAIJob| C[AI Brain Pipeline]
     
-    C -->|1. Classify & Extract Facts| D[Gemini-2.5-Flash]
+    C -->|1. Classify & Extract Facts| D[DeepSeek V4 Pro]
     C -->|2. Semantic Anti-Duplicate Check| E[(pgvector Similarity Search)]
-    C -->|3. Bilingual Copywriting & Opinion| F[DeepSeek V4 Pro / Claude 3.5 Sonnet]
-    C -->|4. Humanization & SEO Optimization| G[GPT-4o-Mini / LSI Injection]
+    C -->|3. Bilingual Copywriting & Opinion| F[DeepSeek V4 Pro]
+    C -->|4. Humanization & SEO Optimization| F
     C -->|5. Realistic Visual Generation| H[SiliconFlow FLUX.1 API]
     C -->|6. Automatic Tagging| I[TagGeneratorService]
     
@@ -31,8 +31,8 @@ graph TD
 | Layer | Technology | Operational Function |
 | :--- | :--- | :--- |
 | **Web Server / Runtime** | **FrankenPHP** (PHP 8.3 + Caddy) | Replaces traditional Nginx + PHP-FPM. Enables Worker Mode (app persistent in memory like Octane), HTTP/3 QUIC, Brotli/Zstd compression, and Server Push. |
-| **Core Framework** | **Laravel 12** | Core backend logic, routing, service providers, and database abstraction. |
-| **Admin Dashboard** | **Filament v3** | Premium backoffice for manual review, editor curation, and settings administration. |
+| **Core Framework** | **Laravel 13** | Core backend logic, routing, service providers, and database abstraction. |
+| **Admin Dashboard** | **Filament v5 + Livewire v4** | Premium backoffice for manual review, editor curation, and settings administration. Schema API replaces Form. |
 | **Database** | **PostgreSQL + pgvector** | Core persistence. `pgvector` enables fast cosine distance (<=>) queries for semantic duplicate checking. |
 | **Caching & Queues** | **Redis + Laravel Horizon** | Caching, session storage, and Horizon dashboard to process heavy AI and visual generation tasks in the background. |
 | **WebSockets** | **Laravel Reverb** | Real-time notifications for live updates when new articles are published without reloading the page. |
@@ -99,9 +99,8 @@ Processing incoming news is executed as a background worker pipeline via Horizon
 *   Regular cron pulls active RSS configurations.
 *   Raw content is parsed and validated, then stored as `pending` inside `raw_articles`.
 
-### 2. Classification & Fact Extraction (`Gemini-2.5-Flash`)
-*   An ultra-fast prompt detects the source language.
-*   Extracts key facts as a concise list (translated directly to English for consistency).
+### 2. Classification & Fact Extraction (DeepSeek V4 Pro)
+*   A single model handles classification, language detection, and fact extraction.
 *   Validates if the content fits categories, flagging non-relevant items as `ignored`.
 
 ### 3. Anti-Duplicate Matrix (`DuplicateCheckerService`)
@@ -116,7 +115,7 @@ To prevent Google spam penalties and maintain a clean layout, three levels of du
     *   Instead of creating a new article, it appends the new link as a structured `ArticleUpdate` and bumps `updated_at`, alerting Google via **IndexNow** of fresh coverage.
 
 ### 4. Bilingual Copywriting & Opinion Column Voice
-The core copywriting model is **DeepSeek V4 Pro** (fallback: Claude 3.5 Sonnet) configured through `OpenRouterService`. It implements an opinion-column style modeled after TechCrunch or Wired:
+The core copywriting model is **DeepSeek V4 Pro** (active model via `OpenRouterService::MODEL_ACTIVE`) configured through `OpenRouterService`. It implements an opinion-column style modeled after TechCrunch or Wired:
 *   **Irresistible Curiosity Gap**: Compelling headers and punchy hooks.
 *   **Strong Editorial Thesis**: The writer adopts a specific, expert point of view (skeptical, excited, urgent). No robotic fence-straddling.
 *   **Organic Rhythm (Burstiness)**: Handcrafted sentence variation (mix of short 5-word punches and structured complex thoughts).
