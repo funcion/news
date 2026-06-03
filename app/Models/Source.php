@@ -22,6 +22,8 @@ class Source extends Model
         'frequency',
         'last_fetched_at',
         'is_active',
+        'trusted',
+        'max_age_days',
         'score',
         'metadata',
     ];
@@ -34,6 +36,8 @@ class Source extends Model
     protected $casts = [
         'last_fetched_at' => 'datetime',
         'is_active' => 'boolean',
+        'trusted' => 'boolean',
+        'max_age_days' => 'integer',
         'score' => 'integer',
         'metadata' => 'array',
     ];

@@ -4,6 +4,7 @@ namespace App\Services\AI;
 
 use App\Models\Article;
 use App\Models\ArticleUpdate;
+use App\Models\RawArticle;
 use Illuminate\Support\Facades\Log;
 
 class DuplicateCheckerService
@@ -33,6 +34,23 @@ class DuplicateCheckerService
         if ($similarByTitle) {
             Log::info("Level 2 Duplicate found by title similarity: Article ID {$similarByTitle->id}");
             $this->createUpdateEntry($similarByTitle, $url, $rawArticleId);
+            return true;
+        }
+
+        // Level 2.5: Cross-check against pending raw_articles in the queue
+        // Prevents two sources from generating duplicate articles for the same news
+        $pendingDuplicate = RawArticle::where('id', '!=', $rawArticleId)
+            ->where('status', 'pending')
+            ->where(function ($q) use ($title) {
+                $q->whereRaw("title ILIKE ?", ["%{$title}%"])
+                  ->orWhere('title', 'ILIKE', '%' . substr($title, 0, 50) . '%');
+            })
+            ->first();
+
+        if ($pendingDuplicate) {
+            Log::info("Level 2.5 Duplicate found in queue: RawArticle ID {$pendingDuplicate->id} matches {$rawArticleId}");
+            // Mark this one as ignored since another pending article covers the same news
+            RawArticle::where('id', $rawArticleId)->update(['status' => 'ignored']);
             return true;
         }
 

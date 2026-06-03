@@ -54,6 +54,15 @@ class SourceResource extends Resource
                     ->disabled(),
                 Toggle::make('is_active')
                     ->default(true),
+                Toggle::make('trusted')
+                    ->label('Fuente Verificada')
+                    ->helperText('Las fuentes verificadas tienen prioridad en el procesamiento')
+                    ->default(false),
+                TextInput::make('max_age_days')
+                    ->label('Máx. Antigüedad (días)')
+                    ->numeric()
+                    ->default(7)
+                    ->helperText('Rechazar artículos más antiguos que este número de días'),
             ]);
     }
 
@@ -75,6 +84,11 @@ class SourceResource extends Resource
                     ->numeric()
                     ->sortable(),
                 ToggleColumn::make('is_active'),
+                ToggleColumn::make('trusted')
+                    ->label('Verificada'),
+                TextColumn::make('max_age_days')
+                    ->label('Máx. Días')
+                    ->numeric(),
                 TextColumn::make('last_fetched_at')
                     ->dateTime()
                     ->sortable(),

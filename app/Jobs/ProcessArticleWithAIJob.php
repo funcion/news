@@ -76,6 +76,35 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
+        // --- FILTER: Sensitive / Harmful Content ---
+        if (!empty($classification['is_sensitive']) && $classification['is_sensitive'] === true) {
+            $this->rawArticle->update(['status' => 'ignored']);
+            Log::warning("RawArticle {$this->rawArticle->id} flagged as sensitive content. Blocked.");
+            return;
+        }
+
+        // --- FILTER: Potentially False / Misinformation ---
+        if (!empty($classification['is_potentially_false']) && $classification['is_potentially_false'] === true) {
+            $this->rawArticle->update(['status' => 'ignored']);
+            Log::warning("RawArticle {$this->rawArticle->id} flagged as potentially false/misinformation. Blocked.");
+            return;
+        }
+
+        // --- FILTER: Article Age ---
+        $maxAgeDays = $this->rawArticle->source->max_age_days ?? 7;
+        if ($this->rawArticle->published_at && $this->rawArticle->published_at->lt(now()->subDays($maxAgeDays))) {
+            $this->rawArticle->update(['status' => 'ignored']);
+            Log::info("RawArticle {$this->rawArticle->id} rejected: article is {$this->rawArticle->published_at->diffForHumans()}, max age is {$maxAgeDays} days.");
+            return;
+        }
+
+        // --- FILTER: Source Trust ---
+        if (!$this->rawArticle->source->trusted && $this->rawArticle->source->score < 50) {
+            $this->rawArticle->update(['status' => 'ignored']);
+            Log::warning("RawArticle {$this->rawArticle->id} rejected: untrusted source with low score ({$this->rawArticle->source->score}).");
+            return;
+        }
+
         // --- NEW: DUPLICATE CHECK LEVEL 2 & 3 ---
         $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
              $this->rawArticle->title ?? '',
@@ -126,14 +155,32 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $contentEn = $this->cleanInlineUrls($contentEn);
         $contentEs = $this->cleanInlineUrls($contentEs);
 
-        // Determine category
-        $categoryId = $this->rawArticle->source->category_id ?? 1;
+        // Determine category — STRICT matching, no fallback to generic
+        $categoryId = null;
         if (!empty($classification['category_name'])) {
             $matchedCat = \App\Models\Category::whereRaw("name->>'es' ILIKE ?", [trim($classification['category_name'])])->first()
                 ?? \App\Models\Category::whereRaw("name->>'en' ILIKE ?", [trim($classification['category_name'])])->first();
             if ($matchedCat) {
                 $categoryId = $matchedCat->id;
             }
+        }
+
+        // If no strict match, try partial match (contains)
+        if (!$categoryId && !empty($classification['category_name'])) {
+            $partialCat = \App\Models\Category::whereRaw("name->>'es' ILIKE ?", ['%' . trim($classification['category_name']) . '%'])->first()
+                ?? \App\Models\Category::whereRaw("name->>'en' ILIKE ?", ['%' . trim($classification['category_name']) . '%'])->first();
+            if ($partialCat) {
+                $categoryId = $partialCat->id;
+                Log::info("Category matched via partial search: {$partialCat->id}");
+            }
+        }
+
+        // If STILL no match → reject to pending_review instead of publishing blindly
+        if (!$categoryId) {
+            Log::warning("RawArticle {$this->rawArticle->id}: No category match for '{$classification['category_name']}'. Setting to pending_review.");
+            $categoryId = $this->rawArticle->source->category_id ?? 1; // Use source default but flag it
+            $this->rawArticle->update(['status' => 'processed']);
+            // Article will be created as draft (not published) so admin can review
         }
 
         // --- CREATE ARTICLE (Bilingual) ---
@@ -445,6 +492,10 @@ class ProcessArticleWithAIJob implements ShouldQueue
         })->filter()->toArray();
         $categoriesList = implode(', ', $categories) ?: 'General / General';
 
+        $sourceTrusted = $this->rawArticle->source->trusted ? 'YES' : 'NO';
+        $sourceScore   = $this->rawArticle->source->score ?? 0;
+        $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'unknown';
+
         $prompt = <<<PROMPT
 You are a senior multilingual editorial AI. Analyze the following news article and respond in STRICT JSON only.
 
@@ -452,12 +503,16 @@ DATE: {$today}
 VALID CATEGORIES: [{$categoriesList}]
 ARTICLE TITLE: {$this->rawArticle->title}
 ARTICLE CONTENT: {$content}
+SOURCE TRUSTED: {$sourceTrusted} (score: {$sourceScore})
+ARTICLE AGE: {$articleAge}
 
 Detect the SOURCE LANGUAGE of the article automatically (it may be English, Spanish, French, Portuguese, or any other language).
 
 Respond in STRICT JSON (no markdown):
 {
     "is_relevant": true,
+    "is_sensitive": false,
+    "is_potentially_false": false,
     "source_language": "en",
     "category_name": "AI / IA",
     "content_type": "news",
@@ -467,10 +522,12 @@ Respond in STRICT JSON (no markdown):
 
 Rules:
 - source_language: ISO 639-1 code of the article's source language (e.g., "en", "es", "pt", "fr")
-- category_name: must match one of the valid categories above (use the English name part before the slash)
+- category_name: MUST exactly match one of the VALID CATEGORIES listed above. Use the English name part before the slash. If NONE of the valid categories fit, set is_relevant to false.
 - content_type: one of: news, blog, guide, review, pillar
 - importance: 1-10 based on editorial relevance
 - facts: 3-7 concise key facts extracted from the article IN ENGLISH (always translate facts to English)
+- is_sensitive: set to TRUE if the content involves: graphic violence, hate speech, explicit sexual content, illegal activities, self-harm, terrorism, or content that could cause legal liability
+- is_potentially_false: set to TRUE if the article contains obvious misinformation, fabricated statistics, conspiracy theories, unverified claims presented as fact, or reads like propaganda/sponsored content disguised as news
 PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
