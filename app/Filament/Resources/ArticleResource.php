@@ -312,7 +312,7 @@ class ArticleResource extends Resource
         ];
     }
 
-    protected static function sendNotification(Article $article, string $oldStatus, string $newStatus): void
+    public static function sendNotification(Article $article, string $oldStatus, string $newStatus): void
     {
         try {
             $editors = \App\Models\User::where('is_active', true)->pluck('email')->filter();
