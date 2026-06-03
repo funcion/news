@@ -1614,38 +1614,81 @@ services:
 
 ---
 
-## 20. LISTA DE TAREAS — CHECKLIST ACTUALIZADO
+## 20. LISTA DE TAREAS DETALLADAS CON CHECKLISTS
 
-> **Última actualización**: 3 Junio 2026
-> **Dominio**: Comprado hace menos de 24 horas — sitio nuevo
+### 20.1 ✅ FASE 0-3: COMPLETADO (Infraestructura + IA + Frontend)
 
-### ✅ COMPLETADO (Fases 0-3)
+#### 📋 Infraestructura Docker + Laravel
 
-- [x] Docker + FrankenPHP + PostgreSQL + pgvector + Redis
-- [x] RSS pipeline (scheduler cada 60s, 4 fuentes activas)
-- [x] AI Pipeline (clasificación → redacción → imágenes → tags → publish)
-- [x] 31+ artículos publicados automáticamente
-- [x] Frontend responsive EN/ES con dark mode
-- [x] SEO técnico (sitemap index, canonical, OG, hreflang, JSON-LD, news/images sitemaps)
-- [x] Custom Code injection via Filament admin
-- [x] RSS feed en `/feed.xml`
-- [x] Migración Laravel 13 + Filament v5 + Livewire v4
-- [x] Editorial workflow (approve/reject/review + email notifications)
-- [x] Dashboard widgets (stats + pending review table)
-- [x] Sitemap Index con 6 sub-sitemaps + hreflang bilingüe
+- [x] Docker con FrankenPHP + PostgreSQL + pgvector + Redis
+- [x] Configurar Vite y Tailwind CSS
+- [x] Configurar FrankenPHP worker mode
+
+#### 📋 Base de datos
+
+- [x] Migraciones: sources, raw_articles, articles (JSONB translatable), categories, tags, media
+- [x] Spatie Translatable + MediaLibrary (images_en / images_es)
+- [x] pgvector para embeddings
+
+#### 📋 Filament Admin
+
+- [x] Instalar Filament v5 + Livewire v4
+- [x] Resources: ArticleResource, SourceResource, CategoryResource, TagResource, RawArticleResource
+- [x] Dashboard con widgets (StatsOverview, PendingReviewTable)
+- [x] Custom Code Resource (injection header_head, header_body, footer)
+
+#### 📋 Pipeline RSS
+
+- [x] RssService con SimplePie + dedup SHA256
+- [x] FetchRssFeedJob + RssFetchCommand
+- [x] Scheduler cada 60s via Supervisor
+- [x] 4 fuentes activas
+- [x] ScraperService con Jina Reader fallback
+
+#### 📋 Pipeline IA
+
+- [x] ProcessArticleWithAIJob (clasificación → redacción → imagen → tags → publish)
+- [x] OpenRouterService (DeepSeek V4 Pro)
+- [x] SiliconFlowImageService (FLUX.1)
+- [x] TagGeneratorService (NER con IA)
+- [x] DuplicateCheckerService (3 niveles: hash, texto, pgvector)
+- [x] cleanInlineUrls + validateRedactedOutput + parseJson robusto
+
+#### 📋 Frontend
+
+- [x] Diseño 2 columnas (70/30) responsive
+- [x] Dark/Light mode
+- [x] Header con navegación + sidebar (trending, categorías, newsletter)
+- [x] Footer con enlaces legales
+- [x] Rutas: home, article, category, tag, search, feed.xml
+- [x] Sitemaps: index, articles EN/ES, categories, tags, news, images
+- [x] SEO: canonical, OG/Twitter cards, hreflang, JSON-LD, robots
+
+#### 📋 Editorial Workflow
+
+- [x] Estados: draft, pending_review, published, rejected
+- [x] Botones Aprobar/Rechazar/Revisar en tabla
+- [x] Botones en página de edición
+- [x] Notificaciones email (ArticleStatusChanged Mailable)
+- [x] Dashboard PendingReviewTable widget
+- [x] Safety filters: is_sensitive, is_potentially_false, max_age_days, trusted sources
+
+#### 📋 SEO + IndexNow
+
+- [x] Sitemap Index con 6 sub-sitemaps (artículos EN/ES, categorías, tags, news, images)
+- [x] Hreflang bilingüe EN↔ES en sitemaps
 - [x] IndexNow controller (verificación GET + ping POST)
-- [x] Safety filters (age, trust, sensitivity, cross-duplication, strict categories)
-- [x] Fuentes RSS con campo `trusted` y `max_age_days`
 - [x] flushCache + IndexNow ping al publicar (IA + Filament approve)
+- [x] Google News sitemap (últimas 48h)
+- [x] Images sitemap (image:image namespace)
 
 ---
 
-### 🔴 SEMANA 1 — Despliegue y Fundación SEO
+### 20.2 🔴 SEMANA 1 — Despliegue y Fundación SEO
 
-#### Deploy en producción
+#### 📋 Deploy en producción
 
-- [ ] Elegir proveedor VPS (recomendado: Hetzner CX22 ~$5/mes o DigitalOcean $6/mes)
-- [ ] Comprar/configurar dominio (ya comprado ✅)
+- [ ] Elegir proveedor VPS (recomendado: **Hetzner CX22** ~$5/mes o **DigitalOcean** $6/mes)
 - [ ] Apuntar DNS del dominio al VPS (A record → IP del VPS)
 - [ ] Instalar Docker + Docker Compose en el VPS
 - [ ] Clonar repositorio en el VPS
@@ -1653,116 +1696,102 @@ services:
 - [ ] `docker compose up -d` en producción
 - [ ] `php artisan migrate --seed`
 - [ ] `php artisan shield:generate --all`
-- [ ] Verificar que el sitio carga en `https://{dominio}`
-- [ ] Verificar HTTPS automático (Caddy genera certificado Let's Encrypt)
-- [ ] Verificar que `/admin` funciona
-- [ ] Verificar que Horizon está corriendo (`/horizon`)
+- [ ] Verificar sitio HTTPS, admin, Horizon
 
-#### IndexNow — Activar
+#### 📋 IndexNow — Activar
 
 - [ ] Generar INDEXNOW_KEY: `openssl rand -hex 16`
-- [ ] Crear archivo de verificación: `public/{key}.txt` con contenido `{key}`
+- [ ] Crear archivo verificación `public/{key}.txt` con contenido `{key}`
 - [ ] Agregar `INDEXNOW_KEY={key}` al `.env` de producción
-- [ ] Reiniciar contenedor: `docker compose restart app`
-- [ ] Verificar: `curl "https://{dominio}/indexnow?key={key}"` → debe retornar `{key}` (200)
-- [ ] Registrar en Bing Webmaster Tools: https://www.bing.com/webmasters
-- [ ] Probar ping: publicar un artículo y revisar logs del contenedor
+- [ ] Verificar endpoint y archivo de verificación
+- [ ] Registrar en Bing Webmaster Tools
+- [ ] Probar ping al publicar artículo
 
-#### Google — Primer contacto
+#### 📋 Google — Primer contacto
 
-- [ ] Crear cuenta en Google Search Console: https://search.google.com/search-console
-- [ ] Agregar propiedad: `https://{dominio}`
-- [ ] Verificar propiedad (DNS TXT record)
+- [ ] Crear Google Search Console + verificar propiedad
 - [ ] Enviar sitemap: `https://{dominio}/sitemap.xml`
-- [ ] Crear cuenta en Google Analytics 4: https://analytics.google.com
-- [ ] Obtener Measurement ID (G-XXXXXXXXXX)
-- [ ] Agregar tag GA4 al layout: `resources/views/components/layouts/app.blade.php`
+- [ ] Crear Google Analytics 4 + obtener Measurement ID
+- [ ] Agregar tag GA4 al layout principal
 
 ---
 
-### 🟡 SEMANAS 2-4 — Contenido + Indexación
+### 20.3 🟡 SEMANAS 2-4 — Contenido + Indexación
 
-#### Generar masa crítica de contenido
+#### 📋 Masa crítica de contenido
 
-- [ ] Verificar scheduler RSS activo (Horizon + scheduler)
 - [ ] Agregar más fuentes RSS (objetivo: 8-10 fuentes activas)
 - [ ] Objetivo: **50+ artículos publicados** para fin de mes 1
 - [ ] Revisar calidad de artículos (títulos, contenido, imágenes, tags)
-- [ ] Ajustar prompt si es necesario
+- [ ] Ajustar prompt de redacción si es necesario
 
-#### Monitorear indexación
+#### 📋 Monitorear indexación
 
 - [ ] Google Search Console semanalmente (cobertura, sitemaps, errores)
 - [ ] Bing Webmaster Tools (IndexNow pings, páginas indexadas)
+- [ ] Verificar sitemaps individualmente (curl)
 
-#### SEO on-page — Verificar
-
-- [ ] Canonical URL correcta por artículo
-- [ ] Hreflang apunta a versión alternativa
-- [ ] JSON-LD válido (https://search.google.com/test/rich-results)
-- [ ] Open Graph correcto (imagen + título)
-- [ ] Sitemaps válidos (`/sitemap.xml`, `/sitemap-articles-en.xml`, `/sitemap-news.xml`, `/sitemap-images.xml`)
-
-#### Fixes de código
+#### 📋 Fixes de código
 
 - [ ] `PendingReviewTable` widget: agregar `flushCache()` + `IndexNow ping` en approve/reject
-- [ ] Google Ping en `IndexNowController::ping()`
+- [ ] Google Ping en `IndexNowController::ping()`: `Http::get('https://www.google.com/ping?sitemap={url}')`
+- [ ] Commit y push
 
 ---
 
-### 🟢 MES 2 — Crecimiento orgánico
+### 20.4 🟢 MES 2 — Crecimiento orgánico
 
-#### Analytics
+#### 📋 Analytics
 
 - [ ] GA4 semanal: usuarios, páginas vistas, tiempo sesión, rebote, fuentes
 - [ ] Evento GA4 `article_read` (scroll 50%+)
 - [ ] Evento GA4 `search`
 
-#### Dashboard Filament
+#### 📋 Dashboard Filament
 
-- [ ] Widget `TrafficOverviewWidget`
-- [ ] Widget `TopArticlesWidget`
+- [ ] Widget `TrafficOverviewWidget` — visitas diarias (últimos 30 días)
+- [ ] Widget `TopArticlesWidget` — artículos más vistos
 
-#### Tracking vistas
+#### 📋 Tracking vistas
 
 - [ ] Job `TrackArticleViewJob` (incrementa `views` async)
 - [ ] Limitar: 1 vista por IP por artículo por sesión
 
-#### Feedback Loop prompts IA
+#### 📋 Feedback Loop prompts IA
 
-- [ ] Migration `article_edits` table
+- [ ] Migration `article_edits` table (article_id, field, old_value, new_value, edited_by, edited_at)
 - [ ] Registrar ediciones manuales en Filament
 - [ ] Analizar patrones y refinar prompt
 
-#### Distribución automática
+#### 📋 Distribución automática
 
 - [ ] Telegram Bot (BotFather → canal → job `DispatchToTelegramJob`)
 - [ ] Discord Webhook (crear webhook → job `DispatchToDiscordJob`)
 
 ---
 
-### 🔵 MES 3 — Google News + Newsletter
+### 20.5 🔵 MES 3 — Google News + Newsletter
 
-#### Google News Publisher
+#### 📋 Google News Publisher
 
 > ⚠️ No aplicar hasta tener 50+ artículos y 1 mes de indexación
 
 - [ ] Verificar indexación en Search Console
 - [ ] Ir a https://publishercenter.google.com → Agregar publicación
 - [ ] Completar info (Glodaxia, URL, país, idioma, Technology)
-- [ ] Crear páginas legales: `/privacy`, `/terms`, `/cookies`, `/dmca`
+- [ ] Verificar requisitos técnicos (sitemap-news ✅, canonical ✅, hreflang ✅, JSON-LD ✅)
 - [ ] Enviar solicitud → esperar 1-4 semanas
 
-#### Newsletter
+#### 📋 Newsletter
 
-- [ ] Migration `subscribers` + modelo
+- [ ] Migration `subscribers` + modelo Subscriber
 - [ ] Formulario suscripción en sidebar
 - [ ] Endpoint `POST /subscribe` + doble opt-in
 - [ ] Mailable `WeeklyNewsletter` + template responsive
 - [ ] Job `SendWeeklyNewsletterJob` (scheduler viernes 10:00 AM)
 - [ ] Link desuscripción + dashboard Filament
 
-#### Páginas legales
+#### 📋 Páginas legales
 
 - [ ] `/privacy` — Política de privacidad
 - [ ] `/terms` — Términos de servicio
@@ -1772,42 +1801,47 @@ services:
 
 ---
 
-### ⚪ TRANSVERSAL
+### 20.6 ⚪ TRANSVERSAL — En cualquier momento
 
-#### Seguridad
-- [ ] HTTPS (Caddy automático ✅)
+#### 📋 Seguridad
+
 - [ ] Rate limiting rutas públicas
-- [ ] Cloudflare free tier (DNS + WAF)
+- [ ] Cloudflare free tier (DNS + WAF + CDN)
 - [ ] Headers seguridad (CSP, X-Frame-Options, HSTS)
 
-#### Monitoreo
+#### 📋 Monitoreo
+
 - [ ] UptimeRobot (gratis)
-- [ ] Alertas si sitio cae
-- [ ] Revisar Horizon semanalmente
+- [ ] Alertas si sitio cae (email o Telegram)
+- [ ] Revisar Horizon dashboard semanalmente
 
-#### Backups
-- [ ] PostgreSQL diario (`pg_dump` cron)
-- [ ] Backup storage/app/public
+#### 📋 Backups
+
+- [ ] PostgreSQL diario (`pg_dump` cron en VPS)
+- [ ] Backup storage/app/public (imágenes)
 - [ ] Guardar en S3/R2/disco externo
+- [ ] Probar restore al menos una vez
 
-#### CI/CD
-- [ ] GitHub Actions: push master → deploy VPS
+#### 📋 CI/CD
+
+- [ ] GitHub Actions: push master → deploy automático VPS
 - [ ] Script: `git pull` → `docker compose build` → `up -d` → `migrate`
 
-#### Mejoras continuas
+#### 📋 Mejoras continuas
+
 - [ ] Más fuentes RSS (objetivo: 10-15 activas)
 - [ ] Monitorear calidad artículos semanalmente
-- [ ] Campo `is_featured` + grid destacados en homepage
-- [ ] Comando `artisan report:weekly` (lunes 8:00 AM)
+- [ ] Campo `is_featured` en articles + grid destacados homepage
+- [ ] Comando `artisan report:weekly` (scheduler lunes 8:00 AM)
 
 ---
 
-## 📊 MÉTRICAS OBJETIVO
+### 📊 MÉTRICAS OBJETIVO
 
 | Métrica | Mes 1 | Mes 3 | Mes 6 |
 |---------|-------|-------|-------|
 | Artículos publicados | 50+ | 150+ | 300+ |
-| Páginas indexadas | 10+ | 50+ | 150+ |
+| Páginas indexadas (Google) | 10+ | 50+ | 150+ |
 | Visitas diarias | 10+ | 100+ | 500+ |
 | Suscriptores newsletter | — | 20+ | 100+ |
 | Tasa de rechazo IA | <5% | <5% | <5% |
@@ -1816,43 +1850,116 @@ services:
 
 ---
 
-## 🔗 REFERENCIA RÁPIDA
-
-| Qué | Dónde |
-|-----|-------|
-| Pipeline IA | `app/Jobs/ProcessArticleWithAIJob.php` |
-| Servicio IA | `app/Services/AI/OpenRouterService.php` |
-| Sitemap | `app/Http/Controllers/SitemapController.php` |
-| IndexNow | `app/Http/Controllers/IndexNowController.php` |
-| RSS Fetch | `app/Jobs/FetchRssFeedJob.php` |
-| RSS Service | `app/Services/RssService.php` |
-| Workflow admin | `app/Filament/Resources/ArticleResource.php` |
-| Dashboard | `app/Filament/Pages/Dashboard.php` |
-| Widgets | `app/Filament/Widgets/StatsOverview.php`, `PendingReviewTable.php` |
-| Email notif | `app/Mail/ArticleStatusChanged.php` |
-| Config IA | `config/global.php` |
-| Config IndexNow | `config/services.php` → `indexnow.key` |
-| Scheduler | `routes/console.php` |
-| Docker | `docker-compose.yml`, `docker/frankenphp/` |
-
----
-
 ## 📝 NOTAS DE DESARROLLO
 
-> Este documento es el plan maestro del proyecto.
-> Actualizar conforme avance el desarrollo.
+> Este documento es el plan maestro del proyecto.  
+> Actualizar conforme avance el desarrollo.  
 > Cada módulo debe tener su propio documento técnico detallado.
 
 ---
 
-**Última actualización**: 3 Junio 2026
-**Versión**: 6.0 (Fases 1-3 completadas + editorial workflow + SEO + safety filters)
-**Estado**: ✅ **OPERACIONAL** — Publicando artículos con IA, dominio nuevo, pendiente deploy producción
+**Última actualización**: 3 de Junio 2026  
+**Versión**: 5.0 (Producción funcional — pipeline completo end-to-end)  
+**Estado**: ✅ **OPERACIONAL** — Fases 1-3 completadas, publicando artículos con IA
 
 ---
 
-## ⏭️ PRÓXIMA ACCIÓN INMEDIATA
+## 🚀 CHECKLIST DE ARRANQUE - DÍA 1 (HOY)
 
-1. **Deploy en producción** — PRIORITARIO. Sin dominio público, nada de SEO funciona.
-2. **Configurar IndexNow + Google Search Console** — el mismo día del deploy.
-3. **Agregar GA4** — tracking desde día 1.
+### **Paso 1: Crear estructura inicial del proyecto**
+
+```bash
+# 1. Navegar al directorio del proyecto
+cd /home/adminpro/noticias
+
+# 2. Crear proyecto Laravel 13
+composer create-project laravel/laravel:^12.0 noticias-platform --prefer-dist
+
+# 3. Entrar al directorio del proyecto
+cd noticias-platform
+```
+
+### **Paso 2: Configurar Docker con FrankenPHP**
+
+```bash
+# 1. Crear estructura de directorios
+mkdir -p docker/{frankenphp,postgres}
+mkdir -p src
+
+# 2. Crear docker-compose.yml con FrankenPHP
+# (Usar la configuración de la sección 18.7)
+
+# 3. Crear Dockerfile para FrankenPHP
+# (Incluir todas las extensiones necesarias)
+
+# 4. Crear Caddyfile para Laravel + HTTP/3
+```
+
+### **Paso 3: Variables de entorno base**
+
+```bash
+# 1. Copiar .env.example a .env
+cp .env.example .env
+
+# 2. Configurar variables críticas:
+# DB_CONNECTION=pgsql
+# CACHE_DRIVER=redis
+# QUEUE_CONNECTION=redis
+# SESSION_DRIVER=redis
+# FRANKENPHP_WORKERS=4
+
+# 3. Generar APP_KEY
+php artisan key:generate
+```
+
+### **Paso 4: Levantar entorno de desarrollo**
+
+```bash
+# 1. Levantar contenedores
+docker compose up -d
+
+# 2. Verificar que Laravel carga
+curl http://localhost
+# Debería mostrar la página de bienvenida de Laravel
+
+# 3. Verificar HTTP/3
+curl --http3 -I http://localhost
+# Debería mostrar: HTTP/3 200
+```
+
+### **Paso 5: Primer commit**
+
+```bash
+# 1. Inicializar repositorio git
+git init
+
+# 2. Agregar todos los archivos
+git add .
+
+# 3. Primer commit
+git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 13"
+```
+
+---
+
+## 🎯 **DECISIÓN INMEDIATA - ¿QUÉ HACEMOS AHORA?**
+
+**Recomiendo comenzar con [OPCIÓN A] 🐳 Docker + FrankenPHP listo para usar**
+
+### **Por qué empezar con la infraestructura:**
+
+1. **Elimina bloqueos técnicos**: Tener el entorno funcionando es el mayor obstáculo
+2. **Valida decisiones técnicas**: Confirmar que FrankenPHP + HTTP/3 funciona
+3. **Crea momentum**: Ver algo funcionando motiva a continuar
+4. **Base sólida**: Todo lo demás se construye sobre esta infraestructura
+
+### **¿Listo para comenzar?**
+
+Te proporcionaré:
+
+1. **`docker-compose.yml`** completo con FrankenPHP
+2. **`Dockerfile`** optimizado para Laravel 13
+3. **`Caddyfile`** con HTTP/3 y Server Push
+4. **Scripts de validación** para HTTP/3 y performance
+
+**¿Quieres que empecemos con la configuración de Docker + FrankenPHP?** 🚀
