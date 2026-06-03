@@ -25,7 +25,7 @@ class CustomCodeResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 Forms\Components\Select::make('location')
                     ->label('Ubicación')
                     ->options([

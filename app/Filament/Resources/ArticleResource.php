@@ -38,7 +38,7 @@ class ArticleResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 Section::make('Production Wall')
                     ->description('Manage the final article content in both languages, adjust SEO settings, and publish.')
                     ->schema([

@@ -25,7 +25,7 @@ class SourceResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('url')

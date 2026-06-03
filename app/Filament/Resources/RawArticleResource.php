@@ -28,7 +28,7 @@ class RawArticleResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 Forms\Components\Section::make('Laboratorio de Ideas y Entradas')
                     ->description('Aquí llegan las noticias automáticas del RSS o puedes "Sembrar una Idea" para que la IA la procese.')
                     ->schema([

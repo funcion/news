@@ -35,7 +35,7 @@ class CategoryResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 Section::make('Category Details')
                     ->description('Define the category name and description in both languages.')
                     ->schema([

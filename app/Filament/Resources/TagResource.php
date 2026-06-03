@@ -30,7 +30,7 @@ class TagResource extends Resource
     public static function form(Schema $form): Schema
     {
         return $form
-            ->schema([
+            ->components([
                 Section::make('Tag Details')
                     ->description('Define the tag name and description in both languages. Tags are used to classify articles.')
                     ->schema([
