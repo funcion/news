@@ -1208,13 +1208,15 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 ```
 ✅ Revisión manual en Filament (workflow de aprobación)
-✅ A/B testing de titulares con analytics integrado
-✅ Analytics con métricas FrankenPHP (request timing, memory)
-✅ Sistema de "artículos destacados" con cache Redis
-✅ RSS propio para que otros te consuman
+⬜ A/B testing de titulares con analytics integrado
+⬜ Analytics con métricas FrankenPHP (request timing, memory)
+⬜ Sistema de "artículos destacados" con cache Redis
+⬜ RSS propio para que otros te consuman
 ✅ Sitemap dinámico + IndexNow
-✅ Optimización FrankenPHP worker count y memory limits
+⬜ Optimización FrankenPHP worker count y memory limits
 ```
+
+**Meta**: 50+ artículos de alta calidad/día, <5% tasa de rechazo, <100ms response time
 
 **Meta**: 50+ artículos de alta calidad/día, <5% tasa de rechazo, <100ms response time
 
@@ -1616,182 +1618,418 @@ services:
 
 ## 20. LISTA DE TAREAS DETALLADAS CON CHECKLISTS
 
-### 20.1 ✅ FASE 0-3: COMPLETADO (Infraestructura + IA + Frontend)
+### 20.1 ✅ FASE 0: Validación y Preparación (Semanas 1-2) — COMPLETADA
 
-#### 📋 Infraestructura Docker + Laravel
+#### 📋 Setup Inicial y Validación de Concepto
 
-- [x] Docker con FrankenPHP + PostgreSQL + pgvector + Redis
-- [x] Configurar Vite y Tailwind CSS
-- [x] Configurar FrankenPHP worker mode
+- [x] **Configurar entorno de desarrollo con FrankenPHP**
+  - [x] Instalar Docker y Docker Compose
+  - [x] Configurar WSL2 (si es Windows)
+  - [x] Verificar soporte HTTP/3 en sistema
+  - [x] Configurar IDE (VS Code con extensiones PHP/Laravel)
+  - [x] Instalar herramientas de monitoreo FrankenPHP
 
-#### 📋 Base de datos
+- [x] **Validación manual del nicho**
+  - [x] Recopilar 20+ feeds RSS del nicho IA y Automatización
+  - [x] Crear documento con lista de fuentes verificadas
+  - [x] Analizar competencia directa (3-5 sitios principales)
+  - [x] Validar volumen de contenido disponible (>100 artículos/día)
 
-- [x] Migraciones: sources, raw_articles, articles (JSONB translatable), categories, tags, media
-- [x] Spatie Translatable + MediaLibrary (images_en / images_es)
-- [x] pgvector para embeddings
-
-#### 📋 Filament Admin
-
-- [x] Instalar Filament v5 + Livewire v4
-- [x] Resources: ArticleResource, SourceResource, CategoryResource, TagResource, RawArticleResource
-- [x] Dashboard con widgets (StatsOverview, PendingReviewTable)
-- [x] Custom Code Resource (injection header_head, header_body, footer)
-
-#### 📋 Pipeline RSS
-
-- [x] RssService con SimplePie + dedup SHA256
-- [x] FetchRssFeedJob + RssFetchCommand
-- [x] Scheduler cada 60s via Supervisor
-- [x] 4 fuentes activas
-- [x] ScraperService con Jina Reader fallback
-
-#### 📋 Pipeline IA
-
-- [x] ProcessArticleWithAIJob (clasificación → redacción → imagen → tags → publish)
-- [x] OpenRouterService (DeepSeek V4 Pro)
-- [x] SiliconFlowImageService (FLUX.1)
-- [x] TagGeneratorService (NER con IA)
-- [x] DuplicateCheckerService (3 niveles: hash, texto, pgvector)
-- [x] cleanInlineUrls + validateRedactedOutput + parseJson robusto
-
-#### 📋 Frontend
-
-- [x] Diseño 2 columnas (70/30) responsive
-- [x] Dark/Light mode
-- [x] Header con navegación + sidebar (trending, categorías, newsletter)
-- [x] Footer con enlaces legales
-- [x] Rutas: home, article, category, tag, search, feed.xml
-- [x] Sitemaps: index, articles EN/ES, categories, tags, news, images
-- [x] SEO: canonical, OG/Twitter cards, hreflang, JSON-LD, robots
-
-#### 📋 Editorial Workflow
-
-- [x] Estados: draft, pending_review, published, rejected
-- [x] Botones Aprobar/Rechazar/Revisar en tabla
-- [x] Botones en página de edición
-- [x] Notificaciones email (ArticleStatusChanged Mailable)
-- [x] Dashboard PendingReviewTable widget
-- [x] Safety filters: is_sensitive, is_potentially_false, max_age_days, trusted sources
-
-#### 📋 SEO + IndexNow
-
-- [x] Sitemap Index con 6 sub-sitemaps (artículos EN/ES, categorías, tags, news, images)
-- [x] Hreflang bilingüe EN↔ES en sitemaps
-- [x] IndexNow controller (verificación GET + ping POST)
-- [x] flushCache + IndexNow ping al publicar (IA + Filament approve)
-- [x] Google News sitemap (últimas 48h)
-- [x] Images sitemap (image:image namespace)
+- [x] **Pruebas de concepto IA**
+  - [x] Crear cuenta en OpenRouter
+  - [x] Desarrollar 10-20 prompts de redacción manual
+  - [x] Generar 5 artículos de prueba con diferentes modelos
+  - [x] Evaluar calidad y humanización del contenido
+  - [x] Documentar "Prompt Library" inicial
 
 ---
 
-### 20.2 🔴 SEMANA 1 — Despliegue y Fundación SEO
+### 20.2 ✅ FASE 1: Fundación con FrankenPHP (Meses 1-2) — COMPLETADA
 
-#### 📋 Deploy en producción
+#### 📋 Infraestructura y Configuración Base
 
-- [ ] Elegir proveedor VPS (recomendado: **Hetzner CX22** ~$5/mes o **DigitalOcean** $6/mes)
-- [ ] Apuntar DNS del dominio al VPS (A record → IP del VPS)
-- [ ] Instalar Docker + Docker Compose en el VPS
-- [ ] Clonar repositorio en el VPS
-- [ ] Configurar `.env` de producción (APP_ENV, APP_DEBUG, APP_URL, DB, API keys)
-- [ ] `docker compose up -d` en producción
-- [ ] `php artisan migrate --seed`
-- [ ] `php artisan shield:generate --all`
-- [ ] Verificar sitio HTTPS, admin, Horizon
+- [x] **Configurar proyecto Laravel 13 con FrankenPHP**
+  - [x] Crear nuevo proyecto Laravel 13
+  - [x] Configurar Docker con FrankenPHP (reemplaza php-fpm+nginx)
+  - [x] Configurar PostgreSQL + pgvector + Redis
+  - [x] Configurar entorno de desarrollo (.env, docker-compose)
+  - [x] Configurar Vite y Tailwind CSS
+  - [x] Configurar FrankenPHP worker mode para Laravel
 
-#### 📋 IndexNow — Activar
+- [x] **Base de datos y modelos**
+  - [x] Diseñar esquema de base de datos completo
+  - [x] Crear migraciones para:
+    - [x] `sources` (fuentes RSS)
+    - [x] `raw_articles` (artículos crudos)
+    - [x] `articles` (artículos procesados con JSONB para traducciones)
+    - [x] `categories` (categorías)
+    - [x] `tags` + `article_tag` (sistema de tags)
+    - [x] `article_updates` (actualizaciones)
+    - [x] `media` (tabla de Spatie MediaLibrary)
+    - [x] Cache, jobs, failed_jobs
+  - [x] Configurar relaciones Eloquent (incluyendo many-to-many articles-tags)
+  - [x] Implementar Trait `HasTranslations` en modelo Article
+  - [x] Configurar colecciones de media multidioma (`images_en`, `images_es`)
+  - [x] Crear factories y seeders para testing
 
-- [ ] Generar INDEXNOW_KEY: `openssl rand -hex 16`
-- [ ] Crear archivo verificación `public/{key}.txt` con contenido `{key}`
-- [ ] Agregar `INDEXNOW_KEY={key}` al `.env` de producción
-- [ ] Verificar endpoint y archivo de verificación
-- [ ] Registrar en Bing Webmaster Tools
-- [ ] Probar ping al publicar artículo
+- [x] **Configurar Filament Admin**
+  - [x] Instalar y configurar Filament v5 + Livewire v4
+  - [x] Crear recursos: SourceResource, ArticleResource, CategoryResource, TagResource, RawArticleResource, CustomCodeResource, UserResource
+  - [x] Dashboard con métricas básicas
 
-#### 📋 Google — Primer contacto
+- [x] **Configurar sistema de colas y sesiones**
+  - [x] Instalar y configurar Laravel Horizon
+  - [x] Configurar Redis para colas
+  - [x] `SESSION_DRIVER=redis` en .env
+  - [x] Crear workers básicos
+  - [x] Configurar supervisord para producción
 
-- [ ] Crear Google Search Console + verificar propiedad
-- [ ] Enviar sitemap: `https://{dominio}/sitemap.xml`
-- [ ] Crear Google Analytics 4 + obtener Measurement ID
-- [ ] Agregar tag GA4 al layout principal
+- [x] **Configurar FrankenPHP específicamente**
+  - [x] Crear Dockerfile para FrankenPHP
+  - [x] Configurar Caddyfile para Laravel + HTTP/3
+  - [x] Configurar worker mode
+  - [x] Configurar opcache y JIT
+  - [ ] Habilitar Brotli/Zstd compression
+  - [ ] Configurar Server Push para assets críticos
+  - [ ] Configurar métricas y monitoreo FrankenPHP
+
+#### 📋 Módulo 1: Motor de Ingesta RSS
+
+- [x] **Sistema de fuentes RSS**
+  - [x] Instalar `vedmant/laravel-feed-reader`
+  - [x] Crear modelo `Source` con campos: url, frequency, score, is_active, trusted, max_age_days
+  - [x] Implementar sistema de scoring automático
+  - [x] Crear interfaz en Filament para gestionar fuentes
+
+- [x] **Worker de ingesta**
+  - [x] Crear comando Artisan `rss:fetch`
+  - [x] Implementar polling dinámico según frecuencia
+  - [x] Crear job `FetchRssFeedJob`
+  - [x] Implementar manejo de errores y retries
+
+- [x] **Parser y validación**
+  - [x] Crear parser con SimplePie para extraer metadatos
+  - [x] Validar estructura de artículos
+  - [x] Extraer título, contenido, fecha, autor, URL
+  - [x] Deduplicación por hash SHA256
+  - [x] Jina Reader fallback para contenido truncado
+  - [x] Almacenar en tabla `raw_articles`
+
+- [x] **Sistema de monitoreo**
+  - [x] Configurar Laravel Pulse para monitoreo
+  - [x] Crear alertas para fuentes fallidas
+  - [x] Dashboard de métricas de ingesta
 
 ---
 
-### 20.3 🟡 SEMANAS 2-4 — Contenido + Indexación
+### 20.3 ✅ FASE 2: Cerebro IA (Meses 3-4) — COMPLETADA
 
-#### 📋 Masa crítica de contenido
+#### 📋 Integración con IA
 
-- [ ] Agregar más fuentes RSS (objetivo: 8-10 fuentes activas)
-- [ ] Objetivo: **50+ artículos publicados** para fin de mes 1
-- [ ] Revisar calidad de artículos (títulos, contenido, imágenes, tags)
-- [ ] Ajustar prompt de redacción si es necesario
+- [x] **Configurar OpenRouter**
+  - [x] Crear servicio `OpenRouterService` (multi-model)
+  - [x] Implementar rotación de modelos
+  - [x] Configurar cache de respuestas
+  - [x] Implementar rate limiting y backoff
 
-#### 📋 Monitorear indexación
+- [x] **Pipeline de procesamiento IA**
+  - [x] Crear job `ProcessArticleWithAIJob`
+  - [x] Implementar pipeline completo: clasificación → redacción bilingüe → imágenes → tags → publish
+  - [x] Modelo activo: DeepSeek V4 Pro (todo el pipeline usa 1 modelo)
+  - [x] parseJson robusto (trailing commas, control chars, think tags)
+  - [x] validateRedactedOutput (longitud, tokens, blocked phrases)
+  - [x] cleanInlineUrls + cleanHallucinatedAttributes
+  - [x] Implementar sistema de "voces editoriales"
 
-- [ ] Google Search Console semanalmente (cobertura, sitemaps, errores)
-- [ ] Bing Webmaster Tools (IndexNow pings, páginas indexadas)
-- [ ] Verificar sitemaps individualmente (curl)
+- [x] **Sistema anti-duplicados**
+  - [x] Implementar 3 niveles de detección:
+    - [x] Nivel 1: Hash exacto (SHA256) en RssService
+    - [x] Nivel 2: ILIKE title en DuplicateCheckerService
+    - [x] Nivel 2.5: Cross-check contra raw_articles pendientes
+    - [x] Nivel 3: IA semántica con pgvector (cosine distance < 0.15)
+  - [x] Configurar PostgreSQL con extensión pgvector
+  - [x] Crear sistema de "updates" para noticias existentes (ArticleUpdate)
 
-#### 📋 Fixes de código
+- [x] **Safety Filters (Editorial)**
+  - [x] is_sensitive: detecta contenido sensible (violencia, odio, ilegal, etc.)
+  - [x] is_potentially_false: detecta desinformación / claims falsos
+  - [x] is_relevant: clasifica relevancia editorial
+  - [x] max_age_days: filtra artículos antiguos por fuente
+  - [x] trusted sources: solo fuentes verificadas pasan
 
-- [ ] `PendingReviewTable` widget: agregar `flushCache()` + `IndexNow ping` en approve/reject
-- [ ] Google Ping en `IndexNowController::ping()`: `Http::get('https://www.google.com/ping?sitemap={url}')`
-- [ ] Commit y push
+- [x] **Optimización SEO automática**
+  - [x] Generar meta tags automáticos (title, description)
+  - [x] Slug SEO-friendly por idioma (slug_en, slug_es)
+  - [x] Schema.org JSON-LD (NewsArticle)
+  - [x] Keywords LSI en meta_keywords
+
+- [x] **Sistema de Tags Inteligente**
+  - [x] Crear servicio `TagGeneratorService`
+  - [x] Implementar extracción de tags con IA (NER)
+  - [x] Normalización automática (lowercase, plural/singular, stopwords)
+  - [x] Asignación automática de 3-5 tags por artículo
+  - [x] Cache de tags en Redis
+  - [x] Comando `tags:cleanup` para limpieza automática
+
+#### 📋 Generación de imágenes
+
+- [x] **Integración con SiliconFlow / FluxAPI**
+  - [x] Crear servicio `SiliconFlowImageService`
+  - [x] Prompt templates consistentes (FLUX.1 style)
+  - [x] Sistema de fallback si la API falla
+  - [x] Optimizar imágenes a WebP 1280x720
+
+- [x] **Procesamiento de imágenes**
+  - [x] Spatie MediaLibrary con colecciones images_en / images_es
+  - [x] Responsive conversions: thumb (480w), medium (800w), large (1200w)
+  - [x] Generar alt text con IA (bilingüe)
+  - [x] Figure tags semánticos con srcset
+
+#### 📋 Módulo: Scraping Inteligente
+
+- [x] **Integración con Jina Reader**
+  - [x] Crear `ScraperService` para r.jina.ai
+  - [x] Manejo de Rate Limits y Timeouts
+  - [x] Normalización de contenido para el pipeline de IA
 
 ---
 
-### 20.4 🟢 MES 2 — Crecimiento orgánico
+### 20.4 ✅ FASE 3: Frontend Público (Meses 5-6) — COMPLETADA
 
-#### 📋 Analytics
+#### 📋 Diseño y desarrollo frontend
 
-- [ ] GA4 semanal: usuarios, páginas vistas, tiempo sesión, rebote, fuentes
-- [ ] Evento GA4 `article_read` (scroll 50%+)
+- [x] **Diseño UI/UX**
+  - [x] Diseño 2 columnas (70/30)
+  - [x] Componentes con Tailwind CSS
+  - [x] Dark/Light mode
+  - [x] Responsive mobile-first
+
+- [x] **Layout principal**
+  - [x] Header con navegación y search
+  - [x] Columna principal: grid de noticias
+  - [x] Sidebar: trending, categorías, newsletter
+  - [x] Footer con enlaces legales
+
+- [x] **Páginas y rutas**
+  - [x] Página de inicio (feed de noticias)
+  - [x] Página de artículo individual
+  - [x] Páginas de categoría
+  - [x] Páginas de tags (nube de tags, artículos por tag)
+  - [x] Página de búsqueda
+  - [x] RSS feed (/feed.xml)
+
+- [x] **Sistema de tags en frontend**
+  - [x] Componente nube de tags en sidebar
+  - [x] Mostrar tags en artículos individuales
+  - [x] Página de tag individual con artículos relacionados
+
+- [x] **Tiempo real con Reverb**
+  - [x] Instalar y configurar Laravel Reverb
+  - [x] Crear canales WebSocket
+  - [x] Evento ArticlePublished
+  - [x] Configurar Laravel Echo en frontend
+
+#### 📋 SEO técnico
+
+- [x] **Optimización de rendimiento**
+  - [x] Configurar FrankenPHP worker mode
+  - [x] Cache de vistas en Redis
+  - [x] Optimizar imágenes (lazy loading, srcset)
+  - [x] Minificar CSS/JS con Vite
+
+- [x] **SEO on-page**
+  - [x] Canonical URLs en layout base
+  - [x] Open Graph + Twitter Card tags dinámicos
+  - [x] Hreflang para EN/ES (mcamara/laravel-localization)
+  - [x] JSON-LD structured data en artículos
+  - [x] Meta description y title por página
+
+- [x] **Sitemaps**
+  - [x] Sitemap Index (/sitemap.xml) con 6 sub-sitemaps
+  - [x] Articles EN con hreflang → ES (/sitemap-articles-en.xml)
+  - [x] Articles ES con hreflang → EN (/sitemap-articles-es.xml)
+  - [x] Categories (/sitemap-categories.xml)
+  - [x] Tags (/sitemap-tags.xml)
+  - [x] Google News (/sitemap-news.xml) — últimas 48h
+  - [x] Images (/sitemap-images.xml) — namespace image:image
+  - [x] Cache Redis con TTL 1h + flush al publicar
+
+- [x] **IndexNow**
+  - [x] Controller con verificación GET (handle)
+  - [x] Ping POST a 3 endpoints (indexnow.org, bing, yandex)
+  - [x] flushCache automático al hacer ping
+  - [x] Config en services.php + .env.example
+  - [x] Integrado en ProcessArticleWithAIJob (publish automático)
+  - [x] Integrado en ArticleResource (approve manual)
+
+---
+
+### 20.5 🔴 FASE 4: Refinamiento y Performance (Meses 7-8) — EN PROGRESO
+
+#### 📋 Workflow de aprobación — ✅ COMPLETADO
+
+- [x] **Sistema de revisión manual**
+  - [x] Estados: draft, pending_review, published, rejected
+  - [x] Botones Aprobar/Rechazar/Enviar a Revisión en tabla
+  - [x] Botones en página de edición (header actions)
+  - [x] Dashboard PendingReviewTable widget con acciones directas
+  - [x] Email notifications (ArticleStatusChanged Mailable + template)
+  - [x] flushCache + IndexNow ping al aprobar
+
+- [x] **Dashboard de revisión**
+  - [x] StatsOverview widget (6 stats: publicados, pendientes, hoy, rechazados, fuentes, tags)
+  - [x] PendingReviewTable widget (10 pendientes con botones Aprobar/Rechazar)
+  - [x] Dashboard con 2 columnas
+
+#### 📋 A/B testing y feedback loop — PENDIENTE
+
+- [ ] **Implementar testing de titulares**
+- [ ] **Sistema de métricas por artículo**
+- [ ] **Dashboard de performance de contenido**
+- [ ] **Sistema de feedback para mejorar prompts:**
+  - [ ] Registrar cambios manuales en Filament
+  - [ ] Analizar patrones de edición humana
+  - [ ] Refinar prompts basado en feedback real
+  - [ ] Versionado de prompts con métricas de calidad
+
+#### 📋 Analytics y métricas — PENDIENTE
+
+- [ ] Integrar Google Analytics 4 (GA4)
+- [ ] Evento GA4 `article_read` (scroll 50%)
 - [ ] Evento GA4 `search`
+- [ ] Tracking interno de vistas (TrackArticleViewJob)
+- [ ] Dashboard de métricas de engagement
+- [ ] Sistema de "artículos destacados"
+- [ ] Reportes automáticos semanales
 
-#### 📋 Dashboard Filament
+#### 📋 RSS propio y distribución — PENDIENTE
 
-- [ ] Widget `TrafficOverviewWidget` — visitas diarias (últimos 30 días)
-- [ ] Widget `TopArticlesWidget` — artículos más vistos
+- [ ] **Generación de RSS**
+  - [ ] Instalar `spatie/laravel-feed`
+  - [ ] Crear feeds por categoría
+  - [ ] RSS completo del sitio
+  - [ ] Promover RSS para que otros consuman
 
-#### 📋 Tracking vistas
+#### 📋 Fixes pendientes de código
 
-- [ ] Job `TrackArticleViewJob` (incrementa `views` async)
-- [ ] Limitar: 1 vista por IP por artículo por sesión
-
-#### 📋 Feedback Loop prompts IA
-
-- [ ] Migration `article_edits` table (article_id, field, old_value, new_value, edited_by, edited_at)
-- [ ] Registrar ediciones manuales en Filament
-- [ ] Analizar patrones y refinar prompt
-
-#### 📋 Distribución automática
-
-- [ ] Telegram Bot (BotFather → canal → job `DispatchToTelegramJob`)
-- [ ] Discord Webhook (crear webhook → job `DispatchToDiscordJob`)
+- [ ] Agregar `flushCache()` + `IndexNow ping` al `PendingReviewTable` widget (falta)
+- [ ] Agregar Google Ping a `IndexNowController::ping()`
 
 ---
 
-### 20.5 🔵 MES 3 — Google News + Newsletter
+### 20.6 🔵 FASE 5: Crecimiento y Escalabilidad (Meses 9-10) — PENDIENTE
 
-#### 📋 Google News Publisher
+#### 📋 Automatización de distribución
 
-> ⚠️ No aplicar hasta tener 50+ artículos y 1 mes de indexación
+- [ ] **Integración con Telegram Bot**
+  - [ ] Crear bot en BotFather
+  - [ ] Job `DispatchToTelegramJob`
+  - [ ] Disparar después de cada publicación
 
-- [ ] Verificar indexación en Search Console
-- [ ] Ir a https://publishercenter.google.com → Agregar publicación
-- [ ] Completar info (Glodaxia, URL, país, idioma, Technology)
-- [ ] Verificar requisitos técnicos (sitemap-news ✅, canonical ✅, hreflang ✅, JSON-LD ✅)
-- [ ] Enviar solicitud → esperar 1-4 semanas
+- [ ] **Integración con Discord**
+  - [ ] Crear webhook en Discord
+  - [ ] Job `DispatchToDiscordJob`
 
-#### 📋 Newsletter
+- [ ] **Reddit** (opcional)
+  - [ ] API credentials
+  - [ ] Job `DispatchToRedditJob`
+
+#### 📋 Newsletter automatizada
 
 - [ ] Migration `subscribers` + modelo Subscriber
 - [ ] Formulario suscripción en sidebar
 - [ ] Endpoint `POST /subscribe` + doble opt-in
 - [ ] Mailable `WeeklyNewsletter` + template responsive
 - [ ] Job `SendWeeklyNewsletterJob` (scheduler viernes 10:00 AM)
-- [ ] Link desuscripción + dashboard Filament
+- [ ] Link desuscripción en cada email
+- [ ] Dashboard Filament: total suscriptores
 
-#### 📋 Páginas legales
+#### 📋 Sistema de trending
+
+- [ ] Servicio `TrendingService`
+- [ ] Widget en sidebar
+- [ ] Página `/trending`
+- [ ] Cache Redis TTL 1h
+
+#### 📋 Optimización de costos IA
+
+- [ ] Dashboard de costos por modelo
+- [ ] Alertas de umbrales
+- [ ] "Modo degradado" automático
+- [ ] Optimización de prompts
+
+---
+
+### 20.7 🟣 FASE 6: Monetización y Producción (Meses 11-12) — PENDIENTE
+
+#### 📋 Sistema de anuncios
+
+- [ ] Ad slots dinámicos (entre artículos, sidebar, mid-content)
+- [ ] Integración con ad network (Ezoic/Adsterra)
+- [ ] Header bidding (opcional)
+- [ ] Analytics de revenue
+
+#### 📋 Affiliate marketing
+
+- [ ] Sistema de detección automática de herramientas SaaS
+- [ ] Links de afiliado contextuales
+- [ ] Dashboard de comisiones
+- [ ] Integración con Amazon/ShareASale
+
+#### 📋 Sponsored content
+
+- [ ] Campo `is_sponsored` en articles
+- [ ] Badge "Patrocinado" en frontend
+- [ ] Workflow para contenido patrocinado
+- [ ] Dashboard para anunciantes
+
+---
+
+### 20.8 ⚪ TAREAS TRANSVERSALES
+
+#### 📋 DevOps y Deployment
+
+- [ ] **Configuración de producción**
+  - [ ] Elegir proveedor VPS (Hetzner CX22 ~$5/mes o DigitalOcean $6/mes)
+  - [ ] Apuntar DNS del dominio al VPS (A record → IP del VPS)
+  - [ ] Instalar Docker + Docker Compose en el VPS
+  - [ ] Clonar repositorio en el VPS
+  - [ ] Configurar `.env` de producción
+  - [ ] `docker compose up -d` + migrate + seed + shield
+  - [ ] HTTPS automático (Caddy)
+
+- [ ] **IndexNow — Activar**
+  - [ ] Generar INDEXNOW_KEY y crear archivo verificación
+  - [ ] Registrar en Bing Webmaster Tools
+  - [ ] Probar ping al publicar artículo
+
+- [ ] **Google Search Console**
+  - [ ] Crear cuenta + verificar propiedad
+  - [ ] Enviar sitemap
+
+- [ ] **CI/CD**
+  - [ ] GitHub Actions: push master → deploy VPS
+
+- [ ] **Backups**
+  - [ ] PostgreSQL diario (`pg_dump` cron)
+  - [ ] Backup storage/app/public
+  - [ ] Guardar en S3/R2/disco externo
+
+#### 📋 Monitoreo y alertas
+
+- [ ] Uptime monitoring (UptimeRobot)
+- [ ] Alertas si el sitio cae
+- [ ] Revisar Horizon dashboard semanalmente
+- [ ] Logs centralizados
+
+#### 📋 Seguridad
+
+- [ ] HTTPS forzado (Caddy automático ✅)
+- [ ] Rate limiting rutas públicas
+- [ ] Cloudflare free tier (DNS + WAF + CDN)
+- [ ] Headers seguridad (CSP, X-Frame-Options, HSTS)
+
+#### 📋 Documentación legal
 
 - [ ] `/privacy` — Política de privacidad
 - [ ] `/terms` — Términos de servicio
@@ -1799,40 +2037,11 @@ services:
 - [ ] `/dmca` — DMCA policy
 - [ ] Links en footer
 
----
+#### 📋 Google News Publisher
 
-### 20.6 ⚪ TRANSVERSAL — En cualquier momento
-
-#### 📋 Seguridad
-
-- [ ] Rate limiting rutas públicas
-- [ ] Cloudflare free tier (DNS + WAF + CDN)
-- [ ] Headers seguridad (CSP, X-Frame-Options, HSTS)
-
-#### 📋 Monitoreo
-
-- [ ] UptimeRobot (gratis)
-- [ ] Alertas si sitio cae (email o Telegram)
-- [ ] Revisar Horizon dashboard semanalmente
-
-#### 📋 Backups
-
-- [ ] PostgreSQL diario (`pg_dump` cron en VPS)
-- [ ] Backup storage/app/public (imágenes)
-- [ ] Guardar en S3/R2/disco externo
-- [ ] Probar restore al menos una vez
-
-#### 📋 CI/CD
-
-- [ ] GitHub Actions: push master → deploy automático VPS
-- [ ] Script: `git pull` → `docker compose build` → `up -d` → `migrate`
-
-#### 📋 Mejoras continuas
-
-- [ ] Más fuentes RSS (objetivo: 10-15 activas)
-- [ ] Monitorear calidad artículos semanalmente
-- [ ] Campo `is_featured` en articles + grid destacados homepage
-- [ ] Comando `artisan report:weekly` (scheduler lunes 8:00 AM)
+- [ ] Verificar indexación en Search Console (50+ artículos y 1 mes)
+- [ ] Solicitar en https://publishercenter.google.com
+- [ ] Esperar aprobación (1-4 semanas)
 
 ---
 
@@ -1860,106 +2069,27 @@ services:
 
 **Última actualización**: 3 de Junio 2026  
 **Versión**: 5.0 (Producción funcional — pipeline completo end-to-end)  
-**Estado**: ✅ **OPERACIONAL** — Fases 1-3 completadas, publicando artículos con IA
+**Estado**: ✅ **Fases 1-3 COMPLETADAS** — Fase 4 parcial | Fases 5-6 pendientes
 
 ---
 
-## 🚀 CHECKLIST DE ARRANQUE - DÍA 1 (HOY)
+## 🎯 **PRÓXIMA ACCIÓN — Deploy en Producción**
 
-### **Paso 1: Crear estructura inicial del proyecto**
+El proyecto está funcional en desarrollo local. La prioridad ahora es:
 
-```bash
-# 1. Navegar al directorio del proyecto
-cd /home/adminpro/noticias
+### 🔴 **Paso 1: Deploy en VPS**
+1. Elegir proveedor (Hetzner CX22 ~$5/mes o DigitalOcean $6/mes)
+2. Apuntar DNS del dominio al VPS
+3. Clonar repo + `docker compose up -d`
+4. Configurar IndexNow + Google Search Console + GA4
 
-# 2. Crear proyecto Laravel 13
-composer create-project laravel/laravel:^12.0 noticias-platform --prefer-dist
+### 🟡 **Paso 2: Generar masa crítica**
+- Agregar más fuentes RSS (objetivo: 8-10 activas)
+- Llegar a 50+ artículos publicados
 
-# 3. Entrar al directorio del proyecto
-cd noticias-platform
-```
+### 🟢 **Paso 3: Crecimiento**
+- Telegram/Discord distribution
+- Newsletter
+- Google News Publisher (cuando haya tráfico orgánico)
 
-### **Paso 2: Configurar Docker con FrankenPHP**
-
-```bash
-# 1. Crear estructura de directorios
-mkdir -p docker/{frankenphp,postgres}
-mkdir -p src
-
-# 2. Crear docker-compose.yml con FrankenPHP
-# (Usar la configuración de la sección 18.7)
-
-# 3. Crear Dockerfile para FrankenPHP
-# (Incluir todas las extensiones necesarias)
-
-# 4. Crear Caddyfile para Laravel + HTTP/3
-```
-
-### **Paso 3: Variables de entorno base**
-
-```bash
-# 1. Copiar .env.example a .env
-cp .env.example .env
-
-# 2. Configurar variables críticas:
-# DB_CONNECTION=pgsql
-# CACHE_DRIVER=redis
-# QUEUE_CONNECTION=redis
-# SESSION_DRIVER=redis
-# FRANKENPHP_WORKERS=4
-
-# 3. Generar APP_KEY
-php artisan key:generate
-```
-
-### **Paso 4: Levantar entorno de desarrollo**
-
-```bash
-# 1. Levantar contenedores
-docker compose up -d
-
-# 2. Verificar que Laravel carga
-curl http://localhost
-# Debería mostrar la página de bienvenida de Laravel
-
-# 3. Verificar HTTP/3
-curl --http3 -I http://localhost
-# Debería mostrar: HTTP/3 200
-```
-
-### **Paso 5: Primer commit**
-
-```bash
-# 1. Inicializar repositorio git
-git init
-
-# 2. Agregar todos los archivos
-git add .
-
-# 3. Primer commit
-git commit -m "feat: proyecto inicial con FrankenPHP + Laravel 13"
-```
-
----
-
-## 🎯 **DECISIÓN INMEDIATA - ¿QUÉ HACEMOS AHORA?**
-
-**Recomiendo comenzar con [OPCIÓN A] 🐳 Docker + FrankenPHP listo para usar**
-
-### **Por qué empezar con la infraestructura:**
-
-1. **Elimina bloqueos técnicos**: Tener el entorno funcionando es el mayor obstáculo
-2. **Valida decisiones técnicas**: Confirmar que FrankenPHP + HTTP/3 funciona
-3. **Crea momentum**: Ver algo funcionando motiva a continuar
-4. **Base sólida**: Todo lo demás se construye sobre esta infraestructura
-
-### **¿Listo para comenzar?**
-
-Te proporcionaré:
-
-1. **`docker-compose.yml`** completo con FrankenPHP
-2. **`Dockerfile`** optimizado para Laravel 13
-3. **`Caddyfile`** con HTTP/3 y Server Push
-4. **Scripts de validación** para HTTP/3 y performance
-
-**¿Quieres que empecemos con la configuración de Docker + FrankenPHP?** 🚀
+¿Quieres que empecemos con el paso 1 (deploy en VPS)? 🚀
