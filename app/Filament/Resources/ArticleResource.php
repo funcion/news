@@ -41,6 +41,7 @@ class ArticleResource extends Resource
             ->components([
                 Section::make('Production Wall')
                     ->description('Manage the final article content in both languages, adjust SEO settings, and publish.')
+                    ->columnSpanFull()
                     ->schema([
                         Tabs::make('Sections')
                             ->tabs([
