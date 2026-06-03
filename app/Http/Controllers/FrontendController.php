@@ -102,4 +102,17 @@ class FrontendController extends Controller
 
         return view('search', compact('articles', 'query', 'trendingTags'));
     }
+
+    public function feed()
+    {
+        $articles = Article::where('status', 'published')
+            ->whereNotNull('published_at')
+            ->orderByDesc('published_at')
+            ->limit(50)
+            ->get();
+
+        return response()
+            ->view('feed', compact('articles'))
+            ->header('Content-Type', 'application/xml');
+    }
 }

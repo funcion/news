@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name', 'Noticias Platform') }}</title>
+    {{-- Custom Head Codes (GA, GTM, Meta, CSS) --}}
+    {!! \App\Models\CustomCode::getActive('header_head') !!}
+
+    <title>{{ $title ?? config('app.name', 'Glodaxia') }}</title>
     
     @if(isset($metaDescription))
         <meta name="description" content="{{ $metaDescription }}">
@@ -15,8 +18,11 @@
         <meta name="keywords" content="{{ is_array($metaKeywords) ? implode(', ', $metaKeywords) : $metaKeywords }}">
     @endif
     
-    <!-- Canonical URL (avoids duplicate content) -->
+    <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}" />
+    
+    <!-- Robots (index/follow by default) -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     
     <!-- Open Graph (Facebook, LinkedIn) -->
     <meta property="og:site_name" content="{{ config('app.name', 'Glodaxia') }}" />
@@ -451,6 +457,9 @@
             </div>
         </div>
     </div>
+
+{{-- Custom Footer Codes (analytics, chat, scripts) --}}
+{!! \App\Models\CustomCode::getActive('footer') !!}
 
 </body>
 </html>

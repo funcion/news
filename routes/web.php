@@ -45,3 +45,6 @@ Route::get('/sitemap-tags.xml', [\App\Http\Controllers\SitemapController::class,
 
 // IndexNow (SEO - Bing/Yandex indexación instantánea)
 Route::post('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handle'])->name('indexnow');
+
+// RSS Feed
+Route::get('/feed.xml', [\App\Http\Controllers\FrontendController::class, 'feed'])->name('feed');
