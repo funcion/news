@@ -26,6 +26,8 @@ class EditArticle extends EditRecord
                     $old = $this->record->status;
                     $this->record->update(['status' => 'published', 'published_at' => now()]);
                     $this->sendNotification($old, 'published');
+                    \App\Http\Controllers\SitemapController::flushCache();
+                    \App\Http\Controllers\IndexNowController::ping(url('/' . $this->record->slug_en));
                     $this->refreshFormData(['status']);
                 }),
             Actions\Action::make('reject')

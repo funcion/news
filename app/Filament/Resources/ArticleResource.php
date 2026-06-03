@@ -266,6 +266,8 @@ class ArticleResource extends Resource
                         $old = $record->status;
                         $record->update(['status' => 'published', 'published_at' => now()]);
                         static::sendNotification($record, $old, 'published');
+                        \App\Http\Controllers\SitemapController::flushCache();
+                        \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
                     }),
                 \Filament\Actions\Action::make('reject')
                     ->label('Rechazar')

@@ -38,13 +38,17 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
-// Sitemap XML
+// Sitemap Index (sitemap.xml = index of all sub-sitemaps)
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
-Route::get('/sitemap-articles.xml', [\App\Http\Controllers\SitemapController::class, 'articles'])->name('sitemap.articles');
+Route::get('/sitemap-articles-en.xml', [\App\Http\Controllers\SitemapController::class, 'articlesEn'])->name('sitemap.articles.en');
+Route::get('/sitemap-articles-es.xml', [\App\Http\Controllers\SitemapController::class, 'articlesEs'])->name('sitemap.articles.es');
+Route::get('/sitemap-categories.xml', [\App\Http\Controllers\SitemapController::class, 'categories'])->name('sitemap.categories');
 Route::get('/sitemap-tags.xml', [\App\Http\Controllers\SitemapController::class, 'tags'])->name('sitemap.tags');
+Route::get('/sitemap-news.xml', [\App\Http\Controllers\SitemapController::class, 'news'])->name('sitemap.news');
+Route::get('/sitemap-images.xml', [\App\Http\Controllers\SitemapController::class, 'images'])->name('sitemap.images');
 
-// IndexNow (SEO - Bing/Yandex indexación instantánea)
-Route::post('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handle'])->name('indexnow');
+// IndexNow verification endpoint (Bing/Yandex send GET with ?key=xxx to verify ownership)
+Route::get('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handle'])->name('indexnow');
 
 // RSS Feed
 Route::get('/feed.xml', [\App\Http\Controllers\FrontendController::class, 'feed'])->name('feed');

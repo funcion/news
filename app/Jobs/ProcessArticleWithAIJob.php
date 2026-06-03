@@ -392,6 +392,15 @@ class ProcessArticleWithAIJob implements ShouldQueue
                 Log::error("Realtime event broadcasting failed for Article {$article->id}: " . $e->getMessage());
             }
         }
+
+        // --- Sitemap: flush cache + IndexNow ping ---
+        try {
+            \App\Http\Controllers\SitemapController::flushCache();
+            $articleUrl = url('/' . $article->slug_en);
+            \App\Http\Controllers\IndexNowController::ping($articleUrl);
+        } catch (\Exception $e) {
+            Log::warning("Sitemap/IndexNow failed for Article {$article->id}: " . $e->getMessage());
+        }
         
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
     }
