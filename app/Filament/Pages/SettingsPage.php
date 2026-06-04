@@ -82,8 +82,8 @@ class SettingsPage extends Page
                             ->suffix('arts/cat'),
 
                         TextInput::make('data.publish_hour_start')
-                            ->label('Hora de inicio')
-                            ->helperText('No publicar antes de esta hora (0-23)')
+                            ->label('Publicar desde las')
+                            ->helperText('Hora mínima para publicar contenido (formato 24h)')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(23)
@@ -91,8 +91,8 @@ class SettingsPage extends Page
                             ->suffix(':00'),
 
                         TextInput::make('data.publish_hour_end')
-                            ->label('Hora de fin')
-                            ->helperText('No publicar después de esta hora (0-23)')
+                            ->label('Hasta las')
+                            ->helperText('Hora máxima para publicar contenido (formato 24h)')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(23)
