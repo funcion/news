@@ -32,6 +32,7 @@ class RawArticleResource extends Resource
             ->components([
                 Section::make('Laboratorio de Ideas y Entradas')
                     ->description('Aquí llegan las noticias automáticas del RSS o puedes "Sembrar una Idea" para que la IA la procese.')
+                    ->columnSpanFull()
                     ->schema([
                         Forms\Components\Select::make('source_id')
                             ->relationship('source', 'name')
@@ -42,10 +43,11 @@ class RawArticleResource extends Resource
                             ->label('URL de Referencia (Opcional)')
                             ->placeholder('https://ejemplo.com/noticia-interesante')
                             ->columnSpanFull(),
-                    ])->columns(2),
+                    ])->columns(1),
                 
                 Section::make('Contenido para Procesar')
                     ->description('Escribe un título o un pequeño resumen. Si solo pones un título y le das a "Procesar con IA", el sistema investigará el tema.')
+                    ->columnSpanFull()
                     ->schema([
                         Forms\Components\TextInput::make('title')
                             ->label('Título o Semilla de la Noticia')
@@ -61,24 +63,11 @@ class RawArticleResource extends Resource
                             ->label('Contenido Crudo (Opcional)')
                             ->helperText('Contenido original que la IA usará como base para redactar.')
                             ->columnSpanFull(),
-                    ]),
+                    ])->columns(1),
                 
                 Section::make('Estado y Metadatos')
+                    ->columnSpanFull()
                     ->schema([
-                        Forms\Components\Placeholder::make('ai_status_alert')
-                            ->label('')
-                            ->content(new \Illuminate\Support\HtmlString('
-                                <div class="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-500 flex items-center gap-3">
-                                    <div class="text-blue-500">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                                    </div>
-                                    <div class="text-sm text-blue-700">
-                                        <strong>Nota de IA:</strong> Para que la IA pueda trabajar, el estado siempre debe ser <strong>"Pendiente" (Pending)</strong>.
-                                    </div>
-                                </div>
-                            '))
-                            ->columnSpanFull(),
-
                         Forms\Components\Select::make('status')
                             ->label('Estado de Procesamiento')
                             ->options([
@@ -91,8 +80,9 @@ class RawArticleResource extends Resource
                             ->default('pending')
                             ->required(),
                         Forms\Components\DateTimePicker::make('published_at')
-                            ->label('Fecha de Publicación'),
-                    ])->columns(2),
+                            ->label('Fecha de Publicación')
+                            ->columnSpanFull(),
+                    ])->columns(1),
             ]);
     }
 
