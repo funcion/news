@@ -98,6 +98,8 @@ class SiliconFlowImageService
             Log::info("Image successfully generated and saved to temp: {$absolutePath}");
 
             // Return absolute path for Spatie Media Library
+            // Note: Spatie reads this file, uploads to MEDIA_DISK (R2 or local), 
+            // then the caller should clean up temp files
             return $absolutePath;
 
         } catch (\Exception $e) {

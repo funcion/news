@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'disk_name' => env('MEDIA_DISK', 'public'),
+    'disk_name' => env('MEDIA_DISK', env('R2_ACCESS_KEY_ID') ? 'r2' : 'public'),
 
     /*
     |--------------------------------------------------------------------------

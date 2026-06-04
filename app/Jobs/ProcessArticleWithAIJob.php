@@ -396,6 +396,24 @@ class ProcessArticleWithAIJob implements ShouldQueue
             // Do NOT throw — article content is preserved for manual image addition
         }
 
+        // --- CLEANUP: Remove temp files from images-tmp/ ---
+        // SiliconFlowImageService saves to local temp, Spatie copies to MEDIA_DISK (R2 or local).
+        // We must clean up the temp copies to avoid disk accumulation.
+        $tempPath = storage_path('app/images-tmp');
+        if (is_dir($tempPath)) {
+            $tempFiles = glob($tempPath . '/' . $slugEn . '-*.webp');
+            foreach ($tempFiles as $tempFile) {
+                if (is_file($tempFile)) {
+                    @unlink($tempFile);
+                }
+            }
+            // Clean up placeholder too
+            $placeholderFile = $tempPath . '/placeholder-' . $slugEn . '.webp';
+            if (is_file($placeholderFile)) {
+                @unlink($placeholderFile);
+            }
+        }
+
 
         // Save final bilingual content
         $article->setTranslation('content', 'en', $contentEn);
