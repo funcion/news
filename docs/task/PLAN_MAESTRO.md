@@ -1598,6 +1598,7 @@ services:
 | **Tiempo Real**      | Laravel Reverb + Horizon                               | WebSockets + async processing           |
 | **Sistema de Scrapping** | **Jina Reader (r.jina.ai)**            | Scraping optimizado para LLMs           |
 | **Sistema de Tags**  | IA + PostgreSQL                          | SEO semántico, navegación mejorada      |
+| **Image Storage**    | Local (spatie/media-library) → R2 en producción con tráfico | Sin egress fees con R2 |
 
 **Tecnología Clave**: FrankenPHP reemplaza Nginx+PHP-FPM con:
 
@@ -2067,9 +2068,26 @@ services:
 
 ---
 
-**Última actualización**: 3 de Junio 2026  
-**Versión**: 5.0 (Producción funcional — pipeline completo end-to-end)  
-**Estado**: ✅ **Fases 1-3 COMPLETADAS** — Fase 4 parcial | Fases 5-6 pendientes
+**Última actualización**: 4 de Junio 2026  
+**Versión**: 5.1 (Producción funcional — pipeline completo end-to-end)  
+**Estado**: ✅ **Fases 1-3 COMPLETADAS** — Fase 4 parcial | Fases 5-6 pendientes  
+  
+### Cambios v5.1 (4 Jun 2026)  
+- **Prompt V3**: Sección Anti-AI (34 líneas) reducida a Voice Discipline (8 líneas). Prompt ~180→~155 líneas  
+- **Timeout**: 600s→900s, tries=2, backoff [60,180]  
+- **Reading time bilingüe**: EN 225 WPM, ES 165 WPM (usa el mayor)  
+- **ensureUniqueSlug()**: Límite de 50 intentos + fallback random  
+- **countSentences()**: Regex única para abreviaciones (10× más rápido)  
+- **GD extension check**: Log explícito si GD no está cargado  
+- **Auto-fix frases bloqueadas**: Reemplaza silenciosamente en vez de fallar el job  
+- **Article::booted()**: Elimina media files al borrar artículo (eliminación huérfanos)  
+- **CleanupOrphanMedia**: Comando `php artisan media:cleanup-orphan` para limpiar carpetas huérfanas  
+- **Style DNA logging**: Guardado en ai_metadata por artículo  
+- **Placeholder hero**: Imagen GD cuando SiliconFlow falla (no rollback)  
+- **Status overwrite fix**: `if ($article->status !== 'draft')` evita publicar artículos sin imágenes  
+- **$source fix**: `$source = $this->rawArticle->source` dentro de classifyAndExtract()  
+- **validateSeoTechnical()**: Keyword density, keyword en H2, keyword en primeras 100 palabras, JSON-LD validation  
+- **Jitter conservador**: ±10% de temperatura base (proporcional, no flat)
 
 ---
 

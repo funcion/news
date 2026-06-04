@@ -18,12 +18,12 @@ class ProcessArticleWithAIJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 600; // 10 minutes — reasoning models (DeepSeek V4 Pro) take 3-5min per bilingual draft
+    public $timeout = 900; // 15 minutes — classification (60s) + redaction (300s) + 5 images (240s) + validation (30s) + buffer
     public $tries = 2;
 
     public function backoff(): array
     {
-        return [30, 120];
+        return [60, 180]; // 1min, 3min between retries
     }
 
     public function __construct(
@@ -207,11 +207,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->published_at   = now();
         $article->seo_score      = 85; // Static default — self-reported AI scores are unreliable, use Filament for manual override
         $article->meta_keywords  = $redacted['keywords'] ?? [];
-        $article->reading_time   = $this->calculateReadingTime($contentEn);
+        $article->reading_time   = $this->calculateReadingTime($contentEn, $contentEs);
         $article->ai_metadata    = [
-            'origin_url' => $this->rawArticle->url,
-            'today_date' => $today,
-            'json_ld'    => $redacted['json_ld'] ?? null,
+            'origin_url'  => $this->rawArticle->url,
+            'today_date'  => $today,
+            'json_ld'     => $redacted['json_ld'] ?? null,
+            'style_dna'   => $redacted['_style_dna'] ?? null,
+            'model_used'  => OpenRouterService::MODEL_ACTIVE,
+            'temperature' => $redacted['_temperature'] ?? null,
         ];
 
         // Set all translatable fields via setTranslation (Spatie-aware)
@@ -342,23 +345,55 @@ class ProcessArticleWithAIJob implements ShouldQueue
                     $contentEs = str_replace($placeholder, '', $contentEs);
                     Log::warning("Image generation failed for placeholder {$placeholder}.");
 
-                    // --- HARD STOP: Featured image [IMAGE_1] is mandatory ---
+                    // --- FEATURED IMAGE [IMAGE_1] FAILURE: Use placeholder instead of rollback ---
                     if ($placeholder === '[IMAGE_1]') {
-                        $article->delete(); // rollback article creation
-                        throw new \RuntimeException(
-                            "Featured image generation failed for RawArticle {$this->rawArticle->id}. Article rolled back."
+                        $placeholderPath = $this->generatePlaceholderHero(
+                            $redacted['title_en'] ?? $this->rawArticle->title ?? 'Article',
+                            $slugEn
                         );
+                        if ($placeholderPath && file_exists($placeholderPath)) {
+                            $heroImgId = "img-hero-placeholder-" . Str::random(5);
+                            $heroSizes = "(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px";
+
+                            $fileNameEn = "{$slugEn}-hero-placeholder.webp";
+                            $mediaEn = $article->addMedia($placeholderPath)
+                                ->usingFileName($fileNameEn)
+                                ->usingName(Str::limit($redacted['title_en'] ?? 'Hero', 70))
+                                ->withCustomProperties(['lang' => 'en', 'alt' => $altEn, 'title' => Str::limit($altEn, 70), 'caption' => $captionEn])
+                                ->preservingOriginal()
+                                ->toMediaCollection('images_en');
+
+                            $fileNameEs = "{$slugEs}-hero-placeholder.webp";
+                            $mediaEs = $article->addMedia($placeholderPath)
+                                ->usingFileName($fileNameEs)
+                                ->usingName(Str::limit($redacted['title_es'] ?? 'Hero', 70))
+                                ->withCustomProperties(['lang' => 'es', 'alt' => $altEs, 'title' => Str::limit($altEs, 70), 'caption' => $captionEs])
+                                ->toMediaCollection('images_es');
+
+                            $article->image_url = $mediaEn->getUrl();
+                            $article->save();
+                            $article->setTranslation('image_alt', 'en', $altEn);
+                            $article->setTranslation('image_alt', 'es', $altEs);
+                            $article->save();
+
+                            $imageCount++;
+                            Log::info("Placeholder hero image generated for Article. Original SiliconFlow call failed.");
+                        }
                     }
                 }
             }
         }
 
-        // --- SAFETY NET: No images at all → abort ---
+        // --- SAFETY NET: No images at all → save as draft for admin review ---
         if ($imageCount === 0) {
-            $article->delete();
-            throw new \RuntimeException(
-                "No images were generated for RawArticle {$this->rawArticle->id}. Article rolled back."
-            );
+            $article->status = 'draft';
+            $meta = $article->ai_metadata;
+            $meta['needs_images'] = true;
+            $meta['image_failure_reason'] = 'All image generations failed';
+            $article->ai_metadata = $meta;
+            $article->save();
+            Log::warning("Article {$article->id} saved as draft — no images generated. Admin review needed.");
+            // Do NOT throw — article content is preserved for manual image addition
         }
 
 
@@ -373,7 +408,10 @@ class ProcessArticleWithAIJob implements ShouldQueue
             $article->ai_metadata = $meta;
         }
 
-        $article->status = 'published'; // Set to published now that drafting and image injection is complete
+        // Only publish if safety-net didn't already flag as draft (e.g. no images)
+        if ($article->status !== 'draft') {
+            $article->status = 'published';
+        }
         $article->save();
 
         // --- Generate Embedding ---
@@ -459,6 +497,12 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
     private function ensureUniqueSlug(string $slug, string $column, int $attempt = 0): string
     {
+        // Safety limit to prevent infinite recursion
+        if ($attempt > 50) {
+            Log::warning("ensureUniqueSlug: exceeded 50 attempts for '{$slug}', using random suffix");
+            return "{$slug}-" . Str::random(6);
+        }
+
         $candidate = $attempt === 0 ? $slug : "{$slug}-" . ($attempt + 1);
         
         // We must check BOTH columns to ensure a slug is truly unique across the whole site
@@ -505,6 +549,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         })->filter()->toArray();
         $categoriesList = implode(', ', $categories) ?: 'General / General';
 
+        $source = $this->rawArticle->source;
         $sourceTrusted = ($source && $source->trusted) ? 'YES' : 'NO';
         $sourceScore   = $source?->score ?? 0;
         $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'unknown';
@@ -636,16 +681,16 @@ TONE_BLEND (follow your assigned TONE_BLEND — this is your dominant tonal regi
 TAKE A CLEAR STANCE. Every column needs a clear, opinionated thesis: is this overhyped? Dangerous? Quietly brilliant? Reckless? State it precisely where your assigned STRUCTURE_VARIANT mandates it. Commit fully. A columnist who hedges on everything is a columnist nobody reads. When claims from the source are unverified, flag them honestly ("reports suggest", "if confirmed") — but your analytical OPINION about those claims must still be sharp and decisive.
 
 MANDATORY ANCHORS OF REALITY (NON-NEGOTIABLE):
-- UNCERTAINTY: Include exactly {$paragraphRules['doubt_moments']} sentence(s) in each language where you openly doubt part of your own argument, admit a gap in knowledge, or hedge on a prediction. Vary the phrasing each time — never use the same doubt structure twice.
+- UNCERTAINTY: Include {$paragraphRules['doubt_moments']} moment(s) in each language where you stress-test your own thesis — admit a gap in knowledge, qualify a prediction, or acknowledge a valid counterpoint. Do this naturally, not mechanically. Vary the phrasing each time.
 - NO EXTERNAL URLS: NEVER include URLs or hyperlinks inside content_en or content_es. Cite sources by name only.
 - PERSONAL GROUNDING: Write in first person ("I", "we") with at least ONE moment grounded in your professional lens. VARY how you do it. Never open with "In my experience". Instead: a pattern you noticed over time, a moment of realization, something you covered before, your reaction when first reading this news. Make it feel remembered, not performed.
 - HYPER-SPECIFIC DATA: Be as specific as possible — exact percentages, named sources, timeframes. If you lack the exact figure, use a qualified approximate ("roughly 40%", "industry estimates suggest"). NEVER invent a fake statistic. A vague but honest estimate reads as more human than a suspiciously precise fabrication.
 
-WRITE WITH GENUINE PERSONALITY:
-- Use contractions naturally: "don't", "isn't", "we've", "they're"
-- Use em dashes — like this — for dramatic asides or mid-thought clarifications
-- Strong, opinionated adjectives: "reckless", "lazy", "alarming", "brilliant" — never safe filler like "interesting" or "notable"
-- Challenge PR spin and vague marketing language with specific counter-evidence
+WRITE WITH DISCIPLINED PERSONALITY — think of it as jazz improvisation: you have freedom, but within a chord progression.
+- You have a distinct voice, but it operates within clear boundaries.
+- DO: Use contractions naturally ("don't", "isn't", "we've", "they're"), em dashes for dramatic asides, strong opinionated adjectives ("reckless", "lazy", "alarming", "brilliant"), first-person perspective, challenge PR spin with specific counter-evidence.
+- DON'T: Use blocked phrases (Section 2), start paragraphs with gerunds (-ing words), repeat the same transition word 3x, use safe filler like "interesting" or "notable".
+- Your personality emerges from WHAT you choose to emphasize, the analogies you pick, and how you structure your argument — not from breaking rules.
 
 PARAGRAPH ASYMMETRY (the #1 AI fingerprint — break it or get flagged):
 - Include exactly {$paragraphRules['single_sentence']} paragraph(s) of 1 sentence (5-12 words) for rhetorical punch
@@ -667,40 +712,15 @@ HUMAN NOISE (follow your assigned HUMAN_NOISE from Section 0):
 - Include exactly {$paragraphRules['human_noise']} moment(s) of human noise: brief digression, half-formed thought, question left hanging, "okay, fair enough"
 - These are the texture of real writing. More than {$paragraphRules['human_noise']} reads as try-hard.
 
-═══ 2. ANTI-AI DETECTION PATTERNS (CRITICAL) ═══
+═══ 2. VOICE DISCIPLINE & QUALITY GUARDRAILS ═══
 
-These are the structural tells that flag machine-generated text. NEVER DO THEM:
-- Open mid-article paragraphs with rhetorical questions ("But what does this mean for X?")
-- Use balanced "on one hand / on the other hand" framing in every section
-- Start 3+ consecutive sentences with identical syntactic pattern (Subject-Verb-Object)
-- End sections with hollow wrap-up lines ("This will certainly be worth watching", "Only time will tell")
-- Chain 3+ consecutive single-sentence paragraphs for artificial dramatic effect
-- Repeat the same analogy or metaphor twice in one article
-- Start an article with a sweeping generalization about "the state of" or "in today's rapidly evolving"
+QUALITY STANDARD: Write like a senior columnist at The Atlantic or El País — opinionated, specific, never generic. If a sentence could appear in any article about any topic, delete it and write something only THIS article would say.
 
-BLOCKED PHRASES (AI fingerprints — using ANY of these fails the article):
-EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "trajectory points toward", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "raises important questions", "a bold step forward", "double-edged sword", "the implications are profound", "a testament to"
+AVOID THESE AI-FINGERPRINT PHRASES (the backend auto-strips them, but avoidance improves quality):
+EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "double-edged sword", "the implications are profound", "a testament to"
 ES: "cambio de paradigma", "en conclusión", "sin lugar a dudas", "cabe destacar", "queda por ver", "un arma de doble filo", "marca un antes y un después", "las implicaciones son profundas"
 
-OPENING FINGERPRINTS (never start with these — instant AI detection):
-- "In today's [adjective] [noun]..." / "En el [adjetivo] mundo de..."
-- "Let's dive in" / "Let me break this down"
-- "I've been covering X for Y years and..."
-- "Picture this:" / "Imagine a world where..."
-- "If you've been following [topic]..."
-- "In my experience" as an opener
-- Any sweeping generalization about "the state of" a whole industry
-
-BLOCKED STRUCTURAL PATTERNS (structural, not lexical):
-- Never start 3+ consecutive paragraphs with the same number of words in the first sentence
-- Never use the same transition word (But/However/Still/Yet) more than twice in the entire article
-- Never end two consecutive sections with a single-sentence paragraph
-- Never make all H2 headings exactly the same word count (4-6 words each is a tell)
-- The last paragraph must NEVER start with "In the end", "Ultimately", "At the end of the day"
-
-FOOD/SPORT METAPHOR LIMIT:
-- Maximum ONE food or sports metaphor per article. Zero is fine.
-- If you write "like a recipe for" or "home run" or "low-hanging fruit" — delete it and use your ANALOGY_DOMAIN.
+STRUCTURAL DISCIPLINE: Never start 3+ consecutive sentences with the same structure. Never repeat the same transition word (But/However/Still/Yet) more than twice. Vary H2 heading lengths — mixing short ("Why?") with long. The last paragraph must not start with "In the end" or "Ultimately".
 
 ═══ 3. ARTICLE STRUCTURE (follow your STRUCTURE_VARIANT from Section 0) ═══
 
@@ -714,7 +734,7 @@ STRUCTURE_VARIANT RULES (pick the one assigned to you):
 - counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." or equivalent → delay evidence until after first H2 → build the case → Close with a warning
 
 ALL VARIANTS share these rules:
-- You MUST alternate text blocks with structural image tokens. No more than two consecutive paragraphs without an [IMAGE_N] token on its own standalone line.
+- You MUST alternate text blocks with structural image tokens. No more than two consecutive paragraphs without an [IMAGE_N] token on its own standalone line. IMPORTANT: Image tokens in body start at [IMAGE_2]. [IMAGE_1] is the hero/featured image and is NEVER placed inside content_en or content_es — it is handled separately by the backend.
 - Use <strong> for key data points, <blockquote> for critical insights or notable quotes, <ul>/<ol> for scannable information.
 - H2 headings must vary in length — never make them all 4-6 words. Mix short ("Why?") with long ("The Hidden Cost Nobody's Talking About").
 - Use your assigned HOOK_TYPE for the opening:
@@ -816,12 +836,6 @@ CRITICAL JSON FORMATTING RULES:
     }
 }
 
-FINAL SELF-CHECK (verify ONLY these 5 — the rest is validated programmatically by the backend):
-1. [IMAGE_N] tokens on their own lines in BOTH content_en AND content_es
-2. [IMAGE_1] NOT inside content strings
-3. Zero phrases from BLOCKED PHRASES or OPENING FINGERPRINTS lists
-4. Spanish reads as native, not translated
-5. STRUCTURE_VARIANT from Section 0 is followed
 PROMPT;
 
         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE, ['temperature' => $temperature]);
@@ -841,6 +855,10 @@ PROMPT;
         if (isset($data['keywords']) && is_string($data['keywords'])) {
             $data['keywords'] = array_map('trim', explode(',', $data['keywords']));
         }
+
+        // Attach style DNA metadata for downstream logging
+        $data['_style_dna'] = $styleDna;
+        $data['_temperature'] = $temperature;
 
         return $data;
     }
@@ -956,7 +974,9 @@ PROMPT;
             $errors[] = 'content_es is too short (less than 200 chars stripped)';
         }
 
-        // 7. Check for blocked AI-fingerprint phrases
+        // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)
+        // Hard-failing on blocked phrases wastes API credits on retries. The auto-fix
+        // silently strips them in PHP, and we log warnings here for monitoring.
         $blockedPhrases = [
             'paradigm shift', 'game-changer', 'revolutionary', 'democratization of',
             'inflection point', 'trajectory points toward', 'unprecedented scale',
@@ -971,10 +991,40 @@ PROMPT;
         $contentEnLower = strtolower($contentEn);
         foreach ($blockedPhrases as $phrase) {
             if (str_contains($contentEnLower, $phrase)) {
-                $errors[] = "Blocked AI-fingerprint phrase detected in content_en: '{$phrase}'";
-                break; // One is enough to flag
+                Log::warning("AI-fingerprint phrase found in content_en (auto-fixed): '{$phrase}' — RawArticle {$this->rawArticle->id}");
             }
         }
+
+        // 8. Check for blocked AI-fingerprint phrases in SPANISH (WARNING ONLY)
+        $blockedPhrasesEs = [
+            'cambio de paradigma', 'en conclusión', 'sin lugar a dudas',
+            'cabe destacar', 'queda por ver', 'un arma de doble filo',
+            'marca un antes y un después', 'las implicaciones son profundas',
+            'en el mundo de', 'sin ir más lejos',
+            'como ya hemos mencionado', 'en última instancia',
+            'es importante destacar',
+            'sin duda alguna', 'no cabe duda', 'vale la pena mencionar',
+        ];
+        $contentEsLower = strtolower($contentEs);
+        foreach ($blockedPhrasesEs as $phrase) {
+            if (str_contains($contentEsLower, $phrase)) {
+                Log::warning("AI-fingerprint phrase found in content_es (auto-fixed): '{$phrase}' — RawArticle {$this->rawArticle->id}");
+            }
+        }
+
+        // 9. Paragraph asymmetry (warnings only — not hard fails)
+        foreach ($this->validateParagraphAsymmetry($contentEn, 'en') as $w) { Log::warning("Asymmetry: {$w}"); }
+        foreach ($this->validateParagraphAsymmetry($contentEs, 'es') as $w) { Log::warning("Asymmetry: {$w}"); }
+
+        // 10. Heading variety (warnings only)
+        foreach ($this->validateHeadingVariety($contentEn) as $w) { Log::warning("Headings: {$w}"); }
+
+        // 11. IMAGE token placement (warnings only)
+        foreach ($this->validateImageTokenPlacement($contentEn, 'en') as $w) { Log::warning("Tokens: {$w}"); }
+        foreach ($this->validateImageTokenPlacement($contentEs, 'es') as $w) { Log::warning("Tokens: {$w}"); }
+
+        // 12. SEO technical validation (warnings only — too aggressive for hard fail)
+        foreach ($this->validateSeoTechnical($data) as $w) { Log::warning("SEO: {$w}"); }
 
         return $errors;
     }
@@ -1024,6 +1074,57 @@ PROMPT;
             }
         }
 
+        // --- AUTO-FIX: Strip blocked AI-fingerprint phrases silently ---
+        $blockedReplacementsEn = [
+            'paradigm shift' => 'fundamental change', 'game-changer' => 'significant development',
+            'revolutionary' => 'substantial', 'democratization of' => 'wider access to',
+            'inflection point' => 'turning point', 'trajectory points toward' => 'trend suggests',
+            'unprecedented scale' => 'massive scale', 'seamlessly integrate' => 'integrate',
+            'robust ecosystem' => 'mature ecosystem', 'the digital landscape' => 'the industry',
+            'it remains to be seen' => '', 'only time will tell' => '',
+            'it\'s worth noting' => '', 'in today\'s rapidly evolving' => 'in a shifting',
+            'at the end of the day' => '', 'raises important questions' => 'raises questions',
+            'a bold step forward' => 'a deliberate move', 'double-edged sword' => 'trade-off',
+            'the implications are profound' => 'the consequences matter',
+            'a testament to' => 'evidence of',
+            'let\'s dive in' => '', 'let me break this down' => '',
+            'in my experience' => '', 'low-hanging fruit' => 'obvious target',
+            'home run' => 'success', 'slam dunk' => 'certainty', 'picture this' => '',
+        ];
+        $blockedReplacementsEs = [
+            'cambio de paradigma' => 'cambio fundamental', 'en conclusión' => '',
+            'sin lugar a dudas' => '', 'cabe destacar' => '',
+            'queda por ver' => '', 'un arma de doble filo' => 'una disyuntiva',
+            'marca un antes y un después' => 'cambia las reglas',
+            'las implicaciones son profundas' => 'las consecuencias importan',
+            'en el mundo de' => 'en', 'sin ir más lejos' => '',
+            'como ya hemos mencionado' => '', 'en última instancia' => '',
+            'es importante destacar' => '', 'sin duda alguna' => '',
+            'no cabe duda' => '', 'vale la pena mencionar' => '',
+        ];
+
+        foreach (['content_en', 'title_en', 'excerpt_en'] as $field) {
+            if (!empty($data[$field])) {
+                $original = $data[$field];
+                $data[$field] = str_ireplace(array_keys($blockedReplacementsEn), array_values($blockedReplacementsEn), $data[$field]);
+                // Clean up double spaces left by empty replacements
+                $data[$field] = preg_replace('/\s{2,}/', ' ', $data[$field]);
+                if ($data[$field] !== $original) {
+                    $fixes[] = "{$field}: AI-fingerprint phrases stripped";
+                }
+            }
+        }
+        foreach (['content_es', 'title_es', 'excerpt_es'] as $field) {
+            if (!empty($data[$field])) {
+                $original = $data[$field];
+                $data[$field] = str_ireplace(array_keys($blockedReplacementsEs), array_values($blockedReplacementsEs), $data[$field]);
+                $data[$field] = preg_replace('/\s{2,}/', ' ', $data[$field]);
+                if ($data[$field] !== $original) {
+                    $fixes[] = "{$field}: AI-fingerprint phrases stripped (ES)";
+                }
+            }
+        }
+
         if (!empty($fixes)) {
             Log::info('autoFixRedactedOutput: ' . implode(', ', $fixes));
         }
@@ -1031,16 +1132,301 @@ PROMPT;
         return $data;
     }
 
-    protected function calculateReadingTime(string $content): int
+    /**
+     * Calculate reading time for both languages and return the maximum.
+     * English: ~225 WPM, Spanish: ~165 WPM (longer words).
+     * Using the max ensures the displayed time is accurate for both audiences.
+     */
+    protected function calculateReadingTime(string $contentEn, string $contentEs = ''): int
     {
-        $wordCount = str_word_count(strip_tags($content));
-        return max(1, ceil($wordCount / 200));
+        $wordsEn = str_word_count(strip_tags($contentEn));
+        $timeEn  = (int) ceil($wordsEn / 225);
+
+        if (empty($contentEs)) {
+            return max(1, $timeEn);
+        }
+
+        $wordsEs = count(preg_split('/\s+/', trim(strip_tags($contentEs))));
+        $timeEs  = (int) ceil($wordsEs / 165);
+
+        return max(1, $timeEn, $timeEs);
     }
 
     public function failed(\Throwable $exception): void
     {
         $this->rawArticle->update(['status' => 'failed']);
         Log::error("Job failed for RawArticle {$this->rawArticle->id}: {$exception->getMessage()}");
+    }
+
+    // -------------------------------------------------------------------------
+    // NEW VALIDATION & HELPER METHODS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Extract meaningful paragraph-level blocks from HTML content.
+     * Handles <p>, <h2>, <blockquote>, <li>, and fragment lines.
+     */
+    private function extractParagraphs(string $html): array
+    {
+        // Split by common block-level HTML tags
+        $blocks = preg_split('/\n\n+/', strip_tags($html));
+        return array_values(array_filter(array_map('trim', $blocks), fn($b) => mb_strlen($b) > 3));
+    }
+
+    /**
+     * Count sentences in a text block with multilingual support.
+     * Handles abbreviations, URLs, decimal numbers, and ES punctuation.
+     */
+    private function countSentences(string $text): int
+    {
+        $clean = strip_tags($text);
+
+        // Single regex to PROTECT abbreviations (replaces "Dr." with "Dr " — strips the period so it doesn't count as sentence end)
+        $abbrevPattern = '(\\b(?:Dr|Mr|Mrs|Ms|Prof|Sr|Sra|Ing|Lic|EE\\\\.UU|U\\\\.S|U\\\\.K|etc|vs|approx|aprox|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Lun|Mar|Mie|Jue|Vie|Sab|Dom))\\.';
+        $clean = preg_replace("/{$abbrevPattern}/i", '$1 ', $clean);
+
+        // Protect URLs and decimal numbers
+        $clean = preg_replace('/https?:\/\/[^\s]+/', '', $clean);
+        $clean = preg_replace('/\d+\.\d+/', '', $clean);
+
+        // Split by sentence terminators followed by space + uppercase (EN + ES)
+        $sentences = preg_split('/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡"])/u', $clean, -1, PREG_SPLIT_NO_EMPTY);
+
+        // Filter out fragments too short to be real sentences
+        return count(array_filter($sentences, fn($s) => mb_strlen(trim($s)) > 5));
+    }
+
+    /**
+     * Validate paragraph asymmetry (T1).
+     * Detects AI-fingerprint patterns: uniform paragraph lengths, no single-sentence paragraphs, etc.
+     * Returns array of warning strings (not hard errors).
+     */
+    private function validateParagraphAsymmetry(string $html, string $lang): array
+    {
+        $warnings = [];
+        $paragraphs = $this->extractParagraphs($html);
+
+        if (count($paragraphs) < 4) {
+            return $warnings;
+        }
+
+        $sentenceCounts = array_map(fn($p) => $this->countSentences($p), $paragraphs);
+
+        // Check for 3+ consecutive paragraphs with same sentence count
+        $consecutive = 1;
+        for ($i = 1; $i < count($sentenceCounts); $i++) {
+            if ($sentenceCounts[$i] === $sentenceCounts[$i - 1] && $sentenceCounts[$i] > 0) {
+                $consecutive++;
+                if ($consecutive >= 3) {
+                    $warnings[] = "{$lang}: {$consecutive} consecutive paragraphs with {$sentenceCounts[$i]} sentence(s) — AI fingerprint";
+                }
+            } else {
+                $consecutive = 1;
+            }
+        }
+
+        // Check minimum single-sentence paragraphs exist
+        $singleSentence = count(array_filter($sentenceCounts, fn($c) => $c === 1));
+        if ($singleSentence === 0 && count($paragraphs) >= 5) {
+            $warnings[] = "{$lang}: No single-sentence paragraphs found — lacks rhetorical punch";
+        }
+
+        // Check for too many consecutive single-sentence paragraphs (artificial drama)
+        $consecutiveShort = 0;
+        for ($i = 0; $i < count($sentenceCounts); $i++) {
+            if ($sentenceCounts[$i] === 1) {
+                $consecutiveShort++;
+                if ($consecutiveShort >= 3) {
+                    $warnings[] = "{$lang}: {$consecutiveShort} consecutive single-sentence paragraphs — artificial drama";
+                }
+            } else {
+                $consecutiveShort = 0;
+            }
+        }
+
+        // Check long paragraphs exist
+        $longParagraphs = count(array_filter($sentenceCounts, fn($c) => $c >= 6));
+        if ($longParagraphs === 0 && count($paragraphs) >= 6) {
+            $warnings[] = "{$lang}: No long paragraphs (6+ sentences) found — lacks depth";
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * Validate H2 heading variety.
+     * AI-generated content tends to have uniform heading lengths.
+     */
+    private function validateHeadingVariety(string $html): array
+    {
+        $warnings = [];
+        preg_match_all('/<h2[^>]*>(.*?)<\/h2>/is', $html, $matches);
+        $headings = $matches[1] ?? [];
+
+        if (count($headings) >= 3) {
+            $wordCounts = array_map(fn($h) => str_word_count(strip_tags($h)), $headings);
+            $uniqueCounts = array_unique($wordCounts);
+
+            // If all headings have same word count (±1) → flag
+            if (count($uniqueCounts) <= 2 && count($headings) >= 3) {
+                $warnings[] = 'H2 headings have suspiciously uniform word counts: ' . implode(', ', $wordCounts);
+            }
+
+            // If all headings are exactly 4-6 words → classic AI tell
+            $allShort = !empty(array_filter($wordCounts, fn($c) => $c >= 4 && $c <= 6));
+            if ($allShort && count(array_unique(array_map(fn($c) => $c >= 4 && $c <= 6 ? 'mid' : 'other', $wordCounts))) === 1) {
+                $warnings[] = 'All H2 headings are 4-6 words — classic AI fingerprint';
+            }
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * Validate IMAGE token placement in HTML content.
+     * Tokens must be on their own standalone line, not inside <p> tags.
+     */
+    private function validateImageTokenPlacement(string $html, string $lang): array
+    {
+        $warnings = [];
+        $lines = explode("\n", $html);
+
+        foreach ($lines as $i => $line) {
+            if (preg_match('/\[IMAGE_(\d+)\]/', $line, $m)) {
+                $trimmed = trim($line);
+                // Token should be alone on its line (the token itself and nothing else meaningful)
+                if ($trimmed !== $m[0] && mb_strlen(str_replace($m[0], '', $trimmed)) > 10) {
+                    $warnings[] = "{$lang} line " . ($i + 1) . ": IMAGE token not standalone — extra content on same line";
+                }
+                // Token must NOT be inside a <p> tag on the same line
+                if (str_contains($line, '<p') && str_contains($line, '</p>')) {
+                    $warnings[] = "{$lang} line " . ($i + 1) . ": IMAGE token found inside <p> tag";
+                }
+            }
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * Validate SEO technical requirements (CTO recommendation).
+     * Returns array of warning strings.
+     */
+    private function validateSeoTechnical(array $data): array
+    {
+        $warnings = [];
+
+        $contentEn = strip_tags($data['content_en'] ?? '');
+        $keywords = $data['keywords'] ?? [];
+        $primaryKw = strtolower($keywords[0] ?? '');
+
+        if (empty($primaryKw)) {
+            $warnings[] = 'No keywords provided — cannot validate SEO';
+            return $warnings;
+        }
+
+        // 1. Primary keyword in first 100 words
+        $words = str_word_count($contentEn, 1);
+        $first100 = strtolower(implode(' ', array_slice($words, 0, 100)));
+        if (!str_contains($first100, $primaryKw)) {
+            $warnings[] = "Primary keyword '{$primaryKw}' not found in first 100 words";
+        }
+
+        // 2. Keyword density (0.5% - 2.5%)
+        $totalWords = count($words);
+        if ($totalWords > 0) {
+            $keywordCount = mb_substr_count(strtolower($contentEn), $primaryKw);
+            $density = ($keywordCount / $totalWords) * 100;
+            if ($density < 0.3) {
+                $warnings[] = "Keyword density too low: {$density}% (minimum 0.3%)";
+            } elseif ($density > 3.0) {
+                $warnings[] = "Keyword density too high: {$density}% (maximum 3.0%) — possible keyword stuffing";
+            }
+        }
+
+        // 3. Primary keyword in at least 1 H2
+        $contentHtml = $data['content_en'] ?? '';
+        preg_match_all('/<h2[^>]*>(.*?)<\/h2>/is', $contentHtml, $h2Matches);
+        $h2Text = strtolower(implode(' ', strip_tags(implode(' ', $h2Matches[1] ?? []))));
+        if (!empty($h2Matches[1]) && !str_contains($h2Text, $primaryKw)) {
+            $warnings[] = "Primary keyword '{$primaryKw}' not found in any H2 heading";
+        }
+
+        // 4. JSON-LD basic validation
+        $jsonLd = $data['json_ld'] ?? null;
+        if ($jsonLd) {
+            if (empty($jsonLd['@type'])) {
+                $warnings[] = 'JSON-LD missing @type field';
+            }
+            if (empty($jsonLd['headline'])) {
+                $warnings[] = 'JSON-LD missing headline field';
+            }
+            if (empty($jsonLd['author']['name'])) {
+                $warnings[] = 'JSON-LD missing author name';
+            }
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * Generate a placeholder hero image when SiliconFlow fails.
+     * Creates a dark gradient image with the article title as text overlay.
+     */
+    private function generatePlaceholderHero(string $title, string $slug): ?string
+    {
+        if (!extension_loaded('gd')) {
+            Log::error("generatePlaceholderHero: GD extension not loaded. Cannot generate placeholder image.", [
+                'title' => $title,
+                'slug' => $slug,
+            ]);
+            return null;
+        }
+
+        try {
+            $width  = 1280;
+            $height = 720;
+
+            $img = imagecreatetruecolor($width, $height);
+            if (!$img) return null;
+
+            // Dark gradient background (slate-900 to slate-800)
+            for ($y = 0; $y < $height; $y++) {
+                $ratio = $y / $height;
+                $r = (int)(15 + (30 - 15) * $ratio);
+                $g = (int)(23 + (41 - 23) * $ratio);
+                $b = (int)(42 + (59 - 42) * $ratio);
+                $color = imagecolorallocate($img, $r, $g, $b);
+                imageline($img, 0, $y, $width, $y, $color);
+            }
+
+            // Brand accent line (cyan-500)
+            $accent = imagecolorallocate($img, 6, 182, 212);
+            imagefilledrectangle($img, 0, $height - 4, $width, $height, $accent);
+
+            // Title text (white, centered)
+            $white = imagecolorallocate($img, 255, 255, 255);
+            $fontSize = 5;
+            $titleShort = Str::limit($title, 60, '');
+            $textWidth = imagefontwidth($fontSize) * strlen($titleShort);
+            $x = max(20, (int)(($width - $textWidth) / 2));
+            $y = (int)(($height / 2) - (imagefontheight($fontSize) / 2));
+            imagestring($img, $fontSize, $x, $y, $titleShort, $white);
+
+            // "Glodaxia" watermark (bottom-right, gray)
+            $gray = imagecolorallocate($img, 100, 116, 139);
+            imagestring($img, 3, $width - 120, $height - 30, 'Glodaxia.com', $gray);
+
+            // Save as webp
+            $path = storage_path("app/public/placeholder-{$slug}.webp");
+            $saved = imagewebp($img, $path, 85);
+            imagedestroy($img);
+
+            return $saved ? $path : null;
+        } catch (\Throwable $e) {
+            Log::error("generatePlaceholderHero failed: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -1160,8 +1546,11 @@ PROMPT;
             'enthusiastic_rebel'   => 0.85,
             'weary_insider'        => 0.65,
         ];
-        $temperature = ($temperatureMap[$styleSeeds[0]] ?? 0.7) + (mt_rand(-5, 5) / 100);
-        $temperature = max(0.3, min(1.0, $temperature));
+        // Conservative jitter: ±10% of the base temperature (CTO recommended)
+        // cold_forensic (0.45) → jitter ±0.05 | enthusiastic_rebel (0.85) → jitter ±0.09
+        $baseTemp = $temperatureMap[$styleSeeds[0]] ?? 0.7;
+        $jitter = (mt_rand(-10, 10) / 100) * $baseTemp;
+        $temperature = max(0.3, min(1.0, $baseTemp + $jitter));
 
         // Compatibility matrix — resolve hookType AND toneBlend conflicts per seed
         $compatMatrix = [

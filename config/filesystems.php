@@ -57,6 +57,35 @@ return [
             'throw' => false,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Cloudflare R2 Disk
+        |--------------------------------------------------------------------------
+        |
+        | R2 es S3-compatible. Usa endpoint específico de R2.
+        | R2 NO cobra egress (descargas) — solo almacenamiento y operaciones.
+        | Con Cloudflare CDN cache, las lecturas desde R2 se minimizan.
+        |
+        | Para crear credenciales R2:
+        | 1. Cloudflare Dashboard → R2 → Manage R2 API Tokens
+        | 2. Create API Token → permisos: Object Read & Write
+        | 3. Copiar Access Key ID y Secret Access Key
+        | 4. El endpoint es: https://{account_id}.r2.cloudflarestorage.com
+        | 5. El region siempre es: auto
+        |
+        */
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('R2_BUCKET'),
+            'url' => env('R2_PUBLIC_URL'), // Tu dominio CDN: https://media.glodaxia.com
+            'endpoint' => env('R2_ENDPOINT'), // https://{account_id}.r2.cloudflarestorage.com
+            'use_path_style_endpoint' => false,
+            'throw' => false,
+        ],
+
     ],
 
     /*
