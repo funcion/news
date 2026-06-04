@@ -427,8 +427,18 @@ class ProcessArticleWithAIJob implements ShouldQueue
         }
 
         // Only publish if safety-net didn't already flag as draft (e.g. no images)
+        // --- RATE LIMITING: Check if we can publish now ---
+        // Prevents publishing patterns that search engines could flag as automated.
+        $canPublish = $this->canPublishNow($categoryId);
+
         if ($article->status !== 'draft') {
-            $article->status = 'published';
+            if ($canPublish) {
+                $article->status = 'published';
+            } else {
+                // Rate limit hit — keep as draft, will be picked up by scheduler
+                $article->status = 'draft';
+                Log::info("Article {$article->id} kept as draft — rate limit reached. Will publish when limits reset.");
+            }
         }
         $article->save();
 
@@ -774,23 +784,52 @@ ALL VARIANTS share these rules:
 
 ═══ 5. IMAGE PLACEMENT (CRITICAL — READ CAREFULLY) ═══
 
-Generate 3 to 5 photorealistic image prompts (FLUX.1 style: 35mm DSLR Nikon D850, cinematic natural lighting, shallow depth of field, 8k resolution, hyper-realistic, no text overlay, no watermark).
+Generate photorealistic image prompts (FLUX.1 style: 35mm DSLR Nikon D850, cinematic natural lighting, shallow depth of field, 8k resolution, hyper-realistic, no text overlay, no watermark).
 
+RANDOMIZED IMAGE COUNT ({$styleDna['imageCount']} images for this article — follow EXACTLY):
 - [IMAGE_1] = Hero/featured image ONLY. Do NOT place [IMAGE_1] inside content_en or content_es.
-- [IMAGE_2], [IMAGE_3], etc. = Interior images. You MUST place the literal string token (e.g., [IMAGE_2]) on its OWN STANDALONE LINE between paragraphs. NEVER replace the token with the caption text or a quote inside the content_en/content_es strings. The token string must appear raw and intact so the backend parser can replace it. Never embed them inside a <p> tag. Never skip them.
-- SYNCHRONIZATION RULE: Every [IMAGE_N] token placed in content_en/content_es MUST have a corresponding object in the "image_prompts" array with the exact same "id". Never place an image token without its prompt object. Never generate a prompt object without using its token in the text.
+- If imageCount >= 2: add [IMAGE_2] as interior image placed on its OWN STANDALONE LINE.
+- If imageCount >= 3: add [IMAGE_3] as interior image.
+- If imageCount >= 4: add [IMAGE_4] as interior image.
+- If imageCount >= 5: add [IMAGE_5] as interior image.
+- NEVER replace the token with the caption text or a quote inside the content_en/content_es strings. The token string must appear raw and intact so the backend parser can replace it.
+- SYNCHRONIZATION RULE: Every [IMAGE_N] token placed in content_en/content_es MUST have a corresponding object in the "image_prompts" array with the exact same "id".
 - Alt text: descriptive and concise, max 125 characters each.
 - If humans appear in the image: add "hyper-realistic skin textures, authentic facial expression" to the prompt.
 - IMAGE PLACEMENT (follow your IMAGE_PLACEMENT from Section 0):
-  - both_early: place [IMAGE_2] and [IMAGE_3] in the first half of the article body
-  - both_late: place [IMAGE_2] and [IMAGE_3] in the second half of the article body
-  - one_early_one_late: place [IMAGE_2] early (before first H2 or just after) and [IMAGE_3] late (near the close)
+  - both_early: place interior images in the first half of the article body
+  - both_late: place interior images in the second half of the article body
+  - one_early_one_late: place first interior image early, last one late
   - scattered: distribute images evenly — one after each H2 section
   - NEVER place images in the exact same relative position across consecutive articles
 
 ═══ 6. BILINGUAL REQUIREMENT ═══
 
 The Spanish version must NOT be a literal translation. It must read as if a native Spanish-speaking columnist wrote it independently — with natural phrasing, idiomatic expressions, and equivalent rhetorical impact. Both versions must feel like premium journalism.
+
+═══ 7. REAL CITATIONS AND REFERENCES ═══
+
+You MUST reference real, verifiable sources in the article:
+- Cite specific papers by name (e.g., "the 2023 Stanford AI Index report")
+- Reference specific companies, products, or people by name
+- Include dates, numbers, and percentages from the source facts
+- When possible, mention where the information originated (e.g., "according to the company's Q3 earnings call")
+- NEVER use vague attributions like "experts say" or "studies show" — be specific
+
+═══ 8. HUMAN WRITING PATTERNS (CRITICAL FOR AUTHENTICITY) ═══
+
+VARY YOUR OUTPUT STRUCTURE DRAMATICALLY:
+- Some articles should be short and punchy (300-500 words, 4-6 paragraphs)
+- Others should be deep and analytical (1200+ words, 10+ paragraphs with multiple H2 sections)
+- NEVER produce articles of the same length as your previous output
+
+HUMAN WRITING QUIRKS (use 2-3 per article, vary which ones):
+- Start a sentence with "And" or "But" occasionally
+- Use parenthetical asides (like this one) — real writers do this
+- Include one slightly informal phrase ("Look," "Here's the thing," "Between us")
+- Allow one minor structural imperfection (a paragraph that's a bit long, a transition that's abrupt)
+- Vary paragraph count: some articles have 5 paragraphs, others have 15
+- Sometimes use a dash — like this — for dramatic effect instead of a comma
 
 ═══ OUTPUT: STRICT JSON ONLY (no markdown fences, no commentary, no text outside the JSON object) ═══
 
@@ -1449,6 +1488,59 @@ PROMPT;
     }
 
     /**
+     * Check if we can publish an article right now based on editorial rate limits.
+     * Prevents publishing patterns that search engines could flag as automated.
+     */
+    private function canPublishNow(?int $categoryId = null): bool
+    {
+        $limits = config('global.rate_limits', []);
+
+        // Check publishing hours (7am-10pm by default)
+        $hour = now()->hour;
+        $start = $limits['publishing_hours']['start'] ?? 7;
+        $end = $limits['publishing_hours']['end'] ?? 22;
+        if ($hour < $start || $hour >= $end) {
+            Log::info("Rate limit: outside publishing hours ({$hour}:00, allowed {$start}-{$end})");
+            return false;
+        }
+
+        // Check max articles per hour
+        $maxPerHour = $limits['max_articles_per_hour'] ?? 2;
+        $thisHour = Article::where('status', 'published')
+            ->where('updated_at', '>=', now()->subHour())
+            ->count();
+        if ($thisHour >= $maxPerHour) {
+            Log::info("Rate limit: {$thisHour} articles published this hour (max {$maxPerHour})");
+            return false;
+        }
+
+        // Check max articles per day
+        $maxPerDay = $limits['max_articles_per_day'] ?? 8;
+        $today = Article::where('status', 'published')
+            ->whereDate('updated_at', today())
+            ->count();
+        if ($today >= $maxPerDay) {
+            Log::info("Rate limit: {$today} articles published today (max {$maxPerDay})");
+            return false;
+        }
+
+        // Check max articles per category per day
+        if ($categoryId) {
+            $maxPerCategory = $limits['max_articles_per_category_per_day'] ?? 3;
+            $categoryToday = Article::where('status', 'published')
+                ->where('category_id', $categoryId)
+                ->whereDate('updated_at', today())
+                ->count();
+            if ($categoryToday >= $maxPerCategory) {
+                Log::info("Rate limit: {$categoryToday} articles in category {$categoryId} today (max {$maxPerCategory})");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Generate randomized style DNA for each article.
      * 6 x 5 x 5 x 4 x 10 x 12 x 8 x 8 = 9,216,000 unique macro-combinations.
      * Each call shuffles arrays and picks one option per dimension.
@@ -1625,6 +1717,21 @@ PROMPT;
             'toneBlend'        => $toneBlends[0],
             'paragraphRules'   => $paragraphRules,
             'temperature'      => round($temperature, 2),
+            // Randomized image count — 60% hero-only, 25% 2-3 images, 15% 4-5 images
+            'imageCount'       => $this->rollImageCount(),
         ];
+    }
+
+    /**
+     * Roll a randomized image count for the article.
+     * Distribution: 60% = 1 (hero only), 25% = 2-3, 15% = 4-5.
+     * This prevents uniform image patterns that could be detected.
+     */
+    private function rollImageCount(): int
+    {
+        $roll = mt_rand(1, 100);
+        if ($roll <= 60) return 1;       // 60% — hero only
+        if ($roll <= 85) return mt_rand(2, 3); // 25% — 2-3 images
+        return mt_rand(4, 5);            // 15% — 4-5 images
     }
 }
