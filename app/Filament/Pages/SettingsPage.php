@@ -83,21 +83,21 @@ class SettingsPage extends Page
 
                         TextInput::make('data.publish_hour_start')
                             ->label('Publicar desde las')
-                            ->helperText('Hora mínima para publicar contenido (formato 24h)')
+                            ->helperText('Los artículos solo se publicarán desde esta hora (0-23)')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(23)
                             ->live(onBlur: true)
-                            ->suffix(':00'),
+                            ->suffix(':00 hrs'),
 
                         TextInput::make('data.publish_hour_end')
-                            ->label('Hasta las')
-                            ->helperText('Hora máxima para publicar contenido (formato 24h)')
+                            ->label('Publicar hasta las')
+                            ->helperText('Los artículos solo se publicarán hasta esta hora (0-23)')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(23)
                             ->live(onBlur: true)
-                            ->suffix(':00'),
+                            ->suffix(':00 hrs'),
                     ]),
 
                 Section::make('Marca e Identidad')
