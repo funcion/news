@@ -32,11 +32,11 @@ return [
 
         // Word count targets per content type
         'word_targets' => [
-            'news'   => '600-1000 words EN | 600-1000 palabras ES',
-            'blog'   => '800-1200 words EN | 800-1200 palabras ES',
-            'guide'  => '1000-1500 words EN | 1000-1500 palabras ES',
-            'review' => '800-1200 words EN | 800-1200 palabras ES',
-            'pillar' => '1500-2500 words EN | 1500-2500 palabras ES',
+            'news'   => '600-1200 words EN | 600-1200 palabras ES',
+            'blog'   => '800-1600 words EN | 800-1600 palabras ES',
+            'guide'  => '1000-2000 words EN | 1000-2000 palabras ES',
+            'review' => '800-1600 words EN | 800-1600 palabras ES',
+            'pillar' => '1500-3000 words EN | 1500-3000 palabras ES',
         ],
 
         // Default author creation if none exists
