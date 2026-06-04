@@ -13,11 +13,12 @@ class PublishRateLimitedDrafts extends Command
 
     public function handle(): int
     {
-        $limits = config('global.rate_limits', []);
-        $maxPerDay = $limits['max_articles_per_day'] ?? 8;
-        $maxPerHour = $limits['max_articles_per_hour'] ?? 2;
-        $start = $limits['publishing_hours']['start'] ?? 7;
-        $end = $limits['publishing_hours']['end'] ?? 22;
+        // Read from DB (settable via Filament SettingsPage), fall back to config
+        $maxPerDay  = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_day', config('global.rate_limits.max_articles_per_day', 8)));
+        $maxPerHour = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_hour', config('global.rate_limits.max_articles_per_hour', 2)));
+        $start      = (int) (\App\Models\Setting::get('rate_limits.publish_hour_start', config('global.rate_limits.publishing_hours.start', 7)));
+        $end        = (int) (\App\Models\Setting::get('rate_limits.publish_hour_end', config('global.rate_limits.publishing_hours.end', 22)));
+        $maxPerCategory = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_category_per_day', config('global.rate_limits.max_articles_per_category_per_day', 3)));
 
         $hour = now()->hour;
         if ($hour < $start || $hour >= $end) {
@@ -62,14 +63,15 @@ class PublishRateLimitedDrafts extends Command
 
         $published = 0;
         foreach ($drafts as $article) {
-            // Check category rate limit
+            // Check category rate limit — use $maxPerCategory from DB settings
+            // Read again in case it changed during run
+            $catLimit = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_category_per_day', $maxPerCategory));
             $categoryToday = Article::where('status', 'published')
                 ->where('category_id', $article->category_id)
                 ->whereDate('updated_at', today())
                 ->count();
 
-            $maxPerCategory = $limits['max_articles_per_category_per_day'] ?? 3;
-            if ($categoryToday >= $maxPerCategory) {
+            if ($categoryToday >= $catLimit) {
                 continue;
             }
 

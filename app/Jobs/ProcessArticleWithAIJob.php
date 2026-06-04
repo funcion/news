@@ -1489,23 +1489,25 @@ PROMPT;
 
     /**
      * Check if we can publish an article right now based on editorial rate limits.
+     * Reads from DB (Settings table) if available, falls back to config then env defaults.
      * Prevents publishing patterns that search engines could flag as automated.
      */
     private function canPublishNow(?int $categoryId = null): bool
     {
-        $limits = config('global.rate_limits', []);
+        // Try DB first (settable via Filament SettingsPage), fall back to config
+        $maxPerDay  = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_day', config('global.rate_limits.max_articles_per_day', 8)));
+        $maxPerHour = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_hour', config('global.rate_limits.max_articles_per_hour', 2)));
+        $maxPerCategory = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_category_per_day', config('global.rate_limits.max_articles_per_category_per_day', 3)));
+        $start      = (int) (\App\Models\Setting::get('rate_limits.publish_hour_start', config('global.rate_limits.publishing_hours.start', 7)));
+        $end        = (int) (\App\Models\Setting::get('rate_limits.publish_hour_end', config('global.rate_limits.publishing_hours.end', 22)));
 
-        // Check publishing hours (7am-10pm by default)
         $hour = now()->hour;
-        $start = $limits['publishing_hours']['start'] ?? 7;
-        $end = $limits['publishing_hours']['end'] ?? 22;
         if ($hour < $start || $hour >= $end) {
             Log::info("Rate limit: outside publishing hours ({$hour}:00, allowed {$start}-{$end})");
             return false;
         }
 
         // Check max articles per hour
-        $maxPerHour = $limits['max_articles_per_hour'] ?? 2;
         $thisHour = Article::where('status', 'published')
             ->where('updated_at', '>=', now()->subHour())
             ->count();
@@ -1515,7 +1517,6 @@ PROMPT;
         }
 
         // Check max articles per day
-        $maxPerDay = $limits['max_articles_per_day'] ?? 8;
         $today = Article::where('status', 'published')
             ->whereDate('updated_at', today())
             ->count();
@@ -1526,7 +1527,6 @@ PROMPT;
 
         // Check max articles per category per day
         if ($categoryId) {
-            $maxPerCategory = $limits['max_articles_per_category_per_day'] ?? 3;
             $categoryToday = Article::where('status', 'published')
                 ->where('category_id', $categoryId)
                 ->whereDate('updated_at', today())
