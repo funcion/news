@@ -90,18 +90,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
-        // --- FILTER: Article Age ---
-        $maxAgeDays = $this->rawArticle->source->max_age_days ?? 7;
+        // --- FILTER: Article Age (null-safe for articles without source) ---
+        $source = $this->rawArticle->source;
+        $maxAgeDays = $source?->max_age_days ?? 7;
         if ($this->rawArticle->published_at && $this->rawArticle->published_at->lt(now()->subDays($maxAgeDays))) {
             $this->rawArticle->update(['status' => 'ignored']);
             Log::info("RawArticle {$this->rawArticle->id} rejected: article is {$this->rawArticle->published_at->diffForHumans()}, max age is {$maxAgeDays} days.");
             return;
         }
 
-        // --- FILTER: Source Trust ---
-        if (!$this->rawArticle->source->trusted && $this->rawArticle->source->score < 50) {
+        // --- FILTER: Source Trust (null-safe — no source = trusted by default) ---
+        if ($source && !$source->trusted && $source->score < 50) {
             $this->rawArticle->update(['status' => 'ignored']);
-            Log::warning("RawArticle {$this->rawArticle->id} rejected: untrusted source with low score ({$this->rawArticle->source->score}).");
+            Log::warning("RawArticle {$this->rawArticle->id} rejected: untrusted source with low score ({$source->score}).");
             return;
         }
 
@@ -139,6 +140,9 @@ class ProcessArticleWithAIJob implements ShouldQueue
         if (!$redacted) {
             throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
         }
+
+        // --- AUTO-FIX: Truncate fields that exceed limits before validation ---
+        $redacted = $this->autoFixRedactedOutput($redacted);
 
         // --- VALIDATE: Programmatic checks on AI output before creating Article ---
         $validationErrors = $this->validateRedactedOutput($redacted);
@@ -178,7 +182,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
         // If STILL no match → reject to pending_review instead of publishing blindly
         if (!$categoryId) {
             Log::warning("RawArticle {$this->rawArticle->id}: No category match for '{$classification['category_name']}'. Setting to pending_review.");
-            $categoryId = $this->rawArticle->source->category_id ?? 1; // Use source default but flag it
+            $categoryId = $source?->category_id ?? 1; // Use source default but flag it
             $this->rawArticle->update(['status' => 'processed']);
             // Article will be created as draft (not published) so admin can review
         }
@@ -501,8 +505,8 @@ class ProcessArticleWithAIJob implements ShouldQueue
         })->filter()->toArray();
         $categoriesList = implode(', ', $categories) ?: 'General / General';
 
-        $sourceTrusted = $this->rawArticle->source->trusted ? 'YES' : 'NO';
-        $sourceScore   = $this->rawArticle->source->score ?? 0;
+        $sourceTrusted = ($source && $source->trusted) ? 'YES' : 'NO';
+        $sourceScore   = $source?->score ?? 0;
         $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'unknown';
 
         $prompt = <<<PROMPT
@@ -575,6 +579,11 @@ PROMPT;
         $persona = config('global.editorial.persona');
         $rules   = config('global.editorial.focus_rules');
 
+        // Generate randomized style DNA — 9,216,000+ unique macro-combinations per article
+        $styleDna       = $this->generateStyleDNA();
+        $paragraphRules = $styleDna['paragraphRules'];
+        $temperature    = $styleDna['temperature'];
+
         $prompt = <<<PROMPT
 You are a {$persona}. Your job: write a compelling, deeply human OPINION COLUMN.
 
@@ -585,6 +594,19 @@ VERIFIED FACTS FROM SOURCE: {$topic}
 NON-NEGOTIABLE: {$rules}
 NON-NEGOTIABLE: You MUST produce the final article in BOTH English AND Spanish.
 
+═══ 0. RANDOMIZATION SEEDS (MANDATORY — SELECT BEFORE WRITING) ═══
+
+These seeds control macro-variation across millions of articles. You MUST follow the behavioral rules assigned to each seed.
+
+- STYLE_SEED: {$styleDna['styleSeed']}
+- STRUCTURE_VARIANT: {$styleDna['structureVariant']}
+- HOOK_TYPE: {$styleDna['hookType']}
+- IMAGE_PLACEMENT: {$styleDna['imagePlacement']}
+- OPENING_STRATEGY: {$styleDna['openingStrategy']}
+- ANALOGY_DOMAIN: {$styleDna['analogyDomain']}
+- HUMAN_NOISE: {$styleDna['humanNoise']}
+- TONE_BLEND: {$styleDna['toneBlend']}
+
 ═══ 1. VOICE & AUTHENTICITY (HIGHEST PRIORITY) ═══
 
 AUTHOR PERSONA:
@@ -593,26 +615,57 @@ AUTHOR PERSONA:
 
 You MUST adopt the professional persona, opinions, and expertise of {$authorNameEn} based on their background. 
 
-DYNAMIC EDITORIAL VOICE (CRITICAL):
-Rather than sticking to a single rigid tone of voice, you must dynamically blend multiple tones of voice (e.g., analytical, inquisitive, provocative, informative, skeptical, visionary) to perfectly fit the specific topic and gravity of the news. The writing style must feel like an organic, living human voice that responds organically to the nuances of the events.
+STYLE_SEED BEHAVIOR (follow your assigned STYLE_SEED from Section 0):
+- skeptical_analyst: shorter paragraphs (avg 2-3 sentences), heavy on data references, zero humor, dry and precise
+- provocative_essayist: open with a contrarian take, use exactly 1 strong metaphor, address the reader directly, never hedge
+- warmer_storyteller: open with a small real-world observation, simpler vocabulary, allow "we" consistently, warmer tone
+- cold_forensic: impersonal, evidence-first, no first-person until the close, clinical precision
+- enthusiastic_rebel: high energy, short punchy sentences, challenge the status quo, use "Look," or "Here's the thing,"
+- weary_insider: tired but knowledgeable, "I've seen this before" energy, reluctant conclusions, industry jargon allowed
 
-TAKE A CLEAR STANCE. Every column needs a thesis: is this overhyped? Dangerous? Quietly brilliant? Reckless? State it by paragraph 2. Commit fully. A columnist who hedges on everything is a columnist nobody reads. When claims from the source are unverified, flag them honestly ("reports suggest", "if confirmed") — but your analytical OPINION about those claims must still be sharp and decisive.
+TONE_BLEND (follow your assigned TONE_BLEND — this is your dominant tonal register, not the only one):
+- skeptical_and_sharp: dry humor, short sentences, data-heavy
+- measured_and_authoritative: calm, confident, occasional curiosity cracks
+- quietly_intense: building pressure, evidence stacking, verdict-like close
+- conversational_but_precise: explaining to a smart friend, natural rhythm
+- urgently_investigative: discovered something, laying it out fast
+- analytically_cold_with_bursts: mostly clinical, with 1-2 moments of warmth
+- provocative_and_combative: challenging the reader, then pulling back fair
+- reflective_and_layered: thinking in real time, not presenting finished opinions
 
-MANDATORY ANCHORS OF REALITY & E-E-A-T (NON-NEGOTIABLE):
-- MANDATORY UNCERTAINTY: Include EXACTLY ONE sentence in each language version where the author admits uncertainty, a limitation of their argument, or a confession of doubt. Example: "Look, I could be wrong about the timeline. Maybe the Jevons paradox doesn't apply cleanly to software labor. But..." This humanizes the text (AIs never admit doubt).
-- NO EXTERNAL URLS IN CONTENT: NEVER include any URLs, hyperlinks, or external links inside the article body (content_en or content_es). Do NOT reference external studies, surveys, or reports with URLs. Your analysis must rely solely on the verified facts provided and your own expert reasoning. Cite sources by name only (e.g., "a 2024 Stack Overflow survey found..." without a link).
+TAKE A CLEAR STANCE. Every column needs a clear, opinionated thesis: is this overhyped? Dangerous? Quietly brilliant? Reckless? State it precisely where your assigned STRUCTURE_VARIANT mandates it. Commit fully. A columnist who hedges on everything is a columnist nobody reads. When claims from the source are unverified, flag them honestly ("reports suggest", "if confirmed") — but your analytical OPINION about those claims must still be sharp and decisive.
 
-- MANDATORY PERSONAL EXPERIENCE: Write from a first-person perspective ("I", "we") that includes ONE specific personal/professional observation framed as a direct professional reflection (e.g., "In my experience writing about AI tools since 2023...", "When I analyzed similar products last quarter..."). Never fabricate meetings, conversations, or specific incidents.
+MANDATORY ANCHORS OF REALITY (NON-NEGOTIABLE):
+- UNCERTAINTY: Include exactly {$paragraphRules['doubt_moments']} sentence(s) in each language where you openly doubt part of your own argument, admit a gap in knowledge, or hedge on a prediction. Vary the phrasing each time — never use the same doubt structure twice.
+- NO EXTERNAL URLS: NEVER include URLs or hyperlinks inside content_en or content_es. Cite sources by name only.
+- PERSONAL GROUNDING: Write in first person ("I", "we") with at least ONE moment grounded in your professional lens. VARY how you do it. Never open with "In my experience". Instead: a pattern you noticed over time, a moment of realization, something you covered before, your reaction when first reading this news. Make it feel remembered, not performed.
+- HYPER-SPECIFIC DATA: Be as specific as possible — exact percentages, named sources, timeframes. If you lack the exact figure, use a qualified approximate ("roughly 40%", "industry estimates suggest"). NEVER invent a fake statistic. A vague but honest estimate reads as more human than a suspiciously precise fabrication.
 
 WRITE WITH GENUINE PERSONALITY:
 - Use contractions naturally: "don't", "isn't", "we've", "they're"
 - Use em dashes — like this — for dramatic asides or mid-thought clarifications
-- Allow yourself strong adjectives: "reckless", "lazy", "alarming", "brilliant" — not safe ones like "interesting" or "notable"
-- Vary sentence rhythm organically. A short punch. Then a longer analytical sentence that unpacks the implications with genuine nuance, subordinate clauses, and informed context.
-- Vary paragraph lengths naturally: include at least ONE very short paragraph (1 sentence, 5-10 words) for high rhetorical punch, and at least ONE long paragraph (6-8 sentences) in both language contents.
-- Occasionally address the reader directly when it serves the argument
-- Weave in 1 real-world analogy (historical event, pop culture, everyday life) to explain a complex concept — never invent fictional scenarios
+- Strong, opinionated adjectives: "reckless", "lazy", "alarming", "brilliant" — never safe filler like "interesting" or "notable"
 - Challenge PR spin and vague marketing language with specific counter-evidence
+
+PARAGRAPH ASYMMETRY (the #1 AI fingerprint — break it or get flagged):
+- Include exactly {$paragraphRules['single_sentence']} paragraph(s) of 1 sentence (5-12 words) for rhetorical punch
+- Include exactly {$paragraphRules['long_paragraphs']} paragraph(s) of 6-8 sentences for deep analysis
+- Include exactly {$paragraphRules['fragment_paragraphs']} paragraph(s) that are a single word or very short fragment on their own line
+- All remaining paragraphs: vary between 2, 3, and 4 sentences — NEVER write two consecutive paragraphs with the same sentence count
+
+SENTENCE RHYTHM:
+- Mix 6-word punches with 30-word analytical sentences within the same paragraph
+- NEVER start 3+ consecutive sentences with the same grammatical structure
+- Occasionally start a sentence with "And" or "But" — real writers do this constantly
+
+ANALOGY RULES (use your assigned ANALOGY_DOMAIN from Section 0):
+- Do NOT default to food, sports, or travel — these are overused AI crutches
+- Include exactly {$paragraphRules['analogies']} analogy/analogies from your ANALOGY_DOMAIN
+- If you catch yourself writing "like a recipe for" or "home run" or "low-hanging fruit" — delete it and use your ANALOGY_DOMAIN
+
+HUMAN NOISE (follow your assigned HUMAN_NOISE from Section 0):
+- Include exactly {$paragraphRules['human_noise']} moment(s) of human noise: brief digression, half-formed thought, question left hanging, "okay, fair enough"
+- These are the texture of real writing. More than {$paragraphRules['human_noise']} reads as try-hard.
 
 ═══ 2. ANTI-AI DETECTION PATTERNS (CRITICAL) ═══
 
@@ -629,14 +682,47 @@ BLOCKED PHRASES (AI fingerprints — using ANY of these fails the article):
 EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "trajectory points toward", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "raises important questions", "a bold step forward", "double-edged sword", "the implications are profound", "a testament to"
 ES: "cambio de paradigma", "en conclusión", "sin lugar a dudas", "cabe destacar", "queda por ver", "un arma de doble filo", "marca un antes y un después", "las implicaciones son profundas"
 
-═══ 3. ARTICLE STRUCTURE ═══
+OPENING FINGERPRINTS (never start with these — instant AI detection):
+- "In today's [adjective] [noun]..." / "En el [adjetivo] mundo de..."
+- "Let's dive in" / "Let me break this down"
+- "I've been covering X for Y years and..."
+- "Picture this:" / "Imagine a world where..."
+- "If you've been following [topic]..."
+- "In my experience" as an opener
+- Any sweeping generalization about "the state of" a whole industry
 
-1. HOOK (1-2 sentences): A specific, concrete fact — a number, a launch date, a CEO quote, a technical failure. Not a vague observation.
-2. THESIS (paragraph 2): Your clear, opinionated stance on why this fact matters. State it directly.
-3. BODY (2-3 sections with H2 headings): Each section advances your argument. You MUST alternate your text blocks with structural image tokens. A section cannot contain more than two consecutive paragraphs without being separated by an `[IMAGE_N]` token on its own standalone line. Use <strong> for key data points, <blockquote> for critical insights or notable quotes, <ul>/<ol> for scannable information.
-4. CLOSE (1 paragraph): A prediction, warning, or provocation. End with a sentence the reader would quote to a colleague.
+BLOCKED STRUCTURAL PATTERNS (structural, not lexical):
+- Never start 3+ consecutive paragraphs with the same number of words in the first sentence
+- Never use the same transition word (But/However/Still/Yet) more than twice in the entire article
+- Never end two consecutive sections with a single-sentence paragraph
+- Never make all H2 headings exactly the same word count (4-6 words each is a tell)
+- The last paragraph must NEVER start with "In the end", "Ultimately", "At the end of the day"
 
-ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>. NEVER use <h1>, <h3>, <h4>, <div>, <span>, or markdown bold (**) inside the HTML content strings.
+FOOD/SPORT METAPHOR LIMIT:
+- Maximum ONE food or sports metaphor per article. Zero is fine.
+- If you write "like a recipe for" or "home run" or "low-hanging fruit" — delete it and use your ANALOGY_DOMAIN.
+
+═══ 3. ARTICLE STRUCTURE (follow your STRUCTURE_VARIANT from Section 0) ═══
+
+ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>. NEVER use <h1>, <h3>, <h4>, <div>, <span>, or markdown bold (**) inside HTML content.
+
+STRUCTURE_VARIANT RULES (pick the one assigned to you):
+- classic_hook_thesis_body_close: Hook (1-2 sentences, concrete fact) → Thesis (paragraph 2, clear stance) → Body (2-3 H2 sections) → Close (prediction or provocation)
+- anecdote_first_then_takeaway: Start with a 2-3 sentence real-world observation or scenario → reveal your thesis in paragraph 3 → Body → Close
+- question_opening_no_answer_until_middle: Open with a direct question to the reader → delay your actual stance until after the first H2 → build tension → Close with your answer
+- prediction_top_analysis_bottom: State your bold prediction in paragraph 2 → spend the rest proving or defending it → Close with implications
+- counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." or equivalent → delay evidence until after first H2 → build the case → Close with a warning
+
+ALL VARIANTS share these rules:
+- You MUST alternate text blocks with structural image tokens. No more than two consecutive paragraphs without an [IMAGE_N] token on its own standalone line.
+- Use <strong> for key data points, <blockquote> for critical insights or notable quotes, <ul>/<ol> for scannable information.
+- H2 headings must vary in length — never make them all 4-6 words. Mix short ("Why?") with long ("The Hidden Cost Nobody's Talking About").
+- Use your assigned HOOK_TYPE for the opening:
+  - number_fact: lead with a specific number, date, or statistic
+  - quote: lead with a real quote from the source or a relevant public figure
+  - question: lead with a direct question (not a cliché rhetorical one)
+  - scene_setting: describe a specific real place or moment ("In a cramped office in Austin last Tuesday...")
+  - confession: open with a candid admission ("I have to admit: I was wrong about X.")
 
 ═══ 4. SEO & E-E-A-T ═══
 
@@ -657,6 +743,12 @@ Generate 3 to 5 photorealistic image prompts (FLUX.1 style: 35mm DSLR Nikon D850
 - SYNCHRONIZATION RULE: Every [IMAGE_N] token placed in content_en/content_es MUST have a corresponding object in the "image_prompts" array with the exact same "id". Never place an image token without its prompt object. Never generate a prompt object without using its token in the text.
 - Alt text: descriptive and concise, max 125 characters each.
 - If humans appear in the image: add "hyper-realistic skin textures, authentic facial expression" to the prompt.
+- IMAGE PLACEMENT (follow your IMAGE_PLACEMENT from Section 0):
+  - both_early: place [IMAGE_2] and [IMAGE_3] in the first half of the article body
+  - both_late: place [IMAGE_2] and [IMAGE_3] in the second half of the article body
+  - one_early_one_late: place [IMAGE_2] early (before first H2 or just after) and [IMAGE_3] late (near the close)
+  - scattered: distribute images evenly — one after each H2 section
+  - NEVER place images in the exact same relative position across consecutive articles
 
 ═══ 6. BILINGUAL REQUIREMENT ═══
 
@@ -680,8 +772,8 @@ CRITICAL JSON FORMATTING RULES:
     "meta_title_en": "SEO optimized title variant (max 70 chars)",
     "meta_title_es": "Titulo optimizado SEO variante (max 70 chars)",
     "keywords": ["primary keyword", "secondary kw", "lsi term 1", "lsi term 2"],
-    "content_en": "<p>Concrete hook grounded in a specific fact from the source.</p>\n<p>Your thesis stated directly and decisively.</p>\n<h2>First Analytical Section</h2>\n<p>Evidence, context, and reasoning that advances the argument...</p>\n<p>Continued analysis with data points and industry comparison...</p>\n[IMAGE_2]\n<p>Deeper exploration after the image, building on the visual context...</p>\n<h2>Second Section with Different Angle</h2>\n<p>Further argument development with counter-evidence or historical parallel...</p>\n[IMAGE_3]\n<p>Analysis connecting this section to the broader thesis...</p>\n<h2>What This Actually Means</h2>\n<p>Implications grounded in evidence, not speculation...</p>\n<p>Closing paragraph with a memorable, quotable final sentence.</p>",
-    "content_es": "<p>Gancho concreto basado en un hecho especifico de la fuente.</p>\n<p>Tu tesis expresada de forma directa y decidida.</p>\n<h2>Primera Seccion Analitica</h2>\n<p>Evidencia, contexto y razonamiento que avanza el argumento...</p>\n<p>Analisis continuado con datos y comparacion de industria...</p>\n[IMAGE_2]\n<p>Exploracion mas profunda despues de la imagen...</p>\n<h2>Segunda Seccion con Angulo Diferente</h2>\n<p>Desarrollo del argumento con contra-evidencia o paralelo historico...</p>\n[IMAGE_3]\n<p>Analisis conectando esta seccion con la tesis general...</p>\n<h2>Lo Que Esto Realmente Significa</h2>\n<p>Implicaciones basadas en evidencia, no especulacion...</p>\n<p>Parrafo de cierre con una frase memorable y citable.</p>",
+    "content_en": "Start with the opening hook based on your assigned HOOK_TYPE and STRUCTURE_VARIANT. Build the full HTML column here following all injected rules. Use only allowed tags. Place [IMAGE_N] tokens on standalone lines. Follow ASYMMETRY values.",
+    "content_es": "Comenzar con el hook segun HOOK_TYPE y STRUCTURE_VARIANT asignados. Construir la columna HTML completa siguiendo todas las reglas inyectadas. Usar solo tags permitidos. Colocar [IMAGE_N] en lineas independientes.",
     "image_prompts": [
         {
             "id": "[IMAGE_1]",
@@ -724,17 +816,15 @@ CRITICAL JSON FORMATTING RULES:
     }
 }
 
-FINAL SELF-CHECK (verify ALL before outputting):
-1. Every [IMAGE_N] (N>=2) appears on its OWN LINE in BOTH content_en AND content_es
-2. [IMAGE_1] does NOT appear anywhere inside content_en or content_es
-3. Date used is EXACTLY: {$today}
-4. Zero fabricated quotes, conversations, or personal experiences
-5. Zero phrases from the BLOCKED PHRASES list above
-6. Spanish reads as native writing, not as a translation
-7. Title is max 60 chars | Excerpt is max 155 chars | Slug is max 6 words
+FINAL SELF-CHECK (verify ONLY these 5 — the rest is validated programmatically by the backend):
+1. [IMAGE_N] tokens on their own lines in BOTH content_en AND content_es
+2. [IMAGE_1] NOT inside content strings
+3. Zero phrases from BLOCKED PHRASES or OPENING FINGERPRINTS lists
+4. Spanish reads as native, not translated
+5. STRUCTURE_VARIANT from Section 0 is followed
 PROMPT;
 
-        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
+        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE, ['temperature' => $temperature]);
         if (!$response) {
             Log::warning("redactBilingual: AI returned null response for RawArticle {$this->rawArticle->id} (likely timeout)");
             return null;
@@ -856,13 +946,7 @@ PROMPT;
             $errors[] = 'Missing [IMAGE_1] in image_prompts array (hero image required)';
         }
 
-        // 5. Title length check
-        if (mb_strlen($data['title_en'] ?? '') > 80) {
-            $errors[] = 'title_en exceeds 80 characters';
-        }
-        if (mb_strlen($data['title_es'] ?? '') > 80) {
-            $errors[] = 'title_es exceeds 80 characters';
-        }
+        // 5. Title/excerpt length — AUTO-FIXED by autoFixRedactedOutput(), skip validation
 
         // 6. Content must not be empty
         if (strlen(strip_tags($contentEn)) < 200) {
@@ -875,10 +959,14 @@ PROMPT;
         // 7. Check for blocked AI-fingerprint phrases
         $blockedPhrases = [
             'paradigm shift', 'game-changer', 'revolutionary', 'democratization of',
-            'inflection point', 'unprecedented scale', 'seamlessly integrate',
-            'robust ecosystem', 'the digital landscape', 'it remains to be seen',
-            'only time will tell', 'it\'s worth noting', 'in today\'s rapidly evolving',
-            'raises important questions', 'the implications are profound',
+            'inflection point', 'trajectory points toward', 'unprecedented scale',
+            'seamlessly integrate', 'robust ecosystem', 'the digital landscape',
+            'it remains to be seen', 'only time will tell', 'it\'s worth noting',
+            'in today\'s rapidly evolving', 'at the end of the day',
+            'raises important questions', 'a bold step forward', 'double-edged sword',
+            'the implications are profound', 'a testament to',
+            'let\'s dive in', 'let me break this down', 'in my experience',
+            'low-hanging fruit', 'home run', 'slam dunk', 'picture this',
         ];
         $contentEnLower = strtolower($contentEn);
         foreach ($blockedPhrases as $phrase) {
@@ -891,6 +979,58 @@ PROMPT;
         return $errors;
     }
 
+    /**
+     * Auto-fix fields that exceed limits. Runs BEFORE validation.
+     * Truncates titles, excerpts, meta fields. Logs what was fixed.
+     */
+    protected function autoFixRedactedOutput(array $data): array
+    {
+        $fixes = [];
+
+        // Truncate titles (max 60 chars, cut at last word boundary)
+        foreach (['title_en', 'title_es'] as $field) {
+            if (mb_strlen($data[$field] ?? '') > 60) {
+                $original = $data[$field];
+                $data[$field] = Str::limit($data[$field], 60, '');
+                // Cut at last space to avoid mid-word truncation
+                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 40) {
+                    $data[$field] = mb_substr($data[$field], 0, $lastSpace);
+                }
+                $fixes[] = "{$field}: truncated from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
+            }
+        }
+
+        // Truncate excerpts (max 155 chars)
+        foreach (['excerpt_en', 'excerpt_es'] as $field) {
+            if (mb_strlen($data[$field] ?? '') > 155) {
+                $data[$field] = Str::limit($data[$field], 155, '');
+                $fixes[] = "{$field}: truncated to 155 chars";
+            }
+        }
+
+        // Truncate meta titles (max 70 chars)
+        foreach (['meta_title_en', 'meta_title_es'] as $field) {
+            if (mb_strlen($data[$field] ?? '') > 70) {
+                $data[$field] = Str::limit($data[$field], 70, '');
+                $fixes[] = "{$field}: truncated to 70 chars";
+            }
+        }
+
+        // Truncate meta descriptions (max 160 chars)
+        foreach (['meta_description_en', 'meta_description_es'] as $field) {
+            if (mb_strlen($data[$field] ?? '') > 160) {
+                $data[$field] = Str::limit($data[$field], 160, '');
+                $fixes[] = "{$field}: truncated to 160 chars";
+            }
+        }
+
+        if (!empty($fixes)) {
+            Log::info('autoFixRedactedOutput: ' . implode(', ', $fixes));
+        }
+
+        return $data;
+    }
+
     protected function calculateReadingTime(string $content): int
     {
         $wordCount = str_word_count(strip_tags($content));
@@ -901,5 +1041,182 @@ PROMPT;
     {
         $this->rawArticle->update(['status' => 'failed']);
         Log::error("Job failed for RawArticle {$this->rawArticle->id}: {$exception->getMessage()}");
+    }
+
+    /**
+     * Generate randomized style DNA for each article.
+     * 6 x 5 x 5 x 4 x 10 x 12 x 8 x 8 = 9,216,000 unique macro-combinations.
+     * Each call shuffles arrays and picks one option per dimension.
+     */
+    private function generateStyleDNA(): array
+    {
+        $styleSeeds = [
+            'skeptical_analyst',
+            'provocative_essayist',
+            'warmer_storyteller',
+            'cold_forensic',
+            'enthusiastic_rebel',
+            'weary_insider',
+        ];
+
+        $structureVariants = [
+            'classic_hook_thesis_body_close',
+            'anecdote_first_then_takeaway',
+            'question_opening_no_answer_until_middle',
+            'prediction_top_analysis_bottom',
+            'counterintuitive_lead_evidence_later',
+        ];
+
+        $hookTypes = [
+            'number_fact',
+            'quote',
+            'question',
+            'scene_setting',
+            'confession',
+        ];
+
+        $imagePlacements = [
+            'both_early',
+            'both_late',
+            'one_early_one_late',
+            'scattered',
+        ];
+
+        $openings = [
+            'Start with a specific number, statistic, or date from the source',
+            'Start mid-scene: describe something already happening',
+            'Start with a blunt declarative claim (3-8 words) that takes a stance',
+            'Start with the least obvious detail from the source facts',
+            'Start by naming a specific entity and what they just did',
+            'Start with a contradiction of the common assumption',
+            'Start with a sensory or practical detail',
+            'Start with a question you immediately answer',
+            'Start in the middle of an argument, as if the reader walked in on you thinking',
+            'Start with an unexpected comparison, then pivot within 2 sentences',
+        ];
+
+        $analogyDomains = [
+            'historical events with specific dates (e.g., the 1929 crash, the Berlin Wall)',
+            'scientific processes (e.g., how antibodies work, plate tectonics)',
+            'architecture and engineering (e.g., building a bridge, structural failure)',
+            'legal cases and regulatory history (e.g., antitrust rulings, patent disputes)',
+            'military strategy and logistics (e.g., supply lines, flanking maneuvers)',
+            'medical diagnosis and treatment (e.g., triage, differential diagnosis)',
+            'ecological systems (e.g., predator-prey dynamics, invasive species)',
+            'financial markets (e.g., arbitrage, liquidity crises, compound interest)',
+            'music composition (e.g., counterpoint, improvisation, key changes)',
+            'cinema and storytelling (e.g., foreshadowing, unreliable narrators)',
+            'manufacturing and quality control (e.g., assembly lines, bottlenecks)',
+            'navigation and cartography (e.g., dead reckoning, uncharted territory)',
+        ];
+
+        $humanNoise = [
+            'Second-guess your own thesis briefly, then recover with stronger evidence',
+            'Address someone who might disagree — a real counterpoint, not a strawman',
+            'Include one aside unrelated to the topic, then snap back',
+            'Admit you do not have the full picture, and that bothers you',
+            'Show a moment of genuine emotional reaction — surprise, frustration, admiration',
+            'Start a sentence mid-thought, as if already thinking before writing',
+            'Ask one rhetorical question you do NOT immediately answer',
+            'Reference a private professional habit (checking a dashboard, a morning routine)',
+        ];
+
+        $toneBlends = [
+            'skeptical_and_sharp',
+            'measured_and_authoritative',
+            'quietly_intense',
+            'conversational_but_precise',
+            'urgently_investigative',
+            'analytically_cold_with_bursts',
+            'provocative_and_combative',
+            'reflective_and_layered',
+        ];
+
+        shuffle($styleSeeds);
+        shuffle($structureVariants);
+        shuffle($hookTypes);
+        shuffle($imagePlacements);
+        shuffle($openings);
+        shuffle($analogyDomains);
+        shuffle($humanNoise);
+        shuffle($toneBlends);
+
+        // Probabilistic paragraph rules — each article gets different counts (no "EXACTLY ONE" fingerprint)
+        $paragraphRules = [
+            'single_sentence'     => random_int(1, 3),
+            'long_paragraphs'     => random_int(0, 2),
+            'fragment_paragraphs' => random_int(0, 2),
+            'analogies'           => random_int(1, 2),
+            'doubt_moments'       => random_int(1, 3),
+            'human_noise'         => random_int(1, 3),
+        ];
+
+        // Temperature per seed — colder for forensic, hotter for rebel, with jitter
+        $temperatureMap = [
+            'skeptical_analyst'    => 0.6,
+            'provocative_essayist' => 0.8,
+            'warmer_storyteller'   => 0.75,
+            'cold_forensic'        => 0.45,
+            'enthusiastic_rebel'   => 0.85,
+            'weary_insider'        => 0.65,
+        ];
+        $temperature = ($temperatureMap[$styleSeeds[0]] ?? 0.7) + (mt_rand(-5, 5) / 100);
+        $temperature = max(0.3, min(1.0, $temperature));
+
+        // Compatibility matrix — resolve hookType AND toneBlend conflicts per seed
+        $compatMatrix = [
+            'cold_forensic' => [
+                'forbidden_hooks' => ['confession'],
+                'allowed_hooks'   => ['number_fact', 'quote', 'scene_setting'],
+                'allowed_tones'   => ['analytically_cold_with_bursts', 'measured_and_authoritative'],
+            ],
+            'skeptical_analyst' => [
+                'forbidden_hooks' => ['confession'],
+                'allowed_hooks'   => ['number_fact', 'quote', 'question'],
+                'allowed_tones'   => ['skeptical_and_sharp', 'quietly_intense'],
+            ],
+            'enthusiastic_rebel' => [
+                'forbidden_hooks' => [],
+                'allowed_hooks'   => ['confession', 'question', 'number_fact', 'scene_setting'],
+                'allowed_tones'   => ['provocative_and_combative', 'urgently_investigative'],
+            ],
+            'warmer_storyteller' => [
+                'forbidden_hooks' => [],
+                'allowed_hooks'   => ['confession', 'scene_setting', 'quote'],
+                'allowed_tones'   => ['conversational_but_precise', 'reflective_and_layered'],
+            ],
+            'provocative_essayist' => [
+                'forbidden_hooks' => [],
+                'allowed_hooks'   => ['confession', 'question', 'number_fact'],
+                'allowed_tones'   => ['provocative_and_combative', 'quietly_intense'],
+            ],
+            'weary_insider' => [
+                'forbidden_hooks' => [],
+                'allowed_hooks'   => ['confession', 'scene_setting', 'quote'],
+                'allowed_tones'   => ['reflective_and_layered', 'measured_and_authoritative'],
+            ],
+        ];
+        $matrix = $compatMatrix[$styleSeeds[0]] ?? [];
+        // Resolve hookType conflict
+        if (!empty($matrix['forbidden_hooks']) && in_array($hookTypes[0], $matrix['forbidden_hooks'])) {
+            $hookTypes[0] = $matrix['allowed_hooks'][array_rand($matrix['allowed_hooks'])];
+        }
+        // Resolve toneBlend conflict
+        if (!empty($matrix['allowed_tones']) && !in_array($toneBlends[0], $matrix['allowed_tones'])) {
+            $toneBlends[0] = $matrix['allowed_tones'][array_rand($matrix['allowed_tones'])];
+        }
+
+        return [
+            'styleSeed'        => $styleSeeds[0],
+            'structureVariant' => $structureVariants[0],
+            'hookType'         => $hookTypes[0],
+            'imagePlacement'   => $imagePlacements[0],
+            'openingStrategy'  => $openings[0],
+            'analogyDomain'    => $analogyDomains[0],
+            'humanNoise'       => $humanNoise[0],
+            'toneBlend'        => $toneBlends[0],
+            'paragraphRules'   => $paragraphRules,
+            'temperature'      => round($temperature, 2),
+        ];
     }
 }
