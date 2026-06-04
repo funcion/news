@@ -212,9 +212,9 @@ class ProcessArticleWithAIJob implements ShouldQueue
             'origin_url'  => $this->rawArticle->url,
             'today_date'  => $today,
             'json_ld'     => $redacted['json_ld'] ?? null,
-            'style_dna'   => $redacted['_style_dna'] ?? null,
+            'style_dna'   => $redacted['__style_dna'] ?? null,
             'model_used'  => OpenRouterService::MODEL_ACTIVE,
-            'temperature' => $redacted['_temperature'] ?? null,
+            'temperature' => $redacted['__temperature'] ?? null,
         ];
 
         // Set all translatable fields via setTranslation (Spatie-aware)
@@ -569,7 +569,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         $source = $this->rawArticle->source;
         $sourceTrusted = ($source && $source->trusted) ? 'YES' : 'NO';
-        $sourceScore   = $source?->score ?? 0;
+        $sourceScore   = (int) ($source?->score ?? 0);
         $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'unknown';
 
         $prompt = <<<PROMPT
@@ -875,8 +875,9 @@ PROMPT;
         }
 
         // Attach style DNA metadata for downstream logging
-        $data['_style_dna'] = $styleDna;
-        $data['_temperature'] = $temperature;
+        // Prefix with double-underscore to avoid collision with any AI-returned keys
+        $data['__style_dna'] = $styleDna;
+        $data['__temperature'] = $temperature;
 
         return $data;
     }
@@ -1099,26 +1100,26 @@ PROMPT;
             'inflection point' => 'turning point', 'trajectory points toward' => 'trend suggests',
             'unprecedented scale' => 'massive scale', 'seamlessly integrate' => 'integrate',
             'robust ecosystem' => 'mature ecosystem', 'the digital landscape' => 'the industry',
-            'it remains to be seen' => '', 'only time will tell' => '',
-            'it\'s worth noting' => '', 'in today\'s rapidly evolving' => 'in a shifting',
-            'at the end of the day' => '', 'raises important questions' => 'raises questions',
+            'it remains to be seen' => 'it is unclear', 'only time will tell' => 'the outcome is uncertain',
+            'it\'s worth noting' => 'notably,', 'in today\'s rapidly evolving' => 'in a shifting',
+            'at the end of the day' => 'ultimately,', 'raises important questions' => 'raises questions',
             'a bold step forward' => 'a deliberate move', 'double-edged sword' => 'trade-off',
             'the implications are profound' => 'the consequences matter',
             'a testament to' => 'evidence of',
             'let\'s dive in' => '', 'let me break this down' => '',
-            'in my experience' => '', 'low-hanging fruit' => 'obvious target',
+            'in my experience' => 'from what I\'ve observed,', 'low-hanging fruit' => 'obvious target',
             'home run' => 'success', 'slam dunk' => 'certainty', 'picture this' => '',
         ];
         $blockedReplacementsEs = [
-            'cambio de paradigma' => 'cambio fundamental', 'en conclusión' => '',
-            'sin lugar a dudas' => '', 'cabe destacar' => '',
-            'queda por ver' => '', 'un arma de doble filo' => 'una disyuntiva',
+            'cambio de paradigma' => 'cambio fundamental', 'en conclusión' => 'para cerrar,',
+            'sin lugar a dudas' => 'con certeza,', 'cabe destacar' => 'es notable que',
+            'queda por ver' => 'es incierto', 'un arma de doble filo' => 'una disyuntiva',
             'marca un antes y un después' => 'cambia las reglas',
             'las implicaciones son profundas' => 'las consecuencias importan',
             'en el mundo de' => 'en', 'sin ir más lejos' => '',
-            'como ya hemos mencionado' => '', 'en última instancia' => '',
-            'es importante destacar' => '', 'sin duda alguna' => '',
-            'no cabe duda' => '', 'vale la pena mencionar' => '',
+            'como ya hemos mencionado' => 'como se indicó antes,', 'en última instancia' => 'al final,',
+            'es importante destacar' => 'destaca que', 'sin duda alguna' => 'con certeza,',
+            'no cabe duda' => 'es evidente', 'vale la pena mencionar' => 'cabe señalar que',
         ];
 
         foreach (['content_en', 'title_en', 'excerpt_en'] as $field) {
@@ -1350,15 +1351,15 @@ PROMPT;
             $warnings[] = "Primary keyword '{$primaryKw}' not found in first 100 words";
         }
 
-        // 2. Keyword density (0.5% - 2.5%)
+        // 2. Keyword density (aligned with prompt: 0.5% - 2.5%)
         $totalWords = count($words);
         if ($totalWords > 0) {
             $keywordCount = mb_substr_count(strtolower($contentEn), $primaryKw);
             $density = ($keywordCount / $totalWords) * 100;
-            if ($density < 0.3) {
-                $warnings[] = "Keyword density too low: {$density}% (minimum 0.3%)";
-            } elseif ($density > 3.0) {
-                $warnings[] = "Keyword density too high: {$density}% (maximum 3.0%) — possible keyword stuffing";
+            if ($density < 0.5) {
+                $warnings[] = "Keyword density too low: " . round($density, 2) . "% (minimum 0.5%)";
+            } elseif ($density > 2.5) {
+                $warnings[] = "Keyword density too high: " . round($density, 2) . "% (maximum 2.5%) — possible keyword stuffing";
             }
         }
 

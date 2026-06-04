@@ -1,9 +1,9 @@
 # 🗞️ Glodaxia — Checklist Maestro de Tareas Pendientes
 
-> **Última actualización**: 3 Junio 2026
-> **Stack**: Laravel 13 + Filament v5 + Livewire v4 + FrankenPHP + PostgreSQL + Redis
+> **Última actualización**: 4 Junio 2026
+> **Stack**: Laravel 13 + Filament v5 + Livewire v4 + FrankenPHP + PostgreSQL + Redis + Cloudflare R2
 > **Estado actual**: Fases 1-3 completadas, publicando artículos con IA automáticamente
-> **Dominio**: Comprado hace menos de 24 horas — sitio nuevo
+> **Dominio**: Comprado — sitio nuevo
 
 ---
 
@@ -25,6 +25,16 @@
 - [x] Safety filters (age, trust, sensitivity, cross-duplication, strict categories)
 - [x] Fuentes RSS con campo `trusted` y `max_age_days`
 - [x] flushCache + IndexNow ping al publicar (IA + Filament approve)
+- [x] Prompt V3 (Voice Discipline, auto-fix frases, validateSeoTechnical, jitter proporcional)
+- [x] Cloudflare R2 storage (auto-detect, PurgeR2CacheJob, media:migrate-to-r2 command)
+- [x] Media cleanup on Article delete (Article::booted → deleted + PurgeR2CacheJob)
+- [x] CleanupOrphanMedia command (R2-aware, usa Spatie delete)
+- [x] Temp file cleanup after image processing
+- [x] Placeholder hero image (GD-generated cuando SiliconFlow falla)
+- [x] Reading time bilingüe (EN 225 WPM, ES 165 WPM)
+- [x] Timeout 900s + tries=2 + backoff [60,180]
+- [x] ensureUniqueSlug() límite 50 intentos
+- [x] countSentences() regex única multilingüe
 
 ---
 
@@ -44,6 +54,8 @@
   - [ ] `DB_CONNECTION=pgsql` + credenciales de producción
   - [ ] `OPENROUTER_API_KEY` (el mismo)
   - [ ] `SILICONFLOW_API_KEY` (el mismo)
+  - [ ] `R2_ACCESS_KEY_ID` + `R2_SECRET_ACCESS_KEY` + `R2_BUCKET` + `R2_ENDPOINT` + `R2_PUBLIC_URL`
+  - [ ] `MEDIA_DISK=r2` (default si hay credenciales R2)
 - [ ] `docker compose up -d` en producción
 - [ ] `php artisan migrate --seed`
 - [ ] `php artisan shield:generate --all`

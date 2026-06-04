@@ -32,6 +32,11 @@ php artisan storage:link
 # Frontend → http://localhost:8000
 # Admin    → http://localhost:8000/admin
 # Horizon  → http://localhost:8000/horizon
+
+# 8. Configurar R2 (producción — ver docs/task/CLOUDFLARE_R2_SETUP.md)
+# En .env: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_ENDPOINT, R2_PUBLIC_URL
+# php artisan media:migrate-to-r2 --dry-run  (verificar antes de migrar)
+# php artisan media:migrate-to-r2            (migrar imágenes a R2)
 ```
 
 ---
@@ -51,6 +56,7 @@ php artisan storage:link
 | Translations | spatie/laravel-translatable | 6.x |
 | Media | spatie/laravel-medialibrary | 11.x |
 | Frontend | Blade + Alpine.js + Tailwind | Vite 6 |
+| Image Storage | Cloudflare R2 | S3-compatible, $0 egress |
 
 ---
 
@@ -58,12 +64,13 @@ php artisan storage:link
 
 ### Arquitectura del Pipeline
 ```
-RawArticle (created) 
-  → RawArticleObserver 
+RawArticle (created)
+  → RawArticleObserver
   → ProcessArticleWithAIJob
   → AI Classification (OpenRouter)
-  → AI Redacción Bilingüe (OpenRouter) 
+  → AI Redacción Bilingüe (OpenRouter)
   → Image Generation (SiliconFlow FLUX.1)
+  → Spatie MediaLibrary → R2 or Local (MEDIA_DISK)
   → Article Published
   → ArticlePublished Event (Reverb)
 ```
