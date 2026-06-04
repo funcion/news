@@ -33,6 +33,36 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Convert avatar to webp (100px) after upload
+        static::saved(function ($user) {
+            if (!$user->wasChanged('avatar_url') || !$user->avatar_url) return;
+
+            $path = $user->avatar_url;
+            $fullPath = storage_path('app/public/' . $path);
+
+            if (!file_exists($fullPath) || pathinfo($path, PATHINFO_EXTENSION) === 'webp') return;
+
+            try {
+                $image = \Intervention\Image\Laravel\Facades\Image::read($fullPath);
+                $newPath = pathinfo($path, PATHINFO_DIRNAME) . '/' . pathinfo($path, PATHINFO_FILENAME) . '.webp';
+                $newFullPath = storage_path('app/public/' . $newPath);
+
+                $image->toWebp(90)->save($newFullPath);
+
+                if ($newPath !== $path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+                    \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update(['avatar_url' => $newPath]);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Avatar webp conversion failed: ' . $e->getMessage());
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

@@ -7,6 +7,7 @@ use App\Models\User;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -35,6 +36,8 @@ class UserResource extends Resource
         return $form
             ->components([
                 Section::make('Credenciales y Configuración')
+                    ->columnSpanFull()
+                    ->columns(1)
                     ->schema([
                         TextInput::make('email')
                             ->label('Correo Electrónico')
@@ -50,15 +53,25 @@ class UserResource extends Resource
                         TextInput::make('slug')
                             ->required()
                             ->unique(User::class, 'slug', ignoreRecord: true),
-                        TextInput::make('avatar_url')
-                            ->label('URL del Avatar')
-                            ->url(),
+                        FileUpload::make('avatar_url')
+                            ->label('Avatar')
+                            ->image()
+                            ->disk('public')
+                            ->directory('avatars')
+                            ->imageCropAspectRatio('1:1')
+                            ->imageResizeTargetWidth('100')
+                            ->imageResizeTargetHeight('100')
+                            ->imageResizeMode('cover')
+                            ->maxSize(2048)
+                            ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('Activo')
                             ->default(true),
                     ])->columns(2),
 
                 Section::make('Información del Usuario (Bilingüe)')
+                    ->columnSpanFull()
+                    ->columns(1)
                     ->schema([
                         Tabs::make('Languages')
                             ->tabs([
@@ -115,6 +128,7 @@ class UserResource extends Resource
             ->columns([
                 ImageColumn::make('avatar_url')
                     ->label('Avatar')
+                    ->disk('public')
                     ->circular(),
                 TextColumn::make('name')
                     ->label('Nombre')
