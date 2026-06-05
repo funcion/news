@@ -81,7 +81,8 @@ class ArticleResource extends Resource
                                             ->columnSpanFull()
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
-                                                    $component->state($record->getTranslation('content', 'en'));
+                                                    $content = $record->getTranslation('content', 'en');
+                                                    $component->state(blank($content) ? '<p></p>' : $content);
                                                 }
                                             }),
                                     ]),
@@ -118,7 +119,8 @@ class ArticleResource extends Resource
                                             ->columnSpanFull()
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
-                                                    $component->state($record->getTranslation('content', 'es'));
+                                                    $content = $record->getTranslation('content', 'es');
+                                                    $component->state(blank($content) ? '<p></p>' : $content);
                                                 }
                                             }),
                                     ]),
