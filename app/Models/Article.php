@@ -155,37 +155,6 @@ class Article extends Model implements HasMedia
             ->get();
     }
 
-    /**
-     * When an Article is deleted, clean up ALL media files from disk.
-     * Without this, deleted articles leave orphaned images in storage/app/public/media/.
-     */
-    protected static function booted(): void
-    {
-        static::deleted(function (Article $article) {
-            // Collect all media URLs BEFORE deleting (for CDN cache purge)
-            $urlsToPurge = [];
-            foreach (['images_en', 'images_es', 'default'] as $collection) {
-                foreach ($article->getMedia($collection) as $media) {
-                    $urlsToPurge[] = $media->getUrl();
-                    $urlsToPurge[] = $media->getUrl('thumb');
-                    $urlsToPurge[] = $media->getUrl('medium');
-                    $urlsToPurge[] = $media->getUrl('large');
-                }
-            }
-
-            // Delete media files from disk (works with both local and R2)
-            $article->clearMediaCollection('images_en');
-            $article->clearMediaCollection('images_es');
-            $article->clearMediaCollection('default');
-
-            // Purge CDN cache if using R2 (non-blocking job)
-            if (!empty($urlsToPurge) && config('media-library.disk_name') === 'r2') {
-                \App\Jobs\PurgeR2CacheJob::dispatch($urlsToPurge);
-            }
-
-            \Illuminate\Support\Facades\Log::info("Article {$article->id} deleted — media files cleaned up.");
-        });
-    }
 
     /**
      * Register responsive media conversions for BOTH language collections.

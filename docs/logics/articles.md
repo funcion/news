@@ -68,16 +68,24 @@ El sistema está configurado para usar exclusivamente **Cloudflare R2** como el 
 * El servicio de imágenes se realiza 100% mediante el CDN de Cloudflare usando el dominio personalizado `https://media.glodaxia.com`.
 
 ### 4.2 Borrado Físico de Archivos
-Cuando un artículo se elimina de la base de datos, el evento `deleted` de Eloquent gatilla la limpieza física de sus fotos directamente en Cloudflare R2:
-```php
-$article->clearMediaCollection('images_en');
-$article->clearMediaCollection('images_es');
-$article->clearMediaCollection('default');
-```
-Esto envía peticiones S3 `DELETE` al endpoint de Cloudflare R2 para borrar el archivo original y todas sus miniaturas generadas (`thumb`, `medium`, `large`).
+Spatie MediaLibrary escucha nativamente el evento `deleting` de cualquier modelo con imágenes (como `Article`) para borrar de forma automática todos sus registros de la tabla `media` y enviar peticiones S3 `DELETE` a Cloudflare R2 para remover tanto el archivo original como todas sus miniaturas y conversiones generadas (`thumb`, `medium`, `large`). Esto evita la presencia de archivos huérfanos en la nube.
 
-### 4.3 Purga de Caché de Cloudflare (CDN)
-Inmediatamente después del borrado físico, se despacha el Job `PurgeR2CacheJob` pasándole las URLs de las fotos. Este Job envía un POST asíncrono a la API de Cloudflare para limpiar los servidores perimetrales (edge servers) en segundos:
+### 4.3 Purga de Caché de Cloudflare (CDN) reactiva
+Para asegurar que la caché del CDN de Cloudflare se invalide inmediatamente después de borrar cualquier imagen (ya sea al eliminar un artículo completo, o al reemplazar una imagen individual en Filament), el sistema escucha de forma global el evento `deleting` del modelo `Media` en `AppServiceProvider`:
+```php
+\Spatie\MediaLibrary\MediaCollections\Models\Media::deleting(function ($media) {
+    if ($media->disk === 'r2') {
+        $urlsToPurge = [
+            $media->getUrl(),
+            $media->getUrl('thumb'),
+            $media->getUrl('medium'),
+            $media->getUrl('large'),
+        ];
+        \App\Jobs\PurgeR2CacheJob::dispatch($urlsToPurge);
+    }
+});
+```
+Este listener recolecta todas las URLs del CDN asociadas al archivo antes de ser borrado y despacha el Job asíncrono `PurgeR2CacheJob`. Este Job envía un POST a la API de Cloudflare para limpiar los servidores perimetrales (edge servers) en segundos:
 ```php
 $response = Http::withHeaders([
     'Authorization' => "Bearer " . env('CLOUDFLARE_API_TOKEN'),
