@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
 use App\Exceptions\OpenRouterAuthenticationException;
+use App\Services\AI\OpenRouterCircuitBreaker;
 
 class OpenRouterService
 {
@@ -68,6 +69,7 @@ class OpenRouterService
             }
 
             Log::info("OpenRouter Response: Length=" . strlen($content));
+            OpenRouterCircuitBreaker::recordSuccess();
 
             return $content;
         } catch (OpenRouterAuthenticationException $e) {

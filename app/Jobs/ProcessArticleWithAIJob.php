@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\RawArticle;
 use App\Services\AI\OpenRouterService;
 use App\Exceptions\OpenRouterAuthenticationException;
+use App\Services\AI\OpenRouterCircuitBreaker;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,6 +38,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
         if (empty(config('openrouter.api_key'))) {
             Log::error("ProcessArticleWithAIJob: OPENROUTER_API_KEY is not set. Releasing job for 5 minutes.");
             $this->release(300); // retry in 5 minutes
+            return;
+        }
+
+        // Circuit Breaker: if API key is invalid, release all jobs with long delay
+        if (OpenRouterCircuitBreaker::isOpen()) {
+            $ttl = OpenRouterCircuitBreaker::remainingTtl();
+            Log::warning("OpenRouter Circuit Breaker is OPEN. Releasing RawArticle {$this->rawArticle->id} for {$ttl}s. Update OPENROUTER_API_KEY in .env!");
+            $this->release(max(60, $ttl));
             return;
         }
 
@@ -72,6 +81,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
             Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401). Marking as failed — check API key.", [
                 'response' => $e->getResponseBody(),
             ]);
+            OpenRouterCircuitBreaker::recordFailure();
             $this->rawArticle->update(['status' => 'failed']);
             return; // Don't throw — prevents Laravel from retrying a permanent error
         }
@@ -151,6 +161,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
             Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401) during redaction. Marking as failed.", [
                 'response' => $e->getResponseBody(),
             ]);
+            OpenRouterCircuitBreaker::recordFailure();
             $this->rawArticle->update(['status' => 'failed']);
             return;
         }

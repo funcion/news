@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use App\Services\AI\OpenRouterCircuitBreaker;
 
 class TestOpenRouterKey extends Command
 {
@@ -36,8 +37,15 @@ class TestOpenRouterKey extends Command
 
         if ($response->successful()) {
             $this->info('✅ API key is WORKING!');
+            OpenRouterCircuitBreaker::reset();
         } else {
             $this->error('❌ API key FAILED with status: ' . $response->status());
+        }
+
+        // Show circuit breaker status
+        if (OpenRouterCircuitBreaker::isOpen()) {
+            $this->warn('⚠️  Circuit Breaker is OPEN — AI processing is paused!');
+            $this->warn('   Run this command again after fixing the key to auto-reset.');
         }
 
         return 0;
