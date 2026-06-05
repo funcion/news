@@ -70,6 +70,9 @@ class OpenRouterService
             Log::info("OpenRouter Response: Length=" . strlen($content));
 
             return $content;
+        } catch (OpenRouterAuthenticationException $e) {
+            // Re-throw auth errors permanently — callers handle 401 with no retry
+            throw $e;
         } catch (\Exception $e) {
             $isTimeout = str_contains($e->getMessage(), 'timed out') || str_contains($e->getMessage(), 'timeout');
             Log::error("OpenRouter Error [" . ($isTimeout ? 'TIMEOUT' : 'EXCEPTION') . "]: " . $e->getMessage(), [
