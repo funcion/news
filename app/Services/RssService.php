@@ -29,8 +29,52 @@ class RssService
         }
 
         $newArticlesCount = 0;
+        $items = $feed->get_items();
+
+        // If it is a GitHub Release Atom feed, filter to get the latest stable release and any newer RC/Beta versions
+        if (str_contains($source->url, 'github.com') && (str_contains($source->url, 'releases.atom') || $source->type === 'atom')) {
+            $filteredItems = [];
+            $foundStable = false;
+            foreach ($items as $item) {
+                $title = $item->get_title();
+                
+                // Skip raw development or test tags
+                if (preg_match('/alpha|dev|pre|test/i', $title)) {
+                    continue;
+                }
+                
+                // Detect pre-release candidates (RC or Beta)
+                $isPreRelease = preg_match('/rc\d+|beta/i', $title);
+                
+                if ($isPreRelease) {
+                    // Only include if we haven't found the latest stable yet (meaning they are newer)
+                    if (!$foundStable) {
+                        $filteredItems[] = $item;
+                    }
+                } else {
+                    // Include the stable release and stop looking at older entries
+                    $filteredItems[] = $item;
+                    $foundStable = true;
+                    break;
+                }
+            }
+            $items = $filteredItems;
+        }
         
-        foreach ($feed->get_items() as $item) {
+        foreach ($items as $item) {
+            // Check publication date dynamically using max_age_days from the source model
+            $timestamp = $item->get_date('U');
+            $currentTime = time();
+            $maxAgeDays = (int) ($source->max_age_days ?? 1);
+            $maxAgeSeconds = $maxAgeDays * 24 * 3600;
+            $thresholdTime = $currentTime - $maxAgeSeconds;
+
+            if ($timestamp && (int)$timestamp < $thresholdTime) {
+                continue;
+            }
+
+            $publishedAt = $timestamp ? Carbon::createFromTimestamp((int)$timestamp) : now();
+
             $url = $item->get_permalink();
             $title = $item->get_title();
             
@@ -56,7 +100,6 @@ class RssService
             $description = $item->get_description();
             $authorItem = $item->get_author();
             $author = $authorItem ? $authorItem->get_name() : null;
-            $publishedAt = $item->get_date('Y-m-d H:i:s');
 
             // Find image
             $imageUrl = $this->extractImage($item);
@@ -68,7 +111,7 @@ class RssService
                 'content' => $content,
                 'summary' => strip_tags($description),
                 'author' => $author,
-                'published_at' => $publishedAt ? Carbon::parse($publishedAt) : now(),
+                'published_at' => $publishedAt,
                 'hash' => $hash,
                 'image_url' => $imageUrl,
                 'status' => 'pending',

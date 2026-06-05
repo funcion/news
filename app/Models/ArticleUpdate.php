@@ -74,7 +74,7 @@ class ArticleUpdate extends Model
      */
     public function getNotificationSummaryAttribute(): string
     {
-        $summary = $this->summary ?: substr(strip_tags($this->content), 0, 150) . '...';
+        $summary = $this->summary ?: mb_substr(strip_tags($this->content), 0, 150, 'UTF-8') . '...';
         return "📰 {$this->title}: {$summary}";
     }
 

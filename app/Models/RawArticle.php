@@ -98,4 +98,86 @@ class RawArticle extends Model
             ->where('id', '!=', $this->id)
             ->exists();
     }
+
+    /**
+     * Clean and sanitize content automatically on saving.
+     */
+    public function setContentAttribute($value)
+    {
+        $this->attributes['content'] = self::sanitizeContent($value);
+    }
+
+    /**
+     * Clean raw content by removing boilerplate, CSS, JS, images, and converting links to plain text.
+     */
+    public static function sanitizeContent(?string $content): string
+    {
+        if (blank($content)) {
+            return '';
+        }
+
+        // 1. Strip HTML scripts, styles, and iframes
+        $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $content);
+        $content = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $content);
+
+        // 2. Remove markdown images: ![alt](url)
+        $content = preg_replace('/\!\[.*?\]\(.*?\)/i', '', $content);
+        // Remove HTML images: <img ...>
+        $content = preg_replace('/<img\b[^>]*>/i', '', $content);
+
+        // 3. Remove Markdown links, leaving only the anchor text: [Anchor](URL) -> Anchor
+        $content = preg_replace('/\[([^\]]+)\]\([^)]+\)/', '$1', $content);
+
+        // 4. Remove HTML links, leaving only the text: <a href="...">Anchor</a> -> Anchor
+        $content = preg_replace('/<a\b[^>]*>(.*?)<\/a>/is', '$1', $content);
+
+        // 5. Clean up typical boilerplate patterns
+        $lines = explode("\n", $content);
+        $cleanedLines = [];
+        
+        $boilerplateKeywords = [
+            'subscribe to', 'newsletter', 'privacy policy', 'terms of service', 'cookie policy',
+            'share on twitter', 'share on facebook', 'share on linkedin', 'read more', 'click here',
+            'all rights reserved', 'copyright', 'follow us on', 'about the author', 'author bio',
+            'advertisement', 'sponsored', 'you might also like', 'related articles', 'related topics'
+        ];
+
+        foreach ($lines as $line) {
+            $trimmedLine = trim($line);
+            
+            if (empty($trimmedLine)) {
+                $cleanedLines[] = '';
+                continue;
+            }
+
+            $lowerLine = mb_strtolower($trimmedLine);
+            
+            // Skip short boilerplate lines
+            $isBoilerplate = false;
+            if (mb_strlen($lowerLine) < 150) {
+                foreach ($boilerplateKeywords as $kw) {
+                    if (str_contains($lowerLine, $kw)) {
+                        $isBoilerplate = true;
+                        break;
+                    }
+                }
+            }
+
+            // Skip lines with only divider characters
+            if (preg_match('/^[_\-*#|\s]+$/', $trimmedLine)) {
+                continue;
+            }
+
+            if (!$isBoilerplate) {
+                $cleanedLines[] = $line;
+            }
+        }
+
+        $content = implode("\n", $cleanedLines);
+
+        // 6. Clean multiple empty lines
+        $content = preg_replace("/\n{3,}/", "\n\n", $content);
+
+        return trim($content);
+    }
 }

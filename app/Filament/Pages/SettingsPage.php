@@ -31,11 +31,9 @@ class SettingsPage extends Page
 
         $this->data = [
             // Rate Limits
-            'max_articles_per_day'              => Setting::get('rate_limits.max_articles_per_day', 8),
-            'max_articles_per_hour'             => Setting::get('rate_limits.max_articles_per_hour', 2),
-            'max_articles_per_category_per_day' => Setting::get('rate_limits.max_articles_per_category_per_day', 3),
-            'publish_hour_start'                => Setting::get('rate_limits.publish_hour_start', 7),
-            'publish_hour_end'                  => Setting::get('rate_limits.publish_hour_end', 22),
+            'max_articles_per_day'              => Setting::get('rate_limits.max_articles_per_day', '8'),
+            'max_articles_per_hour'             => Setting::get('rate_limits.max_articles_per_hour', '2'),
+            'max_articles_per_category_per_day' => Setting::get('rate_limits.max_articles_per_category_per_day', '3'),
 
             // Editorial
             'site_name'   => Setting::get('editorial.site_name', config('global.site_name', 'Glodaxia')),
@@ -51,53 +49,41 @@ class SettingsPage extends Page
         return $schema
             ->components([
                 Section::make('Límites de Publicación (Rate Limiting)')
-                    ->description('Controla cuántos artículos se publican por día/hora. Esto evita patrones que Google podría detectar como automatizados.')
+                    ->description('Controla cuántos artículos se publican por día/hora de forma dinámica. Esto evita patrones que Google podría detectar como automatizados.')
                     ->columns(3)
                     ->schema([
                         TextInput::make('data.max_articles_per_day')
                             ->label('Artículos por día')
-                            ->helperText('Máximo de artículos publicados por día (7 AM - 10 PM)')
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(100)
+                            ->helperText('Rango dinámico diario obligatorio (ej: "7,20").')
+                            ->required()
+                            ->regex('/^\d+,\d+$/')
+                            ->validationMessages([
+                                'regex' => 'Debe estar en formato min,max (ej: "7,20").',
+                            ])
                             ->live(onBlur: true)
                             ->suffix('arts/día'),
 
                         TextInput::make('data.max_articles_per_hour')
                             ->label('Artículos por hora')
-                            ->helperText('Máximo por hora — evita bursts sospechosos')
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(10)
+                            ->helperText('Rango dinámico por hora obligatorio (ej: "2,7").')
+                            ->required()
+                            ->regex('/^\d+,\d+$/')
+                            ->validationMessages([
+                                'regex' => 'Debe estar en formato min,max (ej: "2,7").',
+                            ])
                             ->live(onBlur: true)
                             ->suffix('arts/hora'),
 
                         TextInput::make('data.max_articles_per_category_per_day')
                             ->label('Por categoría/día')
-                            ->helperText('Máximo de artículos de una misma categoría por día')
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(20)
+                            ->helperText('Rango dinámico por categoría diario obligatorio (ej: "1,5").')
+                            ->required()
+                            ->regex('/^\d+,\d+$/')
+                            ->validationMessages([
+                                'regex' => 'Debe estar en formato min,max (ej: "1,5").',
+                            ])
                             ->live(onBlur: true)
                             ->suffix('arts/cat'),
-
-                        TextInput::make('data.publish_hour_start')
-                            ->label('Publicar desde las')
-                            ->helperText('Los artículos solo se publicarán desde esta hora (0-23)')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(23)
-                            ->live(onBlur: true)
-                            ->suffix(':00 hrs'),
-
-                        TextInput::make('data.publish_hour_end')
-                            ->label('Publicar hasta las')
-                            ->helperText('Los artículos solo se publicarán hasta esta hora (0-23)')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(23)
-                            ->live(onBlur: true)
-                            ->suffix(':00 hrs'),
                     ]),
 
                 Section::make('Marca e Identidad')
@@ -138,12 +124,10 @@ class SettingsPage extends Page
 
     public function save(): void
     {
-        // Rate limits
-        Setting::set('rate_limits.max_articles_per_day', (int) ($this->data['max_articles_per_day'] ?? 8), 'integer', 'rate_limits');
-        Setting::set('rate_limits.max_articles_per_hour', (int) ($this->data['max_articles_per_hour'] ?? 2), 'integer', 'rate_limits');
-        Setting::set('rate_limits.max_articles_per_category_per_day', (int) ($this->data['max_articles_per_category_per_day'] ?? 3), 'integer', 'rate_limits');
-        Setting::set('rate_limits.publish_hour_start', (int) ($this->data['publish_hour_start'] ?? 7), 'integer', 'rate_limits');
-        Setting::set('rate_limits.publish_hour_end', (int) ($this->data['publish_hour_end'] ?? 22), 'integer', 'rate_limits');
+        // Rate limits (saved as string to support ranges like "5,20")
+        Setting::set('rate_limits.max_articles_per_day', $this->data['max_articles_per_day'] ?? '8', 'string', 'rate_limits');
+        Setting::set('rate_limits.max_articles_per_hour', $this->data['max_articles_per_hour'] ?? '2', 'string', 'rate_limits');
+        Setting::set('rate_limits.max_articles_per_category_per_day', $this->data['max_articles_per_category_per_day'] ?? '3', 'string', 'rate_limits');
 
         // Editorial
         Setting::set('editorial.site_name', $this->data['site_name'] ?? 'Glodaxia', 'string', 'editorial');

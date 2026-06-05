@@ -22,6 +22,10 @@ class DuplicateCheckerService
      */
     public function checkAndHandleDuplicate(string $title, string $content, string $url, int $rawArticleId): bool
     {
+        // Sanitize string encodings to guarantee only valid UTF-8 is processed
+        $title   = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
+        $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+
         Log::info("Running Anti-Duplicate Level 2 & 3 for title: {$title}");
 
         // Nivel 2: TF-IDF o similitud rápida basada en texto (Simular usando subcadenas)
@@ -43,7 +47,7 @@ class DuplicateCheckerService
             ->where('status', 'pending')
             ->where(function ($q) use ($title) {
                 $q->whereRaw("title ILIKE ?", ["%{$title}%"])
-                  ->orWhere('title', 'ILIKE', '%' . substr($title, 0, 50) . '%');
+                  ->orWhere('title', 'ILIKE', '%' . mb_substr($title, 0, 50, 'UTF-8') . '%');
             })
             ->first();
 
@@ -56,7 +60,7 @@ class DuplicateCheckerService
 
         // Nivel 3: IA Semántica con pgvector
         // Convert input text (Title + snippet) to an embedding
-        $textToEmbed = substr($title . ". " . strip_tags($content), 0, 1000);
+        $textToEmbed = mb_substr($title . ". " . strip_tags($content), 0, 1000, 'UTF-8');
         $embedding = $this->ai->embeddings($textToEmbed);
 
         if (!$embedding) {
@@ -119,7 +123,9 @@ class DuplicateCheckerService
      */
     public function generateAndStoreEmbedding(Article $article, string $content): void
     {
-        $textToEmbed = substr($article->getTranslation('title', 'en') . ". " . strip_tags($content), 0, 1000);
+        $title = $article->getTranslation('title', 'en') ?? '';
+        $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+        $textToEmbed = mb_substr($title . ". " . strip_tags($content), 0, 1000, 'UTF-8');
         $embedding = $this->ai->embeddings($textToEmbed);
 
         if ($embedding) {

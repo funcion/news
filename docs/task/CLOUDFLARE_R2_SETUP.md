@@ -66,15 +66,17 @@
 
 4. Clic en **"Create bucket"**
 
-### 2.3 Habilitar Acceso Público
+### 2.3 Habilitar Acceso Público (Public Development URL)
 
-1. Dentro del bucket recién creado, ve a la pestaña **"Settings"**
-2. En **"Public Access"**, busca **"R2.dev subdomain"**
-3. Clic en **"Allow Access"** y confirma
-   - Esto te da una URL tipo: `https://pub-{hash}.r2.dev`
-   - Esta URL es temporal — usaremos un dominio propio después
+1. Dentro del bucket recién creado, ve a la pestaña **"Settings"** (Configuración).
+2. Desplázate hacia abajo hasta la sección **"Public Development URL"**.
+3. Verás que dice *"The public development URL is disabled for this bucket"*.
+4. Haz clic en el botón **"Allow Access"** (Permitir acceso) ubicado en la esquina derecha de esa tarjeta.
+5. Se abrirá una ventana emergente de confirmación. Escribe la palabra **"allow"** en el campo de texto y haz clic en **"Allow"** (Permitir).
+   - Esto habilitará una URL pública de desarrollo única parecida a esta: `https://pub-{hash}.r2.dev`
+   - Úsala temporalmente en desarrollo local si aún no tienes un dominio propio apuntando.
 
-> ⚠️ **La URL `r2.dev` es solo para pruebas.** En producción usaremos un subdominio propio (paso 3).
+> ⚠️ **La URL `r2.dev` es exclusivamente para pruebas.** Para producción y el beneficio total de la CDN ($0 de costo), usaremos un dominio personalizado (paso 3).
 
 ---
 
@@ -214,31 +216,26 @@ Este token permite a Laravel limpiar la cache de CDN cuando se elimina una image
 
 ## 7. Paso 6: Configurar .env
 
-### 7.1 En Desarrollo (local)
-
-Tu `.env` actual ya funciona con almacenamiento local. No cambies nada:
-```env
-MEDIA_DISK=public
-FILESYSTEM_DISK=local
-```
-
-### 7.2 En Producción (VPS)
+Tanto en desarrollo como en producción, configuramos el disco de Cloudflare R2 de manera uniforme para almacenar todas las imágenes en la nube de R2:
 
 ```env
-# Usar R2 para media
+# Configuración Unificada de Media
 MEDIA_DISK=r2
 
-# Cloudflare R2
+# Cloudflare R2 (S3-compatible)
 R2_ACCESS_KEY_ID=a1b2c3d4e5f6...
 R2_SECRET_ACCESS_KEY=x9y8z7w6v5u4...
 R2_BUCKET=glodaxia-media
 R2_ENDPOINT=https://<tu_account_id>.r2.cloudflarestorage.com
 R2_PUBLIC_URL=https://media.glodaxia.com
 
-# Cloudflare CDN Cache Purge (opcional)
+# Cloudflare CDN Cache Purge (opcional para purgar caché al borrar fotos)
 CLOUDFLARE_ZONE_ID=<tu_zone_id>
 CLOUDFLARE_API_TOKEN=<token_de_purge_cache>
 ```
+
+> 🛡️ **Obligatoriedad de Cloudflare R2:**
+> La lógica de fallback local ha sido eliminada de `config/media-library.php`. Esto garantiza que el sistema siempre intente almacenar y servir la media desde Cloudflare R2, asegurando coherencia y previniendo que imágenes huérfanas o locales se mezclen en la base de datos de producción o desarrollo. Las credenciales de R2 en el archivo `.env` son obligatorias.
 
 ---
 

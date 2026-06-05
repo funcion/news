@@ -137,6 +137,22 @@ class RawArticleResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Action::make('procesar_ia_inmediato')
+                    ->label('Procesar y Publicar ⚡')
+                    ->icon('heroicon-o-bolt')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (RawArticle $record) => in_array($record->status, ['pending', 'ignored', 'failed']))
+                    ->action(function (RawArticle $record) {
+                        $record->update(['status' => 'pending']);
+                        ProcessArticleWithAIJob::dispatch($record, true); // Envía true como parámetro de forzar inmediato
+                        
+                        Notification::make()
+                            ->title('Procesamiento prioritario iniciado')
+                            ->body('La noticia se está procesando y se publicará inmediatamente al terminar.')
+                            ->success()
+                            ->send();
+                    }),
                 \Filament\Actions\EditAction::make(),
             ])
             ->bulkActions([

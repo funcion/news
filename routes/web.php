@@ -17,6 +17,8 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
+
+
 // Sitemap Index (sitemap.xml = index of all sub-sitemaps)
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap-articles-en.xml', [\App\Http\Controllers\SitemapController::class, 'articlesEn'])->name('sitemap.articles.en');

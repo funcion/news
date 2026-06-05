@@ -25,4 +25,4 @@ yarn-error.log
 /auth.json
 .DS_Store
 storage/
-.env
+# .env has been removed from here by user request to allow tracking it.

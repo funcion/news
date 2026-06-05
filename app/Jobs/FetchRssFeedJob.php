@@ -34,6 +34,12 @@ class FetchRssFeedJob implements ShouldQueue
      */
     public function handle(\App\Services\RssService $rssService, \App\Services\ScraperService $scraperService): void
     {
+        // Fail-fast if the source has been deactivated in the database
+        if (!$this->source->is_active) {
+            Log::info("Skipping FetchRssFeedJob: Source {$this->source->name} is inactive.");
+            return;
+        }
+
         try {
             Log::info("Fetching content for source: {$this->source->name} (Type: {$this->source->type})");
             

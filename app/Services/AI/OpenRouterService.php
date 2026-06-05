@@ -141,5 +141,5 @@ class OpenRouterService
      *  https://openrouter.ai/minimax/minimax-m2.7
      * ═══════════════════════════════════════════════════════════════════
      */
-    public const MODEL_ACTIVE = 'deepseek/deepseek-v4-pro';
+    public const MODEL_ACTIVE = 'google/gemini-2.5-flash';
 }
