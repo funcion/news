@@ -5,6 +5,8 @@ namespace App\Services\AI;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
+use App\Exceptions\OpenRouterAuthenticationException;
+
 class OpenRouterService
 {
     protected string $apiKey;
@@ -12,8 +14,8 @@ class OpenRouterService
 
     public function __construct()
     {
-        $this->apiKey = env('OPENROUTER_API_KEY', '');
-        $this->baseUrl = env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1');
+        $this->apiKey = config('openrouter.api_key', '');
+        $this->baseUrl = config('openrouter.base_url', 'https://openrouter.ai/api/v1');
     }
 
     /**
@@ -44,6 +46,16 @@ class OpenRouterService
 
             if ($response->failed()) {
                 Log::error("OpenRouter Error: " . $response->status() . " - " . $response->body());
+
+                // 401 = permanent auth failure — throw to prevent useless retries
+                if ($response->status() === 401) {
+                    throw new OpenRouterAuthenticationException(
+                        "OpenRouter authentication failed: " . $response->body(),
+                        401,
+                        $response->body()
+                    );
+                }
+
                 return null;
             }
 

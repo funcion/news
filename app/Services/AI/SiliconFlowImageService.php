@@ -16,11 +16,11 @@ class SiliconFlowImageService
 
     public function __construct()
     {
-        $this->apiKey = env('SILICONFLOW_API_KEY', '');
-        $this->model = env('SILICONFLOW_IMAGE_MODEL', 'black-forest-labs/FLUX.1-schnell');
+        $this->apiKey = config('siliconflow.api_key', '');
+        $this->model = config('siliconflow.image_model', 'black-forest-labs/FLUX.1-schnell');
 
         if (empty($this->apiKey)) {
-            Log::warning("SiliconFlow API Key is missing in .env (SILICONFLOW_API_KEY) — image generation will be disabled for this job.");
+            Log::warning("SiliconFlow API Key is missing (SILICONFLOW_API_KEY) — image generation will be disabled for this job.");
         }
     }
 

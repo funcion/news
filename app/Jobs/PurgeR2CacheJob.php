@@ -44,12 +44,21 @@ class PurgeR2CacheJob implements ShouldQueue
             Log::info('PurgeR2CacheJob: Cache purged successfully.', [
                 'urls_count' => count($this->urls),
             ]);
-        } else {
-            Log::error('PurgeR2CacheJob: Cache purge failed.', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-                'urls' => $this->urls,
-            ]);
+            return;
         }
+
+        // 401 = permanent auth failure — don't waste retries
+        if ($response->status() === 401) {
+            Log::error('PurgeR2CacheJob: Cloudflare authentication failed (401). Check CLOUDFLARE_API_TOKEN. NOT retrying.', [
+                'urls_count' => count($this->urls),
+            ]);
+            return; // Don't throw — prevents useless retries on permanent auth failure
+        }
+
+        Log::error('PurgeR2CacheJob: Cache purge failed.', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'urls' => $this->urls,
+        ]);
     }
 }

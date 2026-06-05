@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\User;
 use App\Models\RawArticle;
 use App\Services\AI\OpenRouterService;
+use App\Exceptions\OpenRouterAuthenticationException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,15 +28,14 @@ class ProcessArticleWithAIJob implements ShouldQueue
     }
 
     public function __construct(
-        protected RawArticle $rawArticle,
-        public bool $forceImmediate = false
+        protected RawArticle $rawArticle
     ) {}
 
     public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker): void
     {
         // Guard: require API key before processing
-        if (empty(config('openai.api_key')) && empty(env('OPENROUTER_API_KEY'))) {
-            Log::error("ProcessArticleWithAIJob: OPENROUTER_API_KEY is not set. Pausing job until configured.");
+        if (empty(config('openrouter.api_key'))) {
+            Log::error("ProcessArticleWithAIJob: OPENROUTER_API_KEY is not set. Releasing job for 5 minutes.");
             $this->release(300); // retry in 5 minutes
             return;
         }
@@ -65,10 +65,19 @@ class ProcessArticleWithAIJob implements ShouldQueue
             $existing->delete();
         }
 
-        $classification = $this->classifyAndExtract($ai);
+        try {
+            $classification = $this->classifyAndExtract($ai);
+        } catch (OpenRouterAuthenticationException $e) {
+            // 401 = permanent auth failure — don't retry, mark as failed immediately
+            Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401). Marking as failed — check API key.", [
+                'response' => $e->getResponseBody(),
+            ]);
+            $this->rawArticle->update(['status' => 'failed']);
+            return; // Don't throw — prevents Laravel from retrying a permanent error
+        }
 
         if ($classification === null) {
-            throw new \Exception("AI classification failed. Retrying...");
+            throw new \Exception("AI classification failed (empty response). Retrying...");
         }
 
         if (!($classification['is_relevant'] ?? false) && empty($classification['is_seed'])) {
@@ -107,29 +116,10 @@ class ProcessArticleWithAIJob implements ShouldQueue
             return;
         }
 
-        // --- FILTER: Max Articles per Source per Day (Cap at 3 unless highly important or forced) ---
-        if ($source && !$this->forceImmediate) {
-            $todayCount = Article::whereDate('created_at', today())
-                ->whereHas('rawArticle', function ($query) use ($source) {
-                    $query->where('source_id', $source->id);
-                })
-                ->count();
-
-            $importance = (int) ($classification['importance'] ?? 5);
-            $isHighlyImportant = ($importance >= 8) || ($source->type === 'atom');
-
-            if ($todayCount >= 3 && !$isHighlyImportant) {
-                $this->rawArticle->update(['status' => 'ignored']);
-                Log::info("RawArticle {$this->rawArticle->id} ignored: Source '{$source->name}' has already processed {$todayCount} articles today. Importance is {$importance}/10 (needs >= 8 to bypass limit).");
-                return;
-            }
-        }
-
         // --- NEW: DUPLICATE CHECK LEVEL 2 & 3 ---
-        $sanitizedContent = RawArticle::sanitizeContent($this->rawArticle->content ?? '');
         $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
              $this->rawArticle->title ?? '',
-             $sanitizedContent,
+             $this->rawArticle->content ?? '',
              $this->rawArticle->url ?? '',
              $this->rawArticle->id
         );
@@ -155,7 +145,15 @@ class ProcessArticleWithAIJob implements ShouldQueue
             ]);
         }
 
-        $redacted = $this->redactBilingual($ai, $classification, $author);
+        try {
+            $redacted = $this->redactBilingual($ai, $classification, $author);
+        } catch (OpenRouterAuthenticationException $e) {
+            Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401) during redaction. Marking as failed.", [
+                'response' => $e->getResponseBody(),
+            ]);
+            $this->rawArticle->update(['status' => 'failed']);
+            return;
+        }
 
         if (!$redacted) {
             throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
@@ -222,12 +220,9 @@ class ProcessArticleWithAIJob implements ShouldQueue
         $article->slug_en        = $slugEn;
         $article->slug_es        = $slugEs;
         $article->user_id        = $author->id;
-        $importance = (int) ($classification['importance'] ?? 5);
-        $isBreaking = $this->forceImmediate || ($importance >= 9) || ($source && $source->type === 'atom');
-
         $article->category_id    = $categoryId;
         $article->status         = 'draft'; // Keep as draft during processing so it is hidden from the public frontend until complete
-        $article->published_at   = $isBreaking ? now() : now()->addMinutes(rand(5, 60));
+        $article->published_at   = now();
         $article->seo_score      = 85; // Static default — self-reported AI scores are unreliable, use Filament for manual override
         $article->meta_keywords  = $redacted['keywords'] ?? [];
         $article->reading_time   = $this->calculateReadingTime($contentEn, $contentEs);
@@ -238,7 +233,6 @@ class ProcessArticleWithAIJob implements ShouldQueue
             'style_dna'   => $redacted['__style_dna'] ?? null,
             'model_used'  => OpenRouterService::MODEL_ACTIVE,
             'temperature' => $redacted['__temperature'] ?? null,
-            'importance'  => $importance,
         ];
 
         // Set all translatable fields via setTranslation (Spatie-aware)
@@ -451,22 +445,18 @@ class ProcessArticleWithAIJob implements ShouldQueue
         }
 
         // Only publish if safety-net didn't already flag as draft (e.g. no images)
-        // --- RATE LIMITING & BREAKING NEWS ---
-        $importance = (int) ($article->ai_metadata['importance'] ?? 5);
-        $isBreaking = $this->forceImmediate || ($importance >= 9) || ($source && $source->type === 'atom');
+        // --- RATE LIMITING: Check if we can publish now ---
+        // Prevents publishing patterns that search engines could flag as automated.
+        $canPublish = $this->canPublishNow($categoryId);
 
-        if ($imageCount > 0) { // Safety net passed (images are present)
-            if ($isBreaking) {
+        if ($article->status !== 'draft') {
+            if ($canPublish) {
                 $article->status = 'published';
-                $article->published_at = now();
-                Log::info("⚡ Article {$article->id} is BREAKING NEWS/RELEASE/FORCED: Bypassing rate limits and publishing immediately.");
             } else {
+                // Rate limit hit — keep as draft, will be picked up by scheduler
                 $article->status = 'draft';
-                Log::info("Article {$article->id} scheduled for future publication at {$article->published_at}.");
+                Log::info("Article {$article->id} kept as draft — rate limit reached. Will publish when limits reset.");
             }
-        } else {
-            $article->status = 'draft';
-            Log::warning("Article {$article->id} kept as draft because no images were generated.");
         }
         $article->save();
 
@@ -575,8 +565,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
     protected function classifyAndExtract(OpenRouterService $ai): ?array
     {
-        $content = RawArticle::sanitizeContent($this->rawArticle->content ?? '');
-        $content = trim(strip_tags($content));
+        $content = trim(strip_tags($this->rawArticle->content ?? ''));
         $today   = now()->format('l, F j, Y');
 
         if (empty($content)) {
@@ -660,9 +649,7 @@ PROMPT;
         $today          = now()->format('l, F j, Y');
         $isSeed         = $classification['is_seed'] ?? false;
         $contentType    = $classification['content_type'] ?? 'blog';
-        $facts          = $classification['facts'] ?? [];
-        $factsString    = is_string($facts) ? $facts : implode('; ', (array) $facts);
-        $topic          = $isSeed ? $this->rawArticle->title : $factsString;
+        $topic          = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
         $sourceLang     = $classification['source_language'] ?? 'unknown';
         $sourceLangName = match($sourceLang) {
             'en'    => 'English',
@@ -1132,8 +1119,8 @@ PROMPT;
                 $original = $data[$field];
                 $data[$field] = Str::limit($data[$field], 60, '');
                 // Cut at last space to avoid mid-word truncation
-                if (($lastSpace = mb_strrpos($data[$field], ' ', 0, 'UTF-8')) !== false && $lastSpace > 40) {
-                    $data[$field] = mb_substr($data[$field], 0, $lastSpace, 'UTF-8');
+                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 40) {
+                    $data[$field] = mb_substr($data[$field], 0, $lastSpace);
                 }
                 $fixes[] = "{$field}: truncated from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
             }
@@ -1243,8 +1230,17 @@ PROMPT;
 
     public function failed(\Throwable $exception): void
     {
+        $isAuth = $exception instanceof OpenRouterAuthenticationException;
+        $isPermanent = $isAuth || str_contains($exception->getMessage(), '401');
+
         $this->rawArticle->update(['status' => 'failed']);
-        Log::error("Job failed for RawArticle {$this->rawArticle->id}: {$exception->getMessage()}");
+
+        Log::error("Job failed for RawArticle {$this->rawArticle->id}: {$exception->getMessage()}", [
+            'permanent'    => $isPermanent,
+            'exception'    => get_class($exception),
+            'attempts'     => $this->attempts(),
+            'will_retry'   => !$isPermanent,
+        ]);
     }
 
     // -------------------------------------------------------------------------
@@ -1436,7 +1432,7 @@ PROMPT;
         // 3. Primary keyword in at least 1 H2
         $contentHtml = $data['content_en'] ?? '';
         preg_match_all('/<h2[^>]*>(.*?)<\/h2>/is', $contentHtml, $h2Matches);
-        $h2Text = strtolower(strip_tags(implode(' ', $h2Matches[1] ?? [])));
+        $h2Text = strtolower(implode(' ', strip_tags(implode(' ', $h2Matches[1] ?? []))));
         if (!empty($h2Matches[1]) && !str_contains($h2Text, $primaryKw)) {
             $warnings[] = "Primary keyword '{$primaryKw}' not found in any H2 heading";
         }
