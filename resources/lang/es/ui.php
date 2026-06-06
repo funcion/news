@@ -62,4 +62,8 @@ return [
 
     // E-E-A-T & Transparencia
     'read_original_source' => 'Leer fuente original',
+
+    // Páginas de Etiquetas
+    'tag_meta_desc' => 'Explora los últimos artículos, análisis y opiniones sobre #:tag en ' . config('global.site_name') . '.',
+    'tag_empty'     => 'No se encontraron artículos con esta etiqueta todavía.',
 ];

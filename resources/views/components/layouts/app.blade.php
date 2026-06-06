@@ -62,6 +62,11 @@
         <meta name="twitter:image" content="{{ $ogImage }}" />
     @endif
 
+    <!-- Premium Fonts (Outfit for Headings, Inter for Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -218,6 +223,7 @@
                     <div class="flex items-center gap-2 sm:gap-4 border-l border-gray-100 dark:border-white/5 pl-4 sm:pl-8">
                         <!-- Dark Mode Toggle -->
                         <button @click="toggleDarkMode()" 
+                                aria-label="Toggle dark mode"
                                 class="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                             <svg x-show="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                             <svg x-show="isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -225,6 +231,7 @@
 
                         <!-- Hamburger Button (Standard SVG for reliability) -->
                         <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                                aria-label="Toggle mobile menu"
                                 class="lg:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                             <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -416,7 +423,7 @@
 </div>
 <!-- End Header Wrapper -->
 
-<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-8">
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-10 pb-16 lg:pt-14 lg:pb-24">
         <div class="grid grid-cols-1 gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
             <!-- Left Column (Primary) -->
             <div class="min-w-0">

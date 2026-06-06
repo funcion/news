@@ -259,8 +259,16 @@ html {
 
 /* 28. Improve selection styles */
 ::selection {
-  background-color: var(--color-primary-light);
-  color: var(--color-text-primary);
+  background-color: #a5f3fc !important; /* cyan-200 (high contrast in light mode) */
+  color: #0f172a !important; /* slate-900 */
+}
+
+.dark ::selection,
+html.dark ::selection,
+body.dark ::selection,
+.dark *::selection {
+  background-color: #0e7490 !important; /* cyan-700 (high contrast in dark mode) */
+  color: #ffffff !important; /* white */
 }
 
 /* 29. Improve placeholder styles */

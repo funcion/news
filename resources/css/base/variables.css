@@ -9,6 +9,7 @@
   
   /* Fuentes dinámicas */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
   
   /* ===== ACCESIBILIDAD ===== */
   --focus-ring-width: 3px;

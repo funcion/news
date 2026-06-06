@@ -86,12 +86,21 @@
                      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px"
                      alt="{{ $article->image_alt ?? $article->title }}" 
                      title="{{ $article->title }}"
+                     width="1200"
+                     height="675"
                      class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700"
-                     loading="eager">
+                     loading="eager"
+                     fetchpriority="high">
             </figure>
         @elseif($article->image_url)
             <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
-                <img src="{{ $article->image_url }}" alt="{{ $article->image_alt ?? $article->title }}" class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700" loading="eager">
+                <img src="{{ $article->image_url }}" 
+                     alt="{{ $article->image_alt ?? $article->title }}" 
+                     width="1200"
+                     height="675"
+                     class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700" 
+                     loading="eager"
+                     fetchpriority="high">
             </figure>
         @endif
 
@@ -154,7 +163,7 @@
             <div class="mt-12 flex flex-wrap items-center gap-3 justify-start">
                 @foreach($article->tags as $atag)
                     <a href="{{ route('tags.show', $atag->slug) }}" 
-                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
+                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-bold text-gray-600 dark:text-gray-400 tracking-wider hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
                         #{{ $atag->name }}
                     </a>
                 @endforeach

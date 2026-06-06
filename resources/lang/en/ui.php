@@ -62,4 +62,8 @@ return [
 
     // E-E-A-T & Transparency
     'read_original_source' => 'Read original source',
+
+    // Tag Pages
+    'tag_meta_desc' => 'Explore the latest articles, analysis and opinions on #:tag at ' . config('global.site_name') . '.',
+    'tag_empty'     => 'No articles found under this tag yet.',
 ];

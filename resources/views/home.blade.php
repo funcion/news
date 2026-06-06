@@ -102,7 +102,11 @@
                 <div class="lg:w-1/2 relative overflow-hidden">
                     <img src="{{ $featured->image_url ?? '/placeholder.webp' }}" 
                          alt="{{ $featured->image_alt }}" 
-                         class="w-full h-full object-cover">
+                         width="800"
+                         height="450"
+                         loading="eager"
+                         fetchpriority="high"
+                         class="w-full h-full object-cover aspect-video">
                 </div>
                 <div class="lg:w-1/2 p-6 md:p-8 flex flex-col justify-center">
                     <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-4 w-fit">{{ __('ui.featured') }}</span>
@@ -127,7 +131,10 @@
                        class="block overflow-hidden rounded-lg aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-4 group-hover:border-cyan-500/30 transition-all">
                         <img src="{{ $article->image_url ?? '/placeholder.webp' }}" 
                              alt="{{ $article->image_alt }}" 
-                             class="w-full h-full object-cover">
+                             width="400"
+                             height="225"
+                             loading="lazy"
+                             class="w-full h-full object-cover aspect-video">
                     </a>
                     
                     <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3">
@@ -169,7 +176,7 @@
             </h3>
             <div class="flex flex-wrap gap-2">
                 @foreach($trendingTags ?? [] as $ttag)
-                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/5 rounded-lg text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest hover:border-cyan-600 hover:text-cyan-600 dark:hover:border-cyan-500 dark:hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
+                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/5 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-400 tracking-wider hover:border-cyan-600 hover:text-cyan-600 dark:hover:border-cyan-500 dark:hover:text-cyan-500 transition-all shadow-sm shadow-slate-200/50 dark:shadow-none">
                         #{{ $ttag->name }}
                     </a>
                 @endforeach
@@ -180,9 +187,10 @@
         <div class="p-8 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5">
             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
             <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">{{ __('ui.newsletter_title') }}</h3>
-            <p class="text-slate-300 dark:text-slate-400 text-sm leading-relaxed mb-8 relative z-10">{{ __('ui.newsletter_desc') }}</p>
+            <p class="text-zinc-200 text-sm leading-relaxed mb-8 relative z-10">{{ __('ui.newsletter_desc') }}</p>
             <form class="relative z-10 flex flex-col gap-4">
-                <input type="email" placeholder="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600">
+                <label for="newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
+                <input id="newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
                 <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>
