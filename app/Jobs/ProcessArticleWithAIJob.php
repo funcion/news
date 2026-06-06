@@ -812,7 +812,7 @@ ALL VARIANTS share these rules:
 
 ═══ 4. SEO & E-E-A-T ═══
 
-- Title: max 60 chars, primary keyword naturally integrated. Must spark genuine curiosity.
+- Title: between 40 and 80 chars, primary keyword naturally integrated. Must spark genuine curiosity.
 - Meta title: max 70 chars, SEO-optimized variant of the title.
 - Excerpt: max 155 chars, a teaser that creates urgency — not a summary.
 - Slug: lowercase-hyphenated, max 6 words.
@@ -876,8 +876,8 @@ CRITICAL JSON FORMATTING RULES:
 4. Every interior image token must be isolated like this: `\n\n[IMAGE_2]\n\n` inside the HTML content string. Do not append text or caption sentences to that line.
 
 {
-    "title_en": "Punchy headline with primary keyword (max 60 chars)",
-    "title_es": "Titular magnetico con palabra clave (max 60 chars)",
+    "title_en": "Punchy headline with primary keyword (between 40 and 80 chars)",
+    "title_es": "Titular magnetico con palabra clave (between 40 and 80 chars)",
     "slug_en": "seo-slug-max-six-words",
     "slug_es": "slug-seo-espanol-max-seis",
     "excerpt_en": "Compelling teaser, not a summary (max 155 chars)",
@@ -1131,13 +1131,13 @@ PROMPT;
     {
         $fixes = [];
 
-        // Truncate titles (max 60 chars, cut at last word boundary)
+        // Truncate titles (max 80 chars, cut at last word boundary)
         foreach (['title_en', 'title_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 60) {
+            if (mb_strlen($data[$field] ?? '') > 80) {
                 $original = $data[$field];
-                $data[$field] = Str::limit($data[$field], 60, '');
+                $data[$field] = Str::limit($data[$field], 80, '');
                 // Cut at last space to avoid mid-word truncation
-                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 40) {
+                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 55) {
                     $data[$field] = mb_substr($data[$field], 0, $lastSpace);
                 }
                 $fixes[] = "{$field}: truncated from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
@@ -1510,7 +1510,7 @@ PROMPT;
             // Title text (white, centered)
             $white = imagecolorallocate($img, 255, 255, 255);
             $fontSize = 5;
-            $titleShort = Str::limit($title, 60, '');
+            $titleShort = Str::limit($title, 80, '');
             $textWidth = imagefontwidth($fontSize) * strlen($titleShort);
             $x = max(20, (int)(($width - $textWidth) / 2));
             $y = (int)(($height / 2) - (imagefontheight($fontSize) / 2));
