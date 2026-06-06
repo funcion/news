@@ -43,7 +43,10 @@ input,
 button,
 textarea,
 select {
-  font: inherit;
+  font-family: var(--font-sans, 'Google Sans', sans-serif);
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
   color: inherit;
 }
 

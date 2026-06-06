@@ -8,8 +8,8 @@
   --primary-b: 246;
   
   /* Fuentes dinámicas */
-  --font-sans: 'Google Sans', 'Google Sans Flex', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Google Sans', 'Google Sans Flex', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Google Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Google Sans', system-ui, -apple-system, sans-serif;
   
   /* ===== ACCESIBILIDAD ===== */
   --focus-ring-width: 3px;
