@@ -163,7 +163,7 @@
             <div class="mt-8 lg:mt-12 flex flex-wrap items-center gap-3 justify-start">
                 @foreach($article->tags as $atag)
                     <a href="{{ route('tags.show', $atag->slug) }}" 
-                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-bold text-gray-600 dark:text-gray-400 tracking-wider hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
+                       class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-bold text-gray-600 dark:text-gray-400 tracking-wider hover:!bg-cyan-600 hover:!text-white dark:hover:!bg-cyan-500 dark:hover:!text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
                         #{{ $atag->name }}
                     </a>
                 @endforeach
