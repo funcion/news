@@ -1443,7 +1443,7 @@ PROMPT;
         // 3. Primary keyword in at least 1 H2
         $contentHtml = $data['content_en'] ?? '';
         preg_match_all('/<h2[^>]*>(.*?)<\/h2>/is', $contentHtml, $h2Matches);
-        $h2Text = strtolower(implode(' ', strip_tags(implode(' ', $h2Matches[1] ?? []))));
+        $h2Text = strtolower(strip_tags(implode(' ', $h2Matches[1] ?? [])));
         if (!empty($h2Matches[1]) && !str_contains($h2Text, $primaryKw)) {
             $warnings[] = "Primary keyword '{$primaryKw}' not found in any H2 heading";
         }
