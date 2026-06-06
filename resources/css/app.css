@@ -6,6 +6,7 @@
 
 /* 2. Variables CSS mínimas para funcionalidades específicas */
 @import './base/variables.css';
+@import './base/theme.css';
 
 /* 3. Utilidades de performance */
 @import './utilities/performance.css';

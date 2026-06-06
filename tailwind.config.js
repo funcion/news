@@ -18,9 +18,9 @@ export default {
             },
             colors: {
                 cyan: {
-                    400: '#22d3ee',
-                    500: '#06b6d4',
-                    600: '#0891b2',
+                    400: 'var(--color-cyan-400, oklch(70.7% 0.165 254.96))',
+                    500: 'var(--color-cyan-500, oklch(62.3% 0.214 259.815))',
+                    600: 'var(--color-cyan-600, oklch(53.9% 0.229 264.04))',
                 },
                 brand: {
                     50: '#f0fdfa',

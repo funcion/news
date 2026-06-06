@@ -1,0 +1,36 @@
+/*
+======================================================================
+GLODAXIA COLOR SYSTEM / THEME VARIABLES
+======================================================================
+Modifica este archivo para cambiar fácilmente los colores de toda la web.
+Este archivo controla el color de acento principal (azul/cyan), el fondo,
+los textos y los bordes tanto para modo claro como para modo oscuro.
+======================================================================
+*/
+
+:root {
+  /* ===== COLOR DE ACENTO (PRIMARY BRAND COLOR) ===== */
+  /* El color azul/cyan de acento de la web */
+  /* Configurado al color nativo de Tailwind CSS Blue: oklch(62.3% 0.214 259.815) */
+  --color-cyan-400: oklch(70.7% 0.165 254.96);       /* Tono claro (ej: hover en tema oscuro) */
+  --color-cyan-500: oklch(62.3% 0.214 259.815);     /* Tono base (ej: botones, badges, enlaces) */
+  --color-cyan-600: oklch(53.9% 0.229 264.04);      /* Tono oscuro (ej: hover en tema claro, enlaces oscuros) */
+
+  /* ===== TEMA CLARO (LIGHT MODE) ===== */
+  --color-bg-page: #f8fafc;        /* Fondo principal de la página (slate-50) */
+  --color-bg-card: #ffffff;        /* Fondo de tarjetas, bloques y header (white) */
+  --color-border: #e2e8f0;         /* Color de bordes y separadores (slate-200) */
+  
+  --color-text-main: #0f172a;      /* Texto principal / Títulos (slate-900) */
+  --color-text-body: #334155;      /* Texto de cuerpo / Párrafos (slate-700) */
+  --color-text-muted: #64748b;     /* Texto secundario / Fechas, metadata (slate-500) */
+
+  /* ===== TEMA OSCURO (DARK MODE) ===== */
+  --color-dark-bg-page: #020617;   /* Fondo principal oscuro (slate-950) */
+  --color-dark-bg-card: #0f172a;   /* Fondo de tarjetas oscuro (slate-900) */
+  --color-dark-border: rgba(255, 255, 255, 0.05); /* Bordes oscuros (white/5) */
+
+  --color-dark-text-main: #f8fafc; /* Texto principal oscuro (slate-50) */
+  --color-dark-text-body: #cbd5e1; /* Texto de cuerpo oscuro (slate-300) */
+  --color-dark-text-muted: #94a3b8;/* Texto secundario oscuro (slate-400) */
+}
