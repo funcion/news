@@ -113,7 +113,7 @@
                     <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tighter group-hover:text-cyan-500 transition-colors">
                         {{ $featured->title }}
                     </h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed mb-6 line-clamp-2">
+                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed mb-6 line-clamp-2">
                         {{ $featured->excerpt }}
                     </p>
                     <div class="flex items-center gap-2">
@@ -149,7 +149,7 @@
                         </a>
                     </h3>
                     
-                    <p class="text-slate-600 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2 mb-4">
+                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed line-clamp-2 mb-4">
                         {{ $article->excerpt }}
                     </p>
 
@@ -191,7 +191,7 @@
             <form class="relative z-10 flex flex-col gap-4">
                 <label for="newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
                 <input id="newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
-                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[10px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[12px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>
     </x-slot>

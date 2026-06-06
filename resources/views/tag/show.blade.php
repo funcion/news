@@ -44,7 +44,7 @@
                         <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-3 tracking-tighter group-hover:text-cyan-500 transition-colors">
                             <a href="{{ route('articles.show', app()->getLocale() === 'es' ? ($article->slug_es ?? $article->slug_en) : ($article->slug_en ?? $article->slug_es)) }}">{{ $article->title }}</a>
                         </h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2 mb-4">{{ $article->excerpt }}</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed line-clamp-2 mb-4">{{ $article->excerpt }}</p>
                         <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-white/5">
                             <span class="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->user?->name ?? 'Glodaxia' }}</span>
                             <span class="text-[9px] font-black text-slate-600 dark:text-slate-500 uppercase tracking-widest ml-auto">{{ $article->reading_time ?? 5 }} min</span>

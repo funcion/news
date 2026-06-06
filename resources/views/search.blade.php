@@ -41,7 +41,7 @@
                             <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-2 tracking-tighter group-hover:text-cyan-500 transition-colors line-clamp-2">
                                 {{ $article->title }}
                             </h3>
-                            <p class="text-slate-600 dark:text-slate-400 text-[12px] leading-relaxed line-clamp-2">{{ $article->excerpt }}</p>
+                            <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed line-clamp-2">{{ $article->excerpt }}</p>
                         </div>
                     </a>
                 @endforeach

@@ -54,7 +54,7 @@
         </h3>
         
         @if($truncatedExcerpt)
-            <p class="text-sm leading-normal text-gray-600 dark:text-gray-400 m-0 line-clamp-3">
+            <p class="text-base leading-normal text-gray-600 dark:text-gray-400 m-0 line-clamp-3">
                 {{ $truncatedExcerpt }}
             </p>
         @endif

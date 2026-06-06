@@ -178,7 +178,7 @@
             
             @if(!empty($article->ai_metadata['origin_url']))
                 <a href="{{ $article->ai_metadata['origin_url'] }}" target="_blank" rel="noopener noreferrer" 
-                   class="inline-flex items-center gap-3 bg-slate-100 dark:bg-white/5 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 group shadow-sm">
+                   class="inline-flex items-center gap-3 bg-slate-100 dark:bg-white/5 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 px-5 py-3 rounded-xl text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 group shadow-sm">
                     <svg class="w-4 h-4 text-cyan-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
@@ -197,7 +197,7 @@
             <form class="relative z-10 flex flex-col gap-3">
                 <label for="sidebar-newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
                 <input id="sidebar-newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
-                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest py-3 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[11px] font-black uppercase tracking-widest py-3 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>
 
@@ -205,7 +205,7 @@
             <div class="flex flex-col gap-8 mb-8">
                 <div class="flex items-center gap-4 mb-2">
                     <span class="w-8 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
-                    <h3 class="text-xs font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
+                    <h3 class="text-[14px] font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
                         {{ __('ui.recommended') }}
                     </h3>
                 </div>
@@ -236,7 +236,7 @@
             <div class="flex flex-col gap-8">
                 <div class="flex items-center gap-4 mb-2">
                     <span class="w-8 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
-                    <h3 class="text-xs font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
+                    <h3 class="text-[14px] font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
                         {{ app()->getLocale() === 'es' ? 'Últimas Noticias' : 'Latest News' }}
                     </h3>
                 </div>
@@ -249,11 +249,11 @@
                                 <img src="{{ $latest->image_url ?? '/placeholder.webp' }}" alt="{{ $latest->title }}" width="64" height="64" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
+                                <h4 class="text-[14px] font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
                                     {{ $latest->title }}
                                 </h4>
                                 <div class="mt-1 flex items-center gap-2">
-                                    <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $latest->published_at?->diffForHumans() }}</span>
+                                    <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $latest->published_at?->diffForHumans() }}</span>
                                 </div>
                             </div>
                         </a>

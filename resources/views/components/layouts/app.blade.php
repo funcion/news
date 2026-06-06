@@ -470,8 +470,8 @@
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 dark:text-cyan-600 mb-1">{{ __('ui.new_update') }}</p>
                 <h4 x-text="latestTitle" class="text-sm font-bold truncate mb-3"></h4>
                 <div class="flex items-center gap-4">
-                    <button @click="window.location.reload()" class="text-[10px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors underline underline-offset-4 decoration-2">{{ __('ui.read_now') }}</button>
-                    <button @click="showBanner = false" class="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">{{ __('ui.dismiss') }}</button>
+                    <button @click="window.location.reload()" class="text-[12px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors underline underline-offset-4 decoration-2">{{ __('ui.read_now') }}</button>
+                    <button @click="showBanner = false" class="text-[12px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">{{ __('ui.dismiss') }}</button>
                 </div>
             </div>
         </div>
