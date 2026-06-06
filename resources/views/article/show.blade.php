@@ -29,7 +29,7 @@
 
     <article class="max-w-4xl">
         <!-- Breadcrumbs (Minimalist) -->
-        <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-10">
+        <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-6 lg:mb-10">
             <a href="{{ url('/') }}" class="hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors">{{ __('ui.home') }}</a>
             <svg class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             @if($article->category)
@@ -40,17 +40,17 @@
         </nav>
 
         <!-- Header Section (Impactful) -->
-        <header class="mb-12">
+        <header class="mb-8 lg:mb-12">
             @if($article->category)
-                <span class="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-lg mb-6 leading-none">
+                <span class="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-lg mb-4 leading-none">
                     {{ $article->category->name }}
                 </span>
             @endif
-            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.05] mb-8">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.05] mb-4 lg:mb-8">
                 {{ $article->title }}
             </h1>
             
-            <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-4">
+            <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
                 <div class="flex items-center gap-3">
                     <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
@@ -80,7 +80,7 @@
 
         <!-- Main Featured Image -->
         @if($featuredMedia)
-            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
+            <figure class="mb-8 lg:mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
                 <img src="{{ $featuredMedia->getUrl('large') }}" 
                      srcset="{{ $featuredMedia->getSrcset('large') ?? ($featuredMedia->getUrl('thumb') . ' 480w, ' . $featuredMedia->getUrl('medium') . ' 800w, ' . $featuredMedia->getUrl('large') . ' 1200w') }}"
                      sizes="(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px"
@@ -93,7 +93,7 @@
                      fetchpriority="high">
             </figure>
         @elseif($article->image_url)
-            <figure class="mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
+            <figure class="mb-8 lg:mb-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl border border-gray-100 dark:border-gray-800 ring-8 ring-gray-50 dark:ring-gray-900/50 group relative">
                 <img src="{{ $article->image_url }}" 
                      alt="{{ $article->image_alt ?? $article->title }}" 
                      width="1200"
@@ -105,12 +105,12 @@
         @endif
 
         <!-- Article Body -->
-        <div class="prose prose-xl prose-cyan dark:prose-dark max-w-none prose-headings:font-black prose-img:rounded-lg prose-a:text-cyan-600 hover:prose-a:text-cyan-700 dark:prose-a:text-cyan-400 dark:hover:prose-a:text-cyan-300 leading-relaxed text-gray-700 dark:text-gray-300">
+        <div class="prose prose-base md:prose-lg lg:prose-xl prose-cyan dark:prose-dark max-w-none prose-headings:font-black prose-img:rounded-lg prose-a:text-cyan-600 hover:prose-a:text-cyan-700 dark:prose-a:text-cyan-400 dark:hover:prose-a:text-cyan-300 leading-relaxed text-gray-700 dark:text-gray-300">
             {!! $article->content !!}
         </div>
 
         <!-- Social Share Bar (Moved to End) -->
-        <div class="mt-20 mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-200 dark:border-white/10 overflow-hidden relative">
+        <div class="mt-10 mb-6 lg:mt-20 lg:mb-10 bg-gray-50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-4 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-200 dark:border-white/10 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 pointer-events-none"></div>
             <h3 class="text-xl font-black text-gray-900 dark:text-white relative z-10">{{ __('ui.share_post') }}</h3>
             <div class="flex flex-wrap items-center justify-center gap-3 relative z-10">
@@ -138,8 +138,8 @@
             </div>
         </div>
 
-        <div class="mt-12 pt-10 border-t border-gray-200 dark:border-gray-800/50">
-            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
+        <div class="mt-8 pt-6 lg:mt-12 lg:pt-10 border-t border-gray-200 dark:border-gray-800/50">
+            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-4 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
                     <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
@@ -160,7 +160,7 @@
 
         <!-- Article Tags Section -->
         @if($article->tags && $article->tags->count() > 0)
-            <div class="mt-12 flex flex-wrap items-center gap-3 justify-start">
+            <div class="mt-8 lg:mt-12 flex flex-wrap items-center gap-3 justify-start">
                 @foreach($article->tags as $atag)
                     <a href="{{ route('tags.show', $atag->slug) }}" 
                        class="px-5 py-2.5 rounded-lg bg-gray-50 dark:bg-white/5 text-[10px] font-bold text-gray-600 dark:text-gray-400 tracking-wider hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all duration-300 border border-gray-200 dark:border-transparent">
@@ -171,7 +171,7 @@
         @endif
 
         <!-- Source & AI Disclosure -->
-        <div class="mt-16 pt-8 border-t border-gray-100 dark:border-white/5">
+        <div class="mt-10 pt-6 lg:mt-16 lg:pt-8 border-t border-gray-100 dark:border-white/5">
             <p class="text-[10px] text-gray-400 dark:text-gray-500 italic mb-6 leading-relaxed max-w-2xl">
                 {{ __('ui.content_disclaimer') }}
             </p>
@@ -196,7 +196,7 @@
             <p class="text-zinc-200 text-xs leading-relaxed mb-6 relative z-10">{{ __('ui.newsletter_desc') }}</p>
             <form class="relative z-10 flex flex-col gap-3">
                 <label for="sidebar-newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
-                <input id="sidebar-newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
+                <input id="sidebar-newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-base md:text-xs focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
                 <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[11px] font-black uppercase tracking-widest py-3 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>

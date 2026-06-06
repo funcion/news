@@ -149,7 +149,7 @@
         <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-100 dark:border-white/5 bg-white/80 dark:bg-slate-950/80"
                 x-bind:class="isScrolled ? 'shadow-sm' : ''">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="py-4 flex items-center justify-between">
+                <div class="py-3 md:py-4 flex items-center justify-between">
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group" aria-label="Home page">
                     <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center transform group-hover:rotate-6 transition-transform shadow-lg shadow-cyan-500/20">
@@ -423,8 +423,8 @@
 </div>
 <!-- End Header Wrapper -->
 
-<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-10 pb-16 lg:pt-14 lg:pb-24">
-        <div class="grid grid-cols-1 gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-6 pb-12 lg:pt-14 lg:pb-24">
+        <div class="grid grid-cols-1 gap-6 lg:gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
             <!-- Left Column (Primary) -->
             <div class="min-w-0">
                 {{ $slot }}
@@ -432,7 +432,7 @@
             
             <!-- Right Column (Sidebar) -->
             <aside class="w-full lg:shrink-0 sticky top-24">
-                <div class="flex flex-col gap-8">
+                <div class="flex flex-col gap-6 lg:gap-8">
                     {{ $sidebar ?? '' }}
                 </div>
             </aside>
@@ -440,7 +440,7 @@
     </main>
 
     <!-- Minimalist Footer -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-white/5 py-16">
+    <footer class="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-white/5 py-8 lg:py-16">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="flex flex-col items-center gap-6">
                 <div class="flex items-center gap-2 opacity-40 grayscale pointer-events-none">

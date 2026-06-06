@@ -60,7 +60,7 @@
     </x-slot>
 
     <!-- Page Header (Magazine Style) -->
-    <div class="mb-14 pb-8 border-b border-gray-100 dark:border-white/5 relative">
+    <div class="mb-8 pb-4 lg:mb-14 lg:pb-8 border-b border-gray-100 dark:border-white/5 relative">
         <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-lg opacity-0 lg:opacity-100"></div>
         @if(isset($category))
             <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.browsing_category') }}</p>
@@ -97,7 +97,7 @@
     @else
         <!-- Featured Hero (First Article) -->
         @php $featured = $articles->first(); @endphp
-        <article class="relative group mb-10 overflow-hidden rounded-lg bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 transition-all duration-500">
+        <article class="relative group mb-6 lg:mb-10 overflow-hidden rounded-lg bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 transition-all duration-500">
             <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $featured->slug_es : $featured->slug_en) }}" class="flex flex-col lg:flex-row min-h-[320px]">
                 <div class="lg:w-1/2 relative overflow-hidden">
                     <img src="{{ $featured->image_url ?? '/placeholder.webp' }}" 
@@ -108,12 +108,12 @@
                          fetchpriority="high"
                          class="w-full h-full object-cover aspect-video">
                 </div>
-                <div class="lg:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                    <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-4 w-fit">{{ __('ui.featured') }}</span>
-                    <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tighter group-hover:text-cyan-500 transition-colors">
+                <div class="lg:w-1/2 p-4 md:p-8 flex flex-col justify-center">
+                    <span class="inline-block px-2.5 py-1 bg-cyan-500 text-[9px] font-black text-white rounded-lg uppercase tracking-widest mb-3 md:mb-4 w-fit">{{ __('ui.featured') }}</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-3 md:mb-4 tracking-tighter group-hover:text-cyan-500 transition-colors">
                         {{ $featured->title }}
                     </h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed mb-6 line-clamp-2">
+                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed mb-4 md:mb-6 line-clamp-2">
                         {{ $featured->excerpt }}
                     </p>
                     <div class="flex items-center gap-2">
@@ -124,11 +124,11 @@
         </article>
 
         <!-- Dynamic Grid (Compact) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             @foreach($articles->skip(1) as $article)
                 <article class="flex flex-col group">
                     <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}" 
-                       class="block overflow-hidden rounded-lg aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-4 group-hover:border-cyan-500/30 transition-all">
+                       class="block overflow-hidden rounded-lg aspect-[16/9] bg-gray-100 dark:bg-slate-900 border border-gray-100 dark:border-white/5 mb-3 md:mb-4 group-hover:border-cyan-500/30 transition-all">
                         <img src="{{ $article->image_url ?? '/placeholder.webp' }}" 
                              alt="{{ $article->image_alt }}" 
                              width="400"
@@ -137,23 +137,23 @@
                              class="w-full h-full object-cover aspect-video">
                     </a>
                     
-                    <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3">
+                    <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">
                         <span class="text-cyan-600 dark:text-cyan-500">{{ $article->category?->name }}</span>
                         <div class="w-1 h-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
                         <span>{{ $article->published_at?->diffForHumans() }}</span>
                     </div>
 
-                    <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-3 tracking-tighter group-hover:text-cyan-500 transition-colors">
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-2 tracking-tighter group-hover:text-cyan-500 transition-colors">
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}">
                             {{ $article->title }}
                         </a>
                     </h3>
                     
-                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed line-clamp-2 mb-4">
+                    <p class="text-slate-600 dark:text-slate-400 text-[14px] leading-relaxed line-clamp-2 mb-3 lg:mb-4">
                         {{ $article->excerpt }}
                     </p>
 
-                    <div class="mt-auto flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-white/5">
+                    <div class="mt-auto flex items-center gap-2 pt-3 lg:pt-4 border-t border-gray-100 dark:border-white/5">
                          <span class="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                          <span class="text-[9px] font-black text-slate-600 dark:text-slate-500 uppercase ml-auto">{{ $article->reading_time ?? 5 }} min</span>
                     </div>
@@ -170,7 +170,7 @@
     <x-slot:sidebar>
         <!-- Trending Widget (More Compact) -->
         <div class="relative">
-            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-8 flex items-center gap-3">
+            <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-6 lg:mb-8 flex items-center gap-3">
                 <span class="w-1.5 h-1.5 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
                 {{ __('ui.trending_topics') }}
             </h3>
@@ -184,13 +184,13 @@
         </div>
 
         <!-- Newsletter (Premium) -->
-        <div class="p-8 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5">
+        <div class="p-6 md:p-8 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5">
             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
             <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">{{ __('ui.newsletter_title') }}</h3>
             <p class="text-zinc-200 text-sm leading-relaxed mb-8 relative z-10">{{ __('ui.newsletter_desc') }}</p>
             <form class="relative z-10 flex flex-col gap-4">
                 <label for="newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
-                <input id="newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
+                <input id="newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-base md:text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
                 <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[12px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
             </form>
         </div>
