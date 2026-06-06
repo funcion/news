@@ -53,27 +53,30 @@ cp .env.example .env
 docker compose up -d
 ```
 
-### 5. Instalar Dependencias
+### 5. Instalar Dependencias y Clave
 
 ```bash
-docker compose exec frankenphp composer install
-docker compose exec frankenphp php artisan key:generate
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
 ```
 
-### 6. Ejecutar Migraciones
+### 6. Inicializar Base de Datos
 
 ```bash
-docker compose exec frankenphp php artisan migrate
+docker compose exec app php artisan migrate --seed
 ```
 
-### 7. Iniciar Workers
+> [!NOTE]
+> Los servicios de **Horizon** (colas) y **Reverb** (WebSockets) ya se ejecutan y gestionan de forma automática dentro de sus propios contenedores (`noticias_horizon` y `noticias_reverb`) definidos en `docker-compose.yml`, por lo que no requieres iniciarlos manualmente en tu terminal.
+
+---
+
+### 🔄 Reconfiguración rápida (Después de reset de volumen)
+
+Si realizas una limpieza del entorno destruyendo los volúmenes (con `docker compose down -v && docker compose up -d`), la base de datos quedará vacía. Para restaurar las tablas, categorías, fuentes y la cuenta de administrador inicial, debes ejecutar:
 
 ```bash
-# Horizon para colas
-docker compose exec frankenphp php artisan horizon
-
-# Reverb para WebSockets
-docker compose exec frankenphp php artisan reverb:start
+docker compose exec app php artisan migrate --seed
 ```
 
 ## 🏗️ Estructura del Proyecto
@@ -111,29 +114,29 @@ docker compose down
 docker compose logs -f
 
 # Ejecutar migraciones
-docker compose exec frankenphp php artisan migrate
+docker compose exec app php artisan migrate
 
 # Ejecutar tests
-docker compose exec frankenphp php artisan test
+docker compose exec app php artisan test
 
 # Generar clave de aplicación
-docker compose exec frankenphp php artisan key:generate
+docker compose exec app php artisan key:generate
 
 # Limpiar cache
-docker compose exec frankenphp php artisan optimize:clear
+docker compose exec app php artisan optimize:clear
 ```
 
 ## 📊 Servicios Disponibles
 
-| Servicio | URL | Puerto | Descripción |
-|----------|-----|--------|-------------|
-| **FrankenPHP** | http://localhost | 80 | Aplicación principal |
-| **PostgreSQL** | postgres:5432 | 5432 | Base de datos |
-| **Redis** | redis:6379 | 6379 | Cache y colas |
-| **Horizon** | http://localhost/horizon | 80 | Dashboard de colas |
-| **Reverb** | ws://localhost:8080 | 8080 | WebSockets |
-| **Mailpit** | http://localhost:8025 | 8025 | Cliente de email |
-| **phpMyAdmin** | http://localhost:8081 | 8081 | Admin de DB (opcional) |
+| Servicio       | URL                      | Puerto | Descripción            |
+| -------------- | ------------------------ | ------ | ---------------------- |
+| **FrankenPHP** | http://localhost         | 80     | Aplicación principal   |
+| **PostgreSQL** | postgres:5432            | 5432   | Base de datos          |
+| **Redis**      | redis:6379               | 6379   | Cache y colas          |
+| **Horizon**    | http://localhost/horizon | 80     | Dashboard de colas     |
+| **Reverb**     | ws://localhost:8080      | 8080   | WebSockets             |
+| **Mailpit**    | http://localhost:8025    | 8025   | Cliente de email       |
+| **phpMyAdmin** | http://localhost:8081    | 8081   | Admin de DB (opcional) |
 
 ## 🚀 Desarrollo
 

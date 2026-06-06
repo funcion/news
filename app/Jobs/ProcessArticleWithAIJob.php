@@ -10,18 +10,27 @@ use App\Exceptions\OpenRouterAuthenticationException;
 use App\Services\AI\OpenRouterCircuitBreaker;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class ProcessArticleWithAIJob implements ShouldQueue
+class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 900; // 15 minutes — classification (60s) + redaction (300s) + 5 images (240s) + validation (30s) + buffer
     public $tries = 2;
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return (string) $this->rawArticle->id;
+    }
 
     public function backoff(): array
     {
@@ -266,7 +275,7 @@ class ProcessArticleWithAIJob implements ShouldQueue
 
         if (!empty($redacted['image_prompts']) && is_array($redacted['image_prompts'])) {
             foreach ($redacted['image_prompts'] as $index => $imgData) {
-                if ($index >= 5) break;
+                if ($index >= 3) break;
 
                 $placeholder = $imgData['id'] ?? '';
                 $promptEn    = $imgData['prompt_en'] ?? '';
@@ -816,11 +825,9 @@ ALL VARIANTS share these rules:
 Generate photorealistic image prompts (FLUX.1 style: 35mm DSLR Nikon D850, cinematic natural lighting, shallow depth of field, 8k resolution, hyper-realistic, no text overlay, no watermark).
 
 RANDOMIZED IMAGE COUNT ({$styleDna['imageCount']} images for this article — follow EXACTLY):
-- [IMAGE_1] = Hero/featured image ONLY. Do NOT place [IMAGE_1] inside content_en or content_es.
+- [IMAGE_1] = Hero/featured image ONLY (Minimum/Mandatory). Do NOT place [IMAGE_1] inside content_en or content_es.
 - If imageCount >= 2: add [IMAGE_2] as interior image placed on its OWN STANDALONE LINE.
 - If imageCount >= 3: add [IMAGE_3] as interior image.
-- If imageCount >= 4: add [IMAGE_4] as interior image.
-- If imageCount >= 5: add [IMAGE_5] as interior image.
 - NEVER replace the token with the caption text or a quote inside the content_en/content_es strings. The token string must appear raw and intact so the backend parser can replace it.
 - SYNCHRONIZATION RULE: Every [IMAGE_N] token placed in content_en/content_es MUST have a corresponding object in the "image_prompts" array with the exact same "id".
 - Alt text: descriptive and concise, max 125 characters each.
@@ -1769,7 +1776,6 @@ PROMPT;
     {
         $roll = mt_rand(1, 100);
         if ($roll <= 60) return 1;       // 60% — hero only
-        if ($roll <= 85) return mt_rand(2, 3); // 25% — 2-3 images
-        return mt_rand(4, 5);            // 15% — 4-5 images
+        return mt_rand(2, 3);            // 40% — 2-3 images
     }
 }

@@ -13,10 +13,10 @@ class RawArticleObserver
      */
     public function created(RawArticle $rawArticle): void
     {
-        // Only trigger if status is pending (default)
-        if ($rawArticle->status === 'pending') {
-            Log::info("Auto-Dispatching AI Job for RawArticle: {$rawArticle->id}");
-            ProcessArticleWithAIJob::dispatch($rawArticle);
-        }
+        // Auto-dispatch on creation has been disabled to prevent uncontrolled token consumption.
+        // Raw articles are saved as pending and can be processed manually via Filament 
+        // or automatically via the 'ai:process-auto-capped' artisan command.
+        
+        Log::info("RawArticle created: ID {$rawArticle->id} (saved as pending).");
     }
 }
