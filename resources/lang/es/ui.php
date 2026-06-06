@@ -62,7 +62,7 @@ return [
 
     // E-E-A-T & Transparencia
     'read_original_source' => 'Leer fuente original',
-    'content_disclaimer'   => 'Descargo de responsabilidad: Los artículos de este sitio web pueden ser recopilados, traducidos o curados con la asistencia de inteligencia artificial. Nos esforzamos por lograr la máxima precisión, pero recomendamos verificar los detalles en la fuente original.',
+    'content_disclaimer'   => 'Descargo de responsabilidad: Los artículos de este sitio web son recopilados, traducidos o curados a partir de fuentes externas. Nos esforzamos por lograr la máxima precisión, pero recomendamos verificar los detalles en la fuente original.',
 
     // Páginas de Etiquetas
     'tag_meta_desc' => 'Explora los últimos artículos, análisis y opiniones sobre #:tag en ' . config('global.site_name') . '.',

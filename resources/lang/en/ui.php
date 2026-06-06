@@ -62,7 +62,7 @@ return [
 
     // E-E-A-T & Transparency
     'read_original_source' => 'Read original source',
-    'content_disclaimer'   => 'Disclaimer: The articles on this website may be compiled, translated, or curated with the assistance of artificial intelligence. We strive for maximum accuracy, but recommend verifying details from the original source.',
+    'content_disclaimer'   => 'Disclaimer: The articles on this website are compiled, translated, or curated from external sources. We strive for maximum accuracy, but recommend verifying details from the original source.',
 
     // Tag Pages
     'tag_meta_desc' => 'Explore the latest articles, analysis and opinions on #:tag at ' . config('global.site_name') . '.',
