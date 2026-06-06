@@ -189,8 +189,20 @@
     </article>
 
     <x-slot:sidebar>
+        <!-- Newsletter Subscription Module (Premium Sidebar Version) -->
+        <div class="p-6 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5 shadow-lg mb-8">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
+            <h3 class="text-lg font-black tracking-tighter mb-2 relative z-10">{{ __('ui.newsletter_title') }}</h3>
+            <p class="text-zinc-200 text-xs leading-relaxed mb-6 relative z-10">{{ __('ui.newsletter_desc') }}</p>
+            <form class="relative z-10 flex flex-col gap-3">
+                <label for="sidebar-newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
+                <input id="sidebar-newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest py-3 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
+            </form>
+        </div>
+
         @if($relatedArticles->count() > 0)
-            <div class="flex flex-col gap-8">
+            <div class="flex flex-col gap-8 mb-8">
                 <div class="flex items-center gap-4 mb-2">
                     <span class="w-8 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
                     <h3 class="text-xs font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
@@ -200,10 +212,10 @@
                 
                 <div class="grid grid-cols-1 gap-8">
                     @foreach($relatedArticles as $related)
-                        <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $related->slug_es : $related->slug_en) }}" 
+                        <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($related->slug_es ?? $related->slug_en) : ($related->slug_en ?? $related->slug_es)) }}" 
                            class="group flex gap-5 items-center">
                             <div class="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm relative">
-                                <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" width="80" height="80" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
@@ -211,6 +223,37 @@
                                 </h4>
                                 <div class="mt-2 flex items-center gap-2">
                                     <span class="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{{ $related->published_at?->format('M d') }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- Latest 10 Articles -->
+        @if(isset($latestArticles) && $latestArticles->count() > 0)
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-4 mb-2">
+                    <span class="w-8 h-1 bg-cyan-600 dark:bg-cyan-500 rounded-lg"></span>
+                    <h3 class="text-xs font-black tracking-widest uppercase text-gray-600 dark:text-gray-400">
+                        {{ app()->getLocale() === 'es' ? 'Últimas Noticias' : 'Latest News' }}
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    @foreach($latestArticles as $latest)
+                        <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($latest->slug_es ?? $latest->slug_en) : ($latest->slug_en ?? $latest->slug_es)) }}" 
+                           class="group flex gap-4 items-center">
+                            <div class="w-16 h-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm relative">
+                                <img src="{{ $latest->image_url ?? '/placeholder.webp' }}" alt="{{ $latest->title }}" width="64" height="64" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
+                                    {{ $latest->title }}
+                                </h4>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $latest->published_at?->diffForHumans() }}</span>
                                 </div>
                             </div>
                         </a>

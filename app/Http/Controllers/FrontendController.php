@@ -45,8 +45,13 @@ class FrontendController extends Controller
             ->inRandomOrder()
             ->limit(3)
             ->get();
+        
+        $latestArticles = Article::where('status', 'published')
+            ->orderBy('published_at', 'desc')
+            ->limit(10)
+            ->get();
 
-        return view('article.show', compact('article', 'trendingTags', 'relatedArticles'));
+        return view('article.show', compact('article', 'trendingTags', 'relatedArticles', 'latestArticles'));
     }
 
     public function category(string $slug)
