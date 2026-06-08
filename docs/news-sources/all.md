@@ -185,6 +185,17 @@ Monitorear cambios en la documentación oficial para detectar la inclusión de n
 
 ---
 
+### HackerNoon RSS Feeds (Granularidad por Etiquetas y Autores)
+- **Feed General:** `https://hackernoon.com/feed`
+- **Estructura por Etiqueta (Tag):** `https://hackernoon.com/tagged/{tag}/feed` (ej: `https://hackernoon.com/tagged/blockchain/feed`, donde cualquier etiqueta de tecnología reemplaza a `blockchain`).
+- **Estructura por Autor:** `https://hackernoon.com/feed/u/{username}` (ej: `https://hackernoon.com/feed/u/davidsmooke`, donde cualquier usuario reemplaza a `davidsmooke`).
+- **Detalles Clave:**
+  - Los artículos de HackerNoon tienen un promedio de más de 750 lecturas RSS.
+  - Los feeds RSS incluyen las **20 noticias más recientes** (en su versión actual).
+  - **Estrategia Recomendada:** En lugar de agregar el feed general para evitar el ruido de contenido masivo, podemos agregar selectivamente feeds de etiquetas clave (ej: `ai`, `programming`, `security`) o autores específicos de renombre. Esto permite curar solo las mejores fuentes de noticias de HackerNoon y no procesar todo su flujo.
+
+---
+
 ### Herramientas de Procesamiento de Feeds
 - **Feedly:** Agregador visual estructurado.
 - **Inoreader:** Soporta filtros complejos y reglas automáticas sobre feeds.

@@ -183,19 +183,22 @@ resources/
 
 ```bash
 # Refrescar caché
-php artisan config:clear && php artisan cache:clear && php artisan view:clear
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan cache:clear
+docker compose exec app php artisan view:clear
 
 # Crear usuario admin
-php artisan make:filament-user
+docker compose exec app php artisan make:filament-user
 
-# Exportar/Importar RSS
-php artisan rss:fetch [--force]
+# Ejecutar ingesta de RSS (Manual / Forzado)
+docker compose exec app php artisan rss:fetch
+docker compose exec app php artisan rss:fetch --force
 
 # Limpiar tags huérfanos
-php artisan tags:cleanup
+docker compose exec app php artisan tags:cleanup
 
 # Reintentar artículo fallido
-php artisan tinker
+docker compose exec app php artisan tinker
 >>> App\Models\RawArticle::where('id', X)->update(['status' => 'pending']);
 >>> App\Jobs\ProcessArticleWithAIJob::dispatch(App\Models\RawArticle::find(X));
 ```

@@ -33,10 +33,10 @@ return [
         // Word count targets per content type — WIDE ranges for natural variation
         // A 300-word news brief and a 1200-word news analysis should both be valid
         'word_targets' => [
-            'news'   => '300-1200 words EN | 300-1200 palabras ES',
-            'blog'   => '600-1600 words EN | 600-1600 palabras ES',
-            'guide'  => '1000-2500 words EN | 1000-2500 palabras ES',
-            'review' => '600-1400 words EN | 600-1400 palabras ES',
+            'news'   => '600-1200 words EN | 600-1200 palabras ES',
+            'blog'   => '800-1600 words EN | 800-1600 palabras ES',
+            'guide'  => '1250-2500 words EN | 1250-2500 palabras ES',
+            'review' => '700-1400 words EN | 700-1400 palabras ES',
             'pillar' => '1500-3000 words EN | 1500-3000 palabras ES',
         ],
 
