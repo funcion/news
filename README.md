@@ -1,192 +1,232 @@
 # 🗞️ Noticias Platform - Plataforma de Noticias Automatizada con IA
 
-Plataforma de noticias automatizada con IA y RSS construida con Laravel 12, FrankenPHP, PostgreSQL, Redis y Filament.
+Plataforma de noticias automatizada con IA y RSS construida con Laravel 12, FrankenPHP, PostgreSQL (pgvector), Redis, Reverb, Horizon y Filament v3.
 
 ## 🚀 Características Principales
 
-- **Motor de Ingesta RSS**: Sistema automatizado para consultar fuentes RSS
-- **Cerebro de IA**: Pipeline de procesamiento con 4 capas de IA
-- **Generación de Imágenes**: Creación automática de imágenes únicas
-- **Sistema Anti-Duplicados**: 3 niveles de detección de contenido similar
-- **Frontend en Tiempo Real**: Actualizaciones con WebSockets (Reverb)
-- **SEO Técnico Avanzado**: Optimizado para Google News y Featured Snippets
-- **Sistema de Tags Inteligente**: Tags generados automáticamente por IA
-- **Panel de Administración**: Filament v3 para gestión completa
+- **Motor de Ingesta RSS**: Sistema automatizado para consultar fuentes RSS y procesar noticias.
+- **Cerebro de IA**: Pipeline de procesamiento y enriquecimiento de artículos con modelos de IA (OpenRouter).
+- **Generación de Imágenes**: Creación automática de imágenes de portada contextuales.
+- **Sistema Anti-Duplicados**: Detección de contenido similar con pgvector y algoritmos de proximidad.
+- **Frontend en Tiempo Real**: Actualizaciones instantáneas vía WebSockets con Laravel Reverb.
+- **SEO Técnico Avanzado**: Schema Markup, OpenGraph, Twitter Cards y Sitemaps dinámicos optimizados para Google News.
+- **Sistema de Tags Inteligente**: Extracción y asignación automática de etiquetas temáticas.
+- **Panel de Administración**: Panel completo y moderno basado en Filament v3.
+
+---
 
 ## 🛠️ Stack Tecnológico
 
-- **Backend**: Laravel 12
-- **Servidor Web**: FrankenPHP (PHP 8.3 + Caddy + HTTP/3)
-- **Base de Datos**: PostgreSQL + pgvector
-- **Cache/Colas**: Redis
-- **Panel Admin**: Filament v3
+- **Backend**: Laravel 12 (PHP 8.3)
+- **Servidor Web**: FrankenPHP (Caddy Server + Worker Mode + HTTP/3)
+- **Base de Datos**: PostgreSQL 17 + extensión `pgvector`
+- **Cache y Colas**: Redis 7
+- **Panel Administrativo**: Filament v3
 - **WebSockets**: Laravel Reverb
-- **Colas**: Laravel Horizon
-- **Frontend**: Blade + Alpine.js + Tailwind CSS
-- **IA**: OpenRouter (multi-modelo)
+- **Gestión de Colas**: Laravel Horizon
+- **Frontend**: Blade + Alpine.js + Tailwind CSS v4 (Vite)
+- **Email Testing**: Mailpit
 
-## 📦 Instalación
+---
+
+## 📦 Guía de Instalación Paso a Paso
+
+Sigue estos pasos en orden para levantar la plataforma desde un clon limpio del repositorio.
 
 ### 1. Requisitos Previos
 
-- Docker y Docker Compose
-- Git
-- WSL2 (Windows) o Linux/macOS
+- **Docker** (v24+) y **Docker Compose** (v2.20+)
+- **Git**
+- **WSL2** (en Windows) o terminal **Linux / macOS**
 
 ### 2. Clonar el Repositorio
 
 ```bash
 git clone <repository-url>
-cd noticias
+cd news
 ```
 
 ### 3. Configurar Variables de Entorno
 
+Copia el archivo de ejemplo para generar tu archivo `.env`:
+
 ```bash
 cp .env.example .env
-# Editar .env con tus configuraciones
 ```
 
-### 4. Iniciar Contenedores
+> [!TIP]
+> Verifica que las credenciales de base de datos en tu `.env` coincidan con las del contenedor (`DB_HOST=postgres`, `DB_PORT=5432`, `DB_DATABASE=noticias`, `DB_USERNAME=noticias`, `DB_PASSWORD=noticias123`, `REDIS_HOST=redis`).
+
+### 4. Construir e Iniciar los Contenedores
+
+Levanta los 6 servicios en segundo plano con reconstrucción de imágenes:
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
-### 5. Instalar Dependencias y Clave
+### 5. Instalar Dependencias de Backend (PHP / Composer)
+
+Una vez que los contenedores estén corriendo, instala las dependencias de Laravel:
 
 ```bash
 docker compose exec app composer install
+```
+
+### 6. Generar la Clave de Aplicación (APP_KEY)
+
+Genera la clave de encriptación de Laravel:
+
+```bash
 docker compose exec app php artisan key:generate
 ```
 
-### 6. Inicializar Base de Datos
+### 7. Compilar Assets del Frontend (Vite)
+
+Instala las dependencias de Node.js y compila los assets para que el manifest de Vite esté disponible:
 
 ```bash
-docker compose exec app php artisan migrate --seed
+docker compose exec app npm install
+docker compose exec app npm run build
 ```
 
 > [!NOTE]
-> Los servicios de **Horizon** (colas) y **Reverb** (WebSockets) ya se ejecutan y gestionan de forma automática dentro de sus propios contenedores (`noticias_horizon` y `noticias_reverb`) definidos en `docker-compose.yml`, por lo que no requieres iniciarlos manualmente en tu terminal.
+> Durante el desarrollo activo del frontend también puedes ejecutar `docker compose exec app npm run dev` para hot-reloading de estilos y scripts.
 
----
+### 8. Ejecutar Migraciones y Seeders de Base de Datos
 
-### 🔄 Reconfiguración rápida (Después de reset de volumen)
-
-Si realizas una limpieza del entorno destruyendo los volúmenes (con `docker compose down -v && docker compose up -d`), la base de datos quedará vacía. Para restaurar las tablas, categorías, fuentes y la cuenta de administrador inicial, debes ejecutar:
+Inicializa la estructura de tablas y los datos esenciales (categorías, fuentes iniciales y usuario admin):
 
 ```bash
 docker compose exec app php artisan migrate --seed
 ```
+
+### 9. Reiniciar Servicios de Fondo (Horizon & Reverb)
+
+Para asegurar que los workers de colas y WebSockets tomen las dependencias y configuraciones recién generadas:
+
+```bash
+docker compose restart horizon reverb
+```
+
+---
+
+## 📊 Servicios y Accesos
+
+| Servicio | URL Local | Puerto | Descripción |
+| :--- | :--- | :--- | :--- |
+| **FrankenPHP (App)** | [http://localhost:8000](http://localhost:8000) | `8000` | Frontend de noticias |
+| **Panel de Administración** | [http://localhost:8000/admin](http://localhost:8000/admin) | `8000` | Panel Filament v3 |
+| **Horizon Dashboard** | [http://localhost:8000/horizon](http://localhost:8000/horizon) | `8000` | Monitor de colas y tareas |
+| **Reverb (WebSockets)** | `ws://localhost:8080` | `8080` | Servidor WebSockets |
+| **Mailpit (Email UI)** | [http://localhost:8025](http://localhost:8025) | `8025` | Bandeja de pruebas de email |
+| **PostgreSQL (pgvector)** | `localhost:5432` | `5432` | Base de datos relacional y vectorial |
+| **Redis** | `localhost:6379` | `6379` | Cache de alta velocidad y colas |
+
+---
+
+## 🔍 Detalles Técnicos: ¿Por qué no funcionaba y cómo se solucionó?
+
+Si te encontraste con el error `Container is restarting, wait until the container is running`, aquí se explican las causas técnicas raíz y las soluciones aplicadas en la configuración:
+
+### 1. Ausencia del directorio `storage/` en un clon limpio
+- **Problema**: El script de entrada [entrypoint.sh](file:///docker/frankenphp/entrypoint.sh) ejecutaba `chown -R www-data:www-data /app/storage` con `set -e` habilitado. Como Git no guarda carpetas vacías sin `.gitkeep`, `/app/storage` no existía, provocando que el comando fallara con código de error y el contenedor se apagara inmediatamente en un bucle continuo de reinicios (*crash loop*).
+- **Solución**: Se actualizó `entrypoint.sh` para crear automáticamente mediante `mkdir -p` toda la estructura necesaria (`storage/framework/{cache,sessions,testing,views}`, `storage/logs`, `storage/app/public` y `bootstrap/cache`) antes de asignar permisos.
+
+### 2. Comandos Artisan ejecutados antes del `composer install`
+- **Problema**: `entrypoint.sh` intentaba ejecutar `php artisan key:generate` o limpiezas de caché durante el arranque del contenedor. Sin embargo, en un clon nuevo `vendor/autoload.php` todavía no existe, lo que provocaba un error fatal de PHP (`Failed opening required '/app/vendor/autoload.php'`).
+- **Solución**: Se condicionaron los comandos Artisan dentro de `entrypoint.sh` para que únicamente se ejecuten si el archivo `/app/vendor/autoload.php` ya está presente.
+
+### 3. Composer no estaba instalado dentro de la imagen
+- **Problema**: La imagen base `dunglas/frankenphp:php8.3-bookworm` no incluye el binario de Composer por defecto. Al ejecutar `docker compose exec app composer install`, el comando fallaba con `composer: not found`.
+- **Solución**: Se añadió `COPY --from=composer:2 /usr/bin/composer /usr/bin/composer` junto con `git` y `unzip` dentro de [docker/frankenphp/Dockerfile](file:///docker/frankenphp/Dockerfile).
+
+### 4. Error 500 por falta del manifiesto de Vite
+- **Problema**: Al abrir la página principal por primera vez, Laravel lanzaba una excepción `Vite manifest not found at: /app/public/build/manifest.json`.
+- **Solución**: Se documentó e integró el paso obligatorio de compilación `docker compose exec app npm install && docker compose exec app npm run build`.
+
+### 5. Healthchecks erróneos en Horizon y Reverb
+- **Problema**: Como los contenedores `horizon` y `reverb` usan la misma imagen base de FrankenPHP pero corren como workers CLI (vía `supervisord` y `artisan reverb:start`), el healthcheck HTTP heredado del servidor web en el puerto 80 marcaba erróneamente estos servicios como `unhealthy`.
+- **Solución**: Se añadió `healthcheck: disable: true` para `horizon` y `reverb` en [docker-compose.yml](file:///docker-compose.yml).
+
+---
+
+## 🔧 Comandos Frecuentes y Mantenimiento
+
+### Ver Logs en Tiempo Real
+
+```bash
+# Ver logs de todos los servicios
+docker compose logs -f
+
+# Ver logs solo del servidor web
+docker compose logs -f app
+
+# Ver logs de tareas en segundo plano
+docker compose logs -f horizon
+
+# Ver logs de WebSockets
+docker compose logs -f reverb
+```
+
+### Limpieza y Regeneración de Caché
+
+```bash
+docker compose exec app php artisan optimize:clear
+```
+
+### Reset Completo de Base de Datos y Volúmenes
+
+Si necesitas limpiar la base de datos y recrear todo el entorno desde cero:
+
+```bash
+# 1. Detener y eliminar volúmenes persistentes
+docker compose down -v
+
+# 2. Volver a levantar contenedores
+docker compose up -d
+
+# 3. Re-ejecutar migraciones y seeders
+docker compose exec app php artisan migrate --seed
+
+# 4. Reiniciar workers
+docker compose restart horizon reverb
+```
+
+### Ingesta Manual de Noticias RSS
+
+Para forzar una sincronización manual del motor RSS sin esperar al scheduler de Horizon:
+
+```bash
+docker compose exec app php artisan rss:fetch
+```
+
+---
 
 ## 🏗️ Estructura del Proyecto
 
 ```
-noticias/
-├── app/                    # Código de la aplicación
-│   ├── Console/           # Comandos Artisan
-│   ├── Http/              # Controladores y middleware
+news/
+├── app/                    # Lógica de la aplicación Laravel
+│   ├── Console/           # Comandos Artisan (ej. Ingesta RSS)
+│   ├── Http/              # Controladores, Middleware y Requests
 │   ├── Models/            # Modelos Eloquent
-│   ├── Providers/         # Service providers
-│   └── Services/          # Servicios de negocio
-├── config/                # Configuraciones
-├── database/              # Migraciones y seeders
-├── docker/                # Configuración Docker
-│   ├── frankenphp/        # Configuración FrankenPHP
-│   └── postgres/          # Configuración PostgreSQL
-├── public/                # Assets públicos
-├── resources/             # Vistas y assets
-├── routes/                # Rutas
-├── storage/               # Archivos y logs
-└── tests/                 # Tests
+│   ├── Providers/         # Service Providers
+│   └── Services/          # Servicios (IA, embeddings, RSS, imágenes)
+├── config/                # Archivos de configuración
+├── database/              # Migraciones, factories y seeders
+├── docker/                # Configuración de contenedores
+│   ├── frankenphp/        # Dockerfile, entrypoint, Caddyfile y supervisor
+│   └── postgres/          # Scripts de inicialización y extensiones
+├── public/                # Assets públicos y build de Vite
+├── resources/             # Vistas Blade, CSS y JavaScript
+├── routes/                # Rutas web, API, consola y canales
+├── storage/               # Archivos generados, logs y cache
+└── tests/                 # Pruebas automatizadas Pest / PHPUnit
 ```
-
-## 🔧 Comandos Útiles
-
-```bash
-# Iniciar todos los servicios
-docker compose up -d
-
-# Detener todos los servicios
-docker compose down
-
-# Ver logs
-docker compose logs -f
-
-# Ejecutar migraciones
-docker compose exec app php artisan migrate
-
-# Ejecutar tests
-docker compose exec app php artisan test
-
-# Generar clave de aplicación
-docker compose exec app php artisan key:generate
-
-# Limpiar cache
-docker compose exec app php artisan optimize:clear
-```
-
-## 📊 Servicios Disponibles
-
-| Servicio       | URL                      | Puerto | Descripción            |
-| -------------- | ------------------------ | ------ | ---------------------- |
-| **FrankenPHP** | http://localhost         | 80     | Aplicación principal   |
-| **PostgreSQL** | postgres:5432            | 5432   | Base de datos          |
-| **Redis**      | redis:6379               | 6379   | Cache y colas          |
-| **Horizon**    | http://localhost/horizon | 80     | Dashboard de colas     |
-| **Reverb**     | ws://localhost:8080      | 8080   | WebSockets             |
-| **Mailpit**    | http://localhost:8025    | 8025   | Cliente de email       |
-| **phpMyAdmin** | http://localhost:8081    | 8081   | Admin de DB (opcional) |
-
-## 🚀 Desarrollo
-
-### Configuración de Desarrollo
-
-1. **Variables de entorno de desarrollo** en `.env`
-2. **Configuración de FrankenPHP** en `docker/frankenphp/`
-3. **Configuración de PostgreSQL** en `docker/postgres/`
-
-### Extensión de VS Code Recomendadas
-
-- PHP Intelephense
-- Laravel Idea
-- Docker
-- PostgreSQL
-- Tailwind CSS IntelliSense
-
-## 📈 Producción
-
-### Configuración Recomendada
-
-1. **Actualizar variables de entorno** para producción
-2. **Configurar SSL/TLS** en Caddyfile
-3. **Configurar backups** automáticos de base de datos
-4. **Configurar monitoreo** con Laravel Pulse
-5. **Configurar CDN** (Cloudflare recomendado)
-
-### Escalabilidad
-
-- **FrankenPHP workers**: Ajustar según CPU disponible
-- **PostgreSQL**: Configurar replicación y connection pooling
-- **Redis**: Configurar cluster para alta disponibilidad
-- **CDN**: Cloudflare para assets estáticos y edge caching
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crear una rama (`git checkout -b feature/amazing-feature`)
-3. Commit cambios (`git commit -m 'Add amazing feature'`)
-4. Push a la rama (`git push origin feature/amazing-feature`)
-5. Abrir un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 🆘 Soporte
-
-Para soporte, abrir un issue en el repositorio o contactar al equipo de desarrollo.
 
 ---
 
-**Desarrollado con ❤️ para revolucionar la industria de noticias con IA**
+## 📄 Licencia
+
+Este proyecto está bajo la licencia **MIT**.

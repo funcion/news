@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Crear directorios necesarios si no existen
+mkdir -p /app/storage/framework/{cache,sessions,testing,views}
+mkdir -p /app/storage/logs
+mkdir -p /app/storage/app/public
+mkdir -p /app/bootstrap/cache
+
 # Asegurar symlink correcto para storage (Sirve Media Library)
 if [ ! -L /app/public/storage ]; then
     ln -sfn ../storage/app/public /app/public/storage
@@ -15,30 +21,21 @@ else
 fi
 
 # Configurar permisos
-chown -R www-data:www-data /app/storage /app/bootstrap/cache
-chmod -R 775 /app/storage /app/bootstrap/cache
+chown -R www-data:www-data /app/storage /app/bootstrap/cache 2>/dev/null || true
+chmod -R 775 /app/storage /app/bootstrap/cache 2>/dev/null || true
 
-# Limpiar caché de Laravel
-php artisan config:clear || true
-php artisan cache:clear || true
-php artisan view:clear || true
-php artisan route:clear || true
+# Ejecutar comandos de Laravel solo si las dependencias de Composer ya están instaladas
+if [ -f /app/vendor/autoload.php ]; then
+    php artisan config:clear || true
+    php artisan cache:clear || true
+    php artisan view:clear || true
+    php artisan route:clear || true
+    php artisan migrate --force || true
 
-# Ejecutar migraciones si es necesario
-php artisan migrate --force || true
-
-# Generar clave de aplicación si no existe
-if [ -z "$APP_KEY" ]; then
-    php artisan key:generate --force
+    if [ -z "$APP_KEY" ]; then
+        php artisan key:generate --force || true
+    fi
 fi
 
-# Iniciar HorizSupervisor en background (scheduler para rss:fetch)
-# Horizon se ejecuta en su propio container (docker-compose), 
-# así que solo necesitamos el scheduler aquí
-/usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
-
-# Iniciar Supervisor (gestiona scheduler de RSS + otros workers) en background
-/usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
-
-# Iniciar FrankenPHP (el servidor web)
+# Iniciar FrankenPHP (servidor web)
 exec frankenphp run --config /etc/caddy/Caddyfile
