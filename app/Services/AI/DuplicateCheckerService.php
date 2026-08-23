@@ -41,8 +41,8 @@ class DuplicateCheckerService
         $normalizedUrl = $this->normalizeUrl($url);
         
         // Check if this URL is already attached as an update to an existing article
-        $existingUpdate = ArticleUpdate::where('url', $url)
-            ->orWhere('url', $normalizedUrl)
+        $existingUpdate = ArticleUpdate::where('source_url', $url)
+            ->orWhere('source_url', $normalizedUrl)
             ->first();
 
         if ($existingUpdate && $existingUpdate->article) {
@@ -237,15 +237,23 @@ class DuplicateCheckerService
      */
     protected function createUpdateEntry(Article $article, string $url, int $rawArticleId): void
     {
+        $raw = RawArticle::find($rawArticleId);
+        $title = $raw ? $raw->title : 'Update';
+        $summary = $raw ? ($raw->summary ?? mb_substr(strip_tags($raw->content ?? ''), 0, 200, 'UTF-8')) : 'Update from source';
+
         ArticleUpdate::firstOrCreate([
             'article_id' => $article->id,
-            'raw_article_id' => $rawArticleId,
+            'source_url' => $url,
         ], [
-            'url' => $url,
-            'added_at' => now(),
+            'title' => $title,
+            'content' => $summary,
+            'summary' => $summary,
+            'published_at' => now(),
         ]);
 
-        RawArticle::where('id', $rawArticleId)->update(['status' => 'processed']);
+        if ($raw) {
+            $raw->update(['status' => 'processed']);
+        }
         $article->touch(); // Bump updated_at
         
         Log::info("Attached RawArticle #{$rawArticleId} as update to Article ID {$article->id}.");
