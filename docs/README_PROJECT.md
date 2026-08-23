@@ -1,6 +1,6 @@
 # Glodaxia — Plataforma de Noticias Automatizadas con IA
 
-> **Stack:** Laravel 13 + PostgreSQL + Redis + Horizon + Reverb + FrankenPHP  
+> **Stack:** Laravel 13 + PostgreSQL + Redis + Horizon + Ably + FrankenPHP  
 > **Dominio:** IA y Automatización (Tech News)  
 > **Idiomas:** EN (primario) + ES | Pathless default → `/`, Spanish → `/es/`
 
@@ -52,7 +52,7 @@ php artisan storage:link
 | DB | PostgreSQL + pgvector | 17 |
 | Cache/Queue | Redis | 7 |
 | Queue Workers | Laravel Horizon | 5.x |
-| WebSocket | Laravel Reverb | 1.x |
+| WebSocket | Laravel Ably | 1.x |
 | Translations | spatie/laravel-translatable | 6.x |
 | Media | spatie/laravel-medialibrary | 11.x |
 | Frontend | Blade + Alpine.js + Tailwind | Vite 6 |
@@ -72,7 +72,7 @@ RawArticle (created)
   → Image Generation (SiliconFlow FLUX.1)
   → Spatie MediaLibrary → R2 or Local (MEDIA_DISK)
   → Article Published
-  → ArticlePublished Event (Reverb)
+  → ArticlePublished Event (Ably)
 ```
 
 ### Configuración de Modelo
@@ -213,7 +213,7 @@ app/
 │   ├── RssFetchCommand.php           # Fetch RSS command
 │   └── TagsCleanupCommand.php        # Cleanup tags
 ├── Events/
-│   └── ArticlePublished.php          # Broadcats via Reverb
+│   └── ArticlePublished.php          # Broadcast via Ably
 ├── Filament/
 │   ├── Pages/Dashboard.php
 │   └── Resources/
@@ -276,7 +276,7 @@ app/
 
 ### Fase 2 (En desarrollo)
 - [ ] Scheduler RSS automático (`everyFiveMinutes`)
-- [ ] Reverb WebSocket funcionando (broadcast en vivo)
+- [x] Ably Realtime WebSocket configurado y funcionando (broadcast en vivo)
 - [ ] Fuentes RSS reales configuradas (20+ feeds)
 - [ ] Embeddings pgvector para artículos relacionados
 - [ ] SEO XML Sitemap automático

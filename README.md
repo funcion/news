@@ -1,6 +1,6 @@
 # 🗞️ Noticias Platform - Plataforma de Noticias Automatizada con IA
 
-Plataforma de noticias automatizada con IA y RSS construida con Laravel 12, FrankenPHP, PostgreSQL (pgvector), Redis, Reverb, Horizon y Filament v3.
+Plataforma de noticias automatizada con IA y RSS construida con Laravel 13, FrankenPHP, PostgreSQL (pgvector), Redis, Ably Realtime WebSockets, Horizon y Filament v3.
 
 ## 🚀 Características Principales
 
@@ -8,7 +8,7 @@ Plataforma de noticias automatizada con IA y RSS construida con Laravel 12, Fran
 - **Cerebro de IA**: Pipeline de procesamiento y enriquecimiento de artículos con modelos de IA (OpenRouter).
 - **Generación de Imágenes**: Creación automática de imágenes de portada contextuales.
 - **Sistema Anti-Duplicados**: Detección de contenido similar con pgvector y algoritmos de proximidad.
-- **Frontend en Tiempo Real**: Actualizaciones instantáneas vía WebSockets con Laravel Reverb.
+- **Frontend en Tiempo Real**: Actualizaciones instantáneas vía WebSockets en la nube con Ably.
 - **SEO Técnico Avanzado**: Schema Markup, OpenGraph, Twitter Cards y Sitemaps dinámicos optimizados para Google News.
 - **Sistema de Tags Inteligente**: Extracción y asignación automática de etiquetas temáticas.
 - **Panel de Administración**: Panel completo y moderno basado en Filament v3.
@@ -17,12 +17,12 @@ Plataforma de noticias automatizada con IA y RSS construida con Laravel 12, Fran
 
 ## 🛠️ Stack Tecnológico
 
-- **Backend**: Laravel 12 (PHP 8.3)
+- **Backend**: Laravel 13 (PHP 8.3)
 - **Servidor Web**: FrankenPHP (Caddy Server + Worker Mode + HTTP/3)
 - **Base de Datos**: PostgreSQL 17 + extensión `pgvector`
 - **Cache y Colas**: Redis 7
 - **Panel Administrativo**: Filament v3
-- **WebSockets**: Laravel Reverb
+- **WebSockets / Realtime**: Ably Realtime (`ably/ably-php` + `laravel-echo`)
 - **Gestión de Colas**: Laravel Horizon
 - **Frontend**: Blade + Alpine.js + Tailwind CSS v4 (Vite)
 - **Email Testing**: Mailpit
@@ -55,11 +55,11 @@ cp .env.example .env
 ```
 
 > [!TIP]
-> Verifica que las credenciales de base de datos en tu `.env` coincidan con las del contenedor (`DB_HOST=postgres`, `DB_PORT=5432`, `DB_DATABASE=noticias`, `DB_USERNAME=noticias`, `DB_PASSWORD=noticias123`, `REDIS_HOST=redis`).
+> Verifica que las credenciales de base de datos y la API Key de Ably en tu `.env` estén configuradas (`BROADCAST_CONNECTION=ably`, `ABLY_KEY=tu-api-key`).
 
 ### 4. Construir e Iniciar los Contenedores
 
-Levanta los 6 servicios en segundo plano con reconstrucción de imágenes:
+Levanta los 5 servicios en segundo plano:
 
 ```bash
 docker compose up -d --build
@@ -101,12 +101,12 @@ Inicializa la estructura de tablas y los datos esenciales (categorías, fuentes 
 docker compose exec app php artisan migrate --seed
 ```
 
-### 9. Reiniciar Servicios de Fondo (Horizon & Reverb)
+### 9. Reiniciar Servicios de Fondo (Horizon)
 
-Para asegurar que los workers de colas y WebSockets tomen las dependencias y configuraciones recién generadas:
+Para asegurar que los workers de colas tomen las dependencias y configuraciones recién generadas:
 
 ```bash
-docker compose restart horizon reverb
+docker compose restart horizon
 ```
 
 ---
@@ -118,36 +118,10 @@ docker compose restart horizon reverb
 | **FrankenPHP (App)** | [http://localhost:8000](http://localhost:8000) | `8000` | Frontend de noticias |
 | **Panel de Administración** | [http://localhost:8000/admin](http://localhost:8000/admin) | `8000` | Panel Filament v3 |
 | **Horizon Dashboard** | [http://localhost:8000/horizon](http://localhost:8000/horizon) | `8000` | Monitor de colas y tareas |
-| **Reverb (WebSockets)** | `ws://localhost:8080` | `8080` | Servidor WebSockets |
+| **Ably Realtime** | Cloud Service | WSS / HTTPS | WebSockets en la nube (Eventos en vivo) |
 | **Mailpit (Email UI)** | [http://localhost:8025](http://localhost:8025) | `8025` | Bandeja de pruebas de email |
 | **PostgreSQL (pgvector)** | `localhost:5432` | `5432` | Base de datos relacional y vectorial |
 | **Redis** | `localhost:6379` | `6379` | Cache de alta velocidad y colas |
-
----
-
-## 🔍 Detalles Técnicos: ¿Por qué no funcionaba y cómo se solucionó?
-
-Si te encontraste con el error `Container is restarting, wait until the container is running`, aquí se explican las causas técnicas raíz y las soluciones aplicadas en la configuración:
-
-### 1. Ausencia del directorio `storage/` en un clon limpio
-- **Problema**: El script de entrada [entrypoint.sh](file:///docker/frankenphp/entrypoint.sh) ejecutaba `chown -R www-data:www-data /app/storage` con `set -e` habilitado. Como Git no guarda carpetas vacías sin `.gitkeep`, `/app/storage` no existía, provocando que el comando fallara con código de error y el contenedor se apagara inmediatamente en un bucle continuo de reinicios (*crash loop*).
-- **Solución**: Se actualizó `entrypoint.sh` para crear automáticamente mediante `mkdir -p` toda la estructura necesaria (`storage/framework/{cache,sessions,testing,views}`, `storage/logs`, `storage/app/public` y `bootstrap/cache`) antes de asignar permisos.
-
-### 2. Comandos Artisan ejecutados antes del `composer install`
-- **Problema**: `entrypoint.sh` intentaba ejecutar `php artisan key:generate` o limpiezas de caché durante el arranque del contenedor. Sin embargo, en un clon nuevo `vendor/autoload.php` todavía no existe, lo que provocaba un error fatal de PHP (`Failed opening required '/app/vendor/autoload.php'`).
-- **Solución**: Se condicionaron los comandos Artisan dentro de `entrypoint.sh` para que únicamente se ejecuten si el archivo `/app/vendor/autoload.php` ya está presente.
-
-### 3. Composer no estaba instalado dentro de la imagen
-- **Problema**: La imagen base `dunglas/frankenphp:php8.3-bookworm` no incluye el binario de Composer por defecto. Al ejecutar `docker compose exec app composer install`, el comando fallaba con `composer: not found`.
-- **Solución**: Se añadió `COPY --from=composer:2 /usr/bin/composer /usr/bin/composer` junto con `git` y `unzip` dentro de [docker/frankenphp/Dockerfile](file:///docker/frankenphp/Dockerfile).
-
-### 4. Error 500 por falta del manifiesto de Vite
-- **Problema**: Al abrir la página principal por primera vez, Laravel lanzaba una excepción `Vite manifest not found at: /app/public/build/manifest.json`.
-- **Solución**: Se documentó e integró el paso obligatorio de compilación `docker compose exec app npm install && docker compose exec app npm run build`.
-
-### 5. Healthchecks erróneos en Horizon y Reverb
-- **Problema**: Como los contenedores `horizon` y `reverb` usan la misma imagen base de FrankenPHP pero corren como workers CLI (vía `supervisord` y `artisan reverb:start`), el healthcheck HTTP heredado del servidor web en el puerto 80 marcaba erróneamente estos servicios como `unhealthy`.
-- **Solución**: Se añadió `healthcheck: disable: true` para `horizon` y `reverb` en [docker-compose.yml](file:///docker-compose.yml).
 
 ---
 
@@ -164,9 +138,6 @@ docker compose logs -f app
 
 # Ver logs de tareas en segundo plano
 docker compose logs -f horizon
-
-# Ver logs de WebSockets
-docker compose logs -f reverb
 ```
 
 ### Limpieza y Regeneración de Caché
@@ -190,7 +161,7 @@ docker compose up -d
 docker compose exec app php artisan migrate --seed
 
 # 4. Reiniciar workers
-docker compose restart horizon reverb
+docker compose restart horizon
 ```
 
 ### Ingesta Manual de Noticias RSS
@@ -213,7 +184,7 @@ news/
 │   ├── Models/            # Modelos Eloquent
 │   ├── Providers/         # Service Providers
 │   └── Services/          # Servicios (IA, embeddings, RSS, imágenes)
-├── config/                # Archivos de configuración
+├── config/                # Archivos de configuración (broadcasting, etc.)
 ├── database/              # Migraciones, factories y seeders
 ├── docker/                # Configuración de contenedores
 │   ├── frankenphp/        # Dockerfile, entrypoint, Caddyfile y supervisor

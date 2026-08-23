@@ -1,7 +1,7 @@
 # 🗞️ PLAN MAESTRO - Plataforma de Noticias Automatizada con IA
 
 > **Proyecto**: Plataforma de noticias automatizada con IA y RSS  
-> **Stack**: Laravel 13, Filament v5, Livewire v4, Docker, Redis, PostgreSQL, Horizon, Reverb  
+> **Stack**: Laravel 13, Filament v5, Livewire v4, Docker, Redis, PostgreSQL, Horizon, Ably  
 > **Fecha de creación**: 29 de Marzo 2026  
 > **Estado**: En desarrollo
 
@@ -162,7 +162,7 @@ FASE 3 (Año 3+): Agregar "Finanzas Tech" → Plataforma multi-nicho
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │               FRONTEND + SERVIDOR (FrankenPHP)                  │
-│  [Reverb WebSocket] → [FrankenPHP Worker] → [Usuario]           │
+│  [Ably WebSocket] → [FrankenPHP Worker] → [Usuario]           │
 │  [Blade SSR] → [HTTP/3] → [Caddy Reverse Proxy]                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -177,7 +177,7 @@ FASE 3 (Año 3+): Agregar "Finanzas Tech" → Plataforma multi-nicho
 | DB Principal           | PostgreSQL + pgvector              | JSONB para metadatos, embeddings para IA            | pgvector para similitud semántica                                   |
 | Cache                  | Redis                              | Cache ultra-rápido, colas de trabajos               | Sesiones en Redis para mejor performance                            |
 | Colas                  | Laravel Horizon                    | Gestión visual de colas para procesamiento IA       | Procesamiento async de IA sin bloquear servidor                     |
-| Tiempo Real            | Laravel Reverb                     | WebSockets nativos, sin servicios externos          | Contenedor separado para escalabilidad                              |
+| Tiempo Real            | Ably Realtime                     | WebSockets nativos, sin servicios externos          | Contenedor separado para escalabilidad                              |
 | Frontend               | Blade + Alpine.js + Tailwind       | SSR para SEO + interactividad ligera                | SSR más rápido con FrankenPHP worker mode                           |
 | Build                  | Vite                               | Compilación rápida de assets                        | Sin cambios                                                         |
 | Imágenes               | Intervention Image + WebP/AVIF     | Compresión inteligente + formatos modernos          | Mejor performance de entrega de assets                              |
@@ -496,7 +496,7 @@ Sistema dual de publicación que permite automatización completa o revisión ma
          ↓
 [PUBLICAR]
          ↓
-[Evento Reverb Broadcast]
+[Evento Ably Broadcast]
          ↓
 [Frontend Update en Tiempo Real]
 ```
@@ -589,7 +589,7 @@ Sistema dual de publicación que permite automatización completa o revisión ma
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 9.3 Tiempo Real con Reverb
+### 9.3 Tiempo Real con Ably
 
 | Componente            | Descripción                                     |
 | --------------------- | ----------------------------------------------- |
@@ -1088,7 +1088,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 │  Laravel 13 + Filament v5 + Livewire v4        │
 ├─────────────────────────────────────────────────┤
 │                  TIEMPO REAL                     │
-│  Laravel Reverb (WebSockets)                    │
+│  Ably Realtime (WebSockets)                    │
 ├─────────────────────────────────────────────────┤
 │                  COLAS                           │
 │  Laravel Horizon + Redis                        │
@@ -1123,7 +1123,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 | `spatie/laravel-medialibrary` ^11.0     | Gestión de media y conversiones      | Soporte WebP y SEO filenames       |
 | `filament/spatie-laravel-translatable-plugin` | UI de traducción en Filament     | Edición lado a lado                |
 | `laravel/horizon`                       | Gestión de colas Redis              | Necesario para procesamiento async |
-| `laravel/reverb`                        | WebSockets en tiempo real           | Corre en contenedor separado       |
+| `ably/ably-php`                        | WebSockets en tiempo real           | Corre en contenedor separado       |
 | `laravel/pulse`                         | Monitoreo                           | Monitorea FrankenPHP también       |
 | `vedmant/laravel-feed-reader`           | Lectura RSS                         | Sin cambios                        |
 | `spatie/laravel-feed`                   | Generación RSS propio               | Sin cambios                        |
@@ -1141,7 +1141,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 | `alpinejs`     | Interactividad ligera                      |
 | `tailwindcss`  | Framework CSS                              |
 | `laravel-echo` | Cliente WebSockets                         |
-| `pusher-js`    | Conexión WebSocket (compatible con Reverb) |
+| `pusher-js`    | Conexión WebSocket (compatible con Ably) |
 | `vite`         | Build tool                                 |
 
 ---
@@ -1190,7 +1190,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 
 ```
 ✅ Diseño 2 columnas con Tailwind + SSR con FrankenPHP
-✅ Reverb para tiempo real (contenedor separado)
+✅ Ably para tiempo real (contenedor separado)
 ✅ Optimización PageSpeed >95 con HTTP/3
 ✅ SEO técnico completo con Server Push
 ✅ Responsive design perfecto
@@ -1595,7 +1595,7 @@ services:
 | **Expansión**        | 1 nicho (año 1) → 2 nichos (año 2) → 3 nichos (año 3+) | FrankenPHP escala horizontalmente       |
 | **Stack Principal**  | **FrankenPHP** + Laravel 13 + Filament v5 + Livewire v4  | ⚡ **20-30% más rápido**, 🚀 **HTTP/3** |
 | **Base de Datos**    | PostgreSQL + pgvector + Redis                          | Embeddings para IA, cache ultra-rápido  |
-| **Tiempo Real**      | Laravel Reverb + Horizon                               | WebSockets + async processing           |
+| **Tiempo Real**      | Ably Realtime + Horizon                               | WebSockets + async processing           |
 | **Sistema de Scrapping** | **Jina Reader (r.jina.ai)**            | Scraping optimizado para LLMs           |
 | **Sistema de Tags**  | IA + PostgreSQL                          | SEO semántico, navegación mejorada      |
 | **Image Storage**    | Local (spatie/media-library) → R2 en producción con tráfico | Sin egress fees con R2 |
@@ -1824,8 +1824,8 @@ services:
   - [x] Mostrar tags en artículos individuales
   - [x] Página de tag individual con artículos relacionados
 
-- [x] **Tiempo real con Reverb**
-  - [x] Instalar y configurar Laravel Reverb
+- [x] **Tiempo real con Ably**
+  - [x] Instalar y configurar Ably Realtime
   - [x] Crear canales WebSocket
   - [x] Evento ArticlePublished
   - [x] Configurar Laravel Echo en frontend

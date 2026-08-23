@@ -70,14 +70,11 @@
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <!-- Reverb Config -->
+    <!-- Ably Config -->
     <script>
         window.laravelConfig = {
-            reverb: {
-                appKey: '{{ config('reverb.apps.0.key') ?? env('REVERB_APP_KEY') }}',
-                host: '{{ env('VITE_REVERB_HOST', 'localhost') }}',
-                port: {{ env('VITE_REVERB_PORT', 8080) }},
-                scheme: '{{ env('VITE_REVERB_SCHEME', 'http') }}'
+            ably: {
+                key: '{{ explode(':', config('broadcasting.connections.ably.key') ?? env('ABLY_KEY'))[0] }}'
             }
         };
     </script>

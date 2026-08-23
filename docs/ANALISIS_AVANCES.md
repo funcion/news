@@ -13,7 +13,7 @@ Este documento presenta un análisis consolidado del estado actual del proyecto 
 *   **Framework:** Laravel 13 + Livewire v4.
 *   **Base de Datos:** PostgreSQL 17 + `pgvector` (para embeddings y similitud semántica).
 *   **Caché y Colas:** Redis 7 + Laravel Horizon.
-*   **Tiempo Real:** Laravel Reverb (WebSockets nativos).
+*   **Tiempo Real:** Ably Realtime (WebSockets en la nube).
 *   **Almacenamiento de Media:** Cloudflare R2 (compatible con S3, coste de salida $0).
 *   **Administración:** Filament v5 (Arquitectura basada en `Schemas` y layout responsive).
 *   **Frontend:** Blade + Alpine.js + Tailwind CSS + Vite 6.
