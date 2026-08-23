@@ -31,8 +31,7 @@ class Tag extends Model
     public function articles(): BelongsToMany
     {
         return $this->belongsToMany(Article::class, 'article_tag')
-            ->withPivot('relevance_score')
-            ->withTimestamps();
+            ->withPivot('relevance_score');
     }
 
     public function scopeFeatured($query)
@@ -42,12 +41,15 @@ class Tag extends Model
 
     public function scopePopular($query, $limit = 20)
     {
-        return $query->orderByDesc('article_count')->limit($limit);
+        return $query->whereHas('articles', fn($q) => $q->published())
+            ->withCount(['articles as published_articles_count' => fn($q) => $q->published()])
+            ->orderByDesc('published_articles_count')
+            ->limit($limit);
     }
 
     public function scopeWithMinimumArticles($query, $minCount = 1)
     {
-        return $query->where('article_count', '>=', $minCount);
+        return $query->whereHas('articles', fn($q) => $q->published());
     }
 
     public function getUrlAttribute(): string
@@ -61,10 +63,10 @@ class Tag extends Model
 
         return self::where('id', '!=', $this->id)
             ->whereHas('articles', function ($query) use ($articleIds) {
-                $query->whereIn('articles.id', $articleIds);
+                $query->whereIn('articles.id', $articleIds)->published();
             })
             ->withCount(['articles as common_articles_count' => function ($query) use ($articleIds) {
-                $query->whereIn('articles.id', $articleIds);
+                $query->whereIn('articles.id', $articleIds)->published();
             }])
             ->orderByDesc('common_articles_count')
             ->limit($limit)
