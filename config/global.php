@@ -39,24 +39,24 @@ return [
             'pillar' => '1500-3000 words EN | 1500-3000 palabras ES',
         ],
 
-        // Editorial team — each author has a distinct voice and specialty
+        // Editorial team — concise, credible human bios (40-55 words)
         'authors' => [
             [
                 'name' => 'Luis Figuera',
                 'slug' => 'luis-figuera',
                 'bio' => [
-                    'en' => 'Editor and lead analyst at Glodaxia. Specializes in AI industry analysis, startup ecosystems, and the intersection of technology and society. 15+ years covering tech.',
-                    'es' => 'Editor y analista principal en Glodaxia. Especialista en análisis de la industria IA, ecosistemas de startups y la intersección de tecnología y sociedad. 15+ años cubriendo tecnología.',
+                    'es' => 'Editor jefe y estratega de contenidos con más de diez años de experiencia en periodismo digital y medios tecnológicos. Especializado en análisis de la industria tech, startups y productos digitales. Supervisa la línea editorial para garantizar información rigurosa, veraz y de alto valor para el lector.',
+                    'en' => 'Editor-in-Chief and content strategist with over a decade of experience in digital journalism and tech media. Specializing in technology industry analysis, startups, and digital products, he oversees the editorial pipeline to ensure rigorous, credible, and high-value reporting for modern readers.',
                 ],
-                'voice_style' => 'contundente, directo, con opiniones fuertes',
+                'voice_style' => 'contundente, directo, con opiniones fundamentadas',
                 'specialty' => 'analysis',
             ],
             [
                 'name' => 'María Rodríguez',
                 'slug' => 'maria-rodriguez',
                 'bio' => [
-                    'en' => 'Senior reporter at Glodaxia covering breaking tech news, product launches, and startup funding. 8 years in Silicon Valley journalism.',
-                    'es' => 'Reportera senior en Glodaxia cubriendo noticias de última hora de tecnología, lanzamientos de productos y financiación de startups. 8 años en periodismo de Silicon Valley.',
+                    'es' => 'Periodista senior con 8 años cubriendo noticias de última hora, ciberseguridad y capital de riesgo. Especializada en contrastar fuentes primarias, analizar tendencias de mercado y traducir la actualidad tecnológica en crónicas claras y directas.',
+                    'en' => 'Senior technology journalist with 8 years of experience covering breaking news, cybersecurity, and venture capital. She specializes in primary-source fact-checking, market trend analysis, and delivering clear, accessible reporting on current tech developments.',
                 ],
                 'voice_style' => 'enérgico, datos primero, párrafos cortos',
                 'specialty' => 'news',
@@ -65,8 +65,8 @@ return [
                 'name' => 'Carlos Méndez',
                 'slug' => 'carlos-mendez',
                 'bio' => [
-                    'en' => 'Technical analyst at Glodaxia. PhD in Computer Science, former ML researcher. Specializes in breaking down complex papers and benchmarks for a general audience.',
-                    'es' => 'Analista técnico en Glodaxia. PhD en Ciencias de la Computación, ex-investigador de ML. Especialista en explicar papers y benchmarks complejos para audiencia general.',
+                    'es' => 'Analista técnico e investigador de software. Doctor en Ciencias de la Computación, se especializa en infraestructura cloud, desarrollo web y modelos de lenguaje aplicados, evaluando avances de ingeniería y traduciéndolos en análisis prácticos para desarrolladores y líderes tecnológicos.',
+                    'en' => 'Technical analyst and software researcher with a Ph.D. in Computer Science. He specializes in cloud infrastructure, web engineering, and applied machine learning, evaluating technical breakthroughs into practical insights for developers and tech leaders.',
                 ],
                 'voice_style' => 'técnico preciso, usa analogías, referencia papers',
                 'specialty' => 'guide',
