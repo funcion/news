@@ -189,7 +189,7 @@
                                  class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-xl categories-dropdown border border-gray-200 dark:border-slate-800 py-2 z-50"
                                  @click.away="open = false">
                                 @php
-                                    $categories = \App\Models\Category::whereNull('parent_id')->get();
+                                    $categories = \App\Models\Category::whereNull('parent_id')->whereHas('articles', fn($q) => $q->published())->get();
                                 @endphp
                                 
                                 @foreach($categories as $category)
@@ -282,7 +282,7 @@
                             
                             <div x-show="categoriesOpen" class="mt-2 pl-6 space-y-1">
                                 @php
-                                    $mobileCategories = \App\Models\Category::whereNull('parent_id')->get();
+                                    $mobileCategories = \App\Models\Category::whereNull('parent_id')->whereHas('articles', fn($q) => $q->published())->get();
                                 @endphp
                                 
                                 @foreach($mobileCategories as $category)
