@@ -1533,59 +1533,6 @@ PROMPT;
     }
 
     /**
-     * Check if we can publish an article right now based on editorial rate limits.
-     * Reads from DB (Settings table) if available, falls back to config then env defaults.
-     * Prevents publishing patterns that search engines could flag as automated.
-     */
-    private function canPublishNow(?int $categoryId = null): bool
-    {
-        // Try DB first (settable via Filament SettingsPage), fall back to config
-        $maxPerDay  = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_day', config('global.rate_limits.max_articles_per_day', 8)));
-        $maxPerHour = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_hour', config('global.rate_limits.max_articles_per_hour', 2)));
-        $maxPerCategory = (int) (\App\Models\Setting::get('rate_limits.max_articles_per_category_per_day', config('global.rate_limits.max_articles_per_category_per_day', 3)));
-        $start      = (int) (\App\Models\Setting::get('rate_limits.publish_hour_start', config('global.rate_limits.publishing_hours.start', 7)));
-        $end        = (int) (\App\Models\Setting::get('rate_limits.publish_hour_end', config('global.rate_limits.publishing_hours.end', 22)));
-
-        $hour = now()->hour;
-        if ($hour < $start || $hour >= $end) {
-            Log::info("Rate limit: outside publishing hours ({$hour}:00, allowed {$start}-{$end})");
-            return false;
-        }
-
-        // Check max articles per hour
-        $thisHour = Article::where('status', 'published')
-            ->where('updated_at', '>=', now()->subHour())
-            ->count();
-        if ($thisHour >= $maxPerHour) {
-            Log::info("Rate limit: {$thisHour} articles published this hour (max {$maxPerHour})");
-            return false;
-        }
-
-        // Check max articles per day
-        $today = Article::where('status', 'published')
-            ->whereDate('updated_at', today())
-            ->count();
-        if ($today >= $maxPerDay) {
-            Log::info("Rate limit: {$today} articles published today (max {$maxPerDay})");
-            return false;
-        }
-
-        // Check max articles per category per day
-        if ($categoryId) {
-            $categoryToday = Article::where('status', 'published')
-                ->where('category_id', $categoryId)
-                ->whereDate('updated_at', today())
-                ->count();
-            if ($categoryToday >= $maxPerCategory) {
-                Log::info("Rate limit: {$categoryToday} articles in category {$categoryId} today (max {$maxPerCategory})");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Generate randomized style DNA for each article.
      * 6 x 5 x 5 x 4 x 10 x 12 x 8 x 8 = 9,216,000 unique macro-combinations.
      * Each call shuffles arrays and picks one option per dimension.

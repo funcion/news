@@ -30,11 +30,6 @@ class SettingsPage extends Page
         $this->form->fill();
 
         $this->data = [
-            // Rate Limits
-            'max_articles_per_day'              => Setting::get('rate_limits.max_articles_per_day', '8'),
-            'max_articles_per_hour'             => Setting::get('rate_limits.max_articles_per_hour', '2'),
-            'max_articles_per_category_per_day' => Setting::get('rate_limits.max_articles_per_category_per_day', '3'),
-
             // Editorial
             'site_name'   => Setting::get('editorial.site_name', config('global.site_name', 'Glodaxia')),
             'tagline'     => Setting::get('editorial.tagline', config('global.tagline', 'Tech & News Magazine')),
@@ -48,46 +43,8 @@ class SettingsPage extends Page
     {
         return $schema
             ->components([
-                Section::make('Límites de Publicación (Rate Limiting)')
-                    ->description('Controla cuántos artículos se publican por día/hora de forma dinámica. Esto evita patrones que Google podría detectar como automatizados.')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('data.max_articles_per_day')
-                            ->label('Artículos por día')
-                            ->helperText('Rango dinámico diario obligatorio (ej: "7,20").')
-                            ->required()
-                            ->regex('/^\d+,\d+$/')
-                            ->validationMessages([
-                                'regex' => 'Debe estar en formato min,max (ej: "7,20").',
-                            ])
-                            ->live(onBlur: true)
-                            ->suffix('arts/día'),
-
-                        TextInput::make('data.max_articles_per_hour')
-                            ->label('Artículos por hora')
-                            ->helperText('Rango dinámico por hora obligatorio (ej: "2,7").')
-                            ->required()
-                            ->regex('/^\d+,\d+$/')
-                            ->validationMessages([
-                                'regex' => 'Debe estar en formato min,max (ej: "2,7").',
-                            ])
-                            ->live(onBlur: true)
-                            ->suffix('arts/hora'),
-
-                        TextInput::make('data.max_articles_per_category_per_day')
-                            ->label('Por categoría/día')
-                            ->helperText('Rango dinámico por categoría diario obligatorio (ej: "1,5").')
-                            ->required()
-                            ->regex('/^\d+,\d+$/')
-                            ->validationMessages([
-                                'regex' => 'Debe estar en formato min,max (ej: "1,5").',
-                            ])
-                            ->live(onBlur: true)
-                            ->suffix('arts/cat'),
-                    ]),
-
                 Section::make('Marca e Identidad')
-                    ->description('Configuración general del sitio')
+                    ->description('Configuración general del sitio y metadatos globales')
                     ->columns(2)
                     ->schema([
                         TextInput::make('data.site_name')
@@ -124,11 +81,6 @@ class SettingsPage extends Page
 
     public function save(): void
     {
-        // Rate limits (saved as string to support ranges like "5,20")
-        Setting::set('rate_limits.max_articles_per_day', $this->data['max_articles_per_day'] ?? '8', 'string', 'rate_limits');
-        Setting::set('rate_limits.max_articles_per_hour', $this->data['max_articles_per_hour'] ?? '2', 'string', 'rate_limits');
-        Setting::set('rate_limits.max_articles_per_category_per_day', $this->data['max_articles_per_category_per_day'] ?? '3', 'string', 'rate_limits');
-
         // Editorial
         Setting::set('editorial.site_name', $this->data['site_name'] ?? 'Glodaxia', 'string', 'editorial');
         Setting::set('editorial.tagline', $this->data['tagline'] ?? 'Tech & News Magazine', 'string', 'editorial');
@@ -140,7 +92,7 @@ class SettingsPage extends Page
         Notification::make()
             ->title('Configuración guardada')
             ->success()
-            ->body('Los cambios se aplicarán en los próximos artículos.')
+            ->body('Los cambios se han aplicado correctamente.')
             ->send();
     }
 }

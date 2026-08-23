@@ -31,7 +31,6 @@ return [
         'focus_rules' => 'STRICTLY ADHERE TO THE FACTS PROVIDED. NEVER invent names, dates, statistics, or events not present in the SOURCE FACTS.',
 
         // Word count targets per content type — WIDE ranges for natural variation
-        // A 300-word news brief and a 1200-word news analysis should both be valid
         'word_targets' => [
             'news'   => '600-1200 words EN | 600-1200 palabras ES',
             'blog'   => '800-1600 words EN | 800-1600 palabras ES',
@@ -78,27 +77,6 @@ return [
         'default_author' => [
             'name' => 'Luis Figuera',
             'slug' => 'luis-figuera',
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rate Limiting — Editorial Cadence
-    |--------------------------------------------------------------------------
-    |
-    | Controls how many articles can be published per day/hour.
-    | Prevents patterns that search engines could flag as automated.
-    |
-    */
-
-    'rate_limits' => [
-        'max_articles_per_day' => (int) env('MAX_ARTICLES_PER_DAY', 8),
-        'max_articles_per_hour' => (int) env('MAX_ARTICLES_PER_HOUR', 2),
-        'max_articles_per_category_per_day' => 3,
-        'min_hours_between_similar_topics' => 4,
-        'publishing_hours' => [
-            'start' => (int) env('PUBLISH_HOUR_START', 7),  // 7 AM
-            'end'   => (int) env('PUBLISH_HOUR_END', 22),   // 10 PM
         ],
     ],
 

@@ -10,13 +10,13 @@ class RawArticleObserver
 {
     /**
      * Handle the RawArticle "created" event.
+     * Automatically dispatches AI processing for all newly ingested raw articles.
      */
     public function created(RawArticle $rawArticle): void
     {
-        // Auto-dispatch on creation has been disabled to prevent uncontrolled token consumption.
-        // Raw articles are saved as pending and can be processed manually via Filament 
-        // or automatically via the 'ai:process-auto-capped' artisan command.
-        
-        Log::info("RawArticle created: ID {$rawArticle->id} (saved as pending).");
+        if ($rawArticle->status === 'pending') {
+            Log::info("RawArticle created: ID {$rawArticle->id}. Auto-dispatching ProcessArticleWithAIJob.");
+            ProcessArticleWithAIJob::dispatch($rawArticle);
+        }
     }
 }
