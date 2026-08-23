@@ -464,19 +464,12 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $article->ai_metadata = $meta;
         }
 
-        // Only publish if safety-net didn't already flag as draft (e.g. no images)
-        // --- RATE LIMITING: Check if we can publish now ---
-        // Prevents publishing patterns that search engines could flag as automated.
-        $canPublish = $this->canPublishNow($categoryId);
-
-        if ($article->status !== 'draft') {
-            if ($canPublish) {
-                $article->status = 'published';
-            } else {
-                // Rate limit hit — keep as draft, will be picked up by scheduler
-                $article->status = 'draft';
-                Log::info("Article {$article->id} kept as draft — rate limit reached. Will publish when limits reset.");
-            }
+        // Publish article directly if images were generated
+        if ($imageCount > 0) {
+            $article->status = 'published';
+            $article->published_at = $article->published_at ?? now();
+        } else {
+            $article->status = 'draft';
         }
         $article->save();
 
