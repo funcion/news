@@ -55,7 +55,7 @@
                     @if($article->user?->avatar_url)
                         <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm object-cover">
                     @else
-                        <div class="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-sm shrink-0 uppercase select-none" style="background-color: #0284c7 !important; color: #ffffff !important;">
+                        <div class="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-sm shrink-0 uppercase select-none" style="background-color: #2b7fff !important; color: #ffffff !important;">
                             {{ $article->user?->initials ?? 'LF' }}
                         </div>
                     @endif
@@ -151,7 +151,7 @@
                     @if($article->user?->avatar_url)
                         <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                     @else
-                        <div class="relative h-20 w-20 rounded-lg flex items-center justify-center font-bold text-2xl border-2 border-white dark:border-gray-800 shadow-xl shrink-0 uppercase select-none" style="background-color: #0284c7 !important; color: #ffffff !important;">
+                        <div class="relative h-20 w-20 rounded-lg flex items-center justify-center font-bold text-2xl border-2 border-white dark:border-gray-800 shadow-xl shrink-0 uppercase select-none" style="background-color: #2b7fff !important; color: #ffffff !important;">
                             {{ $article->user?->initials ?? 'LF' }}
                         </div>
                     @endif
