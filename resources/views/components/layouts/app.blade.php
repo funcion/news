@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                        <!-- Centered Search Modal (Explicit Fixed Width 560px & Centered) -->
+                            <!-- Centered Search Modal (Generous Grid Width ~720px & Ample Padding) -->
     <div x-data="{
             open: false,
             query: '',
@@ -637,41 +637,41 @@
         <!-- Backdrop to close -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Container (Fixed Width 560px, Perfectly Centered) -->
-        <div style="width: 560px !important; max-width: calc(100vw - 2rem) !important;" 
-             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 z-10 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Modal Container (Generous width ~720px, max-w-3xl) -->
+        <div style="width: 720px !important; max-width: calc(100vw - 2rem) !important;" 
+             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 z-10 animate-in fade-in zoom-in-95 duration-150">
             
-            <!-- Search Form -->
+            <!-- Search Form with generous padding -->
             <form @submit.prevent="submitSearch()" class="relative">
                 <input x-ref="modalSearchInput"
                        x-model="query"
                        @input.debounce.200ms="search()"
                        type="text"
                        autocomplete="off"
-                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar...' : 'Search...' }}"
+                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis, IA...' : 'Search tech news, analyses, AI...' }}"
                        style="color: #0f172a !important; background-color: #f1f5f9 !important;"
                        :style="isDarkMode ? 'color: #ffffff !important; background-color: #1e293b !important;' : 'color: #0f172a !important; background-color: #f1f5f9 !important;'"
-                       class="w-full rounded-xl pl-4 pr-11 py-3 text-sm font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
+                       class="w-full rounded-xl pl-5 pr-14 py-3.5 text-sm sm:text-base font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
                 
-                <!-- Search Icon & Spinner on RIGHT side -->
-                <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
+                <!-- Search Icon & Spinner with generous right offset (right-5) -->
+                <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </span>
-                    <svg x-show="!loading" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg x-show="!loading" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
             </form>
 
             <!-- Results Dropdown -->
-            <div x-show="articles.length > 0" class="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 max-h-64 overflow-y-auto">
+            <div x-show="articles.length > 0" class="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 max-h-72 overflow-y-auto">
                 <ul class="divide-y divide-slate-100 dark:divide-slate-800/80">
                     <template x-for="item in articles" :key="item.id">
                         <li class="py-2.5">
-                            <a :href="item.url" class="flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
-                                <span x-text="item.title" class="line-clamp-1"></span>
-                                <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
+                            <a :href="item.url" class="flex items-center justify-between gap-4 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+                                <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 hover:text-cyan-600 dark:hover:text-cyan-400"></span>
+                                <span x-show="item.date" x-text="item.date" class="text-xs text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
                             </a>
                         </li>
                     </template>
@@ -679,14 +679,14 @@
 
                 <div x-show="viewAllUrl" class="pt-3 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
                     <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
-                        {{ app()->getLocale() === 'es' ? 'Ver todos los resultados →' : 'View all results →' }}
+                        {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
                     </a>
                 </div>
             </div>
 
             <!-- Empty State -->
             <div x-show="hasSearched && articles.length === 0 && !loading" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 py-3">
-                {{ app()->getLocale() === 'es' ? 'No se encontraron resultados' : 'No results found' }}
+                {{ app()->getLocale() === 'es' ? 'No se encontraron resultados con esa búsqueda.' : 'No results found.' }}
             </div>
         </div>
     </div>
