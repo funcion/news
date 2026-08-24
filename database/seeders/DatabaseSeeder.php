@@ -91,6 +91,18 @@ class DatabaseSeeder extends Seeder
                 'slug_en' => 'science-innovation',
                 'slug_es' => 'ciencia-innovacion',
             ],
+            [
+                'en' => 'Hardware & Gadgets',
+                'es' => 'Hardware & Gadgets',
+                'slug_en' => 'hardware-gadgets',
+                'slug_es' => 'hardware-gadgets',
+            ],
+            [
+                'en' => 'Web Design & UX/UI',
+                'es' => 'Diseño Web & UX/UI',
+                'slug_en' => 'web-design-ux-ui',
+                'slug_es' => 'diseno-web-ux-ui',
+            ],
         ];
 
         foreach ($categories as $catData) {
