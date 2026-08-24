@@ -264,26 +264,36 @@ app/
 
 ---
 
-## 🔜 Roadmap
+## 🔜 Roadmap y Estado del Proyecto
 
-### Fase 1 (Completada ✅)
-- [x] Ingesta RSS manual
-- [x] Pipeline IA: clasificación → redacción → publicación
-- [x] Imágenes BI con SiliconFlow FLUX
-- [x] Admin Filament completo
-- [x] Frontend responsive EN/ES
-- [x] Dark/Light mode
+### Fase 1: Arquitectura y Pipeline Base (Completada ✅)
+- [x] Pipeline IA autónomo: Clasificación → Redacción Bilingüe (EN/ES) → Publicación automática
+- [x] Generación de imágenes fotorrealistas WebP con SiliconFlow FLUX.1
+- [x] Panel de control Filament 5 completo con tooltips y glosario de ingesta
+- [x] Frontend responsive moderno EN/ES con Dark/Light mode y enlaces a redes sociales
+- [x] 10 Perfiles de redactores editoriales humanos E-E-A-T
 
-### Fase 2 (En desarrollo)
-- [ ] Scheduler RSS automático (`everyFiveMinutes`)
-- [x] Ably Realtime WebSocket configurado y funcionando (broadcast en vivo)
-- [ ] Fuentes RSS reales configuradas (20+ feeds)
-- [ ] Embeddings pgvector para artículos relacionados
-- [ ] SEO XML Sitemap automático
+### Fase 2: Automatización e Indexación SEO (Completada ✅)
+- [x] Scheduler RSS autónomo por cron cada 60s (`rss:fetch`) gestionado con Supervisor y Horizon
+- [x] Ably Realtime WebSocket configurado para actualizaciones en vivo
+- [x] 62 Fuentes RSS activas categorizadas
+- [x] Suite completa de XML Sitemaps (`/sitemap.xml`, `/sitemap-news.xml`, `/sitemap-articles-en.xml`, `/sitemap-articles-es.xml`, `/sitemap-categories.xml`, `/sitemap-tags.xml`, `/sitemap-images.xml`)
+- [x] Integración de IndexNow para indexación instantánea en Bing y Yandex
+- [x] Archivo `robots.txt` para control de rastreo y protección del panel de administración
 
-### Fase 3 (Futuro)
-- [ ] Newsletter (subscribers + email)
-- [ ] Monetización (afiliados, ads, sponsorships)
-- [ ] Multi-nicho (Ciberseguridad como nicho complementario)
-- [ ] CDN (Cloudflare) para assets
-- [ ] Analytics dashboard (Laravel Pulse)
+### Checklist Mínimo para Salir a Producción (En Servidor VPS):
+1. **Configurar Dominio**: Apuntar los registros DNS A/AAAA a la IP del VPS.
+2. **Variables `.env` de Producción**:
+   - `APP_ENV=production`
+   - `APP_DEBUG=false`
+   - `APP_URL=https://tudominio.com`
+   - Claves de API (`OPENROUTER_API_KEY`, `SILICONFLOW_API_KEY`, `ABLY_KEY`).
+3. **Persistencia de Imágenes**: Configurar Cloudflare R2 (`MEDIA_DISK=r2`) o volumen Docker persistente en `./storage/app/public`.
+4. **Caché y Optimización**: Ejecutar `php artisan optimize` (`config:cache`, `route:cache`, `view:cache`).
+5. **Supervisor Activo**: Verificar que el contenedor `noticias_horizon` o el daemon de supervisor mantenga corriendo Horizon y el Scheduler.
+
+### Fase 3: Crecimiento y Monetización (Post-Lanzamiento 🚀)
+- [ ] Sistema de Newsletter / Suscriptores
+- [ ] Espacios publicitarios optimizados (Google AdSense / Mediavine / Sponsors)
+- [ ] Búsqueda semántica vectorial avanzada con `pgvector`
+- [ ] Dashboard de analítica y rendimiento con Laravel Pulse
