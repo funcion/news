@@ -429,7 +429,7 @@
     </main>
 
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 transition-colors" style="padding-top: 70px; padding-bottom: 70px;">
+    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 transition-colors" style="padding-top: 70px; padding-bottom: 20px;">
         <style>
             .footer-grid-3cols {
                 display: grid !important;
