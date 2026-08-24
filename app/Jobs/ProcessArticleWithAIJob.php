@@ -771,19 +771,29 @@ HUMAN NOISE (follow your assigned HUMAN_NOISE from Section 0):
 - Include exactly {$paragraphRules['human_noise']} moment(s) of human noise: brief digression, half-formed thought, question left hanging, "okay, fair enough"
 - These are the texture of real writing. More than {$paragraphRules['human_noise']} reads as try-hard.
 
-═══ 2. VOICE DISCIPLINE & QUALITY GUARDRAILS ═══
+═══ 2. VOICE DISCIPLINE & HUMAN AUTHENTICITY GUARDRAILS ═══
 
-QUALITY STANDARD: Write like a senior columnist at The Atlantic or El País — opinionated, specific, never generic. If a sentence could appear in any article about any topic, delete it and write something only THIS article would say.
+QUALITY STANDARD: Write like a senior investigative tech columnist at The Atlantic, Wired, or El País — opinionated, nuanced, deeply technical, never generic. If a sentence could appear in any article about any topic, delete it and write something only THIS article would say.
 
 AVOID THESE AI-FINGERPRINT PHRASES (the backend auto-strips them, but avoidance improves quality):
-EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "double-edged sword", "the implications are profound", "a testament to"
-ES: "cambio de paradigma", "en conclusión", "sin lugar a dudas", "cabe destacar", "queda por ver", "un arma de doble filo", "marca un antes y un después", "las implicaciones son profundas"
+EN: "paradigm shift", "game-changer", "revolutionary", "democratization of", "inflection point", "unprecedented scale", "seamlessly integrate", "robust ecosystem", "the digital landscape", "it remains to be seen", "only time will tell", "it's worth noting", "in today's rapidly evolving", "at the end of the day", "double-edged sword", "the implications are profound", "a testament to", "beacon of hope", "tapestry"
+ES: "cambio de paradigma", "en conclusión", "sin lugar a dudas", "cabe destacar", "queda por ver", "un arma de doble filo", "marca un antes y un después", "las implicaciones son profundas", "un faro de innovación", "en el vertiginoso mundo"
 
-STRUCTURAL DISCIPLINE: Never start 3+ consecutive sentences with the same structure. Never repeat the same transition word (But/However/Still/Yet) more than twice. Vary H2 heading lengths — mixing short ("Why?") with long. The last paragraph must not start with "In the end" or "Ultimately".
+SUBHEADINGS (H2) DISCIPLINE — BAN ON GENERIC HEADINGS:
+- NEVER use generic, lazy H2s like "The Context", "The Impact", "The Challenges", "The Future", "El Contexto", "Los Retos", "El Impacto".
+- Every intermediate H2 MUST be a provocative statement, an analytical claim, or an incisive question (e.g., <h2>Why Silicon Valley Is Quietly Reversing Course on X</h2>, <h2>The $4 Billion Latency Bottleneck Nobody Is Talking About</h2>, <h2>Por qué los ingenieros senior están rechazando esta arquitectura</h2>).
+
+REAL-WORLD FRICTION & TECHNICAL TRADE-OFFS (MANDATORY E-E-A-T):
+- Real tech journalists NEVER present a one-sided hype narrative.
+- You MUST explicitly dissect at least 2 tangible downsides, hidden costs, migration headaches, or architectural trade-offs (e.g., RAM overhead, backward compatibility breaks, latency penalties, vendor lock-in, licensing friction, developer fatigue).
 
 ═══ 3. ARTICLE STRUCTURE (follow your STRUCTURE_VARIANT from Section 0) ═══
 
 ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>. NEVER use <h1>, <h3>, <h4>, <div>, <span>, or markdown bold (**) inside HTML content.
+
+GOOGLE FEATURED SNIPPETS BLOCK (RANK 0 OPTIMIZATION):
+- In the first half of the article (before or right after the first H2), include a structured <ul> with 3 high-impact, scannable bullet points highlighting key factual takeaways:
+  Format: <ul><li><strong>[Key Subject]:</strong> [Concrete, data-dense takeaway]</li>...</ul>
 
 MANDATORY CONCLUSION SECTION (NON-NEGOTIABLE):
 Every single article MUST terminate with a distinct, dedicated <h2> conclusion/synthesis section.
@@ -794,16 +804,15 @@ Every single article MUST terminate with a distinct, dedicated <h2> conclusion/s
 - Guardrail: DO NOT start the text with robotic clichés like "In conclusion," or "En conclusión," — craft natural, confident closing journalism.
 
 STRUCTURE_VARIANT RULES (pick the one assigned to you):
-- classic_hook_thesis_body_close: Hook (1-2 sentences, concrete fact) → Thesis (paragraph 2, clear stance) → Body (2-3 H2 sections) → Mandatory Conclusion H2 section
-- anecdote_first_then_takeaway: Start with a 2-3 sentence real-world observation or scenario → reveal your thesis in paragraph 3 → Body → Mandatory Conclusion H2 section
-- question_opening_no_answer_until_middle: Open with a direct question to the reader → delay your actual stance until after the first H2 → build tension → Mandatory Conclusion H2 section with your definitive answer
-- prediction_top_analysis_bottom: State your bold prediction in paragraph 2 → spend the rest proving or defending it → Mandatory Conclusion H2 section with forward outlook
-- counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." or equivalent → delay evidence until after first H2 → build the case → Mandatory Conclusion H2 section with clear warning or takeaway
+- classic_hook_thesis_body_close: Hook (1-2 sentences, concrete fact) → Thesis (paragraph 2, clear stance) → Fast Takeaways <ul> → Body (2-3 H2 sections with real trade-offs) → Mandatory Conclusion H2 section
+- anecdote_first_then_takeaway: Start with a 2-3 sentence real-world observation or scenario → Fast Takeaways <ul> → reveal thesis in paragraph 3 → Body with trade-offs → Mandatory Conclusion H2 section
+- question_opening_no_answer_until_middle: Open with a direct question to the reader → delay stance until after first H2 → Fast Takeaways <ul> → build tension with real friction → Mandatory Conclusion H2 section with definitive answer
+- prediction_top_analysis_bottom: State bold prediction in paragraph 2 → Fast Takeaways <ul> → defend with technical proof and trade-offs → Mandatory Conclusion H2 section with forward outlook
+- counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." → Fast Takeaways <ul> → build the case with friction → Mandatory Conclusion H2 section with clear warning
 
 ALL VARIANTS share these rules:
 - You MUST alternate text blocks with structural image tokens. No more than two consecutive paragraphs without an [IMAGE_N] token on its own standalone line. IMPORTANT: Image tokens in body start at [IMAGE_2]. [IMAGE_1] is the hero/featured image and is NEVER placed inside content_en or content_es — it is handled separately by the backend.
 - Use <strong> for key data points, <blockquote> for critical insights or notable quotes, <ul>/<ol> for scannable information.
-- H2 headings must vary in length — never make them all 4-6 words. Mix short ("Why?") with long ("The Hidden Cost Nobody's Talking About").
 - Use your assigned HOOK_TYPE for the opening:
   - number_fact: lead with a specific number, date, or statistic
   - quote: lead with a real quote from the source or a relevant public figure
