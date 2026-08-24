@@ -110,10 +110,16 @@ class DatabaseSeeder extends Seeder
                 'slug_es' => 'open-source-linux',
             ],
             [
-                'en' => 'Blockchain & Web3',
-                'es' => 'Blockchain & Web3',
-                'slug_en' => 'blockchain-web3',
-                'slug_es' => 'blockchain-web3',
+                'en' => 'Cryptocurrency & Web3',
+                'es' => 'Criptomonedas & Web3',
+                'slug_en' => 'crypto-web3',
+                'slug_es' => 'criptomonedas-web3',
+            ],
+            [
+                'en' => 'FinTech & Digital Economy',
+                'es' => 'FinTech & Economía Digital',
+                'slug_en' => 'fintech-digital-economy',
+                'slug_es' => 'fintech-economia-digital',
             ],
             [
                 'en' => 'Gaming & 3D Tech',
@@ -126,6 +132,36 @@ class DatabaseSeeder extends Seeder
                 'es' => 'Ciencia & Innovación',
                 'slug_en' => 'science-innovation',
                 'slug_es' => 'ciencia-innovacion',
+            ],
+            [
+                'en' => 'IoT & Smart Home',
+                'es' => 'IoT & Hogar Inteligente',
+                'slug_en' => 'iot-smart-home',
+                'slug_es' => 'iot-hogar-inteligente',
+            ],
+            [
+                'en' => 'No-Code & Automation',
+                'es' => 'No-Code & Automatización',
+                'slug_en' => 'nocode-automation',
+                'slug_es' => 'nocode-automatizacion',
+            ],
+            [
+                'en' => 'Virtual Reality & Spatial Computing',
+                'es' => 'Realidad Virtual & Computación Espacial',
+                'slug_en' => 'vr-spatial-computing',
+                'slug_es' => 'vr-computacion-espacial',
+            ],
+            [
+                'en' => 'ClimateTech & Clean Energy',
+                'es' => 'ClimaTech & Energía Limpia',
+                'slug_en' => 'climatech-clean-energy',
+                'slug_es' => 'climatech-energia-limpia',
+            ],
+            [
+                'en' => 'Tech Career & Productivity',
+                'es' => 'Carrera Tech & Productividad',
+                'slug_en' => 'tech-career-productivity',
+                'slug_es' => 'carrera-tech-productividad',
             ],
         ];
 
