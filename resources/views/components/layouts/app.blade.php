@@ -139,6 +139,8 @@
             this.isScrolled = window.scrollY > 10;
         }
     }">
+    {{-- Custom Body Codes (GTM noscript, Body Start JS) --}}
+    {!! \App\Models\CustomCode::getActive('header_body') !!}
     
     <!-- Premium Header Wrapper -->
     <div class="sticky top-0 z-50 w-full">
