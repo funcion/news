@@ -145,7 +145,7 @@
     <!-- Premium Header Wrapper -->
     <div class="fixed top-0 inset-x-0 z-50 w-full">
         <!-- Header Bar -->
-        <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-sm"
+        <header class="w-full fixed-main-header backdrop-blur-md transition-all duration-300 border-b border-slate-200/90 dark:border-slate-800/90 bg-white/90 dark:bg-slate-900/90 shadow-sm"
                 x-bind:class="isScrolled ? 'shadow-sm' : ''">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
