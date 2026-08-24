@@ -146,7 +146,44 @@
     <div class="sticky top-0 z-50 w-full">
         <!-- Header Bar -->
         <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-100 dark:border-white/5 bg-white/80 dark:bg-slate-950/80"
-                x-bind:class="isScrolled ? 'shadow-sm' : ''">
+                x-bind:class="isScrolled ? 'shadow-sm' : ''"
+                x-data="{
+                    searchOpen: false,
+                    searchQuery: '',
+                    searchLoading: false,
+                    searchResults: [],
+                    searchViewAllUrl: null,
+                    hasSearched: false,
+                    async doSearch() {
+                        if (this.searchQuery.trim().length < 2) {
+                            this.searchResults = [];
+                            this.hasSearched = false;
+                            this.searchLoading = false;
+                            return;
+                        }
+                        this.searchLoading = true;
+                        try {
+                            const res = await axios.get('/api/search', {
+                                params: { q: this.searchQuery, locale: '{{ app()->getLocale() }}' }
+                            });
+                            this.searchResults = res.data.articles || [];
+                            this.searchViewAllUrl = res.data.viewAllUrl;
+                            this.hasSearched = true;
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            this.searchLoading = false;
+                        }
+                    },
+                    submitSearch() {
+                        if (this.searchQuery.trim().length > 0) {
+                            const target = '{{ app()->getLocale() === 'es' ? '/es/search?q=' : '/search?q=' }}' + encodeURIComponent(this.searchQuery.trim());
+                            window.location.href = target;
+                        }
+                    }
+                }"
+                @open-search-modal.window="searchOpen = true; $nextTick(() => $refs.headerSearchInput.focus())"
+                @keydown.escape.window="searchOpen = false">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
                 <!-- Logo -->
@@ -210,110 +247,15 @@
 
                     <!-- Actions -->
                     <div class="flex items-center gap-2 sm:gap-4 border-l border-gray-100 dark:border-white/5 pl-4 sm:pl-8">
-                                                <!-- Search Dropdown Popover (Compact, Non-fullwidth on PC, Perfectly Visible Text) -->
-                        <div class="relative" 
-                             x-data="{
-                                open: false,
-                                query: '',
-                                loading: false,
-                                articles: [],
-                                viewAllUrl: null,
-                                hasSearched: false,
-                                async search() {
-                                    if (this.query.trim().length < 2) {
-                                        this.articles = [];
-                                        this.hasSearched = false;
-                                        this.loading = false;
-                                        return;
-                                    }
-                                    this.loading = true;
-                                    try {
-                                        const res = await axios.get('/api/search', {
-                                            params: { q: this.query, locale: '{{ app()->getLocale() }}' }
-                                        });
-                                        this.articles = res.data.articles || [];
-                                        this.viewAllUrl = res.data.viewAllUrl;
-                                        this.hasSearched = true;
-                                    } catch (e) {
-                                        console.error(e);
-                                    } finally {
-                                        this.loading = false;
-                                    }
-                                },
-                                submitSearch() {
-                                    if (this.query.trim().length > 0) {
-                                        const target = '{{ app()->getLocale() === 'es' ? '/es/search?q=' : '/search?q=' }}' + encodeURIComponent(this.query.trim());
-                                        window.location.href = target;
-                                    }
-                                }
-                             }"
-                             @open-search-modal.window="open = true; setTimeout(() => $refs.popoverInput.focus(), 100)"
-                             @keydown.escape.window="open = false"
-                             @click.away="open = false">
-                             
-                            <!-- Search Icon Button (Header) -->
-                            <button @click="open = !open; if(open) setTimeout(() => $refs.popoverInput.focus(), 100)" 
-                                    type="button"
-                                    aria-label="{{ __('ui.search') }}"
-                                    class="p-2 text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-
-                            <!-- Compact Search Popover Menu -->
-                            <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
-                                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                                 x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                                 x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
-                                 x-cloak
-                                 style="z-index: 999999 !important;"
-                                 class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3">
-                                
-                                <form @submit.prevent="submitSearch()" class="relative">
-                                    <input x-ref="popoverInput"
-                                           x-model="query"
-                                           @input.debounce.200ms="search()"
-                                           type="text"
-                                           autocomplete="off"
-                                           placeholder="{{ app()->getLocale() === 'es' ? 'Buscar...' : 'Search...' }}"
-                                           class="w-full text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-3 pr-9 py-2 text-sm font-semibold outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors"
-                                           style="color: #0f172a; background-color: #f1f5f9;"
-                                           :style="isDarkMode ? 'color: #ffffff !important; background-color: #1e293b !important;' : 'color: #0f172a !important; background-color: #f1f5f9 !important;'">
-                                    
-                                    <!-- Search Icon on RIGHT -->
-                                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
-                                        <span x-show="loading" class="text-cyan-500 animate-spin">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                        </span>
-                                        <svg x-show="!loading" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                    </div>
-                                </form>
-
-                                <!-- Live Results -->
-                                <div x-show="articles.length > 0" class="mt-2.5 border-t border-slate-100 dark:border-slate-800 pt-2 max-h-64 overflow-y-auto">
-                                    <ul class="divide-y divide-slate-100 dark:divide-slate-800/80">
-                                        <template x-for="item in articles" :key="item.id">
-                                            <li class="py-1.5">
-                                                <a :href="item.url" class="block px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                                    <span x-text="item.title" class="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 block hover:text-cyan-600 dark:hover:text-cyan-400"></span>
-                                                    <span x-show="item.date" x-text="item.date" class="text-[10px] text-slate-400 dark:text-slate-500 font-normal mt-0.5 block"></span>
-                                                </a>
-                                            </li>
-                                        </template>
-                                    </ul>
-
-                                    <div x-show="viewAllUrl" class="pt-2 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
-                                        <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
-                                            {{ app()->getLocale() === 'es' ? 'Ver todos los resultados →' : 'View all results →' }}
-                                        </a>
-                                    </div>
-                                </div>
+                                                <!-- Search Toggle Button (Desktop) -->
+                        <button @click="searchOpen = !searchOpen; if(searchOpen) $nextTick(() => $refs.headerSearchInput.focus())" 
+                                type="button"
+                                aria-label="{{ __('ui.search') }}"
+                                class="p-2 text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
 
                                 <!-- Empty State -->
                                 <div x-show="hasSearched && articles.length === 0 && !loading" class="mt-2 text-center text-xs text-slate-500 dark:text-slate-400 py-3">
@@ -341,6 +283,73 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expandable Search Bar Sub-row (100% adapted to layout grid max-w-7xl, perfectly responsive, high contrast) -->
+            <div x-show="searchOpen" 
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 x-cloak
+                 class="border-t border-slate-100 dark:border-slate-800/80 py-3 bg-white/95 dark:bg-slate-950/95">
+                
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-3xl mx-auto">
+                        <form @submit.prevent="submitSearch()" class="relative flex items-center">
+                            <input x-ref="headerSearchInput"
+                                   x-model="searchQuery"
+                                   @input.debounce.200ms="doSearch()"
+                                   type="text"
+                                   placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis, IA...' : 'Search tech news, analyses, AI...' }}"
+                                   style="color: #0f172a !important; background-color: #f1f5f9 !important;"
+                                   :style="isDarkMode ? 'color: #ffffff !important; background-color: #1e293b !important;' : 'color: #0f172a !important; background-color: #f1f5f9 !important;'"
+                                   class="w-full rounded-lg pl-4 pr-20 py-2.5 text-sm font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
+                            
+                            <!-- Actions on the right side of the input -->
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                <span x-show="searchLoading" class="text-cyan-500 animate-spin">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </span>
+                                
+                                <button type="submit" class="text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors p-1" title="{{ __('ui.search') }}">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                </button>
+
+                                <button @click="searchOpen = false" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1" title="Cerrar">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Results List -->
+                        <div x-show="searchResults.length > 0" class="mt-2 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 max-h-72 overflow-y-auto">
+                            <ul class="divide-y divide-slate-100 dark:divide-slate-800/80">
+                                <template x-for="item in searchResults" :key="item.id">
+                                    <li class="py-2 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors">
+                                        <a :href="item.url" class="flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400">
+                                            <span x-text="item.title" class="line-clamp-1"></span>
+                                            <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+
+                            <div x-show="searchViewAllUrl" class="pt-2 text-center border-t border-slate-100 dark:border-slate-800 mt-1">
+                                <a :href="searchViewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
+                                    {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div x-show="hasSearched && searchResults.length === 0 && !searchLoading" class="mt-2 p-3 bg-white dark:bg-slate-900 rounded-xl shadow-md border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
+                            {{ app()->getLocale() === 'es' ? 'No se encontraron artículos con esa palabra.' : 'No articles found with those keywords.' }}
+                        </div>
                     </div>
                 </div>
             </div>
