@@ -53,6 +53,10 @@ Route::group([
     // --- PUBLIC ROUTES ---
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
+    // Contact Us & Inquiries
+    Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
+    Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
+
     // Legal and Editorial Transparency Routes
     Route::get('/terms', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
     Route::get('/privacy', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
