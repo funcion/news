@@ -137,7 +137,7 @@ class FrontendController extends Controller
             $xml .= '        <description>' . $excerpt . '</description>' . "\n";
             $xml .= '        <pubDate>' . $pubDate . '</pubDate>' . "\n";
             if ($article->user) {
-                $xml .= '        <author>' . e($article->user->email ?? 'editorial@glodaxia.com') . '</author>' . "\n";
+                $xml .= '        <author>' . e($article->user->email ?? 'hi@glodaxia.com') . '</author>' . "\n";
             }
             foreach ($article->tags as $tag) {
                 $xml .= '        <category>' . e($tag->getTranslation('name', 'en') ?? $tag->name) . '</category>' . "\n";
