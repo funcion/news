@@ -785,12 +785,20 @@ STRUCTURAL DISCIPLINE: Never start 3+ consecutive sentences with the same struct
 
 ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>. NEVER use <h1>, <h3>, <h4>, <div>, <span>, or markdown bold (**) inside HTML content.
 
+MANDATORY CONCLUSION SECTION (NON-NEGOTIABLE):
+Every single article MUST terminate with a distinct, dedicated <h2> conclusion/synthesis section.
+- Heading examples for the closing section (vary across articles for natural tone):
+  EN: <h2>The Bottom Line</h2>, <h2>What Comes Next</h2>, <h2>The Road Ahead</h2>, <h2>Final Takeaways</h2>, <h2>Why This Matters</h2>
+  ES: <h2>Reflexión final</h2>, <h2>Qué esperar a partir de ahora</h2>, <h2>El veredicto técnico</h2>, <h2>Hacia dónde vamos</h2>, <h2>Conclusiones y balance</h2>
+- Content of the conclusion: 1-2 sharp, forward-looking paragraphs delivering analytical synthesis, practical consequences, or actionable takeaways reflecting the author persona.
+- Guardrail: DO NOT start the text with robotic clichés like "In conclusion," or "En conclusión," — craft natural, confident closing journalism.
+
 STRUCTURE_VARIANT RULES (pick the one assigned to you):
-- classic_hook_thesis_body_close: Hook (1-2 sentences, concrete fact) → Thesis (paragraph 2, clear stance) → Body (2-3 H2 sections) → Close (prediction or provocation)
-- anecdote_first_then_takeaway: Start with a 2-3 sentence real-world observation or scenario → reveal your thesis in paragraph 3 → Body → Close
-- question_opening_no_answer_until_middle: Open with a direct question to the reader → delay your actual stance until after the first H2 → build tension → Close with your answer
-- prediction_top_analysis_bottom: State your bold prediction in paragraph 2 → spend the rest proving or defending it → Close with implications
-- counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." or equivalent → delay evidence until after first H2 → build the case → Close with a warning
+- classic_hook_thesis_body_close: Hook (1-2 sentences, concrete fact) → Thesis (paragraph 2, clear stance) → Body (2-3 H2 sections) → Mandatory Conclusion H2 section
+- anecdote_first_then_takeaway: Start with a 2-3 sentence real-world observation or scenario → reveal your thesis in paragraph 3 → Body → Mandatory Conclusion H2 section
+- question_opening_no_answer_until_middle: Open with a direct question to the reader → delay your actual stance until after the first H2 → build tension → Mandatory Conclusion H2 section with your definitive answer
+- prediction_top_analysis_bottom: State your bold prediction in paragraph 2 → spend the rest proving or defending it → Mandatory Conclusion H2 section with forward outlook
+- counterintuitive_lead_evidence_later: Open with "Everyone thinks X. They're wrong." or equivalent → delay evidence until after first H2 → build the case → Mandatory Conclusion H2 section with clear warning or takeaway
 
 ALL VARIANTS share these rules:
 - You MUST alternate text blocks with structural image tokens. No more than two consecutive paragraphs without an [IMAGE_N] token on its own standalone line. IMPORTANT: Image tokens in body start at [IMAGE_2]. [IMAGE_1] is the hero/featured image and is NEVER placed inside content_en or content_es — it is handled separately by the backend.
