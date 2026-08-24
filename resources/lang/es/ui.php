@@ -52,7 +52,7 @@ return array (
   'privacy_policy' => 'Política de Privacidad',
   'cookie_policy' => 'Política de Cookies',
   'editorial_policy' => 'Política Editorial & IA',
-  'editorial_disclosure_footer' => 'Combinamos periodismo de investigación con asistencia avanzada de IA. Todo el contenido es rigurosamente revisado, verificado y curado por nuestro equipo editorial humano.',
+  'editorial_disclosure_footer' => 'Noticias, análisis y tendencias tecnológicas globales. Combinamos herramientas avanzadas de inteligencia artificial con un estricto criterio y curaduría editorial humana.',
   'cookie_banner_text' => 'Utilizamos cookies técnicas y analíticas esenciales para ofrecerte la mejor experiencia y recordar tus preferencias.',
   'accept_all' => 'Aceptar todas',
   'decline_non_essential' => 'Solo esenciales',
