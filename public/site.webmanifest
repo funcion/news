@@ -1,0 +1,16 @@
+{
+    "name": "Glodaxia - Tech & AI Magazine",
+    "short_name": "Glodaxia",
+    "description": "Breaking tech news, artificial intelligence analyses, and global digital innovation dispatches.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#020617",
+    "theme_color": "#06b6d4",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

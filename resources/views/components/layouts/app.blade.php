@@ -36,31 +36,64 @@
     <!-- Robots (index/follow by default) -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     
-    <!-- Open Graph (Facebook, LinkedIn) -->
+    <!-- Favicons & Mobile Web App Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#06b6d4">
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp, Telegram) -->
     <meta property="og:site_name" content="{{ config('app.name', 'Glodaxia') }}" />
     <meta property="og:url" content="{{ url()->current() }}" />
-    @if(isset($ogTitle))
-        <meta property="og:title" content="{{ $ogTitle }}" />
-    @endif
-    @if(isset($ogDescription))
-        <meta property="og:description" content="{{ $ogDescription }}" />
-    @endif
-    @if(isset($ogImage))
-        <meta property="og:image" content="{{ $ogImage }}" />
-    @endif
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}" />
+    <meta property="og:locale" content="{{ app()->getLocale() === 'es' ? 'es_ES' : 'en_US' }}" />
+    <meta property="og:title" content="{{ $ogTitle ?? ($title ?? config('app.name', 'Glodaxia')) }}" />
+    <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? __('ui.meta_desc')) }}" />
+    <meta property="og:image" content="{{ $ogImage ?? asset('images/glodaxia-og-cover.svg') }}" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="{{ isset($ogImage) ? 'summary_large_image' : 'summary' }}" />
+    <!-- Twitter Card (X, Threads) -->
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="{{ url()->current() }}" />
-    @if(isset($ogTitle))
-        <meta name="twitter:title" content="{{ $ogTitle }}" />
-    @endif
-    @if(isset($ogDescription))
-        <meta name="twitter:description" content="{{ $ogDescription }}" />
-    @endif
-    @if(isset($ogImage))
-        <meta name="twitter:image" content="{{ $ogImage }}" />
-    @endif
+    <meta name="twitter:title" content="{{ $ogTitle ?? ($title ?? config('app.name', 'Glodaxia')) }}" />
+    <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? __('ui.meta_desc')) }}" />
+    <meta name="twitter:image" content="{{ $ogImage ?? asset('images/glodaxia-og-cover.svg') }}" />
+
+    <!-- Global Schema.org JSON-LD (WebSite SearchAction & Organization) -->
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'Organization',
+                '@id' => url('/') . '/#organization',
+                'name' => 'Glodaxia',
+                'url' => url('/'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/glodaxia-logo.svg'),
+                ],
+                'email' => 'hi@glodaxia.com',
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => url('/') . '/#website',
+                'url' => url('/'),
+                'name' => 'Glodaxia',
+                'description' => 'Tech & AI Magazine: Breaking news, artificial intelligence, and digital innovation.',
+                'publisher' => [
+                    '@id' => url('/') . '/#organization',
+                ],
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => url('/search') . '?q={search_term_string}',
+                    'query-input' => 'required name=search_term_string',
+                ],
+                'inLanguage' => ['en', 'es'],
+            ],
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 
     <!-- Google Sans Font (SIL Open Font License) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
