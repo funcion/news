@@ -27,14 +27,18 @@ class SourceResource extends Resource
         return $form
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre de la Fuente')
+                    ->placeholder('Ej: TechCrunch, HackerNoon')
                     ->required(),
                 TextInput::make('url')
-                    ->label('Feed URL')
+                    ->label('Feed URL (RSS / Atom)')
+                    ->helperText('URL pública del archivo feed XML / RSS')
                     ->required()
                     ->url(),
                 Select::make('type')
+                    ->label('Tipo de Ingesta')
                     ->options([
-                        'rss' => 'RSS',
+                        'rss' => 'RSS (2.0)',
                         'atom' => 'Atom',
                         'json' => 'JSON Feed',
                         'scraping' => 'Scraping',
@@ -42,27 +46,33 @@ class SourceResource extends Resource
                     ->required()
                     ->default('rss'),
                 TextInput::make('category')
-                    ->helperText('Categoría principal de la fuente'),
+                    ->label('Categoría Sugerida')
+                    ->helperText('Categoría predeterminada asignada a esta fuente'),
                 TextInput::make('frequency')
                     ->label('Frecuencia (minutos)')
+                    ->helperText('Intervalo de consulta (ej. 60 = cada hora, 120 = cada 2 horas)')
                     ->numeric()
                     ->default(60)
                     ->required(),
                 TextInput::make('score')
+                    ->label('Puntuación de Salud')
+                    ->helperText('Aumenta (+2) con noticias nuevas, disminuye (-5) si falla la conexión')
                     ->numeric()
                     ->default(100)
                     ->disabled(),
                 Toggle::make('is_active')
+                    ->label('Activa')
+                    ->helperText('Activar o pausar la sincronización de este feed')
                     ->default(true),
                 Toggle::make('trusted')
                     ->label('Fuente Verificada')
-                    ->helperText('Las fuentes verificadas tienen prioridad en el procesamiento')
+                    ->helperText('Las fuentes verificadas tienen prioridad en la cola de procesamiento')
                     ->default(false),
                 TextInput::make('max_age_days')
                     ->label('Máx. Antigüedad (días)')
                     ->numeric()
-                    ->default(7)
-                    ->helperText('Rechazar artículos más antiguos que este número de días'),
+                    ->default(1)
+                    ->helperText('Descartar automáticamente noticias publicadas hace más de X días'),
             ]);
     }
 
@@ -71,30 +81,55 @@ class SourceResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('url')
-                    ->limit(30),
+                    ->label('URL')
+                    ->limit(25)
+                    ->tooltip(fn (Source $record): string => $record->url),
                 TextColumn::make('type')
+                    ->label('Tipo')
                     ->badge(),
                 TextColumn::make('frequency')
                     ->label('Freq (min)')
-                    ->numeric(),
-                TextColumn::make('score')
                     ->numeric()
-                    ->sortable(),
-                ToggleColumn::make('is_active'),
+                    ->sortable()
+                    ->tooltip('Intervalo en minutos entre cada consulta al feed por el programador.'),
+                TextColumn::make('score')
+                    ->label('Score (Salud)')
+                    ->numeric()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state >= 80 => 'success',
+                        $state >= 50 => 'warning',
+                        default => 'danger',
+                    })
+                    ->tooltip('Salud del feed: Sube (+2) con noticias nuevas, baja (-5) con errores.'),
+                ToggleColumn::make('is_active')
+                    ->label('Activa')
+                    ->tooltip('Activar o pausar la lectura de este feed.'),
                 ToggleColumn::make('trusted')
-                    ->label('Verificada'),
+                    ->label('Verificada')
+                    ->tooltip('Fuente oficial prioritaria en la cola de procesamiento editorial.'),
                 TextColumn::make('max_age_days')
                     ->label('Máx. Días')
-                    ->numeric(),
+                    ->numeric()
+                    ->sortable()
+                    ->tooltip('Filtro de frescura: Rechaza noticias con más de X días de antigüedad.'),
                 TextColumn::make('last_fetched_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Última Ingesta')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->tooltip('Fecha y hora del último escaneo completado con éxito.'),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_active'),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Estado Activo'),
+                Tables\Filters\TernaryFilter::make('trusted')
+                    ->label('Verificadas'),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

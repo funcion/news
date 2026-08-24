@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SourceResource\Pages;
 
 use App\Filament\Resources\SourceResource;
+use App\Filament\Widgets\SourcesGlossaryWidget;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,13 @@ class ListSources extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            SourcesGlossaryWidget::class,
         ];
     }
 
