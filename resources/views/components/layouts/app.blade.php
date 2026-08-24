@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                                            <!-- Modern Minimalist Spotlight Search Modal (Capsule Input Inside) -->
+                                                <!-- Modern Minimalist Spotlight Search Modal (Soft Minimalist Borders & Symmetrical Capsule) -->
     <div x-data="{
             open: false,
             query: '',
@@ -632,18 +632,18 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-slate-950/70 backdrop-blur-sm transition-opacity">
+         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-slate-950/60 backdrop-blur-sm transition-opacity">
          
         <!-- Backdrop to close -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Container -->
+        <!-- Modal Container (Soft Subtle Border) -->
         <div style="width: 680px !important; max-width: calc(100vw - 2rem) !important;" 
-             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
+             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-white/10 p-4 sm:p-5 z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
             
-            <!-- Minimalist Search Capsule (rounded-2xl with Magnifying Glass INSIDE) -->
+            <!-- Minimalist Search Capsule (Soft Border, Clean Padding) -->
             <form @submit.prevent="submitSearch()" 
-                  class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-100/90 dark:bg-slate-800/80 transition-all focus-within:border-cyan-500 focus-within:bg-white dark:focus-within:bg-slate-800/90 focus-within:ring-2 focus-within:ring-cyan-500/20">
+                  class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-slate-200/60 dark:border-white/10 bg-slate-50 dark:bg-slate-800/60 transition-all focus-within:border-cyan-500/50 focus-within:bg-white dark:focus-within:bg-slate-800/80 focus-within:ring-2 focus-within:ring-cyan-500/10">
                 
                 <!-- Magnifying Glass Icon inside capsule -->
                 <div class="flex items-center text-slate-400 dark:text-slate-400 shrink-0">
@@ -676,11 +676,11 @@
             </form>
 
             <!-- Results Dropdown -->
-            <div x-show="articles.length > 0" class="mt-3 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[55vh]">
+            <div x-show="articles.length > 0" class="mt-3 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-slate-800/40 max-h-[55vh]">
                 <ul class="space-y-0.5">
                     <template x-for="item in articles" :key="item.id">
                         <li>
-                            <a :href="item.url" class="flex items-center justify-between gap-4 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors group">
+                            <a :href="item.url" class="flex items-center justify-between gap-4 px-3.5 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group">
                                 <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></span>
                                 <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
                             </a>
@@ -688,7 +688,7 @@
                     </template>
                 </ul>
 
-                <div x-show="viewAllUrl" class="p-3 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
+                <div x-show="viewAllUrl" class="p-3 text-center border-t border-slate-100 dark:border-slate-800/50 mt-2">
                     <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
                         {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
                     </a>
