@@ -200,11 +200,19 @@
     </article>
 
     <x-slot:sidebar>
-        <!-- Newsletter Subscription Module (Premium Sidebar Version) -->
-        <div class="p-6 rounded-lg bg-slate-900 text-white relative overflow-hidden group border border-white/5 shadow-lg mb-8">
-            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
-            <h3 class="text-lg font-black tracking-tighter mb-2 relative z-10">{{ __('ui.newsletter_title') }}</h3>
-            <p class="text-zinc-200 text-xs leading-relaxed mb-6 relative z-10">{{ __('ui.newsletter_desc') }}</p>
+        <!-- Newsletter Subscription Module (Glodaxia Weekly - 100% Dark/Light Mode Compatible) -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white relative overflow-hidden group border border-slate-200 dark:border-slate-800 shadow-sm mb-8">
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all pointer-events-none"></div>
+            
+            <div class="flex items-center gap-2 mb-2 relative z-10">
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-widest border border-cyan-500/20">
+                    ✉️ Newsletter
+                </span>
+            </div>
+
+            <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-2 relative z-10">{{ __('ui.newsletter_title') }}</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-xs leading-relaxed mb-5 relative z-10 font-normal">{{ __('ui.newsletter_desc') }}</p>
+            
             <form x-data="{
                     email: '',
                     loading: false,
@@ -239,8 +247,18 @@
                 <template x-if="!submitted">
                     <div class="flex flex-col gap-3">
                         <label for="sidebar-newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
-                        <input id="sidebar-newsletter-email" x-model="email" name="email" type="email" required placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-base md:text-xs focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400 text-white">
-                        <button type="submit" :disabled="loading" class="w-full bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-[11px] font-black uppercase tracking-widest py-3 rounded-lg transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 text-white">
+                        <input id="sidebar-newsletter-email" 
+                               x-model="email" 
+                               name="email" 
+                               type="email" 
+                               required 
+                               placeholder="{{ __('ui.email_address') }}" 
+                               aria-label="{{ __('ui.email_address') }}" 
+                               class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-cyan-500/10 transition-all font-medium">
+                        
+                        <button type="submit" 
+                                :disabled="loading" 
+                                class="w-full bg-[#2b7fff] hover:bg-blue-600 active:scale-[0.98] disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider py-3 rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
                             <span x-show="!loading">{{ __('ui.subscribe_now') }}</span>
                             <span x-show="loading" class="flex items-center gap-2">
                                 <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -250,10 +268,10 @@
                     </div>
                 </template>
                 <template x-if="submitted">
-                    <div :class="isSuccess ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-100' : 'bg-rose-500/10 border-rose-500/30 text-rose-100'" class="p-3.5 rounded-lg border text-xs leading-relaxed flex flex-col gap-2.5">
-                        <p x-text="message" class="text-[12px] font-medium leading-relaxed mb-0"></p>
+                    <div :class="isSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'" class="p-3.5 rounded-xl border text-xs leading-relaxed flex flex-col gap-2.5">
+                        <p x-text="message" class="text-xs font-medium leading-relaxed mb-0"></p>
                         <div>
-                            <button type="button" @click="submitted = false" class="inline-flex items-center text-[10.5px] font-bold px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm">
+                            <button type="button" @click="submitted = false" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-[11px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                                 {{ app()->getLocale() === 'es' ? 'Suscribir otro correo' : 'Subscribe another email' }}
                             </button>
                         </div>
