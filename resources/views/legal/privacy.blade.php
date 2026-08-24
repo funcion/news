@@ -27,7 +27,7 @@
 
                 <h2>1. Responsable del Tratamiento</h2>
                 <p>
-                    El responsable del tratamiento de los datos recabados en este sitio web es el equipo editorial de <strong>Glodaxia</strong>. Para cualquier consulta referente a tu privacidad, puedes contactarnos en: <code class="text-cyan-600 dark:text-cyan-400">hi@glodaxia.com</code>.
+                    El responsable del tratamiento de los datos recabados en este sitio web es el equipo editorial de <strong>Glodaxia</strong>. Para cualquier consulta referente a tu privacidad, puedes contactarnos en: <code class="text-cyan-600 dark:text-cyan-400">{{ config('global.contact_email', 'hi@glodaxia.com') }}</code>.
                 </p>
 
                 <h2>2. Datos que Recopilamos</h2>
@@ -70,7 +70,7 @@
 
                 <h2>1. Data Controller</h2>
                 <p>
-                    The data controller for information processed through this website is the editorial team of <strong>Glodaxia</strong>. For privacy-related inquiries, contact us at: <code class="text-cyan-600 dark:text-cyan-400">hi@glodaxia.com</code>.
+                    The data controller for information processed through this website is the editorial team of <strong>Glodaxia</strong>. For privacy-related inquiries, contact us at: <code class="text-cyan-600 dark:text-cyan-400">{{ config('global.contact_email', 'hi@glodaxia.com') }}</code>.
                 </p>
 
                 <h2>2. Data We Collect</h2>

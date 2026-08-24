@@ -17,7 +17,7 @@
             <description>{{ strip_tags($article->excerpt) }}</description>
             <pubDate>{{ $article->published_at?->toRssString() }}</pubDate>
             @if($article->user)
-            <author>{{ $article->user?->email ?? 'hi@glodaxia.com' }} ({{ $article->user?->name ?? 'Glodaxia' }})</author>
+            <author>{{ $article->user?->email ?? config('global.contact_email', 'hi@glodaxia.com') }} ({{ $article->user?->name ?? 'Glodaxia' }})</author>
             @endif
             @foreach($article->tags as $tag)
             <category>{{ $tag->name }}</category>

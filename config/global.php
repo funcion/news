@@ -13,6 +13,7 @@ return [
     'site_name' => 'Glodaxia',
     'tagline'   => 'Tech & News Magazine',
     'footer_text' => 'Glodaxia Digital Media',
+    'contact_email' => env('MAIL_FROM_ADDRESS', 'hi@glodaxia.com'),
 
     /*
     |--------------------------------------------------------------------------
