@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                    <!-- Centered Search Modal (Adapted to grid container, non-fullwidth, high-contrast text) -->
+                        <!-- Centered Search Modal (Explicit Fixed Width 560px & Centered) -->
     <div x-data="{
             open: false,
             query: '',
@@ -627,18 +627,19 @@
                 }
             }
          }"
-         @open-search-modal.window="open = true; setTimeout(() => $refs.modalSearchInput.focus(), 150)"
+         @open-search-modal.window="open = true; setTimeout(() => $refs.modalSearchInput.focus(), 100)"
          @keydown.escape.window="open = false"
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-black/60 backdrop-blur-sm transition-opacity">
+         class="fixed inset-0 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
          
         <!-- Backdrop to close -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Container (Compact & Adapted to Grid: max-w-xl) -->
-        <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 z-10 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Modal Container (Fixed Width 560px, Perfectly Centered) -->
+        <div style="width: 560px !important; max-width: calc(100vw - 2rem) !important;" 
+             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 z-10 animate-in fade-in zoom-in-95 duration-150">
             
             <!-- Search Form -->
             <form @submit.prevent="submitSearch()" class="relative">
@@ -650,10 +651,10 @@
                        placeholder="{{ app()->getLocale() === 'es' ? 'Buscar...' : 'Search...' }}"
                        style="color: #0f172a !important; background-color: #f1f5f9 !important;"
                        :style="isDarkMode ? 'color: #ffffff !important; background-color: #1e293b !important;' : 'color: #0f172a !important; background-color: #f1f5f9 !important;'"
-                       class="w-full rounded-lg pl-3.5 pr-10 py-2.5 text-sm font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
+                       class="w-full rounded-xl pl-4 pr-11 py-3 text-sm font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
                 
-                <!-- Search Icon & Spinner on RIGHT side of the input -->
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
+                <!-- Search Icon & Spinner on RIGHT side -->
+                <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </span>
@@ -664,10 +665,10 @@
             </form>
 
             <!-- Results Dropdown -->
-            <div x-show="articles.length > 0" class="mt-3 border-t border-slate-100 dark:border-slate-800 pt-2 max-h-64 overflow-y-auto">
+            <div x-show="articles.length > 0" class="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 max-h-64 overflow-y-auto">
                 <ul class="divide-y divide-slate-100 dark:divide-slate-800/80">
                     <template x-for="item in articles" :key="item.id">
-                        <li class="py-2">
+                        <li class="py-2.5">
                             <a :href="item.url" class="flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
                                 <span x-text="item.title" class="line-clamp-1"></span>
                                 <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
@@ -676,7 +677,7 @@
                     </template>
                 </ul>
 
-                <div x-show="viewAllUrl" class="pt-2 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
+                <div x-show="viewAllUrl" class="pt-3 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
                     <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
                         {{ app()->getLocale() === 'es' ? 'Ver todos los resultados →' : 'View all results →' }}
                     </a>
@@ -684,7 +685,7 @@
             </div>
 
             <!-- Empty State -->
-            <div x-show="hasSearched && articles.length === 0 && !loading" class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 py-3">
+            <div x-show="hasSearched && articles.length === 0 && !loading" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 py-3">
                 {{ app()->getLocale() === 'es' ? 'No se encontraron resultados' : 'No results found' }}
             </div>
         </div>
