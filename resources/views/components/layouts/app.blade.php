@@ -547,5 +547,36 @@
 {{-- Custom Footer Codes (analytics, chat, scripts) --}}
 {!! \App\Models\CustomCode::getActive('footer') !!}
 
+    <!-- Global Notification Toast (Flash Messages) -->
+    @if(session('success') || session('error') || session('info'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-init="setTimeout(() => show = false, 7000)"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="-translate-y-10 opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-end="-translate-y-10 opacity-0"
+             class="fixed top-20 right-4 md:right-8 z-[200] max-w-md w-[calc(100%-2rem)] shadow-2xl rounded-2xl overflow-hidden border backdrop-blur-xl {{ session('error') ? 'bg-rose-950/90 border-rose-500/30 text-rose-100' : 'bg-slate-900/95 dark:bg-slate-900/95 border-cyan-500/30 text-white' }}">
+            <div class="p-4 flex items-start gap-3.5">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ session('error') ? 'bg-rose-500/20 text-rose-400' : 'bg-cyan-500/20 text-cyan-400' }}">
+                    @if(session('error'))
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    @else
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    @endif
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <p class="text-[13px] font-semibold leading-relaxed">
+                        {{ session('success') ?? session('error') ?? session('info') }}
+                    </p>
+                </div>
+                <button type="button" @click="show = false" class="text-slate-400 hover:text-white transition-colors p-1 -mr-1">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+    @endif
+
 </body>
 </html>

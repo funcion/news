@@ -81,8 +81,8 @@ class NewsletterController extends Controller
         }
 
         $successMsg = $locale === 'es'
-            ? '¡Gracias! Te hemos enviado un correo de confirmación. Por favor, revisa tu bandeja de entrada (o spam) para activar tu suscripción.'
-            : 'Thank you! We have sent a verification link to your email. Please check your inbox (or spam) to activate your subscription.';
+            ? 'Te hemos enviado un enlace de confirmación a tu correo. Por favor revísalo para activar tu suscripción.'
+            : 'We sent a verification link to your email. Please check your inbox to activate your subscription.';
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -114,8 +114,8 @@ class NewsletterController extends Controller
         $subscriber->save();
 
         $successMsg = $subscriber->locale === 'es'
-            ? '🎉 ¡Tu suscripción ha sido confirmada con éxito! Bienvenido a Glodaxia Magazine.'
-            : '🎉 Your subscription has been successfully confirmed! Welcome to Glodaxia Magazine.';
+            ? '🎉 ¡Ya estás suscrito oficialmente a Glodaxia Magazine! Bienvenido.'
+            : '🎉 You are now officially subscribed to Glodaxia Magazine! Welcome.';
 
         return redirect()->route('home')->with('success', $successMsg);
     }

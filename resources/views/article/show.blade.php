@@ -249,10 +249,13 @@
                     </div>
                 </template>
                 <template x-if="submitted">
-                    <div :class="isSuccess ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200' : 'bg-rose-500/10 border-rose-500/30 text-rose-200'" class="p-3.5 rounded-lg border text-xs leading-relaxed flex flex-col gap-1.5">
-                        <span class="font-bold text-xs" x-text="isSuccess ? '✉️ Double Opt-in' : '⚠️ Aviso'"></span>
-                        <p x-text="message" class="font-medium text-[11px]"></p>
-                        <button type="button" @click="submitted = false" class="text-[10px] font-bold underline opacity-80 hover:opacity-100 text-left mt-0.5">{{ app()->getLocale() === 'es' ? 'Suscribir otro correo' : 'Subscribe another email' }}</button>
+                    <div :class="isSuccess ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-100' : 'bg-rose-500/10 border-rose-500/30 text-rose-100'" class="p-3.5 rounded-lg border text-xs leading-relaxed flex flex-col gap-2.5">
+                        <p x-text="message" class="text-[12px] font-medium leading-relaxed mb-0"></p>
+                        <div>
+                            <button type="button" @click="submitted = false" class="inline-flex items-center text-[10.5px] font-bold px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm">
+                                {{ app()->getLocale() === 'es' ? 'Suscribir otro correo' : 'Subscribe another email' }}
+                            </button>
+                        </div>
                     </div>
                 </template>
             </form>
