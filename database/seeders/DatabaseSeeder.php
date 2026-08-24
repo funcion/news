@@ -163,6 +163,54 @@ class DatabaseSeeder extends Seeder
                 'slug_en' => 'tech-career-productivity',
                 'slug_es' => 'carrera-tech-productividad',
             ],
+            [
+                'en' => 'Servers, Hosting & Infrastructure',
+                'es' => 'Servidores & Hosting',
+                'slug_en' => 'servers-hosting-infrastructure',
+                'slug_es' => 'servidores-hosting-infraestructura',
+            ],
+            [
+                'en' => 'E-Commerce & Digital Retail',
+                'es' => 'E-Commerce & Tiendas Digitales',
+                'slug_en' => 'ecommerce-digital-retail',
+                'slug_es' => 'comercio-electronico-tiendas',
+            ],
+            [
+                'en' => 'SaaS & Developer Tools',
+                'es' => 'SaaS & Herramientas DevTools',
+                'slug_en' => 'saas-developer-tools',
+                'slug_es' => 'saas-herramientas-desarrollo',
+            ],
+            [
+                'en' => 'Generative AI & Media',
+                'es' => 'IA Generativa & Medios',
+                'slug_en' => 'generative-ai-media',
+                'slug_es' => 'ia-generativa-medios',
+            ],
+            [
+                'en' => 'Telecom & Networking',
+                'es' => 'Telecomunicaciones & Redes',
+                'slug_en' => 'telecom-networking',
+                'slug_es' => 'telecomunicaciones-redes',
+            ],
+            [
+                'en' => 'Ethical Hacking & Pentesting',
+                'es' => 'Hacking Ético & Pentesting',
+                'slug_en' => 'ethical-hacking-pentesting',
+                'slug_es' => 'hacking-etico-pentesting',
+            ],
+            [
+                'en' => 'LegalTech & AI Regulation',
+                'es' => 'LegalTech & Regulación Digital',
+                'slug_en' => 'legaltech-regulation',
+                'slug_es' => 'derecho-tecnologico-regulacion',
+            ],
+            [
+                'en' => 'Tech Education & Tutorials',
+                'es' => 'Educación Tech & Tutoriales',
+                'slug_en' => 'tech-education-tutorials',
+                'slug_es' => 'educacion-tech-tutoriales',
+            ],
         ];
 
         foreach ($categories as $catData) {
