@@ -1,136 +1,185 @@
 <x-filament-panels::page>
-    <div class="space-y-8 max-w-7xl mx-auto">
-        <!-- Banner de Cabecera -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 md:p-8 shadow-sm">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div class="space-y-2">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Indexación Dinámica en Tiempo Real
-                    </div>
-                    <h2 class="text-xl font-black tracking-tight text-gray-900 dark:text-white">
-                        Gestor de Sitemaps XML & Motores de Búsqueda
-                    </h2>
-                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl">
-                        Los sitemaps se compilan dinámicamente desde PostgreSQL. Cada vez que publicas una noticia, la caché se vacía automáticamente y se envía una notificación a los buscadores.
+    <style>
+        .sitemap-card {
+            background: var(--fi-section-bg, #ffffff);
+            border: 1px solid rgba(150, 150, 150, 0.18);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        .dark .sitemap-card {
+            background: rgba(24, 24, 27, 0.7);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .sitemap-card:hover {
+            border-color: rgba(14, 165, 233, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .sitemap-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        .badge-master { background: #e0f2fe; color: #0369a1; }
+        .dark .badge-master { background: rgba(3, 105, 161, 0.25); color: #7dd3fc; }
+        
+        .badge-news { background: #dcfce7; color: #15803d; }
+        .dark .badge-news { background: rgba(21, 128, 61, 0.25); color: #86efac; }
+
+        .badge-lang { background: #f3e8ff; color: #7e22ce; }
+        .dark .badge-lang { background: rgba(126, 34, 206, 0.25); color: #d8b4fe; }
+
+        .badge-tax { background: #fef3c7; color: #b45309; }
+        .dark .badge-tax { background: rgba(180, 83, 9, 0.25); color: #fde68a; }
+
+        .badge-img { background: #ffe4e6; color: #be123c; }
+        .dark .badge-img { background: rgba(190, 18, 60, 0.25); color: #fda4af; }
+
+        .sitemap-url-box {
+            font-family: ui-monospace, monospace;
+            font-size: 0.78rem;
+            padding: 0.35rem 0.75rem;
+            background: rgba(150, 150, 150, 0.08);
+            border-radius: 0.5rem;
+            display: inline-block;
+            margin-top: 0.35rem;
+            color: #0284c7;
+        }
+        .dark .sitemap-url-box {
+            background: rgba(255, 255, 255, 0.05);
+            color: #38bdf8;
+        }
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .faq-item {
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(150, 150, 150, 0.05);
+            border: 1px solid rgba(150, 150, 150, 0.12);
+        }
+        .dark .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+    </style>
+
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <!-- Banner Superior -->
+        <x-filament::section>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem;">
+                        Indexación Dinámica & Protocolos de Sitemaps
+                    </h3>
+                    <p style="font-size: 0.85rem; color: #71717a; max-width: 800px; line-height: 1.4;">
+                        Los sitemaps se generan al vuelo directamente desde la base de datos de PostgreSQL. Cuando se publica una noticia, la memoria caché se invalida y los buscadores reciben los datos más recientes.
                     </p>
                 </div>
-
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="https://search.google.com/search-console" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors">
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <x-filament::button href="https://search.google.com/search-console" tag="a" target="_blank" color="gray" size="sm">
                         Google Search Console &nearr;
-                    </a>
-                    <a href="https://www.bing.com/webmasters" target="_blank" class="px-4 py-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors">
+                    </x-filament::button>
+                    <x-filament::button href="https://www.bing.com/webmasters" tag="a" target="_blank" color="gray" size="sm">
                         Bing Webmaster Tools &nearr;
-                    </a>
+                    </x-filament::button>
                 </div>
             </div>
-        </div>
+        </x-filament::section>
 
-        <!-- Lista Detallada de Sitemaps (Formato Fila Espaciosa) -->
-        <div class="space-y-4">
-            <div class="border-b border-gray-200 dark:border-gray-800 pb-3">
-                <h3 class="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
-                    Estructura de Sitemaps Disponibles (7 Subsistemas)
-                </h3>
-            </div>
+        <!-- Lista de Sitemaps -->
+        <div style="margin-top: 1.5rem;">
+            <h3 style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; margin-bottom: 1rem;">
+                Estructura de Sitemaps Disponibles (7 Subsistemas)
+            </h3>
 
-            <div class="grid grid-cols-1 gap-4">
-                @foreach($sitemaps as $sitemap)
-                    <div class="rounded-2xl border border-gray-200/80 dark:border-gray-800/80 bg-white dark:bg-gray-900 p-6 shadow-sm hover:border-gray-300 dark:hover:border-gray-700 transition-all">
-                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                            <!-- Información Principal -->
-                            <div class="space-y-3 max-w-4xl">
-                                <div class="flex flex-wrap items-center gap-2.5">
-                                    <span class="px-2.5 py-1 text-xs font-black rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
-                                        {{ $sitemap['badge'] }}
-                                    </span>
-                                    <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                        {{ $sitemap['records'] }}
-                                    </span>
-                                    <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">
-                                        Caché: {{ $sitemap['ttl'] }}
-                                    </span>
-                                </div>
-
-                                <div>
-                                    <h4 class="text-base font-bold text-gray-900 dark:text-white">
-                                        {{ $sitemap['title'] }}
-                                    </h4>
-                                    <div class="mt-1 font-mono text-xs text-primary-600 dark:text-primary-400 bg-gray-50 dark:bg-gray-800/60 px-2.5 py-1 rounded-md inline-block">
-                                        {{ $sitemap['url'] }}
-                                    </div>
-                                </div>
-
-                                <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                    {{ $sitemap['description'] }}
-                                </p>
+            @foreach($sitemaps as $sitemap)
+                @php
+                    $badgeClass = match($sitemap['badge']) {
+                        'Maestro' => 'badge-master',
+                        'Google News 48h' => 'badge-news',
+                        'Bilingüe ES', 'Bilingüe EN' => 'badge-lang',
+                        'Google Images' => 'badge-img',
+                        default => 'badge-tax',
+                    };
+                @endphp
+                <div class="sitemap-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div style="flex: 1; min-width: 280px;">
+                            <div style="margin-bottom: 0.5rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                                <span class="sitemap-badge {{ $badgeClass }}">
+                                    {{ $sitemap['badge'] }}
+                                </span>
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #10b981;">
+                                    ● {{ $sitemap['records'] }}
+                                </span>
+                                <span style="font-size: 0.75rem; color: #a1a1aa; margin-left: 0.5rem;">
+                                    (Caché: {{ $sitemap['ttl'] }})
+                                </span>
                             </div>
 
-                            <!-- Botón de Inspección -->
-                            <div class="shrink-0 pt-2">
-                                <a href="{{ $sitemap['url'] }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-xs">
-                                    <span>Abrir XML</span>
-                                    <span class="text-sm">&nearr;</span>
-                                </a>
+                            <h4 style="font-size: 1.05rem; font-weight: 800; margin: 0 0 0.25rem 0;">
+                                {{ $sitemap['title'] }}
+                            </h4>
+
+                            <div class="sitemap-url-box">
+                                {{ $sitemap['url'] }}
                             </div>
+
+                            <p style="font-size: 0.85rem; color: #71717a; margin-top: 0.75rem; line-height: 1.5;">
+                                {{ $sitemap['description'] }}
+                            </p>
+                        </div>
+
+                        <div style="margin-top: 0.5rem;">
+                            <x-filament::button href="{{ $sitemap['url'] }}" tag="a" target="_blank" color="primary" size="sm">
+                                Abrir XML &nearr;
+                            </x-filament::button>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         </div>
 
         <!-- Guía de Funcionamiento y Preguntas Frecuentes -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 md:p-8 shadow-sm space-y-6">
-            <div class="border-b border-gray-100 dark:border-gray-800 pb-3">
-                <h3 class="text-sm font-black uppercase tracking-wider text-gray-900 dark:text-white">
-                    Guía de Funcionamiento y Preguntas Frecuentes
-                </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Todo lo que necesitas saber sobre cómo se gestiona la indexación de Glodaxia
-                </p>
-            </div>
+        <div style="margin-top: 1.5rem;">
+            <x-filament::section heading="Guía de Funcionamiento y Preguntas Frecuentes" description="Información técnica sobre el ciclo de actualización e indexación de Glodaxia">
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <span class="sitemap-badge badge-master">1. Compilación Dinámica</span>
+                        <h5 style="font-size: 0.9rem; font-weight: 800; margin: 0.5rem 0 0.25rem 0;">¿Cómo se genera el XML?</h5>
+                        <p style="font-size: 0.8rem; color: #71717a; line-height: 1.4;">
+                            No son archivos estáticos en disco. Cada vez que ingresas a una ruta <code style="font-size: 0.75rem;">/sitemap...xml</code>, Laravel consulta la base de datos y arma el XML en milisegundos.
+                        </p>
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Punto 1 -->
-                <div class="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 space-y-2">
-                    <span class="inline-block px-2 py-0.5 text-[11px] font-bold rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
-                        1. Generación Dinámica
-                    </span>
-                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                        ¿Cómo se compila el XML?
-                    </h4>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        No existen archivos estáticos en disco. Cada vez que un bot o usuario ingresa a una ruta <code class="font-mono text-gray-700 dark:text-gray-300">/sitemap...xml</code>, Laravel consulta la base de datos y arma el XML en tiempo de ejecución.
-                    </p>
-                </div>
+                    <div class="faq-item">
+                        <span class="sitemap-badge badge-news">2. Ciclo de Caché</span>
+                        <h5 style="font-size: 0.9rem; font-weight: 800; margin: 0.5rem 0 0.25rem 0;">¿Cuándo se actualiza?</h5>
+                        <p style="font-size: 0.8rem; color: #71717a; line-height: 1.4;">
+                            Al publicar o editar una noticia, el sistema vacía automáticamente la memoria con <code style="font-size: 0.75rem;">flushCache()</code> para que el siguiente rastreo de Googlebot reciba la información más reciente.
+                        </p>
+                    </div>
 
-                <!-- Punto 2 -->
-                <div class="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 space-y-2">
-                    <span class="inline-block px-2 py-0.5 text-[11px] font-bold rounded bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
-                        2. Ciclo de Vida de Caché
-                    </span>
-                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                        ¿Cuándo se actualiza la información?
-                    </h4>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        Para máxima velocidad, los sitemaps se guardan en caché temporal. En el momento en que se publica o edita una noticia, el sistema vacía la caché automáticamente con <code class="font-mono text-gray-700 dark:text-gray-300">flushCache()</code>.
-                    </p>
+                    <div class="faq-item">
+                        <span class="sitemap-badge badge-lang">3. Protocolo IndexNow</span>
+                        <h5 style="font-size: 0.9rem; font-weight: 800; margin: 0.5rem 0 0.25rem 0;">¿Cómo se envía a los buscadores?</h5>
+                        <p style="font-size: 0.8rem; color: #71717a; line-height: 1.4;">
+                            El sistema notifica activamente a Bing y Yandex mediante IndexNow. Para Google, solo debes registrar la URL <code style="font-size: 0.75rem;">/sitemap.xml</code> una sola vez en Search Console.
+                        </p>
+                    </div>
                 </div>
-
-                <!-- Punto 3 -->
-                <div class="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 space-y-2">
-                    <span class="inline-block px-2 py-0.5 text-[11px] font-bold rounded bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
-                        3. Notificación IndexNow
-                    </span>
-                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                        ¿Cómo se envía a los buscadores?
-                    </h4>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        El sistema notifica automáticamente a Bing, Yandex y Seznam mediante el protocolo IndexNow. En Google Search Console solo debes ingresar una única vez la URL <code class="font-mono text-gray-700 dark:text-gray-300">/sitemap.xml</code>.
-                    </p>
-                </div>
-            </div>
+            </x-filament::section>
         </div>
     </div>
 </x-filament-panels::page>
