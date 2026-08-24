@@ -13,11 +13,8 @@
                     </p>
                 </div>
                 <div class="shrink-0 flex items-center gap-3">
-                    <a href="https://search.google.com/search-console" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/>
-                        </svg>
-                        Google Search Console
+                    <a href="https://search.google.com/search-console" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        Google Search Console &nearr;
                     </a>
                 </div>
             </div>
@@ -50,11 +47,8 @@
                         <div class="text-[11px] text-gray-400 dark:text-gray-500 font-mono truncate max-w-[160px]">
                             {{ $sitemap['path'] }}
                         </div>
-                        <a href="{{ $sitemap['url'] }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/60 transition-colors">
-                            <span>Abrir XML</span>
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
+                        <a href="{{ $sitemap['url'] }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/60 transition-colors">
+                            <span>Abrir XML &nearr;</span>
                         </a>
                     </div>
                 </div>
@@ -63,10 +57,7 @@
 
         <!-- How it updates Explanation Card -->
         <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <svg class="w-4 h-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-4">
                 ¿Cómo y Cuándo se Actualiza el Sitemap?
             </h3>
 
