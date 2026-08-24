@@ -52,7 +52,7 @@
             
             <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" alt="{{ $article->user?->name ?? 'Author' }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
+                    <img src="{{ $article->user?->avatar_or_default }}" alt="{{ $article->user?->name ?? 'Author' }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
                          <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                     </div>
@@ -88,7 +88,7 @@
                      title="{{ $article->title }}"
                      width="1200"
                      height="675"
-                     class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700"
+                     class="w-full h-auto object-cover aspect-video "
                      loading="eager"
                      fetchpriority="high">
             </figure>
@@ -98,7 +98,7 @@
                      alt="{{ $article->image_alt ?? $article->title }}" 
                      width="1200"
                      height="675"
-                     class="w-full h-auto object-cover aspect-video group-hover:scale-105 transition-transform duration-700" 
+                     class="w-full h-auto object-cover aspect-video " 
                      loading="eager"
                      fetchpriority="high">
             </figure>
@@ -142,14 +142,14 @@
             <div class="bg-white dark:bg-white/[0.02] rounded-lg p-4 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
-                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" 
+                    <img src="{{ $article->user?->avatar_or_default }}" 
                          class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">
                     <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-700 dark:text-cyan-500 uppercase tracking-widest mb-3 inline-block">{{ __('ui.verified_author') }}</span>
                     <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
-                        {{ $article->user?->name ?? 'AI Reporter' }}
+                        {{ $article->user?->name ?? __('ui.reporter') }}
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
                         {{ $article->user?->bio ?? 'Analizando y curando las noticias tecnológicas más relevantes del mundo.' }}
@@ -215,7 +215,7 @@
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($related->slug_es ?? $related->slug_en) : ($related->slug_en ?? $related->slug_es)) }}" 
                            class="group flex gap-5 items-center">
                             <div class="w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm relative">
-                                <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" width="80" height="80" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <img src="{{ $related->image_url ?? '/placeholder.webp' }}" alt="{{ $related->title }}" width="80" height="80" loading="lazy" class="w-full h-full object-cover ">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">
@@ -246,7 +246,7 @@
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($latest->slug_es ?? $latest->slug_en) : ($latest->slug_en ?? $latest->slug_es)) }}" 
                            class="group flex gap-4 items-center">
                             <div class="w-16 h-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm relative">
-                                <img src="{{ $latest->image_url ?? '/placeholder.webp' }}" alt="{{ $latest->title }}" width="64" height="64" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <img src="{{ $latest->image_url ?? '/placeholder.webp' }}" alt="{{ $latest->title }}" width="64" height="64" loading="lazy" class="w-full h-full object-cover ">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-[14px] font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors">

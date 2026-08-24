@@ -30,7 +30,7 @@
                     <a href="{{ route('articles.show', app()->getLocale() === 'es' ? ($article->slug_es ?? $article->slug_en) : ($article->slug_en ?? $article->slug_es)) }}" 
                        class="group flex gap-5 items-start p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-900 transition-all">
                         <div class="w-24 h-24 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
-                            <img src="{{ $article->image_url ?? '/placeholder.webp' }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <img src="{{ $article->image_url ?? '/placeholder.webp' }}" alt="{{ $article->title }}" class="w-full h-full object-cover ">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">
