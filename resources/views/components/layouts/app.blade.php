@@ -200,33 +200,35 @@
                         
                         <div class="h-6 w-px bg-gray-200 dark:bg-white/10 mx-2"></div>
                         
-                        <!-- Lang Switcher (Desktop >768px: Flags Only) -->
-                        <div class="flex items-center gap-2 pl-1">
-                            <!-- USA Flag (English) -->
-                            <a hreflang="en" 
-                               href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
-                               title="English"
-                               aria-label="Switch to English"
-                               class="relative block w-6 h-4 rounded-[3px] overflow-hidden transition-all duration-200 hover:scale-110 {{ app()->getLocale() === 'en' ? 'ring-2 ring-cyan-500 shadow-sm opacity-100' : 'border border-slate-300 dark:border-slate-700 opacity-40 hover:opacity-90' }}">
-                                <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
-                                    <path fill="#bd3d44" d="M0 0h640v480H0z"/>
-                                    <path stroke="#fff" stroke-width="37" d="M0 55.4h640M0 129.2h640M0 203h640M0 277h640M0 350.8h640M0 424.6h640"/>
-                                    <path fill="#192f5d" d="M0 0h290v258.5H0z"/>
-                                </svg>
-                            </a>
-
-                            <!-- Spain Flag (Español) -->
-                            <a hreflang="es" 
-                               href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" 
-                               title="Español"
-                               aria-label="Cambiar a Español"
-                               class="relative block w-6 h-4 rounded-[3px] overflow-hidden transition-all duration-200 hover:scale-110 {{ app()->getLocale() === 'es' ? 'ring-2 ring-cyan-500 shadow-sm opacity-100' : 'border border-slate-300 dark:border-slate-700 opacity-40 hover:opacity-90' }}">
-                                <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
-                                    <path fill="#aa151b" d="M0 0h640v480H0z"/>
-                                    <path fill="#f1bf00" d="M0 120h640v240H0z"/>
-                                    <path fill="#aa151b" d="M0 0h640v120H0zm0 360h640v120H0z"/>
-                                </svg>
-                            </a>
+                        <!-- Lang Switcher (Desktop >768px: Single Alternate Flag Toggle) -->
+                        <div class="flex items-center pl-1">
+                            @if(app()->getLocale() === 'es')
+                                <!-- Currently Spanish -> Show USA Flag to Switch to English -->
+                                <a hreflang="en" 
+                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
+                                   title="Switch to English"
+                                   aria-label="Switch to English"
+                                   class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
+                                    <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
+                                        <path fill="#bd3d44" d="M0 0h640v480H0z"/>
+                                        <path stroke="#fff" stroke-width="37" d="M0 55.4h640M0 129.2h640M0 203h640M0 277h640M0 350.8h640M0 424.6h640"/>
+                                        <path fill="#192f5d" d="M0 0h290v258.5H0z"/>
+                                    </svg>
+                                </a>
+                            @else
+                                <!-- Currently English -> Show Spain Flag to Switch to Spanish -->
+                                <a hreflang="es" 
+                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" 
+                                   title="Cambiar a Español"
+                                   aria-label="Cambiar a Español"
+                                   class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
+                                    <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
+                                        <path fill="#aa151b" d="M0 0h640v480H0z"/>
+                                        <path fill="#f1bf00" d="M0 120h640v240H0z"/>
+                                        <path fill="#aa151b" d="M0 0h640v120H0zm0 360h640v120H0z"/>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
                     </nav>
 
