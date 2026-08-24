@@ -145,7 +145,7 @@
     <!-- Premium Header Wrapper -->
     <div class="sticky top-0 z-50 w-full">
         <!-- Header Bar -->
-        <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-100 dark:border-white/5 bg-white/80 dark:bg-slate-950/80"
+        <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm"
                 x-bind:class="isScrolled ? 'shadow-sm' : ''">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
@@ -155,7 +155,7 @@
                 <!-- Right Side: Navigation & Actions -->
                 <div class="flex items-center gap-4 lg:gap-8">
                     <!-- Desktop Navigation (hidden on mobile) -->
-                    <nav class="hidden lg:flex items-center gap-8">
+                    <nav class="hidden md:flex items-center gap-5 lg:gap-8">
                         <!-- Home Link -->
                         <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
                             {{ __('ui.home') }}
@@ -231,7 +231,7 @@
                         <!-- Hamburger Button (Standard SVG for reliability) -->
                         <button @click="mobileMenuOpen = !mobileMenuOpen" 
                                 aria-label="Toggle mobile menu"
-                                class="lg:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                                class="md:hidden p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
                             <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -252,7 +252,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 max-h-[400px]"
              x-transition:leave-end="opacity-0 max-h-0"
-             class="lg:hidden overflow-hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+             class="md:hidden overflow-hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         
         <!-- Contenido del menú -->
         <div class="px-4 py-4 space-y-4 max-h-[350px] overflow-y-auto">
