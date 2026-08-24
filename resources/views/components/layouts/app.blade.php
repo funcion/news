@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                                                <!-- Modern Minimalist Spotlight Search Modal (Soft Minimalist Borders & Symmetrical Capsule) -->
+                                                    <!-- Modern Minimalist Spotlight Search Dialog (Vercel & Raycast High-End Style) -->
     <div x-data="{
             open: false,
             query: '',
@@ -632,21 +632,19 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-slate-950/60 backdrop-blur-sm transition-opacity">
+         class="fixed inset-0 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-slate-950/60 backdrop-blur-md transition-opacity">
          
-        <!-- Backdrop to close -->
+        <!-- Backdrop -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Container (Soft Subtle Border) -->
-        <div style="width: 680px !important; max-width: calc(100vw - 2rem) !important;" 
-             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-white/10 p-4 sm:p-5 z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
+        <!-- Sleek High-End Card (Single Container, No Nested Boxes) -->
+        <div style="width: 640px !important; max-width: calc(100vw - 2rem) !important;" 
+             class="relative bg-white dark:bg-[#0c111c] rounded-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] border border-slate-200/90 dark:border-slate-800/90 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
             
-            <!-- Minimalist Search Capsule (Soft Border, Clean Padding) -->
-            <form @submit.prevent="submitSearch()" 
-                  class="flex items-center gap-3 px-4 py-3 rounded-2xl border border-slate-200/60 dark:border-white/10 bg-slate-50 dark:bg-slate-800/60 transition-all focus-within:border-cyan-500/50 focus-within:bg-white dark:focus-within:bg-slate-800/80 focus-within:ring-2 focus-within:ring-cyan-500/10">
-                
-                <!-- Magnifying Glass Icon inside capsule -->
-                <div class="flex items-center text-slate-400 dark:text-slate-400 shrink-0">
+            <!-- Modern Search Bar Row -->
+            <form @submit.prevent="submitSearch()" class="flex items-center gap-3 px-5 py-4 bg-white dark:bg-[#0c111c]">
+                <!-- Search Icon -->
+                <div class="text-slate-400 dark:text-slate-500 shrink-0">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </span>
@@ -655,49 +653,65 @@
                     </svg>
                 </div>
 
-                <!-- Input inside capsule -->
+                <!-- Borderless Typography Input -->
                 <input x-ref="modalSearchInput"
                        x-model="query"
                        @input.debounce.200ms="search()"
                        type="text"
                        autocomplete="off"
-                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis, IA...' : 'Search tech news, analyses, AI...' }}"
+                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis o temas...' : 'Search tech news, analyses or topics...' }}"
                        style="color: #0f172a !important; background: transparent !important;"
-                       :style="isDarkMode ? 'color: #ffffff !important; background: transparent !important;' : 'color: #0f172a !important; background: transparent !important;'"
-                       class="w-full bg-transparent text-sm sm:text-base font-semibold outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 border-none p-0 focus:ring-0">
+                       :style="isDarkMode ? 'color: #f8fafc !important; background: transparent !important;' : 'color: #0f172a !important; background: transparent !important;'"
+                       class="w-full bg-transparent text-[15px] font-medium outline-none text-slate-900 dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500 border-none p-0 focus:ring-0">
 
-                <!-- Clear button inside capsule -->
+                <!-- Clear button (x) -->
                 <button x-show="query.length > 0" 
                         @click="query = ''; articles = []; hasSearched = false; $refs.modalSearchInput.focus()" 
                         type="button" 
-                        class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors p-0.5 shrink-0">
+                        class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors p-1 shrink-0">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                <!-- Clean ESC Badge -->
+                <button @click="open = false" 
+                        type="button" 
+                        class="px-2 py-0.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 bg-slate-100 dark:bg-slate-800/80 rounded border border-slate-200/80 dark:border-slate-700/80 transition-colors shrink-0">
+                    ESC
                 </button>
             </form>
 
             <!-- Results Dropdown -->
-            <div x-show="articles.length > 0" class="mt-3 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-slate-800/40 max-h-[55vh]">
-                <ul class="space-y-0.5">
+            <div x-show="articles.length > 0" class="border-t border-slate-100 dark:border-slate-800/80 overflow-y-auto p-2 max-h-[55vh]">
+                <ul class="space-y-1">
                     <template x-for="item in articles" :key="item.id">
                         <li>
                             <a :href="item.url" class="flex items-center justify-between gap-4 px-3.5 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group">
-                                <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></span>
-                                <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 font-normal"></span>
+                                    <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-500 group-hover:translate-x-0.5 transition-all opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </div>
                             </a>
                         </li>
                     </template>
                 </ul>
 
-                <div x-show="viewAllUrl" class="p-3 text-center border-t border-slate-100 dark:border-slate-800/50 mt-2">
-                    <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
-                        {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
+                <div x-show="viewAllUrl" class="p-3 text-center border-t border-slate-100 dark:border-slate-800/60 mt-1">
+                    <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline inline-flex items-center gap-1.5">
+                        <span>{{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos' : 'View all search results' }}</span>
+                        <span aria-hidden="true">→</span>
                     </a>
                 </div>
             </div>
 
             <!-- Empty State -->
-            <div x-show="hasSearched && articles.length === 0 && !loading" class="p-6 text-center text-xs text-slate-500 dark:text-slate-400">
-                {{ app()->getLocale() === 'es' ? 'No se encontraron resultados con esa búsqueda.' : 'No results found.' }}
+            <div x-show="hasSearched && articles.length === 0 && !loading" class="border-t border-slate-100 dark:border-slate-800/80 p-8 text-center text-xs text-slate-500 dark:text-slate-400">
+                <span class="text-xl block mb-2">🔍</span>
+                <p class="font-bold text-slate-800 dark:text-slate-200 mb-1">{{ app()->getLocale() === 'es' ? 'Sin resultados' : 'No matches found' }}</p>
+                <p>{{ app()->getLocale() === 'es' ? 'Prueba buscando con otros términos o palabras clave.' : 'Try searching for different keywords.' }}</p>
             </div>
         </div>
     </div>
