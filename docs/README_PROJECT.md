@@ -292,8 +292,25 @@ app/
 4. **Caché y Optimización**: Ejecutar `php artisan optimize` (`config:cache`, `route:cache`, `view:cache`).
 5. **Supervisor Activo**: Verificar que el contenedor `noticias_horizon` o el daemon de supervisor mantenga corriendo Horizon y el Scheduler.
 
-### Fase 3: Crecimiento y Monetización (Post-Lanzamiento 🚀)
-- [ ] Sistema de Newsletter / Suscriptores
-- [ ] Espacios publicitarios optimizados (Google AdSense / Mediavine / Sponsors)
-- [ ] Búsqueda semántica vectorial avanzada con `pgvector`
-- [ ] Dashboard de analítica y rendimiento con Laravel Pulse
+### Fase 2.5: Identidad de Marca, Legal & UX/SEO Excellence (Completada ✅)
+- [x] **Suite Legal & Transparencia Periodística con Blindaje Integral**:
+  - `/editorial-policy` & `/es/editorial-policy`: Protocolo Fact-Checking 4 fases, compromiso Human-in-the-Loop 100%, canal formal de correcciones y protección de opinión crítica.
+  - `/privacy` & `/es/privacy`: Cumplimiento RGPD (UE), LOPD-GDD y CCPA (California), cláusula anti-venta de datos a terceros y derechos ARCO.
+  - `/terms` & `/es/terms`: Exención de responsabilidad técnica y financiera (*AS IS*), cláusula DMCA, prohibición de scraping/entrenamiento de IA y límite de responsabilidad en $0.00 USD.
+  - `/cookies` & `/es/cookies`: Clasificación técnica ePrivacy y persistencia en LocalStorage.
+- [x] **Vanilla CookieConsent v3**: Modal bilingüe (ES/EN), panel granular de preferencias y sincronización nativa Dark Mode vía CSS puro.
+- [x] **Identidad y Footer Modular 3 Columnas**: Componente `<x-ui.logo />` cuadrado 1:1, footer responsive balanceado (`1.5fr 1fr 1fr`), centrado mobile y correo oficial `hi@glodaxia.com` centralizado.
+- [x] **Optimización de Rendimiento y Contraste**: Tipografía de alto contraste en Modo Claro y Oscuro en todo el sitio con tiempos de respuesta <80ms en todas las rutas.
+
+---
+
+### Fase 3: Crecimiento, Audiencias & Próximas Tareas (En Progreso ⏳)
+
+| # | Tarea | Estado | Descripción |
+|---|-------|:------:|-------------|
+| **1** | **Backend de Suscriptores (Newsletter con Doble Opt-in)** | ✅ **Completada** | Tabla `subscribers`, endpoint `POST /newsletter/subscribe`, verificación vía email Markdown de Laravel (`NewsletterVerificationMail`), token criptográfico de 64 caracteres, honeypot anti-spam, 1-click unsubscribe y gestión completa en Filament (`SubscriberResource`). |
+| **2** | **Páginas de Error Personalizadas (404 y 500)** | ⏳ Pendiente | Vistas de error `errors/404.blade.php` y `errors/500.blade.php` con estética Glodaxia y botón de retorno al inicio. |
+| **3** | **Prueba de Ingesta en Vivo con Gemini 3.6 Flash** | ⏳ Pendiente | Ciclo de ejecución de `rss:fetch` y Horizon para validar generación y traducción estructurada con `google/gemini-3.6-flash`. |
+| **4** | **Buscador en Vivo con Autocompletado** | ⏳ Pendiente | Autocompletado y búsqueda instantánea en el header con sugerencias de artículos en tiempo real. |
+| **5** | **Página de Contacto `/contact`** | ⏳ Pendiente | Formulario de contacto directo con protección anti-spam conectado a `hi@glodaxia.com`. |
+| **6** | **Monetización & Espacios Publicitarios** | ⏳ Pendiente | Zonas de anuncios preparadas para Google AdSense / Sponsors / Mediavine sin afectar E-E-A-T. |

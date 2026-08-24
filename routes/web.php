@@ -34,6 +34,12 @@ Route::get('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handl
 // RSS Feed
 Route::get('/feed.xml', [\App\Http\Controllers\FrontendController::class, 'feed'])->name('feed');
 
+// Newsletter (Double Opt-In & Unsubscribe)
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');
+Route::get('/newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+
+
 Route::group([
     'prefix'     => LaravelLocalization::setLocale(),
     'middleware' => [

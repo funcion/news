@@ -188,10 +188,56 @@
             <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-lg blur-3xl group-hover:bg-cyan-500/20 transition-all"></div>
             <h3 class="text-2xl font-black tracking-tighter mb-4 relative z-10">{{ __('ui.newsletter_title') }}</h3>
             <p class="text-zinc-200 text-sm leading-relaxed mb-8 relative z-10">{{ __('ui.newsletter_desc') }}</p>
-            <form class="relative z-10 flex flex-col gap-4">
-                <label for="newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
-                <input id="newsletter-email" name="email" type="email" placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-base md:text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400">
-                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-[12px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20">{{ __('ui.subscribe_now') }}</button>
+            <form x-data="{
+                    email: '',
+                    loading: false,
+                    submitted: false,
+                    message: '',
+                    isSuccess: true,
+                    async submit() {
+                        if (!this.email) return;
+                        this.loading = true;
+                        try {
+                            const res = await axios.post('{{ route('newsletter.subscribe') }}', {
+                                email: this.email,
+                                source: 'homepage_sidebar'
+                            });
+                            this.isSuccess = res.data.success;
+                            this.message = res.data.message;
+                            this.submitted = true;
+                            if (this.isSuccess) this.email = '';
+                        } catch (err) {
+                            this.isSuccess = false;
+                            this.message = err.response?.data?.message || '{{ app()->getLocale() === 'es' ? 'Error al procesar la solicitud.' : 'Error processing request.' }}';
+                            this.submitted = true;
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                  }"
+                  @submit.prevent="submit()"
+                  class="relative z-10 flex flex-col gap-4">
+                <input type="text" name="website_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
+                <template x-if="!submitted">
+                    <div class="flex flex-col gap-4">
+                        <label for="newsletter-email" class="sr-only">{{ __('ui.email_address') }}</label>
+                        <input id="newsletter-email" x-model="email" name="email" type="email" required placeholder="{{ __('ui.email_address') }}" aria-label="{{ __('ui.email_address') }}" class="w-full bg-white/5 border border-white/10 rounded-lg px-5 py-4 text-base md:text-sm focus:bg-white/10 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-zinc-400 text-white">
+                        <button type="submit" :disabled="loading" class="w-full bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-[12px] font-black uppercase tracking-widest py-4 rounded-lg transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 text-white">
+                            <span x-show="!loading">{{ __('ui.subscribe_now') }}</span>
+                            <span x-show="loading" class="flex items-center gap-2">
+                                <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                {{ app()->getLocale() === 'es' ? 'Enviando...' : 'Subscribing...' }}
+                            </span>
+                        </button>
+                    </div>
+                </template>
+                <template x-if="submitted">
+                    <div :class="isSuccess ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200' : 'bg-rose-500/10 border-rose-500/30 text-rose-200'" class="p-4 rounded-lg border text-xs leading-relaxed flex flex-col gap-2">
+                        <span class="font-bold text-sm" x-text="isSuccess ? '✉️ Double Opt-in' : '⚠️ Aviso'"></span>
+                        <p x-text="message" class="font-medium"></p>
+                        <button type="button" @click="submitted = false" class="text-[11px] font-bold underline opacity-80 hover:opacity-100 text-left mt-1">{{ app()->getLocale() === 'es' ? 'Suscribir otro correo' : 'Subscribe another email' }}</button>
+                    </div>
+                </template>
             </form>
         </div>
     </x-slot>
