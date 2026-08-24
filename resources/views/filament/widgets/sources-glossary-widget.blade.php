@@ -1,90 +1,91 @@
 <x-filament-widgets::widget>
-    <div class="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 md:p-8 shadow-sm">
-        <div class="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6">
-            <h3 class="text-base font-bold text-gray-900 dark:text-white">
-                Glosario de Fuentes RSS (Lógica de Ingesta)
-            </h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Guía de referencia sobre los parámetros y funcionamiento de cada columna:
-            </p>
+    <div class="mt-8 overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/90 shadow-sm backdrop-blur-sm">
+        <!-- Header banner -->
+        <div class="border-b border-gray-100 dark:border-gray-800/80 bg-gradient-to-r from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-900/90 dark:to-gray-900 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <span class="flex h-2.5 w-2.5 rounded-full bg-cyan-500 shadow-sm shadow-cyan-500/50"></span>
+                <div>
+                    <h3 class="text-sm font-black tracking-tight text-gray-900 dark:text-white uppercase">
+                        Glosario de Columnas de Ingesta (Fuentes RSS)
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Referencia rápida sobre los parámetros y la lógica de procesamiento del sistema
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <div class="space-y-6 divide-y divide-gray-100 dark:divide-gray-800/60">
+        <!-- List items with single paragraph per column, colored left border, and hover elevation -->
+        <div class="divide-y divide-gray-100 dark:divide-gray-800/60 p-2 sm:p-4">
             <!-- Freq (min) -->
-            <div class="pt-4 first:pt-0">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 mb-2">
-                    Freq (min)
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 shadow-xs">
+                        Freq (min)
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Frecuencia de Ingesta:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Minutos entre cada consulta al feed RSS. El programador solo revisa este feed cuando se cumple este intervalo (ej. <strong class="text-gray-800 dark:text-gray-200">60</strong> = 1 hora, <strong class="text-gray-800 dark:text-gray-200">120</strong> = 2 horas).
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Frecuencia de Ingesta:</strong> Minutos entre cada consulta al feed RSS. El programador en segundo plano solo revisa este feed cuando se cumple este intervalo de tiempo (ej. <span class="font-semibold text-blue-600 dark:text-blue-400">60</span> = cada hora, <span class="font-semibold text-blue-600 dark:text-blue-400">120</span> = cada 2 horas).
                 </p>
             </div>
 
             <!-- Score (Salud) -->
-            <div class="pt-6">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 mb-2">
-                    Score (Salud)
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs">
+                        Score (Salud)
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Índice de Fiabilidad:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Salud técnica del feed. Suma <strong class="text-emerald-600 dark:text-emerald-400">+2 puntos</strong> con noticias nuevas y resta <strong class="text-rose-600 dark:text-rose-400">-5 puntos</strong> si la URL falla o da error de conexión.
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Índice de Fiabilidad:</strong> Salud técnica del feed evaluada automáticamente. Suma <strong class="font-bold text-emerald-600 dark:text-emerald-400">+2 puntos</strong> cuando entrega noticias nuevas exitosamente y resta <strong class="font-bold text-rose-600 dark:text-rose-400">-5 puntos</strong> si la URL falla o da error de conexión.
                 </p>
             </div>
 
             <!-- Máx. Días -->
-            <div class="pt-6">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 mb-2">
-                    Máx. Días
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-purple-50 dark:bg-purple-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
+                        Máx. Días
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Filtro de Antigüedad:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Límite de frescura. Descarta automáticamente cualquier noticia cuya fecha de publicación original sea anterior a X días (ej. <strong class="text-gray-800 dark:text-gray-200">1 día</strong>).
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Filtro de Antigüedad:</strong> Límite de frescura de publicación. El sistema descarta automáticamente cualquier noticia del feed cuya fecha original sea anterior a este número de días (ej. <span class="font-semibold text-purple-600 dark:text-purple-400">1 día</span> para noticias del día).
                 </p>
             </div>
 
             <!-- Verificada -->
-            <div class="pt-6">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 mb-2">
-                    Verificada
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 shadow-xs">
+                        Verificada
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Fuente Oficial:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Identifica medios y canales oficiales de alta reputación. Sus artículos tienen prioridad en la cola de procesamiento editorial.
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Fuente Oficial:</strong> Marca de medio o portal verificado de alta reputación periodística. Los artículos provenientes de estas fuentes reciben prioridad en la cola de procesamiento editorial de Horizon.
                 </p>
             </div>
 
             <!-- Activa -->
-            <div class="pt-6">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 mb-2">
-                    Activa
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-teal-50 dark:bg-teal-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-800/60 shadow-xs">
+                        Activa
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Interruptor de Ingesta:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Pausa o reactiva la sincronización del feed con un solo clic sin necesidad de borrar su configuración.
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Interruptor de Ingesta:</strong> Interruptor rápido para pausar o reactivar la sincronización automática de un feed con un solo clic directamente desde la tabla, sin borrar su configuración.
                 </p>
             </div>
 
             <!-- Última Ingesta -->
-            <div class="pt-6">
-                <div class="inline-block px-2.5 py-1 text-xs font-bold rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 mb-2">
-                    Última Ingesta
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-black tracking-wider text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-xs">
+                        Última Ingesta
+                    </span>
                 </div>
-                <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                    Sincronización:
-                </h4>
-                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1.5 max-w-4xl">
-                    Fecha y hora exacta del último escaneo exitoso realizado en segundo plano por el programador.
+                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <strong class="font-bold text-gray-900 dark:text-white">Sincronización:</strong> Registro de fecha y hora exacta del último escaneo completado con éxito por el comando de ingesta en segundo plano.
                 </p>
             </div>
         </div>
