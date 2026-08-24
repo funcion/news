@@ -150,17 +150,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
                 <!-- Logo -->
-                <a href="{{ url('/') }}" class="flex items-center gap-2 group" aria-label="Home page">
-                    <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center transform group-hover:rotate-6 transition-transform shadow-lg shadow-cyan-500/20">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
-                        </svg>
-                    </div>
-                    <div class="flex flex-col -gap-1">
-                        <span class="font-black text-xl tracking-tighter text-slate-950 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
-                        <span class="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.2em] ml-0.5">{{ __('Magazine') }}</span>
-                    </div>
-                </a>
+                <x-ui.logo />
                 
                 <!-- Right Side: Navigation & Actions -->
                 <div class="flex items-center gap-4 lg:gap-8">
@@ -457,12 +447,7 @@
             <div class="footer-grid-3cols pb-12 border-b border-gray-100 dark:border-white/5">
                 <!-- Columna 1: Marca & Declaración de Transparencia IA -->
                 <div class="flex flex-col gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-[#2b7fff] text-white font-black text-base flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
-                            G
-                        </div>
-                        <span class="font-black text-2xl tracking-tight text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
-                    </div>
+                    <x-ui.logo size="lg" />
                     <p class="text-sm md:text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
