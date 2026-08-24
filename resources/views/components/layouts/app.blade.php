@@ -143,9 +143,9 @@
     {!! \App\Models\CustomCode::getActive('header_body') !!}
     
     <!-- Premium Header Wrapper -->
-    <div class="sticky top-0 z-50 w-full">
+    <div class="fixed top-0 inset-x-0 z-50 w-full">
         <!-- Header Bar -->
-        <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm"
+        <header class="w-full backdrop-blur-md transition-all duration-300 border-b border-gray-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-sm"
                 x-bind:class="isScrolled ? 'shadow-sm' : ''">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
@@ -418,7 +418,7 @@
 </div>
 <!-- End Header Wrapper -->
 
-<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-6 pb-12 lg:pt-14 lg:pb-24">
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-24 pb-12 lg:pt-28 lg:pb-24">
         @if(isset($sidebar) && !empty(trim((string) $sidebar)))
             <div class="grid grid-cols-1 gap-6 lg:gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
                 <!-- Left Column (Primary) -->
