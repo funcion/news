@@ -481,10 +481,9 @@
                 </div>
             </div>
 
-            <!-- Bottom Copyright -->
-            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 dark:text-slate-500 font-medium">
+            <!-- Bottom Copyright (Centrado y Limpio) -->
+            <div class="pt-8 text-center text-xs text-slate-500 dark:text-slate-500 font-medium">
                 <p>&copy; {{ date('Y') }} {{ __('ui.site_name') }}. {{ app()->getLocale() === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.' }}</p>
-                <p class="text-[10px] uppercase tracking-widest font-black text-slate-400 dark:text-slate-600">Built with Laravel & AI Human Curation</p>
             </div>
         </div>
     </footer>
