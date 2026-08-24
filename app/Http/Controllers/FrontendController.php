@@ -84,9 +84,60 @@ class FrontendController extends Controller
         return view('tag.show', compact('articles', 'tag', 'trendingTags'));
     }
 
+        public function liveSearch(Request $request)
+    {
+        $query = trim($request->get('q', ''));
+        $locale = $request->get('locale', app()->getLocale() ?: 'en');
+
+        if (strlen($query) < 2) {
+            return response()->json([
+                'articles' => [],
+                'count' => 0,
+                'viewAllUrl' => null,
+            ]);
+        }
+
+        $articles = Article::where('status', 'published')
+            ->where(function ($q) use ($query) {
+                $q->whereRaw("title->>'en' ILIKE ?", ["%{$query}%"])
+                  ->orWhereRaw("title->>'es' ILIKE ?", ["%{$query}%"])
+                  ->orWhereRaw("excerpt->>'en' ILIKE ?", ["%{$query}%"])
+                  ->orWhereRaw("excerpt->>'es' ILIKE ?", ["%{$query}%"]);
+            })
+            ->with('category')
+            ->orderByDesc('published_at')
+            ->take(6)
+            ->get()
+            ->map(function ($article) use ($locale) {
+                $title = $article->getTranslation('title', $locale) ?: $article->getTranslation('title', 'en');
+                $categoryName = $article->category ? ($article->category->getTranslation('name', $locale) ?: $article->category->getTranslation('name', 'en')) : null;
+                $url = $locale === 'es' ? url('/es/' . $article->slug) : url('/' . $article->slug);
+
+                return [
+                    'id'       => $article->id,
+                    'title'    => $title,
+                    'url'      => $url,
+                    'category' => $categoryName,
+                    'image'    => $article->image ?: null,
+                    'date'     => $article->published_at ? $article->published_at->format('d/m/Y') : null,
+                ];
+            });
+
+        $viewAllUrl = $locale === 'es'
+            ? url('/es/search?q=' . urlencode($query))
+            : url('/search?q=' . urlencode($query));
+
+        return response()->json([
+            'articles'   => $articles,
+            'count'      => $articles->count(),
+            'viewAllUrl' => $viewAllUrl,
+        ]);
+    }
+
     public function search(Request $request)
     {
-        $query = $request->get('q', '');
+        $query = trim($request->get('q', ''));
+        $locale = app()->getLocale() ?: 'en';
 
         $articles = collect();
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
@@ -100,10 +151,10 @@ class FrontendController extends Controller
                       ->orWhereRaw("excerpt->>'es' ILIKE ?", ["%{$query}%"]);
                 })
                 ->orderByDesc('published_at')
-                ->paginate(20);
+                ->paginate(15);
         }
 
-        return view('search', compact('articles', 'query', 'trendingTags'));
+        return view('search', compact('articles', 'query', 'trendingTags', 'locale'));
     }
 
     public function feed()

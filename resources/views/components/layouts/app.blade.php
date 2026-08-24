@@ -210,6 +210,15 @@
 
                     <!-- Actions -->
                     <div class="flex items-center gap-2 sm:gap-4 border-l border-gray-100 dark:border-white/5 pl-4 sm:pl-8">
+                                                <!-- Live Search Trigger Button (Desktop) -->
+                        <button @click="$dispatch('open-search-modal')" 
+                                type="button"
+                                aria-label="{{ __('ui.search') }}"
+                                class="p-2 text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-1.5">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <kbd class="hidden xl:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-mono">⌘K</kbd>
+                        </button>
+
                         <!-- Dark Mode Toggle -->
                         <button @click="toggleDarkMode()" 
                                 aria-label="Toggle dark mode"
@@ -302,14 +311,10 @@
                             {{ __('ui.latest_news') }}
                         </a>
                         
-                        <a href="#search" 
-                           class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1"
-                           @click="mobileMenuOpen = false">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            {{ __('ui.search') }}
-                        </a>
+                        <button @click="mobileMenuOpen = false; $dispatch('open-search-modal')" type="button" class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1 w-full text-left">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        {{ __('ui.search') }}
+    </button>
                         
                         <a href="#about" 
                            class="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-1"
@@ -585,5 +590,113 @@
         </div>
     @endif
 
+    <!-- Live Autocomplete Search Modal (Spotlight) -->
+    <div x-data="{
+            open: false,
+            query: '',
+            loading: false,
+            articles: [],
+            viewAllUrl: null,
+            hasSearched: false,
+            async search() {
+                if (this.query.trim().length < 2) {
+                    this.articles = [];
+                    this.hasSearched = false;
+                    this.loading = false;
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await axios.get('/api/search', {
+                        params: { q: this.query, locale: '{{ app()->getLocale() }}' }
+                    });
+                    this.articles = res.data.articles || [];
+                    this.viewAllUrl = res.data.viewAllUrl;
+                    this.hasSearched = true;
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    this.loading = false;
+                }
+            }
+         }"
+         @open-search-modal.window="open = true; setTimeout(() => $refs.searchInput.focus(), 100)"
+         @keydown.window.prevent.cmd.k="open = true; setTimeout(() => $refs.searchInput.focus(), 100)"
+         @keydown.window.prevent.ctrl.k="open = true; setTimeout(() => $refs.searchInput.focus(), 100)"
+         @keydown.escape.window="open = false"
+         x-show="open"
+         x-cloak
+         class="fixed inset-0 z-[250] flex items-start justify-center pt-16 sm:pt-24 px-4 bg-slate-950/70 backdrop-blur-md transition-all">
+         
+        <div class="fixed inset-0" @click="open = false"></div>
+
+        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[80vh] z-10">
+            <!-- Search Bar -->
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+                <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                
+                <input x-ref="searchInput"
+                       x-model="query"
+                       @input.debounce.250ms="search()"
+                       type="text"
+                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar artículos, noticias, IA, empresas...' : 'Search articles, news, AI, companies...' }}"
+                       class="w-full bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 text-base outline-none font-medium">
+
+                <span x-show="loading" class="text-cyan-500 animate-spin shrink-0">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </span>
+
+                <button @click="open = false" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs font-bold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    ESC
+                </button>
+            </div>
+
+            <!-- Results -->
+            <div class="overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[60vh]">
+                <template x-if="articles.length > 0">
+                    <div>
+                        <template x-for="item in articles" :key="item.id">
+                            <a :href="item.url" 
+                               class="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center gap-3.5 group">
+                                <template x-if="item.image">
+                                    <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
+                                        <img :src="item.image" :alt="item.title" class="w-full h-full object-cover">
+                                    </div>
+                                </template>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 text-[10px] font-black uppercase text-cyan-600 dark:text-cyan-400 mb-0.5" x-show="item.category">
+                                        <span x-text="item.category"></span>
+                                    </div>
+                                    <h4 x-text="item.title" class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></h4>
+                                </div>
+                                <svg class="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </template>
+                    </div>
+                </template>
+
+                <template x-if="hasSearched && articles.length === 0 && !loading">
+                    <div class="py-10 text-center text-slate-500 dark:text-slate-400 text-xs">
+                        <p class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">{{ app()->getLocale() === 'es' ? 'Sin resultados' : 'No matches found' }}</p>
+                        <p>{{ app()->getLocale() === 'es' ? 'Prueba con otras palabras o términos técnicos.' : 'Try searching for other keywords.' }}</p>
+                    </div>
+                </template>
+
+                <template x-if="!hasSearched && query.length < 2">
+                    <div class="py-8 text-center text-slate-400 dark:text-slate-500 text-xs font-medium">
+                        <span>{{ app()->getLocale() === 'es' ? 'Escribe al menos 2 letras para buscar en tiempo real...' : 'Type at least 2 characters to search live...' }}</span>
+                    </div>
+                </template>
+            </div>
+
+            <template x-if="articles.length > 0 && viewAllUrl">
+                <div class="p-3 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 text-center">
+                    <a :href="viewAllUrl" class="text-xs font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400 hover:underline">
+                        {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
+                    </a>
+                </div>
+            </template>
+        </div>
+    </div>
 </body>
 </html>

@@ -33,6 +33,7 @@ Route::get('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handl
 
 // RSS Feed
 Route::get('/feed.xml', [\App\Http\Controllers\FrontendController::class, 'feed'])->name('feed');
+Route::get('/api/search', [\App\Http\Controllers\FrontendController::class, 'liveSearch'])->name('api.search');
 
 // Newsletter (Double Opt-In & Unsubscribe)
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
@@ -59,6 +60,7 @@ Route::group([
     Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
 
     // Tags (Must be before root slugs to avoid collisions)
+    Route::get('/search', [\App\Http\Controllers\FrontendController::class, 'search'])->name('search');
     Route::get('/tag/{slug}', [\App\Http\Controllers\FrontendController::class, 'tag'])->name('tags.show');
 
     // Root-level slugs (Articles & Categories)
