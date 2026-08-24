@@ -310,7 +310,7 @@ app/
 |---|-------|:------:|-------------|
 | **1** | **Backend de Suscriptores (Newsletter con Doble Opt-in)** | ✅ **Completada** | Tabla `subscribers`, endpoint `POST /newsletter/subscribe`, verificación vía email Markdown de Laravel (`NewsletterVerificationMail`), token criptográfico de 64 caracteres, honeypot anti-spam, 1-click unsubscribe y gestión completa en Filament (`SubscriberResource`). |
 | **2** | **Páginas de Error Personalizadas (404, 500, 403)** | ✅ **Completada** | Vistas de error `errors/404.blade.php`, `errors/500.blade.php` y `errors/403.blade.php` con tipografía de degradado futurista, buscador contextual integrado, selector bilingüe dinámico y compatibilidad Dark/Light mode. |
-| **3** | **Prueba de Ingesta en Vivo con Gemini 3.6 Flash** | ⏳ Pendiente | Ciclo de ejecución de `rss:fetch` y Horizon para validar generación y traducción estructurada con `google/gemini-3.6-flash`. |
+| **3** | **Prueba de Ingesta en Vivo con Gemini 3.6 Flash** | ✅ **Completada** | Ingesta RSS (`rss:fetch`), extracción, clasificación semántica, verificación anti-duplicados por cosenos, redacción bilingüe EN/ES con `google/gemini-3.6-flash` y generación de imagen FLUX.1. |
 | **4** | **Buscador en Vivo con Autocompletado** | ⏳ Pendiente | Autocompletado y búsqueda instantánea en el header con sugerencias de artículos en tiempo real. |
 | **5** | **Página de Contacto `/contact`** | ⏳ Pendiente | Formulario de contacto directo con protección anti-spam conectado a `hi@glodaxia.com`. |
 | **6** | **Monetización & Espacios Publicitarios** | ⏳ Pendiente | Zonas de anuncios preparadas para Google AdSense / Sponsors / Mediavine sin afectar E-E-A-T. |
