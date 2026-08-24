@@ -13,7 +13,7 @@ class FrontendController extends Controller
     {
         $articles = Article::where('status', 'published')
             ->orderBy('published_at', 'desc')
-            ->paginate(12);
+            ->paginate(15);
 
         $trendingTags = Tag::withMinimumArticles(1)
             ->popular(10)
@@ -63,7 +63,7 @@ class FrontendController extends Controller
         $articles = Article::where('status', 'published')
             ->where('category_id', $category->id)
             ->orderBy('published_at', 'desc')
-            ->paginate(12);
+            ->paginate(15);
 
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
 
@@ -77,7 +77,7 @@ class FrontendController extends Controller
         $articles = $tag->articles()
             ->where('status', 'published')
             ->orderBy('published_at', 'desc')
-            ->paginate(12);
+            ->paginate(15);
 
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
 
