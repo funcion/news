@@ -111,3 +111,41 @@
 :root:not(.dark) .placeholder\\:text-slate-600::placeholder {
   color: theme('colors.gray.500') !important;
 }
+/* ===== ALTO CONTRASTE MODO OSCURO PARA PROSE Y PÁGINAS LEGALES ===== */
+.dark .prose,
+.dark .prose-slate,
+.dark .prose-cyan {
+  --tw-prose-body: #e2e8f0 !important;
+  --tw-prose-headings: #ffffff !important;
+  --tw-prose-lead: #cbd5e1 !important;
+  --tw-prose-links: #38bdf8 !important;
+  --tw-prose-bold: #ffffff !important;
+  --tw-prose-counters: #94a3b8 !important;
+  --tw-prose-bullets: #64748b !important;
+  --tw-prose-hr: #334155 !important;
+  --tw-prose-quotes: #f1f5f9 !important;
+  --tw-prose-quote-borders: #0284c7 !important;
+  --tw-prose-captions: #94a3b8 !important;
+  --tw-prose-code: #38bdf8 !important;
+  --tw-prose-pre-code: #e2e8f0 !important;
+  --tw-prose-pre-bg: #0f172a !important;
+  --tw-prose-th-borders: #334155 !important;
+  --tw-prose-td-borders: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  color: #ffffff !important;
+}
+
+.dark .prose p,
+.dark .prose li {
+  color: #e2e8f0 !important;
+}
+
+.dark .prose strong {
+  color: #ffffff !important;
+}
