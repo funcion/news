@@ -211,6 +211,24 @@ class DatabaseSeeder extends Seeder
                 'slug_en' => 'tech-education-tutorials',
                 'slug_es' => 'educacion-tech-tutoriales',
             ],
+            [
+                'en' => 'Robotics & Embedded Systems',
+                'es' => 'Robótica & Sistemas Embebidos',
+                'slug_en' => 'robotics-embedded-systems',
+                'slug_es' => 'robotica-sistemas-embebidos',
+            ],
+            [
+                'en' => '3D Printing & Maker Culture',
+                'es' => 'Impresión 3D & Cultura Maker',
+                'slug_en' => '3d-printing-maker-culture',
+                'slug_es' => 'impresion-3d-cultura-maker',
+            ],
+            [
+                'en' => 'Electronics & DIY Hardware',
+                'es' => 'Electrónica & Hardware DIY',
+                'slug_en' => 'electronics-diy-hardware',
+                'slug_es' => 'electronica-hardware-diy',
+            ],
         ];
 
         foreach ($categories as $catData) {
