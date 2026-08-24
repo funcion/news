@@ -441,28 +441,28 @@
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
     <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 pt-12 pb-16 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-gray-100 dark:border-white/5">
-                <!-- Brand & AI Human Hybrid Disclosure -->
-                <div class="md:col-span-6 flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-gray-100 dark:border-white/5">
+                <!-- Columna 1: Marca & Declaración de Transparencia IA -->
+                <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-lg bg-[#2b7fff] text-white font-black text-sm flex items-center justify-center shadow-md shadow-blue-500/20">
                             G
                         </div>
                         <span class="font-black text-xl tracking-tight text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
-                    <div class="flex items-center gap-2 text-[11px] text-teal-600 dark:text-teal-400 font-bold uppercase tracking-wider">
+                    <div class="flex items-center gap-2 text-[11px] text-teal-600 dark:text-teal-400 font-bold uppercase tracking-wider mt-1">
                         <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
                         {{ app()->getLocale() === 'es' ? 'Supervisión humana garantizada' : 'Human editorial oversight guaranteed' }}
                     </div>
                 </div>
 
-                <!-- Navigation & Links -->
-                <div class="md:col-span-3 flex flex-col gap-3">
+                <!-- Columna 2: Legal & Transparencia -->
+                <div class="flex flex-col gap-3 md:pl-4">
                     <h4 class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">{{ __('ui.legal_nav') }}</h4>
-                    <ul class="flex flex-col gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    <ul class="flex flex-col gap-2.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
                         <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.editorial_policy') }}</a></li>
                         <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.privacy_policy') }}</a></li>
                         <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.terms_of_service') }}</a></li>
@@ -470,11 +470,12 @@
                     </ul>
                 </div>
 
-                <!-- Syndication & Sitemaps -->
-                <div class="md:col-span-3 flex flex-col gap-3">
+                <!-- Columna 3: Syndication & Feeds -->
+                <div class="flex flex-col gap-3 md:pl-4">
                     <h4 class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">{{ app()->getLocale() === 'es' ? 'Indexación & Feeds' : 'Syndication & Feeds' }}</h4>
-                    <ul class="flex flex-col gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    <ul class="flex flex-col gap-2.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
                         <li><a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.sitemap_xml') }} <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
+                        <li><a href="{{ route('sitemap.news') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">Google News Sitemap (48h) <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
                         <li><a href="{{ route('feed') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.rss_feed') }} <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
                     </ul>
                 </div>
