@@ -1,70 +1,63 @@
 <?php
 
-return [
-    // Navegación
-    'home'          => 'Inicio',
-    'news'          => 'Noticias',
-    'categories'    => 'Categorías',
-    'tags'          => 'Etiquetas',
-    'about'         => 'Acerca de',
-    'contact'       => 'Contacto',
-    'search'        => 'Buscar',
-    'latest_news'   => 'Últimas Noticias',
-
-    // Detalles del artículo y Tarjeta
-    'read_more'     => 'Leer más',
-    'min_read'      => ':count min de lectura',
-    'published_by'  => 'Por :author',
-    'published_on'  => 'Publicado el :date',
-    'current_post'  => 'Post Actual',
-    'views_count'   => ':count vistas',
-    'share_post'    => 'Comparte este Post',
-    'verified_author'=> 'Autor Verificado',
-    'recommended'   => 'Recomendado',
-    'featured'      => 'Destacado',
-    'staff'         => 'Personal',
-    'reporter'      => 'Reportero',
-
-    // Página de Inicio y secciones
-    'just_published'    => 'RECIÉN PUBLICADO',
-    'browsing_category' => 'Explorando Categoría',
-    'topic'             => 'Tema',
-    'the_editorial'     => 'Editorial',
-    'editorial_title'   => 'El Futuro de la Tecnología y la Innovación.',
-    'editorial_subtitle'=> config('global.tagline') . ': Análisis profundos e información en tiempo real sobre las tendencias que cambian el mundo.',
-    'archives_empty'    => 'El archivo está vacío',
-    'expect_insights'   => 'Nuevos artículos muy pronto.',
-    'trending_topics'   => 'Temas de Tendencia',
-
-    // Newsletter
-    'newsletter_title'  => config('global.site_name') . ' Weekly',
-    'newsletter_desc'   => 'Recibe las actualizaciones tecnológicas más importantes directamente en tu bandeja de entrada. Sin spam, solo valor.',
-    'email_address'     => 'Correo electrónico',
-    'subscribe_now'     => 'Suscribirse Ahora',
-
-    // Actualizaciones en vivo / Notificaciones
-    'new_update'    => 'Nueva Actualización',
-    'read_now'      => 'Leer Ahora',
-    'dismiss'       => 'Cerrar',
-
-    // Preferencias
-    'theme'         => 'Tema',
-    'language'      => 'Idioma',
-    'preferences'   => 'Preferencias',
-
-    // Selector de idioma
-    'switch_lang'   => 'English',
-    'current_lang'  => 'Español',
-
-    // SEO por defecto
-    'site_name'     => config('global.site_name', 'Glodaxia'),
-    'meta_desc'     => 'Las últimas noticias de tecnología, innovación y tendencias globales, redactadas por expertos de ' . config('global.site_name') . '.',
-
-    // E-E-A-T & Transparencia
-    'read_original_source' => 'Leer fuente original',
-    'content_disclaimer'   => 'Descargo de responsabilidad: Los artículos de este sitio web son recopilados, traducidos o curados a partir de fuentes externas. Nos esforzamos por lograr la máxima precisión, pero recomendamos verificar los detalles en la fuente original.',
-
-    // Páginas de Etiquetas
-    'tag_meta_desc' => 'Explora los últimos artículos, análisis y opiniones sobre #:tag en ' . config('global.site_name') . '.',
-    'tag_empty'     => 'No se encontraron artículos con esta etiqueta todavía.',
-];
+return array (
+  'home' => 'Inicio',
+  'news' => 'Noticias',
+  'categories' => 'Categorías',
+  'tags' => 'Etiquetas',
+  'about' => 'Acerca de',
+  'contact' => 'Contacto',
+  'search' => 'Buscar',
+  'latest_news' => 'Últimas Noticias',
+  'read_more' => 'Leer más',
+  'min_read' => ':count min de lectura',
+  'published_by' => 'Por :author',
+  'published_on' => 'Publicado el :date',
+  'current_post' => 'Post Actual',
+  'views_count' => ':count vistas',
+  'share_post' => 'Comparte este Post',
+  'verified_author' => 'Autor Verificado',
+  'recommended' => 'Recomendado',
+  'featured' => 'Destacado',
+  'staff' => 'Personal',
+  'reporter' => 'Reportero',
+  'just_published' => 'RECIÉN PUBLICADO',
+  'browsing_category' => 'Explorando Categoría',
+  'topic' => 'Tema',
+  'the_editorial' => 'Editorial',
+  'editorial_title' => 'El Futuro de la Tecnología y la Innovación.',
+  'editorial_subtitle' => 'Tech & News Magazine: Análisis profundos e información en tiempo real sobre las tendencias que cambian el mundo.',
+  'archives_empty' => 'El archivo está vacío',
+  'expect_insights' => 'Nuevos artículos muy pronto.',
+  'trending_topics' => 'Temas de Tendencia',
+  'newsletter_title' => 'Glodaxia Weekly',
+  'newsletter_desc' => 'Recibe las actualizaciones tecnológicas más importantes directamente en tu bandeja de entrada. Sin spam, solo valor.',
+  'email_address' => 'Correo electrónico',
+  'subscribe_now' => 'Suscribirse Ahora',
+  'new_update' => 'Nueva Actualización',
+  'read_now' => 'Leer Ahora',
+  'dismiss' => 'Cerrar',
+  'theme' => 'Tema',
+  'language' => 'Idioma',
+  'preferences' => 'Preferencias',
+  'switch_lang' => 'English',
+  'current_lang' => 'Español',
+  'site_name' => 'Glodaxia',
+  'meta_desc' => 'Las últimas noticias de tecnología, innovación y tendencias globales, redactadas por expertos de Glodaxia.',
+  'read_original_source' => 'Leer fuente original',
+  'content_disclaimer' => 'Descargo de responsabilidad: Los artículos de este sitio web son recopilados, traducidos o curados a partir de fuentes externas. Nos esforzamos por lograr la máxima precisión, pero recomendamos verificar los detalles en la fuente original.',
+  'tag_meta_desc' => 'Explora los últimos artículos, análisis y opiniones sobre #:tag en Glodaxia.',
+  'tag_empty' => 'No se encontraron artículos con esta etiqueta todavía.',
+  'terms_of_service' => 'Términos y Condiciones',
+  'privacy_policy' => 'Política de Privacidad',
+  'cookie_policy' => 'Política de Cookies',
+  'editorial_policy' => 'Política Editorial & IA',
+  'editorial_disclosure_footer' => 'Combinamos periodismo de investigación con asistencia avanzada de IA. Todo el contenido es rigurosamente revisado, verificado y curado por nuestro equipo editorial humano.',
+  'cookie_banner_text' => 'Utilizamos cookies técnicas y analíticas esenciales para ofrecerte la mejor experiencia y recordar tus preferencias.',
+  'accept_all' => 'Aceptar todas',
+  'decline_non_essential' => 'Solo esenciales',
+  'learn_more' => 'Más información',
+  'sitemap_xml' => 'Sitemap XML',
+  'rss_feed' => 'Feed RSS',
+  'legal_nav' => 'Legal & Transparencia',
+);

@@ -438,19 +438,96 @@
         </div>
     </main>
 
-    <!-- Minimalist Footer -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-white/5 py-8 lg:py-16">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="flex flex-col items-center gap-6">
-                <div class="flex items-center gap-2 opacity-40 grayscale pointer-events-none">
-                    <span class="font-black text-xl tracking-tighter text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
+    <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
+    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 pt-12 pb-16 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-gray-100 dark:border-white/5">
+                <!-- Brand & AI Human Hybrid Disclosure -->
+                <div class="md:col-span-6 flex flex-col gap-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-[#2b7fff] text-white font-black text-sm flex items-center justify-center shadow-md shadow-blue-500/20">
+                            G
+                        </div>
+                        <span class="font-black text-xl tracking-tight text-slate-900 dark:text-white uppercase leading-none">{{ __('ui.site_name') }}</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
+                        {{ __('ui.editorial_disclosure_footer') }}
+                    </p>
+                    <div class="flex items-center gap-2 text-[11px] text-teal-600 dark:text-teal-400 font-bold uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                        {{ app()->getLocale() === 'es' ? 'Supervisión humana garantizada' : 'Human editorial oversight guaranteed' }}
+                    </div>
                 </div>
-                <p class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] max-w-xs leading-relaxed">
-                    &copy; {{ date('Y') }} {{ __('ui.site_name') }}
-                </p>
+
+                <!-- Navigation & Links -->
+                <div class="md:col-span-3 flex flex-col gap-3">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">{{ __('ui.legal_nav') }}</h4>
+                    <ul class="flex flex-col gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                        <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.editorial_policy') }}</a></li>
+                        <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.privacy_policy') }}</a></li>
+                        <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.terms_of_service') }}</a></li>
+                        <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.cookie_policy') }}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Syndication & Sitemaps -->
+                <div class="md:col-span-3 flex flex-col gap-3">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">{{ app()->getLocale() === 'es' ? 'Indexación & Feeds' : 'Syndication & Feeds' }}</h4>
+                    <ul class="flex flex-col gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                        <li><a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.sitemap_xml') }} <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
+                        <li><a href="{{ route('feed') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.rss_feed') }} <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 dark:text-slate-500 font-medium">
+                <p>&copy; {{ date('Y') }} {{ __('ui.site_name') }}. {{ app()->getLocale() === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.' }}</p>
+                <p class="text-[10px] uppercase tracking-widest font-black text-slate-400 dark:text-slate-600">Built with Laravel & AI Human Curation</p>
             </div>
         </div>
     </footer>
+
+    <!-- Cookie Consent Banner UI (Non-intrusive, GDPR & CCPA Ready) -->
+    <div x-data="{
+            showConsent: !localStorage.getItem('cookie_consent_accepted'),
+            accept() {
+                localStorage.setItem('cookie_consent_accepted', 'all');
+                this.showConsent = false;
+            },
+            decline() {
+                localStorage.setItem('cookie_consent_accepted', 'essential');
+                this.showConsent = false;
+            }
+         }"
+         x-show="showConsent"
+         x-transition:enter="transition ease-out duration-500 transform"
+         x-transition:enter-start="translate-y-24 opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-300 transform"
+         x-transition:leave-end="translate-y-24 opacity-0"
+         class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50">
+        <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-5 sm:p-6 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white flex flex-col gap-4">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl shrink-0">🍪</span>
+                <div class="flex flex-col gap-1">
+                    <h5 class="text-sm font-bold">{{ app()->getLocale() === 'es' ? 'Aviso de Cookies' : 'Cookie Notice' }}</h5>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {{ __('ui.cookie_banner_text') }}
+                        <a href="{{ route('legal.cookies') }}" class="text-cyan-600 dark:text-cyan-400 underline font-medium ml-1">{{ __('ui.learn_more') }}</a>
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5 pt-1">
+                <button @click="accept()" class="flex-1 py-2 px-3.5 rounded-lg bg-[#2b7fff] hover:bg-blue-600 text-white font-bold text-xs shadow-md transition-colors text-center">
+                    {{ __('ui.accept_all') }}
+                </button>
+                <button @click="decline()" class="py-2 px-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors text-center">
+                    {{ __('ui.decline_non_essential') }}
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Breaking News Banner (Bottom Right, Fixed) -->
     <div x-show="showBanner" 

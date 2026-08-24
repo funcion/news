@@ -46,6 +46,12 @@ Route::group([
     // --- PUBLIC ROUTES ---
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
+    // Legal and Editorial Transparency Routes
+    Route::get('/terms', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
+    Route::get('/privacy', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
+    Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
+    Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
+
     // Tags (Must be before root slugs to avoid collisions)
     Route::get('/tag/{slug}', [\App\Http\Controllers\FrontendController::class, 'tag'])->name('tags.show');
 
