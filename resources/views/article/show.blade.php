@@ -52,7 +52,13 @@
             
             <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->user?->avatar_or_default }}" alt="{{ $article->user?->name ?? 'Author' }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
+                    @if($article->user?->avatar_url)
+                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm object-cover">
+                    @else
+                        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-600 to-teal-700 text-white font-black text-xs flex items-center justify-center border border-white/10 shadow-sm shrink-0 uppercase tracking-tighter select-none">
+                            {{ $article->user?->initials ?? 'GL' }}
+                        </div>
+                    @endif
                     <div class="flex flex-col">
                          <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                     </div>
@@ -142,8 +148,13 @@
             <div class="bg-white dark:bg-white/[0.02] rounded-lg p-4 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
-                    <img src="{{ $article->user?->avatar_or_default }}" 
-                         class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
+                    @if($article->user?->avatar_url)
+                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
+                    @else
+                        <div class="relative h-20 w-20 rounded-lg bg-gradient-to-br from-cyan-600 to-teal-700 text-white font-black text-2xl flex items-center justify-center border-2 border-white/20 dark:border-gray-800 shadow-xl shrink-0 uppercase tracking-tight select-none">
+                            {{ $article->user?->initials ?? 'GL' }}
+                        </div>
+                    @endif
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">

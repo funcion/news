@@ -79,6 +79,32 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Get the 2 initials of the author (First Name + Last Name).
+     */
+    public function getInitialsAttribute(): string
+    {
+        $name = trim($this->name ?? '');
+        if (empty($name)) {
+            $raw = $this->getAttributes()['name'] ?? '';
+            $decoded = json_decode($raw, true);
+            $name = is_array($decoded) ? ($decoded['es'] ?? $decoded['en'] ?? '') : $raw;
+        }
+
+        if (empty($name)) {
+            return 'GL';
+        }
+
+        $parts = preg_split('/\s+/', trim($name));
+        if (count($parts) >= 2) {
+            $first = mb_substr($parts[0], 0, 1, 'UTF-8');
+            $last = mb_substr($parts[count($parts) - 1], 0, 1, 'UTF-8');
+            return strtoupper($first . $last);
+        }
+
+        return strtoupper(mb_substr($name, 0, 2, 'UTF-8'));
+    }
+
+    /**
      * Get the articles for the user/author.
      */
     public function articles()
