@@ -60,7 +60,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach($latestArticles as $article)
-                        <a href="{{ route('article.show', ['slug' => $article->slug]) }}" 
+                        <a href="{{ route('articles.show', ['slug' => $article->slug]) }}" 
                            class="group flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-cyan-500/50 dark:hover:border-cyan-500/50 transition-all p-4 shadow-sm hover:shadow-md">
                             <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 dark:bg-slate-800 relative">
                                 @if($article->image)
