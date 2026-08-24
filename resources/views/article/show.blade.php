@@ -217,7 +217,8 @@
                         try {
                             const res = await axios.post('{{ route('newsletter.subscribe') }}', {
                                 email: this.email,
-                                source: 'article_sidebar'
+                                source: 'article_sidebar',
+                                locale: '{{ app()->getLocale() }}'
                             });
                             this.isSuccess = res.data.success;
                             this.message = res.data.message;

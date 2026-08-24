@@ -31,11 +31,13 @@ class NewsletterVerificationMail extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        app()->setLocale($this->subscriber->locale ?: 'es');
+
         return new Content(
             markdown: 'emails.newsletter-verification',
             with: [
                 'verifyUrl' => route('newsletter.verify', ['token' => $this->subscriber->token]),
-                'locale'    => $this->subscriber->locale,
+                'locale'    => $this->subscriber->locale ?: 'es',
                 'email'     => $this->subscriber->email,
             ],
         );

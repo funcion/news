@@ -23,15 +23,18 @@ class NewsletterController extends Controller
             ]);
         }
 
-        // 2. Validate email
+        // 2. Validate email and locale
         $validated = $request->validate([
             'email'  => ['required', 'string', 'email:rfc', 'max:255'],
             'source' => ['nullable', 'string', 'max:50'],
+            'locale' => ['nullable', 'string', 'max:10'],
         ]);
 
         $email = strtolower(trim($validated['email']));
-        $locale = app()->getLocale() ?: 'en';
+        $locale = $request->input('locale') ?: app()->getLocale() ?: 'es';
         $source = $validated['source'] ?? 'footer';
+
+        app()->setLocale($locale);
 
         $subscriber = Subscriber::where('email', $email)->first();
 
@@ -73,7 +76,7 @@ class NewsletterController extends Controller
             ]);
         }
 
-        // Dispatch verification email to queue
+        // Dispatch verification email with explicit locale
         try {
             Mail::to($subscriber->email)->queue(new NewsletterVerificationMail($subscriber));
         } catch (\Throwable $e) {
@@ -102,22 +105,26 @@ class NewsletterController extends Controller
         $subscriber = Subscriber::where('token', $token)->first();
 
         if (!$subscriber) {
-            $errorMsg = app()->getLocale() === 'es'
+            $isEs = app()->getLocale() === 'es';
+            $errorMsg = $isEs
                 ? 'El enlace de verificación no es válido o ya ha expirado.'
                 : 'The verification link is invalid or has already expired.';
 
-            return redirect()->route('home')->with('error', $errorMsg);
+            $redirectUrl = $isEs ? url('/es') : url('/');
+            return redirect($redirectUrl)->with('error', $errorMsg);
         }
 
         $subscriber->verified_at = now();
         $subscriber->unsubscribed_at = null;
         $subscriber->save();
 
-        $successMsg = $subscriber->locale === 'es'
+        $isEs = $subscriber->locale === 'es';
+        $successMsg = $isEs
             ? '🎉 ¡Ya estás suscrito oficialmente a Glodaxia Magazine! Bienvenido.'
             : '🎉 You are now officially subscribed to Glodaxia Magazine! Welcome.';
 
-        return redirect()->route('home')->with('success', $successMsg);
+        $redirectUrl = $isEs ? url('/es') : url('/');
+        return redirect($redirectUrl)->with('success', $successMsg);
     }
 
     /**
@@ -127,15 +134,18 @@ class NewsletterController extends Controller
     {
         $subscriber = Subscriber::where('token', $token)->first();
 
+        $isEs = true;
         if ($subscriber) {
+            $isEs = $subscriber->locale === 'es';
             $subscriber->unsubscribed_at = now();
             $subscriber->save();
         }
 
-        $msg = app()->getLocale() === 'es'
+        $msg = $isEs
             ? 'Te has dado de baja de nuestro boletín correctamente.'
             : 'You have been successfully unsubscribed from our newsletter.';
 
-        return redirect()->route('home')->with('info', $msg);
+        $redirectUrl = $isEs ? url('/es') : url('/');
+        return redirect($redirectUrl)->with('info', $msg);
     }
 }
