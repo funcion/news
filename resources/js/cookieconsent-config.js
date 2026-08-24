@@ -127,17 +127,4 @@ CookieConsent.run({
     }
 });
 
-// Sync CookieConsent dark mode class with Glodaxia's html.dark
-const syncTheme = () => {
-    if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.add('cc--darkmode');
-    } else {
-        document.documentElement.classList.remove('cc--darkmode');
-    }
-};
-
-syncTheme();
-const observer = new MutationObserver(syncTheme);
-observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
 export default CookieConsent;

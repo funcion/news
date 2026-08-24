@@ -154,6 +154,8 @@ p {
   --cc-btn-border-radius: 0.75rem;
 }
 
+.dark #cc-main,
+html.dark #cc-main,
 .cc--darkmode {
   --cc-bg: #0f172a;
   --cc-primary-color: #f8fafc;
