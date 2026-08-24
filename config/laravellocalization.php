@@ -58,7 +58,6 @@ return [
     | These URLs will NOT be prefixed with the locale.
     */
     'ignoredUrls' => [
-        '/',
         '/health',
         '/admin*',   // Keep Filament admin without locale prefix
         '/up',
