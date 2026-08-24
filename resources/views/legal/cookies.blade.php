@@ -1,108 +1,97 @@
 <x-layouts.app :title="__('ui.cookie_policy') . ' | ' . config('app.name')">
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
-        <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2 mb-3">
                 <span class="px-3 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-black uppercase tracking-widest border border-amber-500/20">
-                    {{ app()->getLocale() === 'es' ? 'Gestión de Cookies' : 'Cookie Management' }}
+                    {{ app()->getLocale() === 'es' ? 'Gestión de Cookies & Directiva ePrivacy' : 'Cookie Governance & ePrivacy' }}
                 </span>
-                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">● {{ app()->getLocale() === 'es' ? 'Actualizado: Agosto 2026' : 'Updated: August 2026' }}</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">● {{ app()->getLocale() === 'es' ? 'Vigente: Agosto 2026' : 'Effective: August 2026' }}</span>
             </div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
-                {{ app()->getLocale() === 'es' ? 'Política de Cookies y Tecnologías de Rastreo' : 'Cookie & Tracking Technologies Policy' }}
+                {{ app()->getLocale() === 'es' ? 'Política de Cookies y Almacenamiento Local' : 'Cookie & Local Storage Policy' }}
             </h1>
-            <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl font-medium">
+            <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl font-medium">
                 {{ app()->getLocale() === 'es' 
-                    ? 'Información transparente sobre el uso de cookies técnicas y analíticas en nuestro portal, y cómo gestionarlas desde tu navegador.' 
-                    : 'Transparent information regarding technical and analytics cookies used across our portal and how to manage your preferences.' }}
+                    ? 'Transparencia técnica sobre las cookies empleadas en Glodaxia, finalidad de cada tipología, persistencia en LocalStorage y mecanismos de revocación.' 
+                    : 'Technical transparency regarding cookies deployed on Glodaxia, categorization, LocalStorage persistence, and revocation mechanisms.' }}
             </p>
         </div>
 
-        <!-- Content Body -->
-        <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-cyan-600 dark:prose-a:text-cyan-400">
+        <div class="prose prose-slate dark:prose-invert max-w-none">
             @if(app()->getLocale() === 'es')
-                <h2>1. ¿Qué son las Cookies?</h2>
                 <p>
-                    Una cookie es un pequeño archivo de texto que un sitio web almacena en tu navegador cuando lo visitas. Permiten que la web recuerde información sobre tu visita (como tu idioma preferido o tu elección de Modo Oscuro) para que tu próxima navegación sea más rápida, cómoda y personalizada.
+                    Esta Política de Cookies forma parte integrante de nuestra Política de Privacidad y Términos de Uso, y se emite en conformidad con la <strong>Directiva 2002/58/CE (Directiva ePrivacy)</strong>, el <strong>Reglamento General de Protección de Datos (RGPD)</strong> y el artículo 22.2 de la <strong>LSSI-CE</strong>.
                 </p>
 
-                <h2>2. Clasificación de Cookies que Utilizamos</h2>
-                <p>En Glodaxia clasificamos nuestras cookies en dos categorías principales:</p>
+                <h2>1. ¿Qué es una Cookie y qué tecnologías empleamos?</h2>
+                <p>
+                    Una cookie es un pequeño fichero de texto que los sitios web descargan en su dispositivo al acceder a determinadas páginas. Permiten recordar sus preferencias y asegurar la navegación. Además de cookies HTTP, empleamos tecnologías equivalentes como <code>localStorage</code> del navegador.
+                </p>
 
+                <h2>2. Clasificación Exhaustiva de Cookies Utilizadas</h2>
                 <div class="not-prose my-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
                         <span class="text-2xl mb-2 block">⚙️</span>
-                        <h4 class="text-base font-black text-slate-900 dark:text-white mb-2">Cookies Técnicas Esenciales</h4>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                            Son estrictamente necesarias para el funcionamiento de la web. Permiten la navegación, protegen contra ataques CSRF y recuerdan tu preferencia de <strong>Modo Oscuro / Modo Claro</strong> y el consentimiento de cookies. No se pueden desactivar.
+                        <h4 class="text-base font-black text-slate-900 dark:text-white mb-2">Cookies Técnicas Estrictamente Necesarias</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal mb-3">
+                            Imprescindibles para permitir la navegación, mantener la seguridad de las sesiones contra ataques CSRF y recordar la preferencia de consentimiento.
                         </p>
+                        <ul class="text-[11px] text-slate-500 dark:text-slate-400 space-y-1 pl-4 list-disc">
+                            <li><strong>XSRF-TOKEN:</strong> Seguridad contra falsificación de peticiones (Sesión).</li>
+                            <li><strong>glodaxia_session:</strong> Identificador de sesión técnica anónima (2 horas).</li>
+                            <li><strong>cc_cookie:</strong> Registro del consentimiento otorgado en CookieConsent (182 días).</li>
+                        </ul>
                     </div>
 
-                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
                         <span class="text-2xl mb-2 block">📊</span>
                         <h4 class="text-base font-black text-slate-900 dark:text-white mb-2">Cookies Analíticas Agregadas</h4>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                            Nos ayudan a cuantificar de forma totalmente anonimizada el número de lectores y qué artículos de tecnología generan mayor interés, permitiéndonos mejorar continuamente nuestra oferta editorial.
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal mb-3">
+                            Recopilan métricas de lectura y rendimiento del servidor de manera agregada y 100% anonimizada sin identificar individualmente al lector.
                         </p>
+                        <ul class="text-[11px] text-slate-500 dark:text-slate-400 space-y-1 pl-4 list-disc">
+                            <li><strong>_ga / _gid:</strong> Conteo de visitas anónimas con anonimización de IP (Opcionales, solo con su consentimiento).</li>
+                        </ul>
                     </div>
                 </div>
 
-                <h2>3. Base de Almacenamiento Local (LocalStorage)</h2>
-                <p>
-                    Además de cookies, utilizamos <code>localStorage</code> en tu navegador exclusivamente para almacenar:
-                </p>
+                <h2>3. Tecnologías de Almacenamiento Local (LocalStorage)</h2>
+                <p>Glodaxia utiliza <code>localStorage</code> del navegador exclusivamente para parámetros visuales sin almacenar datos sensibles:</p>
                 <ul>
-                    <li><code>darkMode</code>: Para recordar de forma instantánea si prefieres el tema claro u oscuro, evitando parpadeos de pantalla al recargar.</li>
-                    <li><code>cookie_consent_accepted</code>: Para registrar tu decisión en el banner de consentimiento y no volverte a interrumpir.</li>
+                    <li><code>darkMode</code>: Registra si usted prefiere el <em>Modo Claro</em> o <em>Modo Oscuro</em> para evitar parpadeos visuales al recargar.</li>
+                    <li><code>cookie_consent_accepted</code>: Persiste la decisión sobre cookies en navegadores antiguos.</li>
                 </ul>
 
-                <h2>4. Cómo Administrar o Desactivar las Cookies</h2>
+                <h2>4. Mecanismo de Revocación y Cambio de Preferencias</h2>
                 <p>
-                    Puedes permitir, bloquear o eliminar las cookies instaladas en tu equipo mediante la configuración de las opciones de tu navegador web:
+                    Usted puede revocar o modificar su consentimiento de cookies en cualquier momento haciendo clic en el enlace permanente ubicado en el pie de página de nuestro portal:
                 </p>
-                <ul>
-                    <li><strong>Google Chrome:</strong> Configuración &rarr; Privacidad y seguridad &rarr; Cookies y otros datos de sitios.</li>
-                    <li><strong>Mozilla Firefox:</strong> Ajustes &rarr; Privacidad y Seguridad &rarr; Cookies y datos del sitio.</li>
-                    <li><strong>Apple Safari:</strong> Preferencias &rarr; Privacidad &rarr; Bloquear todas las cookies.</li>
-                    <li><strong>Microsoft Edge:</strong> Configuración &rarr; Cookies y permisos del sitio &rarr; Administrar y eliminar cookies.</li>
-                </ul>
+                <div class="not-prose my-4">
+                    <button type="button" data-cc="show-preferencesModal" class="py-2.5 px-5 rounded-xl bg-[#2b7fff] hover:bg-blue-600 text-white font-bold text-xs shadow-md transition-colors inline-flex items-center gap-2">
+                        <span>🍪</span> Abrir Centro de Preferencias de Cookies
+                    </button>
+                </div>
+
+                <h2>5. Cómo Bloquear o Eliminar Cookies desde su Navegador</h2>
+                <p>Usted puede en cualquier momento permitir, bloquear o eliminar las cookies instaladas en su equipo mediante las opciones de configuración de su navegador (Chrome, Firefox, Safari, Edge).</p>
             @else
-                <h2>1. What Are Cookies?</h2>
                 <p>
-                    Cookies are small text files placed on your device by websites you visit. They help websites remember preferences (such as your chosen UI theme or language settings) to provide a seamless browsing experience.
+                    This Cookie Policy constitutes an integral component of our Privacy Policy and Terms of Service, formulated in accordance with the <strong>ePrivacy Directive</strong> and the <strong>EU GDPR</strong>.
                 </p>
 
-                <h2>2. Categories of Cookies We Use</h2>
-
-                <div class="not-prose my-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <span class="text-2xl mb-2 block">⚙️</span>
-                        <h4 class="text-base font-black text-slate-900 dark:text-white mb-2">Essential Technical Cookies</h4>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                            Strictly necessary for website operation, CSRF security verification, and remembering your <strong>Dark Mode / Light Mode</strong> preference.
-                        </p>
-                    </div>
-
-                    <div class="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <span class="text-2xl mb-2 block">📊</span>
-                        <h4 class="text-base font-black text-slate-900 dark:text-white mb-2">Aggregate Analytics Cookies</h4>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                            Enable anonymous readership metrics to identify top-performing technical analyses and improve user experience.
-                        </p>
-                    </div>
-                </div>
-
-                <h2>3. Browser LocalStorage Usage</h2>
-                <p>We utilize client-side <code>localStorage</code> strictly for:</p>
+                <h2>1. Technical Categorization</h2>
                 <ul>
-                    <li><code>darkMode</code>: Prevents flash of unstyled theme on page refresh.</li>
-                    <li><code>cookie_consent_accepted</code>: Remembers your cookie preference to prevent banner reappearance.</li>
+                    <li><strong>Strictly Necessary:</strong> Session security, CSRF protection, and theme preference state.</li>
+                    <li><strong>Aggregate Analytics:</strong> Anonymous readership measurement enabled solely upon express consent.</li>
                 </ul>
 
-                <h2>4. Managing and Disabling Cookies</h2>
-                <p>
-                    You can manage or disable cookies at any time directly through your web browser settings (Chrome, Firefox, Safari, Edge).
-                </p>
+                <h2>2. Instant Revocation</h2>
+                <p>You can adjust or revoke your cookie choices at any moment via the button below or the permanent footer link:</p>
+                <div class="not-prose my-4">
+                    <button type="button" data-cc="show-preferencesModal" class="py-2.5 px-5 rounded-xl bg-[#2b7fff] hover:bg-blue-600 text-white font-bold text-xs shadow-md transition-colors inline-flex items-center gap-2">
+                        <span>🍪</span> Open Cookie Preferences Modal
+                    </button>
+                </div>
             @endif
         </div>
     </div>

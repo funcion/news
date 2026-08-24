@@ -1,99 +1,88 @@
 <x-layouts.app :title="__('ui.editorial_policy') . ' | ' . config('app.name')">
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
-        <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2 mb-3">
                 <span class="px-3 py-1 rounded-md bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-xs font-black uppercase tracking-widest border border-cyan-500/20">
-                    {{ app()->getLocale() === 'es' ? 'Estándares Editoriales & Ética' : 'Editorial Standards & Ethics' }}
+                    {{ app()->getLocale() === 'es' ? 'Código Deontológico & Estándares' : 'Editorial Standards & Ethics' }}
                 </span>
-                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">● {{ app()->getLocale() === 'es' ? 'Actualizado: Agosto 2026' : 'Updated: August 2026' }}</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">● {{ app()->getLocale() === 'es' ? 'Vigente: Agosto 2026' : 'Effective: August 2026' }}</span>
             </div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
-                {{ app()->getLocale() === 'es' ? 'Política Editorial y Declaración de IA' : 'Editorial Policy & AI Transparency Statement' }}
+                {{ app()->getLocale() === 'es' ? 'Política Editorial, Supervisión de IA y Fact-Checking' : 'Editorial Policy, AI Oversight & Fact-Checking' }}
             </h1>
-            <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl font-medium">
+            <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl font-medium">
                 {{ app()->getLocale() === 'es' 
-                    ? 'Nuestra metodología de trabajo, principios de rigor periodístico y compromiso ético de supervisión humana en cada análisis publicado.' 
-                    : 'Our editorial methodology, journalistic standards, and ethical commitment to human-in-the-loop oversight on every published report.' }}
+                    ? 'Principios deontológicos, estándares de verificación factual, política de asistencia de IA con supervisión humana obligatoria y mecanismos de rectificación.' 
+                    : 'Ethical standards, fact-checking methodology, AI assistance policies with mandatory human-in-the-loop oversight, and formal correction protocols.' }}
             </p>
         </div>
 
-        <!-- Content Body -->
-        <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-cyan-600 dark:prose-a:text-cyan-400">
+        <div class="prose prose-slate dark:prose-invert max-w-none">
             @if(app()->getLocale() === 'es')
-                <div class="p-6 md:p-8 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm not-prose mb-10">
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm not-prose mb-10">
                     <div class="flex items-start gap-4">
                         <span class="text-3xl shrink-0">🛡️</span>
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white mb-2">Compromiso Human-in-the-Loop (Supervisión Humana 100%)</h3>
-                            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                                En <strong>Glodaxia</strong> combinamos el periodismo tecnológico de investigación con tecnologías de inteligencia artificial de vanguardia. La IA actúa exclusivamente como asistente de síntesis y procesamiento de datos. <strong>Cada artículo, titular, dato técnico y análisis es auditado, verificado y aprobado por un redactor humano antes de su publicación.</strong>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white mb-2">Declaración de Supervisión Humana Garantizada (Human-in-the-Loop)</h3>
+                            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal mb-0">
+                                En <strong>Glodaxia</strong> combinamos el periodismo tecnológico de investigación con tecnologías de inteligencia artificial. La IA se utiliza exclusivamente como herramienta de soporte para la recopilación de datos, traducción inicial y estructuración previa. <strong>El 100% de los artículos, análisis técnicos, comparativas y titulares son redactados, contrastados, verificados y aprobados por editores y periodistas humanos antes de su publicación.</strong> Ningún contenido se publica de forma autónoma o desatendida.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <h2>1. Nuestra Misión Periodística</h2>
-                <p>
-                    Glodaxia nace con el objetivo de proporcionar información tecnológica veraz, rigurosa y libre de sensacionalismo. Cubrimos los avances más significativos en inteligencia artificial, desarrollo de software, ciberseguridad, infraestructura en la nube y computación cuántica, explicando su impacto técnico y económico real.
-                </p>
+                <h2>1. Principios Fundamentales y Misión Periodística</h2>
+                <p>La misión editorial de <strong>Glodaxia</strong> es proporcionar análisis tecnológicos rigurosos, precisos y contextualizados sobre software, hardware, inteligencia artificial, ciberseguridad, computación cuántica y mercados digitales. Nos regimos por los principios universales de veracidad, imparcialidad, independencia crítica y responsabilidad informativa.</p>
 
-                <h2>2. Cómo Utilizamos la Inteligencia Artificial</h2>
-                <p>
-                    Utilizamos modelos avanzados de lenguaje (LLMs) como asistentes de apoyo para tareas operativas: monitorización de fuentes oficiales, procesamiento multilingüe y estructuración inicial de datos.
-                </p>
+                <h2>2. Protocolo de Verificación Factual (Fact-Checking)</h2>
+                <p>Todo material informativo publicado en Glodaxia sigue un protocolo de control de calidad estructurado en cuatro etapas:</p>
+                <ol>
+                    <li><strong>Auditoría de Fuentes Primarias:</strong> Las afirmaciones técnicas se contrastan directamente contra documentación oficial de fabricantes, repositorios de código abierto verificados, artículos científicos revisados por pares (*peer-reviewed*) o declaraciones formales de portavoces autorizados.</li>
+                    <li><strong>Prevención y Supresión de Alucinaciones:</strong> Se auditan de forma manual todas las cifras, especificaciones de hardware, puntos de referencia (*benchmarks*), fechas de lanzamiento y fragmentos de código fuente antes de su indexación.</li>
+                    <li><strong>Balance Crítico e Inclusión de Limitaciones Técnicas:</strong> Obligamos a nuestros redactores a detallar desventajas, costes ocultos, compromisos de ingeniería (*trade-offs*) y riesgos de seguridad en cada análisis de producto o infraestructura, evitando cualquier enfoque publicitario no fundamentado.</li>
+                    <li><strong>Atribución Transparente y Enlaces Canónicos:</strong> Siempre que se citan estudios o noticias de terceros, se proporciona enlace directo a la fuente primaria de origen.</li>
+                </ol>
 
-                <h2>3. Protocolo Estricto de Verificación (Fact-Checking)</h2>
-                <p>
-                    Ningún contenido se publica de manera autónoma sin filtro. Nuestro equipo editorial verifica las fuentes primarias, audita posibles alucinaciones, contrasta los compromisos técnicos y asegura enlaces canónicos transparentes.
-                </p>
+                <h2>3. Uso Ético de la Inteligencia Artificial</h2>
+                <p>Reconocemos a la Inteligencia Artificial como un instrumento de productividad tecnológica. En Glodaxia establecemos límites estrictos: prohibición de publicación autónoma desatendida, verificación obligatoria de originalidad y transparencia permanente ante los lectores.</p>
 
-                <h2>4. Correcciones y Rectificaciones</h2>
-                <p>
-                    La honestidad informativa es nuestro pilar fundamental. Si se detecta una imprecisión factual, corregiremos el artículo de forma inmediata y transparente mediante una nota editorial.
-                </p>
+                <h2>4. Protección del Derecho al Honor, Opinión Crítica y Difamación</h2>
+                <p>Las valoraciones sobre productos de software, dispositivos o servicios publicadas en Glodaxia constituyen <strong>juicios de valor, críticas técnicas y opiniones profesionales protegidas por el derecho constitucional a la libertad de expresión e información</strong>. Las críticas se basan en pruebas técnicas reproducibles y en información pública disponible.</p>
 
-                <h2>5. Independencia Editorial</h2>
-                <p>
-                    Nuestros redactores y editores mantienen independencia total de criterio. Los análisis técnicos y críticas de productos no están sujetos a acuerdos comerciales no declarados.
-                </p>
+                <h2>5. Política Formal de Correcciones y Fe de Errores</h2>
+                <p>Mantenemos un compromiso absoluto con la exactitud. Cuando se detecta un error sustancial, se corrige de manera inmediata y se anexa una <strong>Nota Editorial de Actualización</strong>. Para solicitar una rectificación editorial justificada, contáctenos en: <code class="text-cyan-600 dark:text-cyan-400 font-mono font-bold">{{ config('global.contact_email', 'hi@glodaxia.com') }}</code>.</p>
+
+                <h2>6. Independencia Editorial y Conflictos de Interés</h2>
+                <p>Ningún patrocinador, empresa tecnológica o anunciante tiene control ni capacidad de veto sobre nuestra línea editorial. Cualquier patrocinio o enlace de afiliación comercial se divulga expresamente al lector conforme a la normativa vigente.</p>
             @else
-                <div class="p-6 md:p-8 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm not-prose mb-10">
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm not-prose mb-10">
                     <div class="flex items-start gap-4">
                         <span class="text-3xl shrink-0">🛡️</span>
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white mb-2">Our Human-in-the-Loop Guarantee</h3>
-                            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                                At <strong>Glodaxia</strong>, we pair investigative technology journalism with advanced artificial intelligence. AI serves solely as a research and synthesis aid. <strong>Every single article, technical benchmark, headline, and analysis is audited, fact-checked, and approved by human journalists before publication.</strong>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white mb-2">Human-in-the-Loop Oversight Guarantee</h3>
+                            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal mb-0">
+                                At <strong>Glodaxia</strong>, we combine investigative technology journalism with advanced artificial intelligence tools. AI is deployed strictly as an auxiliary research, translation, and structured synthesis aid. <strong>100% of our published articles, benchmarks, code walkthroughs, and headlines are verified, fact-checked, edited, and approved by human journalists before publication.</strong>
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <h2>1. Our Editorial Mission</h2>
-                <p>
-                    Glodaxia is dedicated to delivering high-signal, accurate, and insightful tech journalism. We track breakthroughs in artificial intelligence, software engineering, cybersecurity, cloud infrastructure, and emerging tech.
-                </p>
+                <h2>1. Core Journalistic Principles</h2>
+                <p>Glodaxia delivers high-signal, factual, and deeply technical journalism covering artificial intelligence, cloud architecture, cybersecurity, and digital markets. We adhere to rigorous standards of accuracy, impartiality, and editorial accountability.</p>
 
-                <h2>2. How We Leverage Artificial Intelligence</h2>
-                <p>
-                    We deploy state-of-the-art Large Language Models strictly as research assistants for source ingestion, multilingual translation, and drafting assistance.
-                </p>
+                <h2>2. Four-Stage Fact-Checking Protocol</h2>
+                <ol>
+                    <li><strong>Primary Source Verification:</strong> Technical claims must be verified against official documentation, peer-reviewed papers, or verified commits.</li>
+                    <li><strong>Hallucination Elimination:</strong> Release dates, benchmarks, code snippets, and specifications are manually audited by human reviewers.</li>
+                    <li><strong>Engineering Trade-Offs:</strong> Every review must document edge cases, limitations, security concerns, and architectural compromises.</li>
+                    <li><strong>Explicit Attribution:</strong> We provide canonical links to original primary research and disclosures.</li>
+                </ol>
 
-                <h2>3. Rigorous Fact-Checking Protocol</h2>
-                <p>
-                    No content is ever published unsupervised. Our editorial staff cross-references primary documentation, audits technical claims, and eliminates unverified statements.
-                </p>
+                <h2>3. Fair Comment & Technical Critique</h2>
+                <p>Product evaluations and architectural breakdowns published on Glodaxia represent protected professional opinions, technical critiques, and fair commentary based on reproducible empirical testing and publicly available documentation.</p>
 
-                <h2>4. Corrections & Accountability</h2>
-                <p>
-                    We take factual accuracy seriously. If an error is identified, we correct the article promptly and issue a transparent editorial note detailing the update.
-                </p>
-
-                <h2>5. Editorial Independence</h2>
-                <p>
-                    Our editorial opinions remain strictly independent and governed exclusively by technical merit and journalistic integrity.
-                </p>
+                <h2>4. Formal Corrections Policy</h2>
+                <p>If an error is identified, our editorial desk will promptly issue a transparent correction note. To submit a verifiable correction request, contact our editorial team at: <code class="text-cyan-600 dark:text-cyan-400 font-mono font-bold">{{ config('global.contact_email', 'hi@glodaxia.com') }}</code>.</p>
             @endif
         </div>
     </div>
