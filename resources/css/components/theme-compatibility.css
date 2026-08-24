@@ -185,3 +185,24 @@ html.dark .prose a, .dark .prose a,
 html.dark [class*="prose"] a, .dark [class*="prose"] a {
     color: #38bdf8 !important;
 }
+
+
+/* ===== SEARCH MODAL INPUT & CONTRAST ===== */
+.search-modal-input {
+  color: #0f172a !important;
+  background-color: transparent !important;
+}
+html.dark .search-modal-input,
+.dark .search-modal-input {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+.search-modal-input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+html.dark .search-modal-input::placeholder,
+.dark .search-modal-input::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}

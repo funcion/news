@@ -590,7 +590,7 @@
         </div>
     @endif
 
-        <!-- Live Autocomplete Search Modal (Spotlight) -->
+            <!-- Live Autocomplete Search Modal (Minimalist Spotlight) -->
     <div x-data="{
             open: false,
             query: '',
@@ -642,101 +642,99 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-3 sm:pt-16 md:pt-24 px-2 sm:px-4 bg-slate-950/80 backdrop-blur-md transition-all">
+         class="fixed inset-0 flex items-start justify-center pt-8 sm:pt-20 px-3 sm:px-4 bg-slate-950/70 backdrop-blur-sm transition-all">
          
-        <!-- Backdrop overlay -->
-        <div class="fixed inset-0 bg-transparent" @click="open = false"></div>
+        <!-- Backdrop -->
+        <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Box -->
-        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[80vh] z-10 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Minimalist Modal Container -->
+        <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[75vh] z-10 animate-in fade-in zoom-in-95 duration-150">
             
-            <!-- Search Form / Input Bar -->
-            <form @submit.prevent="submitSearch()" class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2.5 sm:gap-3 bg-white dark:bg-slate-900">
-                <svg class="w-5 h-5 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <!-- Clean Minimalist Search Input -->
+            <form @submit.prevent="submitSearch()" class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                <svg class="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
                 
                 <input x-ref="searchInput"
                        x-model="query"
-                       @input.debounce.250ms="search()"
+                       @input.debounce.200ms="search()"
                        type="search"
                        autocomplete="off"
                        autocorrect="off"
                        autocapitalize="off"
                        spellcheck="false"
-                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, IA, empresas...' : 'Search articles, news, AI...' }}"
-                       class="w-full bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 text-sm sm:text-base outline-none font-medium">
+                       placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis, IA...' : 'Search tech news, analyses, AI...' }}"
+                       class="search-modal-input w-full text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm sm:text-base font-semibold outline-none bg-transparent caret-cyan-500">
 
                 <!-- Loading Spinner -->
                 <span x-show="loading" class="text-cyan-500 animate-spin shrink-0">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </span>
 
-                <!-- Clear query button -->
+                <!-- Clear query (x) -->
                 <button x-show="query.length > 0" 
                         @click="query = ''; articles = []; hasSearched = false; $refs.searchInput.focus()" 
                         type="button" 
-                        class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
+                        class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-0.5 transition-colors">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
 
-                <!-- ESC Badge Button -->
-                <button @click="open = false" type="button" class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-[11px] font-bold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0">
+                <!-- Minimal ESC indicator -->
+                <button @click="open = false" type="button" class="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-800 transition-colors shrink-0">
                     ESC
                 </button>
             </form>
 
-            <!-- Results Scrollable Area -->
-            <div class="overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/60 flex-grow max-h-[60vh]">
+            <!-- Results List -->
+            <div class="overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/50 flex-grow max-h-[55vh]">
                 <template x-if="articles.length > 0">
-                    <div class="space-y-1">
+                    <ul class="space-y-0.5">
                         <template x-for="item in articles" :key="item.id">
-                            <a :href="item.url" 
-                               class="p-2.5 sm:p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center gap-3 group">
-                                <template x-if="item.image">
-                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
-                                        <img :src="item.image" :alt="item.title" class="w-full h-full object-cover">
+                            <li>
+                                <a :href="item.url" 
+                                   class="px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors flex items-center justify-between gap-3 group">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400 mb-0.5" x-show="item.category">
+                                            <span x-text="item.category"></span>
+                                            <template x-if="item.date">
+                                                <span class="text-slate-300 dark:text-slate-700">●</span>
+                                            </template>
+                                            <span x-text="item.date" class="text-slate-400 dark:text-slate-500 font-normal"></span>
+                                        </div>
+                                        <h4 x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></h4>
                                     </div>
-                                </template>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400 mb-0.5" x-show="item.category">
-                                        <span x-text="item.category"></span>
-                                        <template x-if="item.date">
-                                            <span class="text-slate-300 dark:text-slate-700">●</span>
-                                        </template>
-                                        <span x-text="item.date" class="text-slate-400 dark:text-slate-500 font-normal"></span>
-                                    </div>
-                                    <h4 x-text="item.title" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></h4>
-                                </div>
-                                <svg class="w-4 h-4 text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </a>
+                                    <svg class="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </li>
                         </template>
-                    </div>
+                    </ul>
                 </template>
 
                 <!-- No Results State -->
                 <template x-if="hasSearched && articles.length === 0 && !loading">
-                    <div class="py-10 text-center text-slate-500 dark:text-slate-400 text-xs px-4">
-                        <span class="text-2xl block mb-2">🔍</span>
-                        <p class="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">{{ app()->getLocale() === 'es' ? 'No se encontraron artículos' : 'No articles found' }}</p>
-                        <p>{{ app()->getLocale() === 'es' ? 'Intenta buscar con otros términos o presiona Enter para buscar en todo el archivo.' : 'Try other keywords or press Enter to search full archive.' }}</p>
+                    <div class="py-8 text-center text-xs px-4">
+                        <p class="font-bold text-slate-800 dark:text-slate-200 mb-1">{{ app()->getLocale() === 'es' ? 'No se encontraron resultados' : 'No articles found' }}</p>
+                        <p class="text-slate-500 dark:text-slate-400">{{ app()->getLocale() === 'es' ? 'Prueba con otras palabras o presiona Enter para buscar en todo el catálogo.' : 'Try other keywords or press Enter to search.' }}</p>
                     </div>
                 </template>
 
-                <!-- Initial Idle State -->
+                <!-- Initial Idle Hint -->
                 <template x-if="!hasSearched && query.length < 2">
-                    <div class="py-8 text-center text-slate-400 dark:text-slate-500 text-xs font-medium px-4">
-                        <span>{{ app()->getLocale() === 'es' ? 'Escribe al menos 2 letras para sugerencias automáticas...' : 'Type at least 2 characters for instant suggestions...' }}</span>
+                    <div class="py-6 text-center text-xs text-slate-400 dark:text-slate-500 font-medium px-4">
+                        <span>{{ app()->getLocale() === 'es' ? 'Escribe al menos 2 letras para buscar al instante...' : 'Type at least 2 characters to search live...' }}</span>
                     </div>
                 </template>
             </div>
 
-            <!-- Footer: View All Results or Enter to Search -->
-            <div class="p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs px-4">
-                <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">
+            <!-- Footer Action -->
+            <div class="px-4 py-2 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+                <span class="hidden sm:inline">
                     {{ app()->getLocale() === 'es' ? 'Presiona Enter ↵ para buscar' : 'Press Enter ↵ to search' }}
                 </span>
 
                 <template x-if="viewAllUrl">
-                    <a :href="viewAllUrl" class="text-xs font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400 hover:underline ml-auto">
+                    <a :href="viewAllUrl" class="font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 hover:underline ml-auto text-[11px]">
                         {{ app()->getLocale() === 'es' ? 'Ver todos los resultados →' : 'View all results →' }}
                     </a>
                 </template>
