@@ -41,7 +41,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         protected RawArticle $rawArticle
     ) {}
 
-    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker): void
+    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker, \App\Services\SEO\EntityAutoLinkerService $autoLinker): void
     {
         // Guard: require API key before processing
         if (empty(config('openrouter.api_key'))) {
@@ -453,6 +453,20 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         }
 
 
+        // --- Verified Entity Auto-Linking (Zero-Hallucination Safe Outbound Links) ---
+        $contentEn = $autoLinker->autoLink($contentEn);
+        $contentEs = $autoLinker->autoLink($contentEs);
+
+        // --- Canonical Source Reference Card ---
+        if (!empty($this->rawArticle->url)) {
+            $sourceName = $this->rawArticle->source ? $this->rawArticle->source->name : 'Primary Source';
+            $sourceUrl = htmlspecialchars($this->rawArticle->url, ENT_QUOTES, 'UTF-8');
+            $sourceNameClean = htmlspecialchars($sourceName, ENT_QUOTES, 'UTF-8');
+
+            $contentEn .= "\n<p class=\"source-reference-card mt-8 pt-4 border-t border-slate-800 text-xs text-slate-400\"><em>Originally reported and referenced from <a href=\"{$sourceUrl}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" class=\"text-brand-teal hover:underline font-medium\">{$sourceNameClean}</a>.</em></p>";
+            $contentEs .= "\n<p class=\"source-reference-card mt-8 pt-4 border-t border-slate-800 text-xs text-slate-400\"><em>Referencia y fuente original: <a href=\"{$sourceUrl}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" class=\"text-brand-teal hover:underline font-medium\">{$sourceNameClean}</a>.</em></p>";
+        }
+
         // Save final bilingual content
         $article->setTranslation('content', 'en', $contentEn);
         $article->setTranslation('content', 'es', $contentEs);
@@ -611,12 +625,17 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $source = $this->rawArticle->source;
         $sourceTrusted = ($source && $source->trusted) ? 'YES' : 'NO';
         $sourceScore   = (int) ($source?->score ?? 0);
-        $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'unknown';
+        $sourceDate    = $this->rawArticle->published_at ? $this->rawArticle->published_at->format('l, F j, Y') : $today;
+        $articleAge    = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'today';
+        $currentYear   = now()->year;
 
         $prompt = <<<PROMPT
 You are a senior multilingual editorial AI. Analyze the following news article and respond in STRICT JSON only.
 
-DATE: {$today}
+STRICT TEMPORAL ANCHORS:
+- CURRENT DATE: {$today} (Year: {$currentYear})
+- SOURCE PUBLISHED: {$sourceDate} ({$articleAge})
+
 VALID CATEGORIES: [{$categoriesList}]
 ARTICLE TITLE: {$this->rawArticle->title}
 ARTICLE CONTENT: {$content}
@@ -660,6 +679,9 @@ PROMPT;
     protected function redactBilingual(OpenRouterService $ai, array $classification, User $author): ?array
     {
         $today          = now()->format('l, F j, Y');
+        $currentYear    = now()->year;
+        $sourceDate     = $this->rawArticle->published_at ? $this->rawArticle->published_at->format('l, F j, Y') : $today;
+        $articleAge     = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'today';
         $isSeed         = $classification['is_seed'] ?? false;
         $contentType    = $classification['content_type'] ?? 'blog';
         $topic          = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
@@ -690,6 +712,14 @@ PROMPT;
 
         $prompt = <<<PROMPT
 You are a {$persona}. Your job: write a compelling, deeply human OPINION COLUMN.
+
+═══ STRICT TEMPORAL ANCHORS & DATE DISCIPLINE ═══
+- CURRENT SYSTEM DATE: {$today} (Year: {$currentYear})
+- SOURCE PUBLICATION DATE: {$sourceDate} ({$articleAge})
+- TEMPORAL DISCIPLINE RULES:
+  1. The current year is {$currentYear}. Never state or imply we are in 2024 or earlier.
+  2. Respect the timeline: If the news happened {$articleAge}, do NOT say "today" unless it occurred today. Use natural journalistic phrasing like "earlier this week", "recently", or reference the specific event day.
+  3. Never invent historical dates or fake release dates.
 
 DATE: {$today} | TYPE: {$contentType} | TARGET: {$wordTarget}
 SOURCE LANGUAGE: {$sourceLangName} (ISO: {$sourceLang})
