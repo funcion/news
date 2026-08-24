@@ -440,8 +440,21 @@
 
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
     <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 pt-12 pb-16 transition-colors">
+        <style>
+            .footer-grid-3cols {
+                display: grid !important;
+                grid-template-columns: 1.5fr 1fr 1fr !important;
+                gap: 2.5rem !important;
+            }
+            @media (max-width: 860px) {
+                .footer-grid-3cols {
+                    grid-template-columns: 1fr !important;
+                    gap: 2rem !important;
+                }
+            }
+        </style>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-gray-100 dark:border-white/5">
+            <div class="footer-grid-3cols pb-12 border-b border-gray-100 dark:border-white/5">
                 <!-- Columna 1: Marca & Declaración de Transparencia IA -->
                 <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-2.5">
