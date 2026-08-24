@@ -632,7 +632,7 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-2 sm:pt-4 px-4 bg-black/50">
+         class="fixed inset-0 flex items-start justify-center pt-2 sm:pt-4 px-4 bg-slate-950/60 backdrop-blur-md transition-all">
          
         <!-- Backdrop -->
         <div class="fixed inset-0" @click="open = false"></div>
