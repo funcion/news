@@ -52,7 +52,7 @@
             
             <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
                 <div class="flex items-center gap-3">
-                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
+                    <img src="{{ $article->user?->avatar_url ?? 'https://ui-avatars.com/api/?name=AI&background=0284c7&color=fff' }}" alt="{{ $article->user?->name ?? 'Author' }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
                     <div class="flex flex-col">
                          <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->user?->name ?? __('ui.reporter') }}</span>
                     </div>
