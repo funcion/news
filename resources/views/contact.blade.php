@@ -60,7 +60,7 @@
                      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 md:p-10">
 
                     <!-- Success State -->
-                    <div x-show="submitted" x-cloak class="text-center py-10 space-y-4">
+                    <div x-show="submitted" x-cloak role="status" aria-live="polite" class="text-center py-10 space-y-4">
                         <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20 text-3xl">
                             ✓
                         </div>
@@ -85,7 +85,7 @@
                         <input type="text" name="website_hp" x-model="website_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
 
                         <!-- Global Server Error -->
-                        <div x-show="errorMessage" x-cloak class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm">
+                        <div x-show="errorMessage" x-cloak role="alert" aria-live="assertive" class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm">
                             <span x-text="errorMessage"></span>
                         </div>
 

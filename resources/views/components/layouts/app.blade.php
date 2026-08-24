@@ -145,7 +145,7 @@
     <!-- Premium Header Wrapper -->
     <div class="fixed top-0 inset-x-0 z-50 w-full">
         <!-- Header Bar -->
-        <header class="w-full fixed-main-header backdrop-blur-md transition-all duration-300 border-b border-slate-200/90 dark:border-slate-800/90 bg-white/90 dark:bg-slate-900/90 shadow-sm"
+        <header role="banner" class="w-full fixed-main-header backdrop-blur-md transition-all duration-300 border-b border-slate-200/90 dark:border-slate-800/90 bg-white/90 dark:bg-slate-900/90 shadow-sm"
                 x-bind:class="isScrolled ? 'shadow-sm' : ''">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="py-3 md:py-4 flex items-center justify-between">
@@ -155,7 +155,7 @@
                 <!-- Right Side: Navigation & Actions -->
                 <div class="flex items-center gap-4 lg:gap-8">
                     <!-- Desktop Navigation (hidden on mobile) -->
-                    <nav class="hidden md:flex items-center gap-5 lg:gap-8">
+                    <nav aria-label="{{ app()->getLocale() === 'es' ? 'Navegación principal' : 'Main navigation' }}" class="hidden md:flex items-center gap-5 lg:gap-8">
                         <!-- Home Link -->
                         <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors {{ request()->is('/') ? 'text-cyan-500 dark:text-cyan-400' : '' }}">
                             {{ __('ui.home') }}
@@ -163,7 +163,7 @@
                         
                         <!-- Categories Dropdown -->
                         <div class="relative group nav-item" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                            <button class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2">
+                            <button type="button" :aria-expanded="open" aria-haspopup="true" class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-md px-1">
                                 {{ __('ui.categories') }}
                                 <svg class="w-4 h-4 transition-transform duration-200 dropdown-arrow" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -207,7 +207,7 @@
                                 <a hreflang="en" 
                                    href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
                                    title="Switch to English"
-                                   aria-label="Switch to English"
+                                   aria-label="{{ app()->getLocale() === 'es' ? 'Cambiar idioma a Inglés (Switch to English)' : 'Switch language to Spanish (Cambiar a Español)' }}"
                                    class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
                                     <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
                                         <path fill="#bd3d44" d="M0 0h640v480H0z"/>
@@ -220,7 +220,7 @@
                                 <a hreflang="es" 
                                    href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" 
                                    title="Cambiar a Español"
-                                   aria-label="Cambiar a Español"
+                                   aria-label="{{ app()->getLocale() === 'es' ? 'Cambiar idioma a Inglés (Switch to English)' : 'Switch language to Spanish (Cambiar a Español)' }}"
                                    class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
                                     <svg viewBox="0 0 640 480" class="w-full h-full object-cover">
                                         <path fill="#aa151b" d="M0 0h640v480H0z"/>
@@ -443,7 +443,7 @@
 </div>
 <!-- End Header Wrapper -->
 
-<main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-24 pb-12 lg:pt-28 lg:pb-24">
+<main id="main-content" role="main" tabindex="-1" class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-24 pb-12 lg:pt-28 lg:pb-24 focus:outline-none">
         @if(isset($sidebar) && !empty(trim((string) $sidebar)))
             <div class="grid grid-cols-1 gap-6 lg:gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
                 <!-- Left Column (Primary) -->
@@ -467,7 +467,7 @@
     </main>
 
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 transition-colors" style="padding-top: 50px; padding-bottom: 20px;">
+    <footer role="contentinfo" class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 transition-colors" style="padding-top: 50px; padding-bottom: 20px;">
         <style>
             .footer-grid-3cols {
                 display: grid !important;
@@ -658,7 +658,7 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-2 sm:pt-4 px-4 bg-slate-950/60 backdrop-blur-md transition-all">
+         role="dialog" aria-modal="true" aria-label="{{ __('ui.search') }}" class="fixed inset-0 flex items-start justify-center pt-2 sm:pt-4 px-4 bg-slate-950/60 backdrop-blur-md transition-all">
          
         <!-- Backdrop -->
         <div class="fixed inset-0" @click="open = false"></div>

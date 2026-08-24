@@ -250,7 +250,7 @@
                         </button>
                     </div>
                 </template>
-                <template x-if="submitted">
+                <template x-if="submitted"><div role="status" aria-live="polite">
                     <div :class="isSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'" class="p-4 rounded-xl border text-xs leading-relaxed flex flex-col gap-4">
                         <p x-text="message" class="text-xs font-medium leading-relaxed mb-0"></p>
                         <div>
@@ -259,7 +259,7 @@
                             </button>
                         </div>
                     </div>
-                </template>
+                </div></template>
             </form>
         </div>
     </x-slot>
