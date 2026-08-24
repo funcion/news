@@ -52,7 +52,7 @@ return array (
   'privacy_policy' => 'Privacy Policy',
   'cookie_policy' => 'Cookie Policy',
   'editorial_policy' => 'Editorial Policy & AI',
-  'editorial_disclosure_footer' => 'Global tech news, analysis, and emerging trends. We pair advanced artificial intelligence with rigorous human editorial standards and curation.',
+  'editorial_disclosure_footer' => 'Digital media platform specializing in artificial intelligence, software engineering, cybersecurity, and the breakthrough technologies shaping the future.',
   'cookie_banner_text' => 'We use essential technical and analytics cookies to optimize your browsing experience and store your preferences.',
   'accept_all' => 'Accept All',
   'decline_non_essential' => 'Essential Only',

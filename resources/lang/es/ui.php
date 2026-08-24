@@ -52,7 +52,7 @@ return array (
   'privacy_policy' => 'Política de Privacidad',
   'cookie_policy' => 'Política de Cookies',
   'editorial_policy' => 'Política Editorial & IA',
-  'editorial_disclosure_footer' => 'Noticias, análisis y tendencias tecnológicas globales. Combinamos herramientas avanzadas de inteligencia artificial con un estricto criterio y curaduría editorial humana.',
+  'editorial_disclosure_footer' => 'Plataforma digital especializada en la cobertura de inteligencia artificial, desarrollo de software, ciberseguridad y las innovaciones tecnológicas que transforman el mundo.',
   'cookie_banner_text' => 'Utilizamos cookies técnicas y analíticas esenciales para ofrecerte la mejor experiencia y recordar tus preferencias.',
   'accept_all' => 'Aceptar todas',
   'decline_non_essential' => 'Solo esenciales',

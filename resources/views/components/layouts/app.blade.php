@@ -466,10 +466,6 @@
                     <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
-                    <div class="flex items-center gap-2 text-[11px] text-teal-600 dark:text-teal-400 font-bold uppercase tracking-wider mt-1">
-                        <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-                        {{ app()->getLocale() === 'es' ? 'Supervisión humana garantizada' : 'Human editorial oversight guaranteed' }}
-                    </div>
                 </div>
 
                 <!-- Columna 2: Legal & Transparencia -->

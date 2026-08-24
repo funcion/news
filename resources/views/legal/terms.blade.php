@@ -23,8 +23,8 @@
                 <h2>3. Descargo de Responsabilidad</h2>
                 <p>Los artículos publicados en este sitio tienen fines informativos y educativos. Glodaxia no ofrece asesoramiento financiero, legal o de inversión. Cualquier decisión técnica o de inversión tomada a partir de la información de este sitio es responsabilidad exclusiva del usuario.</p>
 
-                <h2>4. Asistencia de IA y Supervisión Humana</h2>
-                <p>En Glodaxia combinamos el periodismo tecnológico de investigación con la asistencia avanzada de inteligencia artificial. Todo el contenido es rigurosamente verificado, revisado y curado por editores humanos antes de su publicación definitiva para garantizar los más altos estándares de calidad y veracidad informativa.</p>
+                                <h2>4. Asistencia de Inteligencia Artificial y Supervisión Humana</h2>
+                <p>En Glodaxia combinamos el periodismo tecnológico de investigación con la asistencia avanzada de inteligencia artificial. La IA se utiliza exclusivamente como herramienta de soporte para la recopilación y síntesis de datos. <strong>Todo el contenido es rigurosamente verificado, contrastado, revisado y curado por redactores y editores humanos antes de su publicación.</strong> Supervisión editorial humana 100% garantizada.</p>
             @else
                 <h2>1. Acceptance of Terms</h2>
                 <p>By accessing and using this website, you agree to be bound by these Terms of Service, all applicable laws, and regulations, and agree that you are responsible for compliance with any applicable local laws.</p>
@@ -35,8 +35,8 @@
                 <h2>3. Disclaimer</h2>
                 <p>The materials on Glodaxia are provided for general educational and informational purposes only. We do not provide financial, legal, or investment advice.</p>
 
-                <h2>4. AI Assistance & Human Editorial Oversight</h2>
-                <p>We pair investigative tech journalism with advanced AI assistance. All content is strictly fact-checked, reviewed, and curated by human editors prior to publication to ensure maximum factual accuracy and technical depth.</p>
+                                <h2>4. AI Assistance & Human Editorial Oversight</h2>
+                <p>We pair investigative tech journalism with advanced AI assistance. AI is used strictly as a research and synthesis aid. <strong>All content is strictly fact-checked, reviewed, and curated by human editors prior to publication.</strong> Human editorial oversight guaranteed.</p>
             @endif
         </div>
     </div>
