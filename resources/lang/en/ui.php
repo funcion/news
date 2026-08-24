@@ -38,7 +38,7 @@ return [
 
     // Newsletter
     'newsletter_title'  => config('global.site_name') . ' Weekly',
-    'newsletter_desc'   => 'Get the most important tech updates directly to your inbox. No fluff, just value.',
+    'newsletter_desc'   => 'Get the most important tech updates directly to your inbox. No spam, just value.',
     'email_address'     => 'Email address',
     'subscribe_now'     => 'Subscribe Now',
 

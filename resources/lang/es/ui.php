@@ -38,7 +38,7 @@ return [
 
     // Newsletter
     'newsletter_title'  => config('global.site_name') . ' Weekly',
-    'newsletter_desc'   => 'Recibe las actualizaciones tecnológicas más importantes directamente en tu bandeja de entrada. Sin rodeos, solo valor.',
+    'newsletter_desc'   => 'Recibe las actualizaciones tecnológicas más importantes directamente en tu bandeja de entrada. Sin spam, solo valor.',
     'email_address'     => 'Correo electrónico',
     'subscribe_now'     => 'Suscribirse Ahora',
 
