@@ -41,26 +41,67 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Create Categories
+        // Create Categories (Deduplicated with updateOrCreate)
         $categories = [
-            ['en' => 'Artificial Intelligence', 'es' => 'Inteligencia Artificial', 'slug_en' => 'artificial-intelligence', 'slug_es' => 'inteligencia-artificial'],
-            ['en' => 'Machine Learning', 'es' => 'Aprendizaje Automático', 'slug_en' => 'machine-learning', 'slug_es' => 'aprendizaje-automatico'],
-            ['en' => 'Startups', 'es' => 'Startups', 'slug_en' => 'startups', 'slug_es' => 'startups'],
-            ['en' => 'Cybersecurity', 'es' => 'Ciberseguridad', 'slug_en' => 'cybersecurity', 'slug_es' => 'ciberseguridad'],
-            ['en' => 'Tech Industry', 'es' => 'Industria Tech', 'slug_en' => 'tech-industry', 'slug_es' => 'industria-tech'],
-            ['en' => 'Science', 'es' => 'Ciencia', 'slug_en' => 'science', 'slug_es' => 'ciencia'],
-            ['en' => 'Innovation', 'es' => 'Innovación', 'slug_en' => 'innovation', 'slug_es' => 'innovacion'],
-            ['en' => 'Automation', 'es' => 'Automatización', 'slug_en' => 'automation', 'slug_es' => 'automatizacion'],
-            ['en' => 'SEO & Marketing', 'es' => 'SEO y Marketing', 'slug_en' => 'seo-marketing', 'slug_es' => 'seo-marketing'],
+            [
+                'en' => 'Artificial Intelligence',
+                'es' => 'Inteligencia Artificial',
+                'slug_en' => 'artificial-intelligence',
+                'slug_es' => 'inteligencia-artificial',
+            ],
+            [
+                'en' => 'Software & Web Development',
+                'es' => 'Desarrollo Web & Software',
+                'slug_en' => 'software-web-development',
+                'slug_es' => 'desarrollo-web-software',
+            ],
+            [
+                'en' => 'Cybersecurity',
+                'es' => 'Ciberseguridad',
+                'slug_en' => 'cybersecurity',
+                'slug_es' => 'ciberseguridad',
+            ],
+            [
+                'en' => 'Cloud & DevOps',
+                'es' => 'Cloud & DevOps',
+                'slug_en' => 'cloud-devops',
+                'slug_es' => 'cloud-devops',
+            ],
+            [
+                'en' => 'SEO & Digital Marketing',
+                'es' => 'SEO & Marketing Digital',
+                'slug_en' => 'seo-digital-marketing',
+                'slug_es' => 'seo-marketing-digital',
+            ],
+            [
+                'en' => 'Startups & Business',
+                'es' => 'Startups & Negocios',
+                'slug_en' => 'startups-business',
+                'slug_es' => 'startups-negocios',
+            ],
+            [
+                'en' => 'Blockchain & Web3',
+                'es' => 'Blockchain & Web3',
+                'slug_en' => 'blockchain-web3',
+                'slug_es' => 'blockchain-web3',
+            ],
+            [
+                'en' => 'Science & Innovation',
+                'es' => 'Ciencia & Innovación',
+                'slug_en' => 'science-innovation',
+                'slug_es' => 'ciencia-innovacion',
+            ],
         ];
 
         foreach ($categories as $catData) {
-            Category::create([
-                'name' => ['en' => $catData['en'], 'es' => $catData['es']],
-                'slug_en' => $catData['slug_en'],
-                'slug_es' => $catData['slug_es'],
-                'is_active' => true,
-            ]);
+            Category::updateOrCreate(
+                ['slug_en' => $catData['slug_en']],
+                [
+                    'name' => ['en' => $catData['en'], 'es' => $catData['es']],
+                    'slug_es' => $catData['slug_es'],
+                    'is_active' => true,
+                ]
+            );
         }
 
         // Create Featured/Sample Tags
