@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                                    <!-- Centered Search Modal (Perfect Symmetrical Flex Alignment & Spacing) -->
+                                        <!-- Modern Minimalist Spotlight Search Modal (Linear / Raycast Style) -->
     <div x-data="{
             open: false,
             query: '',
@@ -632,20 +632,20 @@
          x-show="open"
          x-cloak
          style="z-index: 999999 !important;"
-         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-black/60 backdrop-blur-sm transition-opacity">
+         class="fixed inset-0 flex items-start justify-center pt-20 sm:pt-28 px-4 bg-slate-950/70 backdrop-blur-sm transition-opacity">
          
         <!-- Backdrop to close -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Modal Container (720px width) -->
-        <div style="width: 720px !important; max-width: calc(100vw - 2rem) !important;" 
-             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 z-10 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Spotlight Card (Seamless Linear Style, width: 680px) -->
+        <div style="width: 680px !important; max-width: calc(100vw - 2rem) !important;" 
+             class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
             
-            <!-- Perfect Symmetrical Search Form (Flex Container) -->
+            <!-- Seamless Integrated Search Header -->
             <form @submit.prevent="submitSearch()" 
-                  class="flex items-center gap-3.5 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 transition-colors focus-within:border-cyan-500 dark:focus-within:border-cyan-500">
+                  class="flex items-center gap-3.5 px-5 py-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
                 
-                <!-- Search Icon with natural symmetrical spacing -->
+                <!-- Modern Search Icon -->
                 <div class="flex items-center text-slate-400 dark:text-slate-500 shrink-0">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -655,7 +655,7 @@
                     </svg>
                 </div>
 
-                <!-- Input naturally aligned with gap-3.5 -->
+                <!-- Seamless Borderless Input -->
                 <input x-ref="modalSearchInput"
                        x-model="query"
                        @input.debounce.200ms="search()"
@@ -676,19 +676,19 @@
             </form>
 
             <!-- Results Dropdown -->
-            <div x-show="articles.length > 0" class="mt-4 border-t border-slate-100 dark:border-slate-800 pt-3 max-h-72 overflow-y-auto">
-                <ul class="divide-y divide-slate-100 dark:divide-slate-800/80">
+            <div x-show="articles.length > 0" class="overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[60vh]">
+                <ul class="space-y-0.5">
                     <template x-for="item in articles" :key="item.id">
-                        <li class="py-2.5">
-                            <a :href="item.url" class="flex items-center justify-between gap-4 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
-                                <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 hover:text-cyan-600 dark:hover:text-cyan-400"></span>
-                                <span x-show="item.date" x-text="item.date" class="text-xs text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
+                        <li>
+                            <a :href="item.url" class="flex items-center justify-between gap-4 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors group">
+                                <span x-text="item.title" class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"></span>
+                                <span x-show="item.date" x-text="item.date" class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 font-normal"></span>
                             </a>
                         </li>
                     </template>
                 </ul>
 
-                <div x-show="viewAllUrl" class="pt-3 text-center border-t border-slate-100 dark:border-slate-800 mt-2">
+                <div x-show="viewAllUrl" class="p-3 text-center border-t border-slate-100 dark:border-slate-800 mt-1">
                     <a :href="viewAllUrl" class="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
                         {{ app()->getLocale() === 'es' ? 'Ver todos los resultados completos →' : 'View all search results →' }}
                     </a>
@@ -696,7 +696,7 @@
             </div>
 
             <!-- Empty State -->
-            <div x-show="hasSearched && articles.length === 0 && !loading" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 py-3">
+            <div x-show="hasSearched && articles.length === 0 && !loading" class="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
                 {{ app()->getLocale() === 'es' ? 'No se encontraron resultados con esa búsqueda.' : 'No results found.' }}
             </div>
         </div>
