@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\FetchRssFeedJob;
+use App\Models\Setting;
 use App\Models\Source;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +29,12 @@ class RssFetchCommand extends Command
      */
     public function handle(): int
     {
+        // Check Master Ingestion Switch
+        if (! Setting::get('ingestion_enabled', true)) {
+            $this->warn("⏸️ RSS Ingestion is currently paused by Master Switch in /admin/sources. Skipping all feeds.");
+            return 0;
+        }
+
         $force = $this->option('force');
         
         $sources = Source::query()
@@ -45,7 +52,7 @@ class RssFetchCommand extends Command
             return 0;
         }
 
-        $this->info("Fetching " . $sources->count() . " sources...");
+        $this->info("Fetching " . $sources->count() . " active sources...");
 
         foreach ($sources as $source) {
             $this->info("Dispatching FetchRssFeedJob for source: {$source->name}");
