@@ -413,19 +413,26 @@
 <!-- End Header Wrapper -->
 
 <main class="flex-grow w-full max-w-7xl mx-auto px-4 lg:px-6 pt-6 pb-12 lg:pt-14 lg:pb-24">
-        <div class="grid grid-cols-1 gap-6 lg:gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
-            <!-- Left Column (Primary) -->
-            <div class="min-w-0">
+        @if(isset($sidebar) && !empty(trim((string) $sidebar)))
+            <div class="grid grid-cols-1 gap-6 lg:gap-[30px] items-start lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
+                <!-- Left Column (Primary) -->
+                <div class="min-w-0">
+                    {{ $slot }}
+                </div>
+                
+                <!-- Right Column (Sidebar) -->
+                <aside class="w-full lg:shrink-0 sticky top-24">
+                    <div class="flex flex-col gap-6 lg:gap-8">
+                        {{ $sidebar }}
+                    </div>
+                </aside>
+            </div>
+        @else
+            <!-- Single Column (Full Width & Centered) for Error Pages, Legal Pages, etc. -->
+            <div class="w-full min-w-0">
                 {{ $slot }}
             </div>
-            
-            <!-- Right Column (Sidebar) -->
-            <aside class="w-full lg:shrink-0 sticky top-24">
-                <div class="flex flex-col gap-6 lg:gap-8">
-                    {{ $sidebar ?? '' }}
-                </div>
-            </aside>
-        </div>
+        @endif
     </main>
 
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
