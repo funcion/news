@@ -50,10 +50,16 @@ class DatabaseSeeder extends Seeder
                 'slug_es' => 'inteligencia-artificial',
             ],
             [
-                'en' => 'Software & Web Development',
-                'es' => 'Desarrollo Web & Software',
-                'slug_en' => 'software-web-development',
-                'slug_es' => 'desarrollo-web-software',
+                'en' => 'Web & Backend Development',
+                'es' => 'Desarrollo Web & Backend',
+                'slug_en' => 'web-backend-development',
+                'slug_es' => 'desarrollo-web-backend',
+            ],
+            [
+                'en' => 'Mobile Development',
+                'es' => 'Desarrollo Móvil',
+                'slug_en' => 'mobile-development',
+                'slug_es' => 'desarrollo-movil',
             ],
             [
                 'en' => 'Cybersecurity',
@@ -68,28 +74,10 @@ class DatabaseSeeder extends Seeder
                 'slug_es' => 'cloud-devops',
             ],
             [
-                'en' => 'SEO & Digital Marketing',
-                'es' => 'SEO & Marketing Digital',
-                'slug_en' => 'seo-digital-marketing',
-                'slug_es' => 'seo-marketing-digital',
-            ],
-            [
-                'en' => 'Startups & Business',
-                'es' => 'Startups & Negocios',
-                'slug_en' => 'startups-business',
-                'slug_es' => 'startups-negocios',
-            ],
-            [
-                'en' => 'Blockchain & Web3',
-                'es' => 'Blockchain & Web3',
-                'slug_en' => 'blockchain-web3',
-                'slug_es' => 'blockchain-web3',
-            ],
-            [
-                'en' => 'Science & Innovation',
-                'es' => 'Ciencia & Innovación',
-                'slug_en' => 'science-innovation',
-                'slug_es' => 'ciencia-innovacion',
+                'en' => 'Databases & Data Engineering',
+                'es' => 'Bases de Datos & Data',
+                'slug_en' => 'databases-data-engineering',
+                'slug_es' => 'bases-de-datos-data',
             ],
             [
                 'en' => 'Hardware & Gadgets',
@@ -102,6 +90,42 @@ class DatabaseSeeder extends Seeder
                 'es' => 'Diseño Web & UX/UI',
                 'slug_en' => 'web-design-ux-ui',
                 'slug_es' => 'diseno-web-ux-ui',
+            ],
+            [
+                'en' => 'SEO & Digital Marketing',
+                'es' => 'SEO & Marketing Digital',
+                'slug_en' => 'seo-digital-marketing',
+                'slug_es' => 'seo-marketing-digital',
+            ],
+            [
+                'en' => 'Startups & Business',
+                'es' => 'Startups & Negocios',
+                'slug_en' => 'startups-business',
+                'slug_es' => 'startups-negocios',
+            ],
+            [
+                'en' => 'Open Source & Linux',
+                'es' => 'Open Source & Linux',
+                'slug_en' => 'open-source-linux',
+                'slug_es' => 'open-source-linux',
+            ],
+            [
+                'en' => 'Blockchain & Web3',
+                'es' => 'Blockchain & Web3',
+                'slug_en' => 'blockchain-web3',
+                'slug_es' => 'blockchain-web3',
+            ],
+            [
+                'en' => 'Gaming & 3D Tech',
+                'es' => 'Videojuegos & Tecnología 3D',
+                'slug_en' => 'gaming-3d-tech',
+                'slug_es' => 'videojuegos-tecnologia-3d',
+            ],
+            [
+                'en' => 'Science & Innovation',
+                'es' => 'Ciencia & Innovación',
+                'slug_en' => 'science-innovation',
+                'slug_es' => 'ciencia-innovacion',
             ],
         ];
 
