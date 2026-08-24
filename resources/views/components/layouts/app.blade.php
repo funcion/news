@@ -446,8 +446,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="footer-grid-3cols pb-12 border-b border-gray-100 dark:border-white/5">
                 <!-- Columna 1: Marca & Declaración de Transparencia IA -->
-                <div class="flex flex-col gap-4">
-                    <x-ui.logo size="lg" />
+                <div class="flex flex-col gap-5">
+                    <div class="mb-1">
+                        <x-ui.logo size="lg" />
+                    </div>
                     <p class="text-sm md:text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
@@ -468,9 +470,30 @@
                 <div class="flex flex-col gap-3.5 md:pl-6">
                     <h4 class="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">{{ app()->getLocale() === 'es' ? 'Indexación & Feeds' : 'Syndication & Feeds' }}</h4>
                     <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.sitemap_xml') }} <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
-                        <li><a href="{{ route('sitemap.news') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">Google News Sitemap (48h) <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
-                        <li><a href="{{ route('feed') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1.5">{{ __('ui.rss_feed') }} <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></li>
+                        <li>
+                            <a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                                {{ __('ui.sitemap_xml') }}
+                                <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('sitemap.news') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                                Google News Sitemap (48h)
+                                <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('feed') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                                {{ __('ui.rss_feed') }}
+                                <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
