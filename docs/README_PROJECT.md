@@ -81,7 +81,7 @@ Archivo: `app/Services/AI/OpenRouterService.php`
 
 ```php
 // Para cambiar modelo, edita MODEL_ACTIVE:
-public const MODEL_ACTIVE = 'deepseek/deepseek-v4-pro';
+public const MODEL_ACTIVE = 'google/gemini-3.6-flash';
 ```
 
 **Modelos disponibles:**
