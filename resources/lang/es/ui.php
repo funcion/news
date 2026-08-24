@@ -51,6 +51,7 @@ return array (
   'terms_of_service' => 'Términos y Condiciones',
   'privacy_policy' => 'Política de Privacidad',
   'cookie_policy' => 'Política de Cookies',
+  'cookie_settings' => 'Configuración de Cookies',
   'editorial_policy' => 'Política Editorial & IA',
   'editorial_disclosure_footer' => 'Plataforma digital especializada en la cobertura de inteligencia artificial, desarrollo de software, ciberseguridad y las innovaciones tecnológicas que transforman el mundo.',
   'cookie_banner_text' => 'Utilizamos cookies técnicas y analíticas esenciales para ofrecerte la mejor experiencia y recordar tus preferencias.',

@@ -22,6 +22,7 @@
         "@alpinejs/focus": "^3.15.9",
         "alpinejs": "^3.15.9",
         "laravel-echo": "^2.3.1",
-        "pusher-js": "^8.4.3"
+        "pusher-js": "^8.4.3",
+        "vanilla-cookieconsent": "^3.1.0"
     }
 }

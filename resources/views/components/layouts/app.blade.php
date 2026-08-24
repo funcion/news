@@ -477,6 +477,7 @@
                         <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
                         <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
                         <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
+                        <li><button type="button" data-cc="show-preferencesModal" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-left">{{ __('ui.cookie_settings') }}</button></li>
                     </ul>
                 </div>
 
@@ -518,47 +519,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Cookie Consent Banner UI (Non-intrusive, GDPR & CCPA Ready) -->
-    <div x-data="{
-            showConsent: !localStorage.getItem('cookie_consent_accepted'),
-            accept() {
-                localStorage.setItem('cookie_consent_accepted', 'all');
-                this.showConsent = false;
-            },
-            decline() {
-                localStorage.setItem('cookie_consent_accepted', 'essential');
-                this.showConsent = false;
-            }
-         }"
-         x-show="showConsent"
-         x-transition:enter="transition ease-out duration-500 transform"
-         x-transition:enter-start="translate-y-24 opacity-0"
-         x-transition:enter-end="translate-y-0 opacity-100"
-         x-transition:leave="transition ease-in duration-300 transform"
-         x-transition:leave-end="translate-y-24 opacity-0"
-         class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50">
-        <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-5 sm:p-6 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white flex flex-col gap-4">
-            <div class="flex items-start gap-3">
-                <span class="text-2xl shrink-0">🍪</span>
-                <div class="flex flex-col gap-1">
-                    <h5 class="text-sm font-bold">{{ app()->getLocale() === 'es' ? 'Aviso de Cookies' : 'Cookie Notice' }}</h5>
-                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                        {{ __('ui.cookie_banner_text') }}
-                        <a href="{{ route('legal.cookies') }}" class="text-cyan-600 dark:text-cyan-400 underline font-medium ml-1">{{ __('ui.learn_more') }}</a>
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2.5 pt-1">
-                <button @click="accept()" class="flex-1 py-2 px-3.5 rounded-lg bg-[#2b7fff] hover:bg-blue-600 text-white font-bold text-xs shadow-md transition-colors text-center">
-                    {{ __('ui.accept_all') }}
-                </button>
-                <button @click="decline()" class="py-2 px-3 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors text-center">
-                    {{ __('ui.decline_non_essential') }}
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Breaking News Banner (Bottom Right, Fixed) -->
     <div x-show="showBanner" 

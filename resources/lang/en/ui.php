@@ -51,6 +51,7 @@ return array (
   'terms_of_service' => 'Terms of Service',
   'privacy_policy' => 'Privacy Policy',
   'cookie_policy' => 'Cookie Policy',
+  'cookie_settings' => 'Cookie Preferences',
   'editorial_policy' => 'Editorial Policy & AI',
   'editorial_disclosure_footer' => 'Digital media platform specializing in artificial intelligence, software engineering, cybersecurity, and the breakthrough technologies shaping the future.',
   'cookie_banner_text' => 'We use essential technical and analytics cookies to optimize your browsing experience and store your preferences.',
