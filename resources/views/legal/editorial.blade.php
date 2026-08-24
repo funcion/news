@@ -19,7 +19,7 @@
         </div>
 
         <!-- Content Body -->
-        <div class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-200">
+        <div class="prose prose-base md:prose-lg prose-cyan dark:prose-dark max-w-none text-slate-700 dark:text-slate-200">
             @if(app()->getLocale() === 'es')
                 <div class="p-6 md:p-8 rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm not-prose mb-10">
                     <div class="flex items-start gap-4">

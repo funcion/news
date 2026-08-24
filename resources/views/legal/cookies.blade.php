@@ -17,7 +17,7 @@
             </p>
         </div>
 
-        <div class="prose prose-slate dark:prose-invert max-w-none">
+        <div class="prose prose-base md:prose-lg prose-cyan dark:prose-dark max-w-none text-slate-700 dark:text-slate-200">
             @if(app()->getLocale() === 'es')
                 <p>
                     Esta Política de Cookies forma parte integrante de nuestra Política de Privacidad y Términos de Uso, y se emite en conformidad con la <strong>Directiva 2002/58/CE (Directiva ePrivacy)</strong>, el <strong>Reglamento General de Protección de Datos (RGPD)</strong> y el artículo 22.2 de la <strong>LSSI-CE</strong>.

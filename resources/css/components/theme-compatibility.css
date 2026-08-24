@@ -149,3 +149,39 @@
 .dark .prose strong {
   color: #ffffff !important;
 }
+
+/* FOOLPROOF DARK MODE PROSE RULES */
+html.dark .prose,
+.dark .prose,
+html.dark [class*="prose"],
+.dark [class*="prose"] {
+    color: #cbd5e1 !important;
+    --tw-prose-body: #cbd5e1 !important;
+    --tw-prose-headings: #ffffff !important;
+    --tw-prose-bold: #ffffff !important;
+    --tw-prose-links: #38bdf8 !important;
+}
+
+html.dark .prose h1, html.dark .prose h2, html.dark .prose h3, html.dark .prose h4,
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4,
+html.dark [class*="prose"] h1, html.dark [class*="prose"] h2, html.dark [class*="prose"] h3, html.dark [class*="prose"] h4,
+.dark [class*="prose"] h1, .dark [class*="prose"] h2, .dark [class*="prose"] h3, .dark [class*="prose"] h4 {
+    color: #ffffff !important;
+}
+
+html.dark .prose p, html.dark .prose li,
+.dark .prose p, .dark .prose li,
+html.dark [class*="prose"] p, html.dark [class*="prose"] li,
+.dark [class*="prose"] p, .dark [class*="prose"] li {
+    color: #cbd5e1 !important;
+}
+
+html.dark .prose strong, .dark .prose strong,
+html.dark [class*="prose"] strong, .dark [class*="prose"] strong {
+    color: #ffffff !important;
+}
+
+html.dark .prose a, .dark .prose a,
+html.dark [class*="prose"] a, .dark [class*="prose"] a {
+    color: #38bdf8 !important;
+}

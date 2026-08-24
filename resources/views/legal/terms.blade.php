@@ -19,7 +19,7 @@
         </div>
 
         <!-- Content Body -->
-        <div class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-200">
+        <div class="prose prose-base md:prose-lg prose-cyan dark:prose-dark max-w-none text-slate-700 dark:text-slate-200">
             @if(app()->getLocale() === 'es')
                 <div class="p-6 md:p-8 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-sm not-prose mb-10">
                     <h3 class="text-base font-black text-amber-900 dark:text-amber-300 uppercase tracking-wider mb-2">Aviso Legal Importante y Aceptación de Términos</h3>

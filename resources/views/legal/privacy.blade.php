@@ -17,7 +17,7 @@
             </p>
         </div>
 
-        <div class="prose prose-slate dark:prose-invert max-w-none">
+        <div class="prose prose-base md:prose-lg prose-cyan dark:prose-dark max-w-none text-slate-700 dark:text-slate-200">
             @if(app()->getLocale() === 'es')
                 <p>
                     La presente Política de Privacidad regula el tratamiento de los datos personales recabados a través de <strong>Glodaxia</strong>, en estricto cumplimiento del <strong>Reglamento General de Protección de Datos de la UE (RGPD - Reglamento UE 2016/679)</strong>, la <strong>Ley Orgánica 3/2018 (LOPD-GDD)</strong> y la <strong>California Consumer Privacy Act (CCPA)</strong>.

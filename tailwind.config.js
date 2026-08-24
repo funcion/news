@@ -73,6 +73,17 @@ export default {
                         },
                     },
                 },
+                invert: {
+                    css: {
+                        color: '#cbd5e1',
+                        h1: { color: '#ffffff' },
+                        h2: { color: '#ffffff' },
+                        h3: { color: '#ffffff' },
+                        h4: { color: '#ffffff' },
+                        strong: { color: '#ffffff' },
+                        a: { color: '#38bdf8' },
+                    },
+                },
                 dark: {
                     css: {
                         color: theme('colors.gray.300'),
