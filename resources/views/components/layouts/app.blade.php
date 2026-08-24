@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                                <!-- Centered Search Modal (Generous Left Padding & Icon Spacing) -->
+                                    <!-- Centered Search Modal (Perfect Symmetrical Flex Alignment & Spacing) -->
     <div x-data="{
             open: false,
             query: '',
@@ -641,10 +641,12 @@
         <div style="width: 720px !important; max-width: calc(100vw - 2rem) !important;" 
              class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 z-10 animate-in fade-in zoom-in-95 duration-150">
             
-            <!-- Search Form with generous left icon spacing and pl-14 -->
-            <form @submit.prevent="submitSearch()" class="relative flex items-center">
-                <!-- Search Icon on the LEFT with clean offset -->
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 flex items-center text-slate-400 dark:text-slate-500 pointer-events-none">
+            <!-- Perfect Symmetrical Search Form (Flex Container) -->
+            <form @submit.prevent="submitSearch()" 
+                  class="flex items-center gap-3.5 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 transition-colors focus-within:border-cyan-500 dark:focus-within:border-cyan-500">
+                
+                <!-- Search Icon with natural symmetrical spacing -->
+                <div class="flex items-center text-slate-400 dark:text-slate-500 shrink-0">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </span>
@@ -653,16 +655,24 @@
                     </svg>
                 </div>
 
-                <!-- Input with plenty of left padding (pl-14) -->
+                <!-- Input naturally aligned with gap-3.5 -->
                 <input x-ref="modalSearchInput"
                        x-model="query"
                        @input.debounce.200ms="search()"
                        type="text"
                        autocomplete="off"
                        placeholder="{{ app()->getLocale() === 'es' ? 'Buscar noticias, análisis, IA...' : 'Search tech news, analyses, AI...' }}"
-                       style="color: #0f172a !important; background-color: #f1f5f9 !important; padding-left: 3.5rem !important; padding-right: 1.25rem !important;"
-                       :style="isDarkMode ? 'color: #ffffff !important; background-color: #1e293b !important; padding-left: 3.5rem !important; padding-right: 1.25rem !important;' : 'color: #0f172a !important; background-color: #f1f5f9 !important; padding-left: 3.5rem !important; padding-right: 1.25rem !important;'"
-                       class="w-full rounded-xl py-3.5 text-sm sm:text-base font-semibold border border-slate-200 dark:border-slate-700 outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
+                       style="color: #0f172a !important; background: transparent !important;"
+                       :style="isDarkMode ? 'color: #ffffff !important; background: transparent !important;' : 'color: #0f172a !important; background: transparent !important;'"
+                       class="w-full bg-transparent text-sm sm:text-base font-semibold outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 border-none p-0 focus:ring-0">
+
+                <!-- Clear button (x) -->
+                <button x-show="query.length > 0" 
+                        @click="query = ''; articles = []; hasSearched = false; $refs.modalSearchInput.focus()" 
+                        type="button" 
+                        class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors p-1 shrink-0">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </form>
 
             <!-- Results Dropdown -->
