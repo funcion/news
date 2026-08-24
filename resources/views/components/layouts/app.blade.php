@@ -591,7 +591,7 @@
         </div>
     @endif
 
-                                                        <!-- Simple Standard Search Modal -->
+                                                            <!-- Simple Standard Search Modal (Native Tailwind Classes) -->
     <div x-data="{
             open: false,
             query: '',
@@ -637,18 +637,18 @@
         <!-- Backdrop -->
         <div class="fixed inset-0" @click="open = false"></div>
 
-        <!-- Dialog Box -->
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-800 shadow-xl p-4 z-10">
+        <!-- Dialog Box with max-w-[700px] -->
+        <div class="relative w-full max-w-[700px] bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-800 shadow-xl p-4 z-10">
             <form @submit.prevent="submitSearch()" class="relative">
                 <input x-ref="modalSearchInput"
                        x-model="query"
                        @input.debounce.200ms="search()"
                        type="text"
                        placeholder="{{ app()->getLocale() === 'es' ? 'Buscar...' : 'Search...' }}"
-                       class="w-full bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-200 dark:border-slate-700 rounded-md pl-10 pr-10 py-2.5 text-sm outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
+                       class="w-full bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-200 dark:border-slate-700 rounded-md pl-14 pr-10 py-2.5 text-sm outline-none focus:border-cyan-500 dark:focus:border-cyan-500 transition-colors">
                 
-                <!-- Left Icon -->
-                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
+                <!-- Left Icon with left-7 (offset +15px) -->
+                <div class="absolute left-7 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">
                     <span x-show="loading" class="text-cyan-500 animate-spin">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </span>
