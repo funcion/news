@@ -53,9 +53,9 @@
             <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
                 <div class="flex items-center gap-3">
                     @if($article->user?->avatar_url)
-                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-slate-300 dark:border-white/10 shadow-sm object-cover">
+                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm object-cover">
                     @else
-                        <div class="h-8 w-8 rounded-lg bg-teal-600 dark:bg-teal-500/20 text-white dark:text-teal-300 font-black text-xs flex items-center justify-center border border-teal-700 dark:border-teal-500/40 shadow-sm shrink-0 uppercase tracking-tighter select-none ring-2 ring-teal-500/20">
+                        <div class="h-8 w-8 rounded-lg bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0 uppercase tracking-tight select-none">
                             {{ $article->user?->initials ?? 'LF' }}
                         </div>
                     @endif
@@ -144,25 +144,25 @@
             </div>
         </div>
 
-        <div class="mt-8 pt-6 lg:mt-12 lg:pt-10 border-t border-slate-200 dark:border-slate-800/80">
-            <div class="bg-slate-100 dark:bg-slate-900/60 rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+        <div class="mt-8 pt-6 lg:mt-12 lg:pt-10 border-t border-gray-200 dark:border-gray-800/50">
+            <div class="bg-white dark:bg-white/[0.02] rounded-lg p-4 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 border border-gray-200 dark:border-white/5 relative overflow-hidden group">
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
                     @if($article->user?->avatar_url)
-                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-xl border-2 border-slate-300 dark:border-slate-700 object-cover shadow-md">
+                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                     @else
-                        <div class="relative h-20 w-20 rounded-xl bg-gradient-to-br from-teal-600 to-cyan-700 dark:from-teal-500/20 dark:to-cyan-500/10 text-white dark:text-teal-300 font-black text-2xl flex items-center justify-center border-2 border-teal-700/40 dark:border-teal-500/30 shadow-lg shrink-0 uppercase tracking-tight select-none ring-4 ring-teal-500/10">
+                        <div class="relative h-20 w-20 rounded-lg bg-[#0284c7] text-white font-bold text-2xl flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-xl shrink-0 uppercase tracking-tight select-none">
                             {{ $article->user?->initials ?? 'LF' }}
                         </div>
                     @endif
                 </div>
 
                 <div class="text-left flex-1 relative z-10 pt-1">
-                    <span class="px-2.5 py-1 rounded-md bg-teal-100 dark:bg-teal-500/10 text-[10px] font-black text-teal-800 dark:text-teal-400 uppercase tracking-wider mb-2 inline-block border border-teal-200 dark:border-teal-500/20">{{ __('ui.verified_author') }}</span>
-                    <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
+                    <span class="px-2 py-0.5 rounded-lg bg-cyan-500/10 text-[9px] font-black text-cyan-700 dark:text-cyan-500 uppercase tracking-widest mb-3 inline-block">{{ __('ui.verified_author') }}</span>
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
                         {{ $article->user?->name ?? __('ui.reporter') }}
                     </h3>
-                    <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4 max-w-2xl font-medium">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-2xl">
                         {{ $article->user?->bio ?? 'Analizando y curando las noticias tecnológicas más relevantes del mundo.' }}
                     </p>
                 </div>
