@@ -434,42 +434,56 @@
             .footer-grid-3cols {
                 display: grid !important;
                 grid-template-columns: 1.5fr 1fr 1fr !important;
-                gap: 2.5rem !important;
+                gap: 3rem !important;
             }
             @media (max-width: 860px) {
                 .footer-grid-3cols {
                     grid-template-columns: 1fr !important;
-                    gap: 2rem !important;
+                    gap: 2.5rem !important;
+                    text-align: center !important;
+                }
+                .footer-col {
+                    align-items: center !important;
+                    text-align: center !important;
+                    padding-left: 0 !important;
+                }
+                .footer-links {
+                    align-items: center !important;
+                    justify-content: center !important;
+                    text-align: center !important;
+                }
+                .footer-links a {
+                    justify-content: center !important;
                 }
             }
         </style>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="footer-grid-3cols pb-12 border-b border-gray-100 dark:border-white/5">
-                <!-- Columna 1: Marca & Declaración de Transparencia IA -->
-                <div class="flex flex-col gap-5">
-                    <div class="mb-1">
+                <!-- Columna 1: Marca & Declaración de Especialización -->
+                <div class="footer-col flex flex-col gap-4">
+                    <div class="mb-1 flex items-center justify-start max-[860px]:justify-center">
                         <x-ui.logo size="lg" />
                     </div>
-                    <p class="text-sm md:text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                    <p class="text-sm md:text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-md">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
                 </div>
 
                 <!-- Columna 2: Legal & Transparencia -->
-                <div class="flex flex-col gap-3.5 md:pl-6">
-                    <h4 class="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">{{ __('ui.legal_nav') }}</h4>
-                    <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.editorial_policy') }}</a></li>
-                        <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.privacy_policy') }}</a></li>
-                        <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.terms_of_service') }}</a></li>
-                        <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">{{ __('ui.cookie_policy') }}</a></li>
+                <div class="footer-col flex flex-col md:pl-6">
+                    <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.legal_nav') }}</h4>
+                    <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.editorial_policy') }}</a></li>
+                        <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
+                        <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
+                        <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
                     </ul>
                 </div>
 
                 <!-- Columna 3: Syndication & Feeds -->
-                <div class="flex flex-col gap-3.5 md:pl-6">
-                    <h4 class="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">{{ app()->getLocale() === 'es' ? 'Indexación & Feeds' : 'Syndication & Feeds' }}</h4>
-                    <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
+                <div class="footer-col flex flex-col md:pl-6">
+                    <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ app()->getLocale() === 'es' ? 'Indexación & Feeds' : 'Syndication & Feeds' }}</h4>
+                    <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
                         <li>
                             <a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
                                 {{ __('ui.sitemap_xml') }}
