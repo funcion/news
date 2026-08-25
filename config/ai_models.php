@@ -20,7 +20,7 @@ return [
         'deepseek/deepseek-chat',
         'qwen/qwen3.7-flash',
         'google/gemini-2.5-flash',
-        'minimax/minimax-m3',
+        //'minimax/minimax-m3',
     ])))))),
 
     /*
