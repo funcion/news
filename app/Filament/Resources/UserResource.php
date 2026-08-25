@@ -129,7 +129,8 @@ class UserResource extends Resource
                 ImageColumn::make('avatar_url')
                     ->label('Avatar')
                     ->disk('public')
-                    ->circular(),
+                    ->circular()
+                    ->defaultImageUrl(fn (User $record): string => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&background=06b6d4&color=ffffff&bold=true'),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->formatStateUsing(fn ($record) => $record->getTranslation('name', 'es') ?: $record->getTranslation('name', 'en'))

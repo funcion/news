@@ -135,9 +135,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'en' => 'IoT & Smart Home',
-                'es' => 'IoT & Hogar Inteligente',
+                'es' => 'IoT & Domótica',
                 'slug_en' => 'iot-smart-home',
-                'slug_es' => 'iot-hogar-inteligente',
+                'slug_es' => 'iot-domotica',
             ],
             [
                 'en' => 'No-Code & Automation',

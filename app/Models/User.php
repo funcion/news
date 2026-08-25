@@ -107,6 +107,26 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the articles for the user/author.
      */
+        /**
+     * Get a consistent, vibrant gradient background for author avatar badges based on user ID or name.
+     */
+    public function getAvatarColorAttribute(): string
+    {
+        $palettes = [
+            'from-cyan-600 to-blue-600',
+            'from-indigo-600 to-purple-600',
+            'from-emerald-600 to-teal-600',
+            'from-amber-600 to-orange-600',
+            'from-rose-600 to-pink-600',
+            'from-violet-600 to-fuchsia-600',
+            'from-sky-600 to-cyan-700',
+            'from-teal-600 to-emerald-700',
+        ];
+
+        $idx = abs(crc32($this->slug ?? $this->email ?? 'glodaxia')) % count($palettes);
+        return $palettes[$idx];
+    }
+
     public function articles()
     {
         return $this->hasMany(Article::class, 'user_id');
