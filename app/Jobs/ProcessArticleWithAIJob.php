@@ -736,9 +736,8 @@ Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based
 - CURRENT DATE: {$today} (Current Year: {$currentYear})
 - SOURCE PUBLISHED: {$sourceDate} ({$articleAge})
 - VERIFIED SOURCE FACTS: {$topic}
-- ARTICLE TYPE: {$contentType} | TARGET LENGTH: {$wordTarget}
-- EDITORIAL REGISTER: {$styleDna['toneDescription']}
-- INVESTIGATIVE ANGLE: {$styleDna['angleDescription']}
+- ARTICLE ARCHETYPE: {$styleDna['archetypeName']}
+- STRUCTURAL GUIDANCE: {$styleDna['archetypeStructure']}
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 2. AUTHOR VOICE & REALISTIC PROFESSIONAL PERSONA ═══
@@ -770,14 +769,15 @@ STRICT PERSONA GROUNDING:
    - Integrate the source attribution naturally in the prose (e.g. "According to a detailed report from...", "As documented in recent findings by...").
 
 ═════════════════════════════════════════════════════════════════════
-═══ 4. CONTENT ARCHITECTURE & HTML RULES ═══
+═══ 4. DYNAMIC EDITORIAL FREEDOM & CONTENT ARCHITECTURE ═══
 ═════════════════════════════════════════════════════════════════════
-- ALLOWED HTML TAGS ONLY: <p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>.
-- NEVER use <h1>, <h3>, <h4>, <div>, <span>, or raw markdown bold (**) inside HTML content.
-- PARAGRAPHS: Every narrative block must be explicitly wrapped in <p>...</p>. Keep paragraphs dynamic and natural (2 to 4 sentences each).
-- SUBHEADINGS (<h2>): Break down the article with 2 to 4 incisive, informative H2 subheadings that describe the analytical core (e.g. <h2>The Hidden Friction Behind Adoption</h2>, <h2>What Real-World Deployments Actually Reveal</h2>). NEVER use generic headings like "The Context" or "The Impact".
-- CONCLUSION H2: Conclude with a dedicated forward-looking H2 section (e.g. <h2>What Comes Next</h2> / <h2>Que esperar a partir de ahora</h2>, <h2>The Road Ahead</h2> / <h2>El veredicto</h2>) delivering sharp synthesis.
-- ENGAGING READER OUTRO: The very last sentence of the article MUST be an incisive, thought-provoking question directly addressing the reader to prompt discussion (e.g. 'What is your take: is this genuine infrastructure or another overleveraged boom cycle?' / '¿Cual es tu balance: estamos ante la infraestructura definitiva o ante una correccion inevitable?'). NEVER say 'In conclusion' or 'En conclusion'.
+- EDITORIAL FREEDOM: Do NOT follow a rigid formula. You have complete freedom to structure the narrative to best tell this specific story. Vary paragraph lengths, use lists when comparing features/data, or use pure flowing prose when delivering deep analytical narrative.
+- ALLOWED HTML TAGS: <p>, <h2>, <h3>, <strong>, <blockquote>, <ul>, <ol>, <li>.
+- NEVER use <h1>, <h4>, <div>, <span>, or raw markdown bold (**) inside HTML content.
+- PARAGRAPHS: Every narrative block must be wrapped in <p>...</p>. Write with natural rhythm (some paragraphs of 2 sentences, others of 3-4 sentences).
+- HEADINGS (<h2> / <h3>): Use descriptive, incisive subheadings to structure your argument. NEVER use generic headers like "The Context" or "The Impact".
+- CLOSING SECTION: Conclude with an analytical final section that looks toward the future.
+- ENGAGING READER OUTRO: The very last sentence of the article MUST be an incisive, thought-provoking question directly addressing the reader to prompt comments/discussion (e.g. 'What is your take: is this genuine progress or an overhyped transition?' / '¿Cual es tu balance: estamos ante un avance real o ante una promesa sobredimensionada?'). NEVER say 'In conclusion' or 'En conclusion'.
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 5. IMAGE PLACEMENT RULES ═══
