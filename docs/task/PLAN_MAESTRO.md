@@ -1097,7 +1097,7 @@ Sistema para distribuir contenido automáticamente a plataformas externas y atra
 │  PostgreSQL + pgvector + Redis                  │
 ├─────────────────────────────────────────────────┤
 │                  IA                              │
-│  OpenRouter (DeepSeek V4 Pro, Gemini, Qwen)     │
+│  OpenRouter (DeepSeek V4 Flash, Qwen 3.7 Flash, DeepSeek V3)     │
 ├─────────────────────────────────────────────────┤
 │                  IMÁGENES                        │
 │  FluxAPI.ai + Unsplash + libvips                │
@@ -1364,7 +1364,7 @@ Costo estimado por artículo: ~$0.04
 100 artículos/día = $4/día = $120/mes
 
 **Modelo activo actual**: `deepseek/deepseek-v4-pro` (vía OpenRouterService::MODEL_ACTIVE)
-**Modelos disponibles para rotación**: Gemini 2.5 Flash, Gemini 2.5 Pro, DeepSeek V4 Flash, Qwen 3.6++, MiniMax M2.7
+**Modelos disponibles para rotación**: DeepSeek V4 Flash, Qwen 3.7 Flash, DeepSeek V3 (Chat)
 
 **Umbral máximo**: $0.06 por artículo.
 ```

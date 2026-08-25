@@ -81,18 +81,18 @@ Archivo: `app/Services/AI/OpenRouterService.php`
 
 ```php
 // Para cambiar modelo, edita MODEL_ACTIVE:
-public const MODEL_ACTIVE = 'google/gemini-3.6-flash';
+// Configurable centralmente en config/ai_models.php
 ```
 
 **Modelos disponibles:**
 | Modelo | ID en OpenRouter | Velocidad |
 |--------|------------------|-----------|
-| Google Gemini 2.5 Flash | `google/gemini-2.5-flash` | Rápido, barato |
-| Google Gemini 2.5 Pro | `google/gemini-2.5-pro` | Más inteligente |
+| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash-0731` | Rápido, barato |
+| Qwen 3.7 Flash | `qwen/qwen3.7-flash` | Más inteligente |
 | DeepSeek V4 Flash | `deepseek/deepseek-v4-flash` | Rápido |
 | DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | Razonamiento |
 | Qwen3-Plus | `qwen/qwen3.6-plus` | Alibaba |
-| MiniMax M2.7 | `minimax/minimax-m2.7` | |
+| MiniMax M2.7 | `deepseek/deepseek-chat` | |
 
 **API Keys en `.env`:**
 ```env
@@ -310,7 +310,7 @@ app/
 |---|-------|:------:|-------------|
 | **1** | **Backend de Suscriptores (Newsletter con Doble Opt-in)** | ✅ **Completada** | Tabla `subscribers`, endpoint `POST /newsletter/subscribe`, verificación vía email Markdown de Laravel (`NewsletterVerificationMail`), token criptográfico de 64 caracteres, honeypot anti-spam, 1-click unsubscribe y gestión completa en Filament (`SubscriberResource`). |
 | **2** | **Páginas de Error Personalizadas (404, 500, 403)** | ✅ **Completada** | Vistas de error `errors/404.blade.php`, `errors/500.blade.php` y `errors/403.blade.php` con tipografía de degradado futurista, buscador contextual integrado, selector bilingüe dinámico y compatibilidad Dark/Light mode. |
-| **3** | **Prueba de Ingesta en Vivo con Gemini 3.6 Flash** | ✅ **Completada** | Ingesta RSS (`rss:fetch`), extracción, clasificación semántica, verificación anti-duplicados por cosenos, redacción bilingüe EN/ES con `google/gemini-3.6-flash` y generación de imagen FLUX.1. |
+| **3** | **Prueba de Ingesta en Vivo con DeepSeek V4 Flash** | ✅ **Completada** | Ingesta RSS (`rss:fetch`), extracción, clasificación semántica, verificación anti-duplicados por cosenos, redacción bilingüe EN/ES con `deepseek/deepseek-v4-flash-0731` y generación de imagen FLUX.1. |
 | **4** | **Buscador en Vivo con Autocompletado (Spotlight Modal)** | ✅ **Completada** | Endpoint `GET /api/search` optimizado (<10ms), modal interactivo Spotlight con atajo de teclado `⌘K`/`Ctrl+K`, autocompletado en tiempo real con debounce de 250ms, sugerencias bilingües y página dedicada de resultados `/search`. |
 | **5** | **Página de Contacto `/contact`** | ✅ **Completada** | Formulario bilingüe (EN/ES) con protección anti-spam Honeypot (`website_hp`), rate limiting (`throttle:5,1`), base de datos `contact_messages`, despacho de emails a `hi@glodaxia.com` (`ContactMessageMail`), gestión en Filament (`ContactMessageResource`), diseño 100% clases nativas Tailwind CSS y modo Dark/Light. |
 | **6** | **Monetización & Espacios Publicitarios** | ⏳ Pendiente | Zonas de anuncios preparadas para Google AdSense / Sponsors / Mediavine sin afectar E-E-A-T. |

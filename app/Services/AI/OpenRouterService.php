@@ -141,8 +141,8 @@ class OpenRouterService
      *
      *  Modelos:
      *  ─────────────────────────────────────────────────────────────────
-     *  google/gemini-2.5-flash        Rápido, barato (default)
-     *  google/gemini-2.5-pro          Más inteligente
+     *  deepseek/deepseek-v4-flash-0731        Rápido, barato (default)
+     *  qwen/qwen3.7-flash          Más inteligente
      *  deepseek/deepseek-v4-flash     DeepSeek V4 Flash (barato)
      *  deepseek/deepseek-v4-pro       DeepSeek V4 Pro (más potente)
      *  qwen/qwen3.6-plus              Qwen 3.6 Plus (Alibaba)
@@ -150,8 +150,8 @@ class OpenRouterService
      *  ─────────────────────────────────────────────────────────────────
      *
      *  URLs de referencia:
-     *  https://openrouter.ai/google/gemini-2.5-flash
-     *  https://openrouter.ai/google/gemini-2.5-pro
+     *  https://openrouter.ai/deepseek/deepseek-v4-flash-0731
+     *  https://openrouter.ai/qwen/qwen3.7-flash
      *  https://openrouter.ai/deepseek/deepseek-v4-flash
      *  https://openrouter.ai/deepseek/deepseek-v4-pro
      *  https://openrouter.ai/qwen/qwen3.6-plus
