@@ -21,7 +21,24 @@ class DatabaseSeeder extends Seeder
         Setting::set('rate_limits.max_articles_per_hour', '2,7', 'string', 'rate_limits');
         Setting::set('rate_limits.max_articles_per_category_per_day', '1,5', 'string', 'rate_limits');
 
-                        // Create Editorial Team & Freelance Writers (12 Human Authors with Unique Creative Voices)
+                                // Create SuperAdmin User
+        User::updateOrCreate([
+            'email' => 'admin@glodaxia.com',
+        ], [
+            'name' => [
+                'en' => 'Administrator',
+                'es' => 'Administrador',
+            ],
+            'slug' => 'admin',
+            'password' => bcrypt('password'),
+            'bio' => [
+                'en' => 'System Administrator for Glodaxia Platform.',
+                'es' => 'Administrador del sistema de Glodaxia.',
+            ],
+            'is_active' => true,
+        ]);
+
+        // Create Editorial Team & Freelance Writers (12 Human Authors with Unique Creative Voices)
         $authorsList = config('global.editorial.authors', []);
         
         if (empty($authorsList)) {
