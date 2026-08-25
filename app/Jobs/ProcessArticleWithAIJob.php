@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\User;
 use App\Models\RawArticle;
 use App\Services\AI\OpenRouterService;
+use App\Services\AI\ModelRouterService;
 use App\Exceptions\OpenRouterAuthenticationException;
 use App\Services\AI\OpenRouterCircuitBreaker;
 use Illuminate\Bus\Queueable;
@@ -41,7 +42,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         protected RawArticle $rawArticle
     ) {}
 
-    public function handle(OpenRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker, \App\Services\SEO\EntityAutoLinkerService $autoLinker): void
+    public function handle(ModelRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker, \App\Services\SEO\EntityAutoLinkerService $autoLinker): void
     {
         // Guard: require API key before processing
         if (empty(config('openrouter.api_key'))) {
@@ -251,7 +252,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             'today_date'  => $today,
             'json_ld'     => $redacted['json_ld'] ?? null,
             'style_dna'   => $redacted['__style_dna'] ?? null,
-            'model_used'  => OpenRouterService::MODEL_ACTIVE,
+            'model_used'  => $redacted['__model_used'] ?? config('ai_models.pool.0', 'deepseek/deepseek-chat'),
             'temperature' => $redacted['__temperature'] ?? null,
         ];
 
@@ -590,7 +591,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         return $candidate;
     }
 
-    protected function classifyAndExtract(OpenRouterService $ai): ?array
+    protected function classifyAndExtract(ModelRouterService $ai): ?array
     {
         $content = trim(strip_tags($this->rawArticle->content ?? ''));
         $today   = now()->format('l, F j, Y');
@@ -666,7 +667,8 @@ Rules:
 - is_potentially_false: set to TRUE if the article contains obvious misinformation, fabricated statistics, conspiracy theories, unverified claims presented as fact, or reads like propaganda/sponsored content disguised as news
 PROMPT;
 
-        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE);
+        $resultObj = $ai->classifyWithFailover([['role' => 'user', 'content' => $prompt]]);
+        $response = $resultObj['content'] ?? null;
         $result   = $this->parseJson($response);
 
         if ($result) {
@@ -676,7 +678,7 @@ PROMPT;
         return $result;
     }
 
-    protected function redactBilingual(OpenRouterService $ai, array $classification, User $author): ?array
+    protected function redactBilingual(ModelRouterService $ai, array $classification, User $author): ?array
     {
         $today          = now()->format('l, F j, Y');
         $currentYear    = now()->year;
@@ -971,7 +973,12 @@ CRITICAL JSON FORMATTING RULES:
 
 PROMPT;
 
-        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], OpenRouterService::MODEL_ACTIVE, ['temperature' => $temperature]);
+        $resultObj = $ai->completeWithFailover([['role' => 'user', 'content' => $prompt]], ['temperature' => $temperature]);
+        if (!$resultObj || empty($resultObj['content'])) {
+            Log::warning("redactBilingual: AI returned null response for RawArticle {$this->rawArticle->id}");
+            return null;
+        }
+        $response = $resultObj['content'];
         if (!$response) {
             Log::warning("redactBilingual: AI returned null response for RawArticle {$this->rawArticle->id} (likely timeout)");
             return null;
@@ -993,6 +1000,7 @@ PROMPT;
         // Prefix with double-underscore to avoid collision with any AI-returned keys
         $data['__style_dna'] = $styleDna;
         $data['__temperature'] = $temperature;
+        $data['__model_used'] = $resultObj['model_used'] ?? 'auto';
 
         return $data;
     }
