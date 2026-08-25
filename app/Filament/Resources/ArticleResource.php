@@ -136,10 +136,11 @@ class ArticleResource extends Resource
                                             ->required(),
                                         Select::make('status')
                                             ->options([
-                                                'draft'          => '⬜ Draft',
-                                                'pending_review' => '🟡 Pending Review',
-                                                'published'      => '✅ Published',
-                                                'rejected'       => '🔴 Rejected',
+                                                'draft'          => '⬜ Borrador (Draft)',
+                                                'scheduled'      => '🟣 Programado (Scheduled)',
+                                                'pending_review' => '🟡 En Revisión (Pending Review)',
+                                                'published'      => '✅ Publicado (Published)',
+                                                'rejected'       => '🔴 Rechazado (Rejected)',
                                             ])
                                             ->required()
                                             ->default('draft'),
@@ -232,8 +233,17 @@ class ArticleResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'draft'          => 'Borrador',
+                        'scheduled'      => 'Programado',
+                        'pending_review' => 'En Revisión',
+                        'published'      => 'Publicado',
+                        'rejected'       => 'Rechazado',
+                        default          => ucfirst($state),
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'draft'          => 'gray',
+                        'scheduled'      => 'info',
                         'pending_review' => 'warning',
                         'published'      => 'success',
                         'rejected'       => 'danger',
@@ -249,15 +259,40 @@ class ArticleResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'draft'          => 'Draft',
-                        'pending_review' => 'Pending Review',
-                        'published'      => 'Published',
+                        'draft'          => 'Borrador',
+                        'scheduled'      => 'Programado',
+                        'pending_review' => 'En Revisión',
+                        'published'      => 'Publicado',
+                        'rejected'       => 'Rechazado',
                     ]),
                 Tables\Filters\SelectFilter::make('category_id')
                     ->relationship('category', 'name'),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
+                \Filament\Actions\Action::make('publish_now')
+                    ->label('Publicar Ahora')
+                    ->icon('heroicon-o-bolt')
+                    ->color('success')
+                    ->visible(fn (Article $record) => $record->status === 'scheduled')
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Publicar artículo inmediatamente?')
+                    ->modalDescription('El artículo cambiará de estado "Programado" a "Publicado" y aparecerá de inmediato en la web pública.')
+                    ->action(function (Article $record) {
+                        $record->update(['status' => 'published', 'published_at' => now()]);
+                        try {
+                            event(new \App\Events\ArticlePublished($record));
+                            \App\Http\Controllers\SitemapController::flushCache();
+                            if ($record->slug_en) {
+                                \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
+                            }
+                            if ($record->slug_es) {
+                                \App\Http\Controllers\IndexNowController::ping(url('/es/' . $record->slug_es));
+                            }
+                        } catch (\Throwable $e) {
+                            // ignore ping error
+                        }
+                    }),
                 \Filament\Actions\Action::make('approve')
                     ->label('Aprobar')
                     ->icon('heroicon-o-check-circle')

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->json('meta_keywords')->nullable();
-            $table->enum('status', ['draft', 'pending_review', 'approved', 'published', 'rejected', 'updated'])->default('draft');
+            $table->enum('status', ['draft', 'scheduled', 'pending_review', 'approved', 'published', 'rejected', 'updated'])->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->integer('views')->default(0);
             $table->integer('reading_time')->default(0); // minutos

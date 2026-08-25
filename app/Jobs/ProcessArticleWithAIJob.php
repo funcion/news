@@ -481,10 +481,22 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $article->ai_metadata = $meta;
         }
 
-        // Publish article directly if images were generated
+        // Dynamic Staggered Publishing (Random delay between 1 and 60 minutes)
         if ($imageCount > 0) {
-            $article->status = 'published';
-            $article->published_at = $article->published_at ?? now();
+            $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
+                ->whereNotNull('published_at')
+                ->max('published_at');
+
+            $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
+                ? \Carbon\Carbon::parse($latestArticleDate)
+                : now();
+
+            $delayMinutes = random_int(1, 60);
+            $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+
+            $article->status = 'scheduled';
+            $article->published_at = $publishAt;
+            Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m staggered delay).");
         } else {
             $article->status = 'draft';
         }
@@ -501,24 +513,6 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         }
 
         $this->rawArticle->update(['status' => 'processed']);
-        
-        // --- Publish Realtime Event ---
-        if ($article->status === 'published' || $article->status === 'draft') {
-            try {
-                event(new \App\Events\ArticlePublished($article));
-            } catch (\Exception $e) {
-                Log::error("Realtime event broadcasting failed for Article {$article->id}: " . $e->getMessage());
-            }
-        }
-
-        // --- Sitemap: flush cache + IndexNow ping ---
-        try {
-            \App\Http\Controllers\SitemapController::flushCache();
-            $articleUrl = url('/' . $article->slug_en);
-            \App\Http\Controllers\IndexNowController::ping($articleUrl);
-        } catch (\Exception $e) {
-            Log::warning("Sitemap/IndexNow failed for Article {$article->id}: " . $e->getMessage());
-        }
         
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
     }
