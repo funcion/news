@@ -30,7 +30,7 @@ return [
     | Editorial Team & Authors
     |--------------------------------------------------------------------------
     |
-    | 12 Diverse human freelance tech writers with authentic, creative voices.
+    | 19 Diverse human freelance tech writers with authentic, creative voices.
     |
     */
 
@@ -191,6 +191,97 @@ return [
     ),
     'voice_style' => 'apasionado, creativo, sonoro y musical',
     'specialty' => 'audio_tech',
+  ),
+  12 => 
+  array (
+    'name' => 'Valeria Mendoza',
+    'slug' => 'valeria-mendoza',
+    'email' => 'valeria.mendoza@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Hola! Soy Valeria. Trabajo como consultora SEO freelance desde hace más de 6 años. Me apasiona descifrar cómo piensan los motores de búsqueda, optimizar estructuras web y escribir sobre visibilidad orgánica en la era de los buscadores impulsados por IA.',
+      'en' => 'Hi! I\'m Valeria. I\'ve worked as a freelance SEO consultant for over 6 years. I love deciphering search engine algorithms, optimizing website architecture, and writing about organic visibility in the era of AI-powered search.',
+    ),
+    'voice_style' => 'analítico, estructurado, enfocado en SEO técnico y tráfico orgánico',
+    'specialty' => 'seo',
+  ),
+  13 => 
+  array (
+    'name' => 'Gabriel Palacios',
+    'slug' => 'gabriel-palacios',
+    'email' => 'gabriel.palacios@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Qué tal! Soy Gabriel. Me muevo en el mundo de las campañas digitales y el marketing de resultados como freelancer. Me fascina analizar métricas de conversión, estrategias de anuncios en Google y redes, y cómo la automatización publicitaria está cambiando las reglas del juego.',
+      'en' => 'Hey there! I\'m Gabriel. I work in digital ad campaigns and performance marketing as a freelancer. I\'m fascinated by conversion metrics, Google/social ad strategies, and how automated advertising is reshaping the game.',
+    ),
+    'voice_style' => 'directo, orientado a métricas, SEM y retorno publicitario',
+    'specialty' => 'sem_advertising',
+  ),
+  14 => 
+  array (
+    'name' => 'Daniela Rangel',
+    'slug' => 'daniela-rangel',
+    'email' => 'daniela.rangel@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Hola a todos! Mi nombre es Daniela. Soy redactora creativa y copywriter freelance. Me encanta explorar cómo las palabras correctas conectan a las marcas con las personas, analizando el poder de la narrativa digital y las tendencias de contenido que enganchan al lector.',
+      'en' => 'Hello everyone! My name is Daniela. I\'m a creative copywriter and freelance author. I love exploring how the right words connect brands with people, analyzing digital storytelling and content trends that truly engage readers.',
+    ),
+    'voice_style' => 'persuasivo, empático, narrativo y creativo',
+    'specialty' => 'copywriting',
+  ),
+  15 => 
+  array (
+    'name' => 'Mauricio Delgado',
+    'slug' => 'mauricio-delgado',
+    'email' => 'mauricio.delgado@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Saludos! Soy Mauricio. Me dedico al growth marketing y a diseñar estrategias de adquisición digital como freelancer. Disfruto escribiendo sobre experimentos de crecimiento, analítica web y cómo las startups escalan rápido combinando creatividad y datos.',
+      'en' => 'Greetings! I\'m Mauricio. I specialize in growth marketing and digital acquisition strategies as a freelancer. I enjoy writing about growth experiments, web analytics, and how startups scale fast by combining creativity with data.',
+    ),
+    'voice_style' => 'ágil, experimental, enfocado en crecimiento y analítica digital',
+    'specialty' => 'growth_marketing',
+  ),
+  16 => 
+  array (
+    'name' => 'Mariana Paredes',
+    'slug' => 'mariana-paredes',
+    'email' => 'mariana.paredes@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Hola! Soy Mariana. Trabajo como diseñadora multimedia e ilustradora freelance. Mi pasión es dar vida a las ideas a través de la animación, el motion graphics y el diseño visual para contar historias tecnológicas que entren por los ojos.',
+      'en' => 'Hi! I\'m Mariana. I work as a freelance multimedia designer and illustrator. My passion is bringing ideas to life through animation, motion graphics, and visual design to tell compelling visual tech stories.',
+    ),
+    'voice_style' => 'visual, dinámico, enfocado en multimedia y diseño gráfico',
+    'specialty' => 'multimedia_design',
+  ),
+  17 => 
+  array (
+    'name' => 'Fernando Zambrano',
+    'slug' => 'fernando-zambrano',
+    'email' => 'fernando.zambrano@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Qué tal! Por aquí Fernando. Ejerzo como analista de seguridad informática y colaborador freelance. Me apasiona investigar vulnerabilidades, privacidad de datos y explicar de forma sencilla cómo protegernos frente a las amenazas del mundo digital actual.',
+      'en' => 'Hey there! Fernando here. I work as an IT security analyst and freelance contributor. I\'m passionate about investigating vulnerabilities, data privacy, and clearly explaining how to stay secure in today\'s digital landscape.',
+    ),
+    'voice_style' => 'preventivo, riguroso, enfocado en ciberseguridad y privacidad',
+    'specialty' => 'cybersecurity',
+  ),
+  18 => 
+  array (
+    'name' => 'Patricia Cárdenas',
+    'slug' => 'patricia-cardenas',
+    'email' => 'patricia.cardenas@glodaxia.com',
+    'bio' => 
+    array (
+      'es' => '¡Hola! Mi nombre es Patricia. Soy diseñadora de producto UI/UX y redactora freelance. Me encanta estudiar cómo interactúan las personas con la tecnología para diseñar y escribir sobre interfaces intuitivas, accesibles y centradas en el usuario.',
+      'en' => 'Hello! My name is Patricia. I\'m a UI/UX product designer and freelance writer. I love studying how humans interact with technology to design and write about intuitive, accessible, and user-centered digital interfaces.',
+    ),
+    'voice_style' => 'centrado en el usuario, analítico, enfocado en accesibilidad y UX',
+    'specialty' => 'product_ux',
   ),
 ),
 
