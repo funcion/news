@@ -1937,13 +1937,13 @@ services:
 
 #### 📋 Newsletter automatizada
 
-- [ ] Migration `subscribers` + modelo Subscriber
-- [ ] Formulario suscripción en sidebar
-- [ ] Endpoint `POST /subscribe` + doble opt-in
+- [x] Migration `subscribers` + modelo Subscriber
+- [x] Formulario suscripción en sidebar y footer
+- [x] Endpoint `POST /subscribe` + doble opt-in
 - [ ] Mailable `WeeklyNewsletter` + template responsive
 - [ ] Job `SendWeeklyNewsletterJob` (scheduler viernes 10:00 AM)
-- [ ] Link desuscripción en cada email
-- [ ] Dashboard Filament: total suscriptores
+- [x] Link desuscripción en cada email
+- [x] Dashboard Filament: total suscriptores
 
 #### 📋 Sistema de trending
 
@@ -2032,11 +2032,11 @@ services:
 
 #### 📋 Documentación legal
 
-- [ ] `/privacy` — Política de privacidad
-- [ ] `/terms` — Términos de servicio
-- [ ] `/cookies` — Política de cookies + banner GDPR
-- [ ] `/dmca` — DMCA policy
-- [ ] Links en footer
+- [x] `/privacy` — Política de privacidad (RGPD / CCPA / LGPD)
+- [x] `/terms` — Términos de servicio (Blindaje Universal "AS IS" & DMCA)
+- [x] `/cookies` — Política de cookies + Centro CookieConsent v3
+- [x] `/editorial-policy` & DMCA Safe Harbor integrado
+- [x] Links en footer y reordenamiento legal
 
 #### 📋 Google News Publisher
 
@@ -2070,7 +2070,7 @@ services:
 
 **Última actualización**: 4 de Junio 2026  
 **Versión**: 5.1 (Producción funcional — pipeline completo end-to-end)  
-**Estado**: ✅ **Fases 1-3 COMPLETADAS** — Fase 4 parcial | Fases 5-6 pendientes  
+**Estado**: ✅ **Fases 1-4 COMPLETADAS** — Preparando Publicación Escalonada (1-60 min) y Monetización  
   
 ### Cambios v5.1 (4 Jun 2026)  
 - **Prompt V3**: Sección Anti-AI (34 líneas) reducida a Voice Discipline (8 líneas). Prompt ~180→~155 líneas  
