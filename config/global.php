@@ -101,11 +101,11 @@ return [
             'email' => 'mariaurys.gonzalez@glodaxia.com',
             'bio' => 
             array (
-              'es' => 'Soy Mariaurys González, ingeniera mecánica y redactora freelance. Me apasiona la robótica, los avances en hardware, la mecatrónica y todo lo relacionado con cómo la ingeniería física converge con el software del futuro.',
-              'en' => 'I am Mariaurys González, a mechanical engineer and freelance writer. I am passionate about robotics, hardware advancements, mechatronics, and how physical engineering converges with next-generation software.',
+              'es' => 'Soy Mariaurys González, administradora de empresas y redactora freelance. Me apasiona la gestión estratégica, los modelos de negocio digitales, el comercio electrónico y el impacto de la tecnología en la toma de decisiones empresariales y financieras.',
+              'en' => 'I am Mariaurys González, a business administrator and freelance writer. I am passionate about strategic management, digital business models, e-commerce, and the impact of technology on financial and corporate decision-making.',
             ),
-            'voice_style' => 'preciso, orientado a hardware, componentes y robótica',
-            'specialty' => 'hardware_robotics',
+            'voice_style' => 'estratégico, analítico, enfocado en gestión, negocios digitales y finanzas',
+            'specialty' => 'business_management',
           ),
           5 => 
           array (
