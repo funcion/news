@@ -79,6 +79,10 @@ class RawArticleResource extends Resource
                             ])
                             ->default('pending')
                             ->required(),
+                        Forms\Components\TextInput::make('ai_model')
+                            ->label('Modelo IA Utilizado')
+                            ->disabled()
+                            ->columnSpanFull(),
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Fecha de Publicación')
                             ->columnSpanFull(),
@@ -106,8 +110,28 @@ class RawArticleResource extends Resource
                         'ignored' => 'warning',
                         'failed' => 'danger',
                     }),
+                Tables\Columns\TextColumn::make('ai_model')
+                    ->label('Modelo IA')
+                    ->badge()
+                    ->placeholder('—')
+                    ->sortable()
+                    ->searchable()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'deepseek/deepseek-v4-flash-0731' => 'success',
+                        'deepseek/deepseek-chat'           => 'info',
+                        'qwen/qwen3.7-flash'               => 'warning',
+                        null                               => 'gray',
+                        default                            => 'primary',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'deepseek/deepseek-v4-flash-0731' => 'DeepSeek V4 Flash',
+                        'deepseek/deepseek-chat'           => 'DeepSeek V3',
+                        'qwen/qwen3.7-flash'               => 'Qwen 3.7 Flash',
+                        default                            => $state ?? '—',
+                    }),
                 Tables\Columns\TextColumn::make('published_at')
-                    ->dateTime()
+                    ->label('Fecha')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
             ->filters([
@@ -118,6 +142,13 @@ class RawArticleResource extends Resource
                         'processed' => 'Procesada',
                         'ignored' => 'Ignorada',
                         'failed' => 'Fallida',
+                    ]),
+                Tables\Filters\SelectFilter::make('ai_model')
+                    ->label('Modelo IA')
+                    ->options([
+                        'deepseek/deepseek-v4-flash-0731' => 'DeepSeek V4 Flash',
+                        'deepseek/deepseek-chat'           => 'DeepSeek V3',
+                        'qwen/qwen3.7-flash'               => 'Qwen 3.7 Flash',
                     ]),
             ])
             ->actions([

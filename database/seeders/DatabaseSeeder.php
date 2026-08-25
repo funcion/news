@@ -806,6 +806,7 @@ class DatabaseSeeder extends Seeder
         foreach ($rssSources as $sourceData) {
             $sourceData['max_age_days'] = 1;
             $sourceData['trusted'] = true;
+            $sourceData['is_default'] = true;
             Source::updateOrCreate(
                 ['url' => $sourceData['url']],
                 $sourceData

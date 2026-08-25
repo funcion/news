@@ -68,6 +68,10 @@ class SourceResource extends Resource
                     ->label('Fuente Verificada')
                     ->helperText('Las fuentes verificadas tienen prioridad en la cola de procesamiento')
                     ->default(false),
+                Toggle::make('is_default')
+                    ->label('Fuente Predeterminada (Sistema)')
+                    ->helperText('Identifica las fuentes nucleares preconfiguradas del sistema')
+                    ->default(false),
                 TextInput::make('max_age_days')
                     ->label('Máx. Antigüedad (días)')
                     ->numeric()
@@ -114,6 +118,15 @@ class SourceResource extends Resource
                 ToggleColumn::make('trusted')
                     ->label('Verificada')
                     ->tooltip('Fuente oficial prioritaria en la cola de procesamiento editorial.'),
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-s-check-badge')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->sortable()
+                    ->tooltip('Fuente nuclear predeterminada del sistema.'),
                 TextColumn::make('max_age_days')
                     ->label('Máx. Días')
                     ->numeric()
@@ -130,6 +143,8 @@ class SourceResource extends Resource
                     ->label('Estado Activo'),
                 Tables\Filters\TernaryFilter::make('trusted')
                     ->label('Verificadas'),
+                Tables\Filters\TernaryFilter::make('is_default')
+                    ->label('Predeterminadas (Default)'),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

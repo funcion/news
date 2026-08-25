@@ -28,6 +28,7 @@ class RawArticle extends Model
         'hash',
         'metadata',
         'status',
+        'ai_model',
     ];
 
     /**
@@ -62,7 +63,8 @@ class RawArticle extends Model
      */
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status',
+        'ai_model', 'pending');
     }
 
     /**
@@ -70,7 +72,8 @@ class RawArticle extends Model
      */
     public function scopeProcessed($query)
     {
-        return $query->where('status', 'processed');
+        return $query->where('status',
+        'ai_model', 'processed');
     }
 
     /**
@@ -78,7 +81,8 @@ class RawArticle extends Model
      */
     public function scopeFailed($query)
     {
-        return $query->where('status', 'failed');
+        return $query->where('status',
+        'ai_model', 'failed');
     }
 
     /**

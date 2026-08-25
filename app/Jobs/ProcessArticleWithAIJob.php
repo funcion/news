@@ -532,9 +532,13 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             Log::info("Tags generated for Article {$article->id}: " . implode(', ', $extractedTags));
         }
 
-        $this->rawArticle->update(['status' => 'processed']);
+        $modelUsed = $redacted['_model_used'] ?? 'deepseek/deepseek-v4-flash-0731';
+        $this->rawArticle->update([
+            'status'   => 'processed',
+            'ai_model' => $modelUsed,
+        ]);
         
-        Log::info("Bilingual article created: {$article->id} with {$imageCount} images.");
+        Log::info("Bilingual article created: {$article->id} with {$imageCount} images using model {$modelUsed}.");
     }
 
     // -------------------------------------------------------------------------
