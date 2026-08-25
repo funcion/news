@@ -20,7 +20,6 @@ return [
         'deepseek/deepseek-v4-flash-0731',
         'deepseek/deepseek-chat',
         'qwen/qwen3.7-flash',
-        'google/gemini-2.5-flash',
     ])))))),
 
     /*

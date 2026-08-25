@@ -65,7 +65,7 @@ class RssService
             // Check publication date dynamically using max_age_days from the source model
             $timestamp = $item->get_date('U');
             $currentTime = time();
-            $maxAgeDays = (int) ($source->max_age_days ?? 7);
+            $maxAgeDays = (int) ($source->max_age_days ?? 3);
             $maxAgeSeconds = $maxAgeDays * 24 * 3600;
             $thresholdTime = $currentTime - $maxAgeSeconds;
 
