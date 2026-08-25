@@ -197,6 +197,8 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
         $contentEn = $this->cleanInlineUrls($contentEn);
         $contentEs = $this->cleanInlineUrls($contentEs);
+        $contentEn = $this->ensureHtmlParagraphs($contentEn);
+        $contentEs = $this->ensureHtmlParagraphs($contentEs);
 
         // Determine category — STRICT matching, no fallback to generic
         $categoryId = null;
@@ -914,7 +916,7 @@ HUMAN WRITING QUIRKS (use 2-3 per article, vary which ones):
 CRITICAL JSON FORMATTING RULES:
 1. Inside HTML content strings, use single quotes (') for speech or attribute quotes. NEVER use unescaped double quotes (") inside text values — they break JSON parsing.
 2. Use literal "\n" for newlines inside content strings. Do NOT insert actual line breaks inside a JSON string value.
-3. Only use the allowed HTML tags listed above (<p>, <h2>, <strong>, <blockquote>, <ul>, <ol>, <li>).
+3. MANDATORY: Wrap EVERY narrative paragraph inside explicit <p> and </p> tags. Keep paragraphs short and dynamic (2 to 4 sentences each). NEVER output continuous raw text sentences without <p> wrappers.
 4. Every interior image token must be isolated like this: `\n\n[IMAGE_2]\n\n` inside the HTML content string. Do not append text or caption sentences to that line.
 
 {
