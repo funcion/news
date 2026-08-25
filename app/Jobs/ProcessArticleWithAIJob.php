@@ -776,7 +776,8 @@ STRICT PERSONA GROUNDING:
 - NEVER use <h1>, <h3>, <h4>, <div>, <span>, or raw markdown bold (**) inside HTML content.
 - PARAGRAPHS: Every narrative block must be explicitly wrapped in <p>...</p>. Keep paragraphs dynamic and natural (2 to 4 sentences each).
 - SUBHEADINGS (<h2>): Break down the article with 2 to 4 incisive, informative H2 subheadings that describe the analytical core (e.g. <h2>The Hidden Friction Behind Adoption</h2>, <h2>What Real-World Deployments Actually Reveal</h2>). NEVER use generic headings like "The Context" or "The Impact".
-- CONCLUSION H2: Conclude with a dedicated forward-looking H2 section (e.g. <h2>What Comes Next</h2> / <h2>Que esperar a partir de ahora</h2>, <h2>The Road Ahead</h2> / <h2>El camino hacia adelante</h2>) delivering a sharp synthesis without ever saying "In conclusion" or "En conclusion".
+- CONCLUSION H2: Conclude with a dedicated forward-looking H2 section (e.g. <h2>What Comes Next</h2> / <h2>Que esperar a partir de ahora</h2>, <h2>The Road Ahead</h2> / <h2>El veredicto</h2>) delivering sharp synthesis.
+- ENGAGING READER OUTRO: The very last sentence of the article MUST be an incisive, thought-provoking question directly addressing the reader to prompt discussion (e.g. 'What is your take: is this genuine infrastructure or another overleveraged boom cycle?' / '¿Cual es tu balance: estamos ante la infraestructura definitiva o ante una correccion inevitable?'). NEVER say 'In conclusion' or 'En conclusion'.
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 5. IMAGE PLACEMENT RULES ═══
