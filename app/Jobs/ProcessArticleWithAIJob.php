@@ -483,7 +483,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 
         // Dynamic Staggered Publishing (Configurable from /admin/settings-page)
         if ($imageCount > 0) {
-            $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', true);
+            $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', false);
             $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
             $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
 

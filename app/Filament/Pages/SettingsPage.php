@@ -41,7 +41,7 @@ class SettingsPage extends Page
             'footer_text' => Setting::get('editorial.footer_text', config('global.footer_text', 'Glodaxia Digital Media')),
 
             // Cadencia de Publicación Escalonada
-            'staggered_enabled' => (bool) Setting::get('publishing.staggered_enabled', true),
+            'staggered_enabled' => (bool) Setting::get('publishing.staggered_enabled', false),
             'delay_min_minutes' => (int) Setting::get('publishing.delay_min_minutes', 1),
             'delay_max_minutes' => (int) Setting::get('publishing.delay_max_minutes', 60),
         ];
@@ -60,7 +60,7 @@ class SettingsPage extends Page
                         Toggle::make('data.staggered_enabled')
                             ->label('Activar Publicación Escalonada')
                             ->helperText('Si se desactiva, las noticias se publicarán de inmediato al redactarse.')
-                            ->default(true)
+                            ->default(false)
                             ->columnSpanFull(),
 
                         TextInput::make('data.delay_min_minutes')
