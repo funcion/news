@@ -481,22 +481,32 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $article->ai_metadata = $meta;
         }
 
-        // Dynamic Staggered Publishing (Random delay between 1 and 60 minutes)
+        // Dynamic Staggered Publishing (Configurable from /admin/settings-page)
         if ($imageCount > 0) {
-            $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
-                ->whereNotNull('published_at')
-                ->max('published_at');
+            $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', true);
+            $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
+            $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
 
-            $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
-                ? \Carbon\Carbon::parse($latestArticleDate)
-                : now();
+            if ($isStaggered && $maxDelay > 0) {
+                $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
+                    ->whereNotNull('published_at')
+                    ->max('published_at');
 
-            $delayMinutes = random_int(1, 60);
-            $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+                $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
+                    ? \Carbon\Carbon::parse($latestArticleDate)
+                    : now();
 
-            $article->status = 'scheduled';
-            $article->published_at = $publishAt;
-            Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m staggered delay).");
+                $delayMinutes = random_int($minDelay, $maxDelay);
+                $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+
+                $article->status = 'scheduled';
+                $article->published_at = $publishAt;
+                Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m delay, range: {$minDelay}-{$maxDelay}m).");
+            } else {
+                $article->status = 'published';
+                $article->published_at = now();
+                Log::info("Article {$article->id} published immediately (staggered delay disabled in settings).");
+            }
         } else {
             $article->status = 'draft';
         }
