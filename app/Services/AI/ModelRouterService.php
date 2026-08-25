@@ -21,14 +21,18 @@ class ModelRouterService
     public function getPool(): array
     {
         $pool = config('ai_models.pool', []);
-        $default = config('ai_models.default', 'deepseek/deepseek-v4-flash-0731');
+        $default = config('ai_models.default');
+
+        if (empty($pool) && empty($default)) {
+            throw new \RuntimeException("No AI models pool configured. Please define AI_MODELS_POOL or AI_DEFAULT_MODEL in .env / config/ai_models.php.");
+        }
 
         if (empty($pool)) {
             return [$default];
         }
 
-        // Ensure default model is first if present
-        if (in_array($default, $pool)) {
+        // Ensure default model is first if present in the pool
+        if ($default && in_array($default, $pool)) {
             $pool = array_unique(array_merge([$default], $pool));
         }
 

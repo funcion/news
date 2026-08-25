@@ -28,7 +28,7 @@ class TagGeneratorService
         try {
             $response = $this->ai->complete(
                 [['role' => 'user', 'content' => $prompt]],
-                config('ai_models.default', OpenRouterService::MODEL_ACTIVE),
+                config('ai_models.default'),
                 ['max_tokens' => config('ai_models.tag_max_tokens', 500)]
             );
 

@@ -254,7 +254,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             'today_date'  => $today,
             'json_ld'     => $redacted['json_ld'] ?? null,
             'style_dna'   => $redacted['__style_dna'] ?? null,
-            'model_used'  => $redacted['__model_used'] ?? config('ai_models.pool.0', 'deepseek/deepseek-chat'),
+            'model_used'  => $redacted['__model_used'] ?? config('ai_models.default'),
             'temperature' => $redacted['__temperature'] ?? null,
         ];
 
@@ -532,7 +532,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             Log::info("Tags generated for Article {$article->id}: " . implode(', ', $extractedTags));
         }
 
-        $modelUsed = $redacted['_model_used'] ?? 'deepseek/deepseek-v4-flash-0731';
+        $modelUsed = $redacted['_model_used'] ?? config('ai_models.default');
         $this->rawArticle->update([
             'status'   => 'processed',
             'ai_model' => $modelUsed,

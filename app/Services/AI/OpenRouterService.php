@@ -158,5 +158,5 @@ class OpenRouterService
      *  https://openrouter.ai/minimax/minimax-m2.7
      * ═══════════════════════════════════════════════════════════════════
      */
-    public const MODEL_ACTIVE = 'deepseek/deepseek-v4-flash-0731';
+    // MODEL_ACTIVE removed in favor of config('ai_models.default')
 }
