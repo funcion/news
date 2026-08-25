@@ -692,7 +692,8 @@ PROMPT;
         $articleAge     = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'today';
         $isSeed         = $classification['is_seed'] ?? false;
         $contentType    = $classification['content_type'] ?? 'blog';
-        $topic          = $isSeed ? $this->rawArticle->title : implode('; ', $classification['facts']);
+        $facts          = (array) ($classification['facts'] ?? [$this->rawArticle->title ?? 'Tech News']);
+        $topic          = $isSeed ? ($this->rawArticle->title ?? 'Tech News') : implode('; ', $facts);
         $sourceLang     = $classification['source_language'] ?? 'unknown';
         $sourceLangName = match($sourceLang) {
             'en'    => 'English',
@@ -704,14 +705,20 @@ PROMPT;
             default => 'an automatically detected language',
         };
 
-        $wordTargets = config('global.editorial.word_targets');
-        $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'];
+        $wordTargets = config('global.editorial.word_targets') ?? [
+            'news'   => '600-1000 words EN | 600-1000 palabras ES',
+            'blog'   => '800-1200 words EN | 800-1200 palabras ES',
+            'guide'  => '1000-1500 words EN | 1000-1500 palabras ES',
+            'review' => '800-1200 words EN | 800-1200 palabras ES',
+            'pillar' => '1500-2500 words EN | 1500-2500 palabras ES',
+        ];
+        $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'] ?? '800-1200 words';
 
         $authorNameEn = $author->getTranslation('name', 'en') ?: $author->getTranslation('name', 'es') ?: $author->name;
         $authorBioEn  = $author->getTranslation('bio', 'en') ?: $author->getTranslation('bio', 'es') ?: $author->bio;
 
-        $persona = config('global.editorial.persona');
-        $rules   = config('global.editorial.focus_rules');
+        $persona = config('global.editorial.persona') ?? 'world-class Senior Technology Journalist and elite SEO copywriter (15+ years experience) working for Glodaxia, a premium tech publication.';
+        $rules   = config('global.editorial.focus_rules') ?? 'STRICTLY ADHERE TO THE FACTS PROVIDED. NEVER invent names, dates, statistics, or events not present in the SOURCE FACTS.';
 
         // Generate randomized style DNA — 9,216,000+ unique macro-combinations per article
         $styleDna       = $this->generateStyleDNA();
@@ -1778,5 +1785,49 @@ PROMPT;
         $roll = mt_rand(1, 100);
         if ($roll <= 60) return 1;       // 60% — hero only
         return mt_rand(2, 3);            // 40% — 2-3 images
+    }
+
+    /**
+     * Ensure raw narrative text blocks without HTML wrapper tags are properly formatted into <p>...</p> paragraphs.
+     */
+    protected function ensureHtmlParagraphs(string $content): string
+    {
+        if (empty(trim($content))) {
+            return $content;
+        }
+
+        // If already well formed with <p> tags and headings
+        if (substr_count($content, '<p>') >= 3) {
+            return $content;
+        }
+
+        $lines = preg_split('/\n{2,}|\r\n\r\n/', $content);
+        $formatted = [];
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if (empty($trimmed)) {
+                continue;
+            }
+
+            // Preserve existing HTML block tags and image tokens
+            if (preg_match('/^<(?:p|h[1-6]|blockquote|ul|ol|li|div|figure)[\s>]/i', $trimmed) ||
+                preg_match('/^\[IMAGE_\d+\]$/i', $trimmed)) {
+                $formatted[] = $trimmed;
+            } else {
+                // Split large blocks into natural 2-3 sentence paragraphs
+                $sentences = preg_split('/(?<=[.?!])\s+(?=[A-Z¿¡"\'\d])/u', $trimmed);
+                if (count($sentences) > 4) {
+                    $chunks = array_chunk($sentences, 3);
+                    foreach ($chunks as $chunk) {
+                        $formatted[] = '<p>' . implode(' ', $chunk) . '</p>';
+                    }
+                } else {
+                    $formatted[] = '<p>' . $trimmed . '</p>';
+                }
+            }
+        }
+
+        return implode("\n\n", $formatted);
     }
 }
