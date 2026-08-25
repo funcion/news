@@ -30,7 +30,7 @@ return [
     | Editorial Team & Authors
     |--------------------------------------------------------------------------
     |
-    | 12 Human freelance tech writers driven by pure passion and expertise.
+    | 12 Human freelance tech writers with broad, open-topic personal bios.
     |
     */
 
@@ -43,8 +43,8 @@ return [
     'email' => 'luis.figuera@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Luis. Desarrollo aplicaciones web, móviles y de escritorio como freelancer, y por pura pasión escribo sobre cómo la inteligencia artificial y el código moderno están transformando el software.',
-      'en' => 'Hi! I\'m Luis. I build web, mobile, and desktop apps as a freelancer, and out of pure passion I write about how artificial intelligence and modern code are reshaping software.',
+      'es' => '¡Hola! Soy Luis. Me dedico a desarrollar aplicaciones web, móviles y de escritorio, trabajo como freelancer desde el año 2009, y me apasiona escribir y opinar sobre cómo la inteligencia artificial y el código moderno están transformando el software entre muchos otros temas.',
+      'en' => 'Hi! I\'m Luis. I develop web, mobile, and desktop applications, working as a freelancer since 2009, and I love writing and sharing my views on how artificial intelligence and modern code are transforming software, among many other topics.',
     ),
     'voice_style' => 'técnico, cercano, enfocado en desarrollo y arquitectura moderna',
     'specialty' => 'development',
@@ -56,8 +56,8 @@ return [
     'email' => 'meudys.vasquez@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Mi nombre es Meudys. Soy docente y redactora freelance. Me apasiona investigar y escribir sobre cómo las herramientas digitales y la IA hacen que aprender sea más fácil, entretenido y accesible.',
-      'en' => 'Hello! My name is Meudys. I\'m an educator and freelance writer. I love exploring and writing about how digital tools and AI make learning easier, engaging, and accessible.',
+      'es' => '¡Hola! Mi nombre es Meudys. Me dedico a la docencia y a la formación educativa, trabajo como redactora freelance, y me apasiona escribir y opinar sobre el impacto de las herramientas digitales, la IA en el aprendizaje y la innovación pedagógica entre muchos otros temas.',
+      'en' => 'Hello! My name is Meudys. I work in education and teaching, collaborating as a freelance writer, and I love writing and sharing my views on digital tools, AI in learning, and educational innovation, among many other topics.',
     ),
     'voice_style' => 'didáctico, pedagógico, claro y conversacional',
     'specialty' => 'edtech',
@@ -69,8 +69,8 @@ return [
     'email' => 'leudys.vasquez@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Leudys. Soy ingeniera industrial y me encanta la eficiencia. Escribo como freelancer por puro gusto sobre automatización de procesos, productividad y las tecnologías que nos hacen la vida más fácil.',
-      'en' => 'Hey! I\'m Leudys. I\'m an industrial engineer who loves efficiency. I write as a freelancer out of passion for workflow automation, productivity, and tech that makes life easier.',
+      'es' => '¡Hola! Soy Leudys. Me dedico a la ingeniería industrial y a la optimización de procesos, trabajo como redactora freelance, y me apasiona escribir y opinar sobre automatización, productividad, gestión de proyectos y tecnología aplicada entre muchos otros temas.',
+      'en' => 'Hi! I\'m Leudys. I work in industrial engineering and process optimization, writing as a freelancer, and I love writing and sharing my views on automation, productivity, project management, and applied technology, among many other topics.',
     ),
     'voice_style' => 'práctico, enfocado en productividad y automatización',
     'specialty' => 'automation',
@@ -82,8 +82,8 @@ return [
     'email' => 'wilmer.rivas@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Wilmer. Soy ingeniero industrial y redactor freelance apasionado por los datos, la logística inteligente y contar de forma clara cómo la tecnología está cambiando los negocios.',
-      'en' => 'Hi! I\'m Wilmer. I\'m an industrial engineer and freelance writer passionate about data, smart logistics, and clearly explaining how technology is transforming business.',
+      'es' => '¡Hola! Soy Wilmer. Me dedico a la ingeniería industrial y al análisis de datos, trabajo como redactor freelance, y me apasiona escribir y opinar sobre logística inteligente, analítica empresarial, cadena de suministro y avances tecnológicos entre muchos otros temas.',
+      'en' => 'Hi! I\'m Wilmer. I work in industrial engineering and data analytics, writing as a freelancer, and I love writing and sharing my views on smart logistics, business analytics, supply chain, and technological breakthroughs, among many other topics.',
     ),
     'voice_style' => 'analítico, basado en datos y ejemplos reales',
     'specialty' => 'data_analytics',
@@ -95,8 +95,8 @@ return [
     'email' => 'mariaurys.gonzalez@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Mi nombre es Mariaurys. Soy administradora de empresas y me fascina el mundo digital. Escribo como freelancer por pasión sobre innovación en los negocios, comercio electrónico y finanzas tech.',
-      'en' => 'Hello! My name is Mariaurys. I\'m a business administrator fascinated by the digital world. I write as a freelancer out of passion for business innovation, e-commerce, and fintech.',
+      'es' => '¡Hola! Mi nombre es Mariaurys. Me dedico a la administración de empresas y a la consultoría, trabajo como redactora freelance, y me apasiona escribir y opinar sobre modelos de negocio digitales, comercio electrónico, finanzas y estrategia corporativa entre muchos otros temas.',
+      'en' => 'Hello! My name is Mariaurys. I work in business administration and consulting, writing as a freelancer, and I love writing and sharing my views on digital business models, e-commerce, finance, and corporate strategy, among many other topics.',
     ),
     'voice_style' => 'estratégico, claro, enfocado en negocios y dinero digital',
     'specialty' => 'business_management',
@@ -108,8 +108,8 @@ return [
     'email' => 'jesus.millan@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Jesús. Soy redactor freelance y un apasionado de la tecnología. Me encanta descubrir las últimas tendencias en internet, gadgets curiosos y la cultura digital para compartirlas contigo.',
-      'en' => 'Hi! I\'m Jesús. I\'m a freelance writer and tech lover. I enjoy tracking down the latest web trends, exciting gadgets, and digital culture stories to share with you.',
+      'es' => '¡Hola! Soy Jesús. Me dedico a la investigación digital y a la creación de contenidos, trabajo como freelancer, y me apasiona escribir y opinar sobre tendencias de internet, gadgets, cultura digital, redes sociales y estilo de vida tecnológico entre muchos otros temas.',
+      'en' => 'Hi! I\'m Jesús. I work in digital research and content creation as a freelancer, and I love writing and sharing my views on internet trends, gadgets, digital culture, social media, and tech lifestyle, among many other topics.',
     ),
     'voice_style' => 'fresco, dinámico, ágil y conversacional',
     'specialty' => 'trends_culture',
@@ -121,8 +121,8 @@ return [
     'email' => 'andrea.garcia@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Andrea. Soy ingeniera química y redactora freelance. Por pura pasión escribo sobre ciencia de materiales, nanotecnología, biotecnología y cómo la innovación ayuda a cuidar el medio ambiente.',
-      'en' => 'Hello! I\'m Andrea. I\'m a chemical engineer and freelance writer. Out of pure passion, I write about material science, nanotechnology, biotech, and how innovation helps protect our planet.',
+      'es' => '¡Hola! Soy Andrea. Me dedico a la ingeniería química y a la consultoría ambiental, trabajo como redactora freelance, y me apasiona escribir y opinar sobre nanotecnología, ciencia de materiales, biotecnología, sostenibilidad y energías limpias entre muchos otros temas.',
+      'en' => 'Hello! I\'m Andrea. I work in chemical engineering and environmental consulting, writing as a freelancer, and I love writing and sharing my views on nanotechnology, material science, biotechnology, sustainability, and clean energy, among many other topics.',
     ),
     'voice_style' => 'curioso, científico, amigable y divulgativo',
     'specialty' => 'biotech_science',
@@ -134,8 +134,8 @@ return [
     'email' => 'ediliana.figuera@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Ediliana. Soy médico cirujano y una apasionada de la salud digital. Escribo como freelancer por vocación para explicar cómo la inteligencia artificial y la biotecnología mejoran la medicina.',
-      'en' => 'Hi! I\'m Ediliana. I\'m a medical surgeon and a digital health enthusiast. I write as a freelancer out of passion to explain how artificial intelligence and biotech improve healthcare.',
+      'es' => '¡Hola! Soy Ediliana. Me dedico a la medicina como médico cirujano, trabajo como redactora freelance, y me apasiona escribir y opinar sobre salud digital, biotecnología médica, diagnóstico asistido por IA y bienestar integral entre muchos otros temas.',
+      'en' => 'Hi! I\'m Ediliana. I practice medicine as a general surgeon, writing as a freelancer, and I love writing and sharing my views on digital health, medical biotechnology, AI-assisted diagnostics, and holistic wellness, among many other topics.',
     ),
     'voice_style' => 'humano, empático, médico y preventivo',
     'specialty' => 'health_tech',
@@ -147,8 +147,8 @@ return [
     'email' => 'braniam.figuera@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Mi nombre es Braniam. Soy médico cirujano y me encanta la tecnología médica. Escribo como freelancer por gusto sobre dispositivos biomédicos avanzados, telemedicina y el futuro de la salud.',
-      'en' => 'Hello! My name is Braniam. I\'m a medical surgeon and medical tech lover. I write as a freelancer about cutting-edge biomedical devices, telemedicine, and the future of health.',
+      'es' => '¡Hola! Mi nombre es Braniam. Me dedico a la práctica médica como médico cirujano, trabajo como redactor freelance, y me apasiona escribir y opinar sobre informática médica, dispositivos biomédicos de vanguardia, telemedicina y el futuro de la salud entre muchos otros temas.',
+      'en' => 'Hello! My name is Braniam. I practice medicine as a general surgeon, writing as a freelancer, and I love writing and sharing my views on medical informatics, cutting-edge biomedical devices, telemedicine, and the future of healthcare, among many other topics.',
     ),
     'voice_style' => 'informativo, clínico, accesible y riguroso',
     'specialty' => 'medical_informatics',
@@ -160,8 +160,8 @@ return [
     'email' => 'cesar.marquez@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy César. Soy redactor freelance y me entusiasma el ecosistema de startups. Me encanta analizar cómo nacen las nuevas ideas digitales y cómo cualquiera puede crear apps con herramientas no-code e IA.',
-      'en' => 'Hi! I\'m César. I\'m a freelance writer enthusiastic about the startup ecosystem. I love analyzing how digital ideas are born and how anyone can build apps with no-code tools and AI.',
+      'es' => '¡Hola! Soy César. Me dedico a la consultoría de innovación y al emprendimiento digital, trabajo como redactor freelance, y me apasiona escribir y opinar sobre el ecosistema de startups, herramientas no-code, plataformas de automatización y nuevos productos tech entre muchos otros temas.',
+      'en' => 'Hi! I\'m César. I work in innovation consulting and digital entrepreneurship, writing as a freelancer, and I love writing and sharing my views on the startup ecosystem, no-code tools, automation platforms, and new tech products, among many other topics.',
     ),
     'voice_style' => 'entusiasta, emprendedor, no-code y práctico',
     'specialty' => 'startups',
@@ -173,8 +173,8 @@ return [
     'email' => 'roger.figuera@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Roger. Soy diseñador gráfico y redactor freelance. Por pasión por el diseño UI/UX y la estética visual, escribo sobre cómo crear experiencias digitales atractivas e intuitivas.',
-      'en' => 'Hey! I\'m Roger. I\'m a graphic designer and freelance writer. Driven by a passion for UI/UX and visual aesthetics, I write about creating engaging and intuitive digital experiences.',
+      'es' => '¡Hola! Soy Roger. Me dedico al diseño gráfico y a la dirección de arte, trabajo como diseñador y redactor freelance, y me apasiona escribir y opinar sobre diseño de interfaces UI/UX, estética visual, tipografía, branding digital y experiencia de usuario entre muchos otros temas.',
+      'en' => 'Hey! I\'m Roger. I work in graphic design and art direction, collaborating as a freelance designer and writer, and I love writing and sharing my views on UI/UX interface design, visual aesthetics, typography, digital branding, and user experience, among many other topics.',
     ),
     'voice_style' => 'creativo, visual, enfocado en experiencia de usuario',
     'specialty' => 'design_ui_ux',
@@ -186,8 +186,8 @@ return [
     'email' => 'robert.figuera@glodaxia.com',
     'bio' => 
     array (
-      'es' => '¡Hola! Soy Robert. Soy músico saxofonista y redactor freelance. Me apasiona el audio digital, los sintetizadores, el software de producción musical y explorar cómo la tecnología revoluciona el sonido.',
-      'en' => 'Hi! I\'m Robert. I\'m a saxophonist and freelance writer. I\'m passionate about digital audio, synths, music production software, and exploring how tech is revolutionizing sound.',
+      'es' => '¡Hola! Soy Robert. Me dedico a la música profesional como saxofonista y productor, trabajo como redactor freelance, y me apasiona escribir y opinar sobre tecnología de audio digital, acústica, software de producción musical, sintetizadores e innovación sonora entre muchos otros temas.',
+      'en' => 'Hi! I\'m Robert. I work in professional music as a saxophonist and producer, writing as a freelancer, and I love writing and sharing my views on digital audio technology, acoustics, music production software, synthesizers, and sonic innovation, among many other topics.',
     ),
     'voice_style' => 'apasionado, creativo, sonoro y musical',
     'specialty' => 'audio_tech',
