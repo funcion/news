@@ -19,12 +19,14 @@ class RssService
     {
         $feed = new SimplePie();
         $feed->set_feed_url($source->url);
+        $feed->set_useragent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
         $feed->set_cache_location(storage_path('framework/cache'));
         $feed->init();
         $feed->handle_content_type();
 
         if ($feed->error()) {
-            $source->increment('score', -5); // Penalty for error
+            $newScore = max(0, (int)$source->score - 5);
+            $source->update(['score' => $newScore]);
             return 0;
         }
 
@@ -130,7 +132,8 @@ class RssService
         ]);
         
         if ($newArticlesCount > 0) {
-            $source->increment('score', 2); // Small boost for freshness
+            $newScore = min(100, (int)$source->score + 2);
+            $source->update(['score' => $newScore]);
         }
 
         return $newArticlesCount;

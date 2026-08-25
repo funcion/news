@@ -564,7 +564,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'The Verge AI',
-                'url' => 'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml',
+                'url' => 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml',
                 'type' => 'rss',
                 'category' => 'Artificial Intelligence',
                 'frequency' => 60,
@@ -572,7 +572,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Google Research Blog',
-                'url' => 'https://research.google/blog/feed/',
+                'url' => 'https://research.google/blog/rss/',
                 'type' => 'rss',
                 'category' => 'Artificial Intelligence',
                 'frequency' => 120,
@@ -580,7 +580,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Meta AI Blog',
-                'url' => 'https://ai.meta.com/blog/rss/',
+                'url' => 'https://about.fb.com/news/category/technology-and-innovation/feed/',
                 'type' => 'rss',
                 'category' => 'Artificial Intelligence',
                 'frequency' => 120,
@@ -588,7 +588,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Hugging Face Papers',
-                'url' => 'https://huggingface.co/papers.rss',
+                'url' => 'https://huggingface.co/blog/feed.xml',
                 'type' => 'rss',
                 'category' => 'Artificial Intelligence',
                 'frequency' => 120,
@@ -750,7 +750,7 @@ class DatabaseSeeder extends Seeder
             // --- Curated Community Sources (High-Signal Feeds Only) ---
             [
                 'name' => 'HackerNoon Top Story',
-                'url' => 'https://hackernoon.com/tagged/hackernoon-top-story/feed/',
+                'url' => 'https://hackernoon.com/feed',
                 'type' => 'rss',
                 'category' => 'Tech Industry',
                 'frequency' => 120,
