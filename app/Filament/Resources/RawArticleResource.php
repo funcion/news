@@ -116,19 +116,8 @@ class RawArticleResource extends Resource
                     ->placeholder('—')
                     ->sortable()
                     ->searchable()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'deepseek/deepseek-v4-flash-0731' => 'success',
-                        'deepseek/deepseek-chat'           => 'info',
-                        'qwen/qwen3.7-flash'               => 'warning',
-                        null                               => 'gray',
-                        default                            => 'primary',
-                    })
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'deepseek/deepseek-v4-flash-0731' => 'DeepSeek V4 Flash',
-                        'deepseek/deepseek-chat'           => 'DeepSeek V3',
-                        'qwen/qwen3.7-flash'               => 'Qwen 3.7 Flash',
-                        default                            => $state ?? '—',
-                    }),
+                    ->color(fn (?string $state): string => config("ai_models.models.{$state}.color") ?? ($state ? 'primary' : 'gray'))
+                    ->formatStateUsing(fn (?string $state): string => config("ai_models.models.{$state}.name") ?? ($state ?? '—')),
                 Tables\Columns\TextColumn::make('published_at')
                     ->label('Fecha')
                     ->dateTime('d/m/Y H:i')
@@ -145,11 +134,7 @@ class RawArticleResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('ai_model')
                     ->label('Modelo IA')
-                    ->options([
-                        'deepseek/deepseek-v4-flash-0731' => 'DeepSeek V4 Flash',
-                        'deepseek/deepseek-chat'           => 'DeepSeek V3',
-                        'qwen/qwen3.7-flash'               => 'Qwen 3.7 Flash',
-                    ]),
+                    ->options(collect(config('ai_models.models', []))->mapWithKeys(fn ($item, $key) => [$key => $item['name']])->toArray()),
             ])
             ->actions([
                 Action::make('procesar_ia')

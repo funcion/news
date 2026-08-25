@@ -1,68 +1,54 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Default Primary AI Model
+    |--------------------------------------------------------------------------
+    | The main model used across all services (redaction, classification, tags).
+    */
+    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-v4-flash-0731'),
 
     /*
     |--------------------------------------------------------------------------
-    | AI Models Pool for Article Writing (Dynamic Rotation & Failover)
+    | AI Models Pool (Failover Chain)
     |--------------------------------------------------------------------------
-    |
-    | List of OpenRouter model slugs to use for generating bilingual news.
-    | The system will randomly pick from this pool for each article, providing
-    | varied editorial voices, and will automatically failover to other models
-    | in the pool if a model experiences downtime, rate limits, or timeouts.
-    |
-    | You can add or remove any OpenRouter model slug directly in this array
-    | or by setting the AI_MODELS_POOL environment variable (comma-separated).
-    |
+    | Ordered list of active models. If the primary model fails or times out,
+    | the system automatically fails over in sequence to the next model.
     */
-    'pool' => array_values(array_filter(array_map('trim', explode(',', env('AI_MODELS_POOL', implode(',', [
-        'deepseek/deepseek-v4-flash-0731',
-        'deepseek/deepseek-chat',
-        'qwen/qwen3.7-flash',
-    ])))))),
+    'pool' => array_values(array_filter(
+        explode(',', env('AI_MODELS_POOL', 'deepseek/deepseek-v4-flash-0731,qwen/qwen3.7-flash,deepseek/deepseek-chat'))
+    )),
 
     /*
     |--------------------------------------------------------------------------
-    | Maximum Output Tokens (max_tokens)
+    | Centralized UI Metadata (Badges & Names)
     |--------------------------------------------------------------------------
-    |
-    | Safe token limit per completion request. Setting this to 10,000 tokens
-    | ensures ample capacity for full bilingual articles (EN & ES) with deep
-    | analysis, quotes, and metadata, while preventing OpenRouter from
-    | locking account credits against extreme default context windows (65k+).
-    |
+    | Dynamic registry of models, human-friendly names and Filament badge colors.
     */
-    'max_tokens' => (int) env('AI_MAX_TOKENS', 10000),
+    'models' => [
+        'deepseek/deepseek-v4-flash-0731' => [
+            'name'  => 'DeepSeek V4 Flash',
+            'color' => 'success',
+        ],
+        'qwen/qwen3.7-flash' => [
+            'name'  => 'Qwen 3.7 Flash',
+            'color' => 'warning',
+        ],
+        'deepseek/deepseek-chat' => [
+            'name'  => 'DeepSeek V3',
+            'color' => 'info',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Fast Classification Max Tokens
+    | Token Limits & Performance Tuners
     |--------------------------------------------------------------------------
-    |
-    | Max tokens for the initial quick relevance & categorization step.
-    |
     */
+    'max_tokens'                => (int) env('AI_MAX_TOKENS', 10000),
     'classification_max_tokens' => (int) env('AI_CLASSIFICATION_MAX_TOKENS', 1500),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Generation Temperature
-    |--------------------------------------------------------------------------
-    |
-    | 0.7 offers the ideal balance between factual accuracy and natural,
-    | engaging journalistic prose.
-    |
-    */
-    'temperature' => 0.7,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Request Timeout (Seconds)
-    |--------------------------------------------------------------------------
-    |
-    | Maximum seconds to wait for a completion before triggering failover.
-    |
-    */
-    'timeout' => (int) env('AI_REQUEST_TIMEOUT', 180),
+    'tag_max_tokens'            => (int) env('AI_TAG_MAX_TOKENS', 500),
+    'temperature'               => (float) env('AI_TEMPERATURE', 0.7),
+    'timeout'                   => (int) env('AI_TIMEOUT', 180),
 ];

@@ -2111,3 +2111,22 @@ El proyecto está funcional en desarrollo local. La prioridad ahora es:
 - Google News Publisher (cuando haya tráfico orgánico)
 
 ¿Quieres que empecemos con el paso 1 (deploy en VPS)? 🚀
+
+---
+
+## 🤖 Arquitectura Modular Unificada de Modelos de IA (Single Source of Truth)
+
+Toda la configuración, selección y failover de modelos de Inteligencia Artificial se gestiona **exclusivamente desde un único punto**: [`config/ai_models.php`](file:///Ubuntu-26.04/home/luisf/news/config/ai_models.php) (respaldado por variables de entorno en `.env`).
+
+### 1. Variables de Entorno y Configuración (`config/ai_models.php`):
+* `AI_DEFAULT_MODEL`: Modelo principal (`deepseek/deepseek-v4-flash-0731`) utilizado para redacción, clasificación y generación de etiquetas.
+* `AI_MODELS_POOL`: Cadena ordenada de failover automático (`deepseek/deepseek-v4-flash-0731,qwen/qwen3.7-flash,deepseek/deepseek-chat`).
+* `AI_MAX_TOKENS`: Límite máximo de salida para artículos completos (10,000 tokens).
+* `AI_CLASSIFICATION_MAX_TOKENS`: Límite para clasificación rápida (1,500 tokens).
+* `AI_TAG_MAX_TOKENS`: Límite para extracción de tags (500 tokens).
+* `AI_TEMPERATURE`: Temperatura de redacción (0.7).
+* `AI_TIMEOUT`: Timeout HTTP seguro (180 segundos).
+
+### 2. Trazabilidad y Mapeo Visual Dinámico:
+* El panel administrativo de Filament (`RawArticleResource`) consume el registro de `config('ai_models.models')` para generar badges de color y filtros sin valores fijos en el código.
+* Cero modelos hardcodeados en servicios (`OpenRouterService`, `ModelRouterService`, `TagGeneratorService`, `ProcessArticleWithAIJob`).

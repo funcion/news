@@ -36,7 +36,7 @@
                         <strong class="font-bold text-gray-900 dark:text-white">Interruptor Maestro Global:</strong> Control central situado en la cabecera superior derecha (<code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[11px]">Ingesta: ACTIVA / PAUSADA</code>). Permite congelar o reanudar instantáneamente todo el flujo de ingesta sin modificar la configuración individual de cada feed.
                     </p>
                     <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                        <li><strong>Al Pausar:</strong> El comando programado (<code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[10px]">rss:fetch</code>) aborta en 1ms, evitando consultas HTTP externas, encolado de trabajos y consumo de tokens en Gemini Flash y FLUX.1.</li>
+                        <li><strong>Al Pausar:</strong> El comando programado (<code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[10px]">rss:fetch</code>) aborta en 1ms, evitando consultas HTTP externas, encolado de trabajos y consumo de tokens en DeepSeek V4 Flash y FLUX.1.</li>
                         <li><strong>Al Reanudar:</strong> El programador retoma el ciclo normal escaneando únicamente las fuentes con estado <em>Activa</em> según su frecuencia.</li>
                         <li><strong>Control por Terminal:</strong> <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[11px]">php artisan ingestion:control [status | pause | resume | toggle]</code></li>
                     </ul>

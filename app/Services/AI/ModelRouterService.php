@@ -21,16 +21,18 @@ class ModelRouterService
     public function getPool(): array
     {
         $pool = config('ai_models.pool', []);
-        
+        $default = config('ai_models.default', 'deepseek/deepseek-v4-flash-0731');
+
         if (empty($pool)) {
-            return [
-                'deepseek/deepseek-v4-flash-0731',
-                'qwen/qwen3.7-flash',
-                'deepseek/deepseek-chat',
-            ];
+            return [$default];
         }
 
-        return $pool;
+        // Ensure default model is first if present
+        if (in_array($default, $pool)) {
+            $pool = array_unique(array_merge([$default], $pool));
+        }
+
+        return array_values($pool);
     }
 
     /**
