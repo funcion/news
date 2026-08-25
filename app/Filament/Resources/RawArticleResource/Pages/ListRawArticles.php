@@ -6,7 +6,7 @@ use App\Filament\Resources\RawArticleResource;
 use App\Models\RawArticle;
 use Filament\Actions;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
