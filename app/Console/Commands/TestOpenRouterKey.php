@@ -27,7 +27,7 @@ class TestOpenRouterKey extends Command
             'Authorization' => 'Bearer ' . $key,
             'Content-Type'  => 'application/json',
         ])->timeout(15)->post('https://openrouter.ai/api/v1/chat/completions', [
-            'model'    => 'google/gemini-2.5-flash',
+            'model'    => 'deepseek/deepseek-v4-flash-0731',
             'messages' => [['role' => 'user', 'content' => 'Say OK']],
             'max_tokens' => 5,
         ]);

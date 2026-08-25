@@ -24,10 +24,9 @@ class ModelRouterService
         
         if (empty($pool)) {
             return [
-                'deepseek/deepseek-chat',
+                'deepseek/deepseek-v4-flash-0731',
                 'qwen/qwen3.7-flash',
-                'google/gemini-2.5-flash',
-                'minimax/minimax-m3',
+                'deepseek/deepseek-chat',
             ];
         }
 
