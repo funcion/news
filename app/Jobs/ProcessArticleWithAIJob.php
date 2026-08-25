@@ -752,6 +752,8 @@ Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based
 - VERIFIED SOURCE FACTS: {$topic}
 - ARTICLE ARCHETYPE: {$styleDna['archetypeName']}
 - STRUCTURAL GUIDANCE: {$styleDna['archetypeStructure']}
+- NARRATIVE VOICE & PERSPECTIVE: {$styleDna['perspectiveVoice']}
+- PERSPECTIVE RULE: {$styleDna['perspectiveRule']}
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 2. AUTHOR VOICE & REALISTIC PROFESSIONAL PERSONA ═══
@@ -1488,7 +1490,7 @@ PROMPT;
             ],
             'conversational_essay' => [
                 'name' => 'Ensayo Conversacional y Reflexivo (700-1100 palabras)',
-                'structure' => 'Narrativa fluida que conecta reflexiones de la experiencia del autor con el impacto de la noticia. Uso libre de analogias naturales.',
+                'structure' => 'Narrativa fluida que conecta reflexiones analiticas con el impacto de la noticia en la industria.',
                 'image_count' => random_int(1, 2),
             ],
             'comparative_technical_verdict' => [
@@ -1498,19 +1500,46 @@ PROMPT;
             ],
         ];
 
+        // Dynamic narrative perspective rotation for organic human credibility
+        $perspectives = [
+            'editorial_collective' => [
+                'voice' => 'Primera Persona Plural / Redaccion Editorial Colegiada (Nosotros / En nuestro equipo)',
+                'rule'  => 'Escribe desde la perspectiva del equipo editorial de Glodaxia o laboratorio de pruebas ("En nuestras pruebas...", "Al analizar estos datos en el equipo...", "Nuestra evaluacion..."). Transmite el rigor de un medio especializado.',
+            ],
+            'technical_observer' => [
+                'voice' => 'Tercera Persona Periodistica Inmersiva (Analisis de Industria)',
+                'rule'  => 'Escribe con tono periodistico analitico, objetivo y riguroso en tercera persona ("Para los equipos de ingenieria...", "Quienes administran sistemas en produccion...", "El ecosistema observa..."). Evita anecdotas personales forzadas.',
+            ],
+            'individual_columnist' => [
+                'voice' => 'Primera Persona Singular Sobria (Firma de Columnista)',
+                'rule'  => 'Escribe como columnista especializado ("Al revisar este cambio...", "Mi balance tras evaluar la documentacion..."). Usa la primera persona con sobriedad profesional, JAMAS abuses de clichés como "en mi escritorio" o "en mi telefono".',
+            ],
+            'practitioner_community' => [
+                'voice' => 'Perspectiva Comunitaria y de Practicantes',
+                'rule'  => 'Conecta con la experiencia compartida de la comunidad tech ("Cualquiera que haya optimizado consultas SQL sabe...", "Como desarrolladores a menudo nos encontramos con...").',
+            ],
+        ];
+
         $archetypeKeys = array_keys($archetypes);
         shuffle($archetypeKeys);
         $selectedArchetypeKey = $archetypeKeys[0];
         $selectedArchetype = $archetypes[$selectedArchetypeKey];
 
+        $perspectiveKeys = array_keys($perspectives);
+        shuffle($perspectiveKeys);
+        $selectedPerspectiveKey = $perspectiveKeys[0];
+        $selectedPerspective = $perspectives[$selectedPerspectiveKey];
+
         $temperature = round(0.65 + (mt_rand(-8, 8) / 100), 2);
 
         return [
-            'archetypeKey'        => $selectedArchetypeKey,
-            'archetypeName'       => $selectedArchetype['name'],
-            'archetypeStructure'  => $selectedArchetype['structure'],
-            'imageCount'          => $selectedArchetype['image_count'],
-            'temperature'         => $temperature,
+            'archetypeKey'          => $selectedArchetypeKey,
+            'archetypeName'         => $selectedArchetype['name'],
+            'archetypeStructure'    => $selectedArchetype['structure'],
+            'perspectiveVoice'      => $selectedPerspective['voice'],
+            'perspectiveRule'       => $selectedPerspective['rule'],
+            'imageCount'            => $selectedArchetype['image_count'],
+            'temperature'           => $temperature,
         ];
     }
 
