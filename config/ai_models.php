@@ -17,10 +17,10 @@ return [
     |
     */
     'pool' => array_values(array_filter(array_map('trim', explode(',', env('AI_MODELS_POOL', implode(',', [
+        'deepseek/deepseek-v4-flash-0731',
         'deepseek/deepseek-chat',
         'qwen/qwen3.7-flash',
         'google/gemini-2.5-flash',
-        //'minimax/minimax-m3',
     ])))))),
 
     /*
