@@ -544,12 +544,12 @@
                 <div class="footer-col flex flex-col md:pl-6">
                     <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.legal_nav') }}</h4>
                     <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.editorial_policy') }}</a></li>
                         <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
                         <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
                         <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
-                        <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold text-cyan-600 dark:text-cyan-400">{{ __('ui.contact') }}</a></li>
                         <li><button type="button" data-cc="show-preferencesModal" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-left">{{ __('ui.cookie_settings') }}</button></li>
+                        <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.editorial_policy') }}</a></li>
+                        <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold text-cyan-600 dark:text-cyan-400">{{ __('ui.contact_us') }}</a></li>
                     </ul>
                 </div>
 
