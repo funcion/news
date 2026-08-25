@@ -21,18 +21,18 @@ class DatabaseSeeder extends Seeder
         Setting::set('rate_limits.max_articles_per_hour', '2,7', 'string', 'rate_limits');
         Setting::set('rate_limits.max_articles_per_category_per_day', '1,5', 'string', 'rate_limits');
 
-                // Create Editorial Team & Reviewers (10 Realistic Human Profiles)
+                // Create Editorial Team & Freelance Writers (12 Human Authors in First Person)
         $authorsList = config('global.editorial.authors', []);
         foreach ($authorsList as $authorData) {
             User::updateOrCreate([
-                'email' => $authorData['email'] ?? ($authorData['slug'] . '@glodaxia.com'),
+                'slug' => $authorData['slug'],
             ], [
                 'name' => [
                     'en' => $authorData['name'],
                     'es' => $authorData['name'],
                 ],
+                'email' => $authorData['email'] ?? ($authorData['slug'] . '@glodaxia.com'),
                 'password' => bcrypt('password'),
-                'slug' => $authorData['slug'],
                 'bio' => [
                     'en' => $authorData['bio']['en'] ?? '',
                     'es' => $authorData['bio']['es'] ?? '',

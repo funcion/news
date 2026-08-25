@@ -41,118 +41,164 @@ return [
         ],
 
         // Editorial & Reviewers team — 10 distinct, credible, human profiles (40-55 words each)
-        'authors' => [
-            [
-                'name' => 'Luis Figuera',
-                'slug' => 'luis-figuera',
-                'email' => 'admin@glodaxia.com',
-                'bio' => [
-                    'es' => 'Editor jefe y estratega de contenidos con más de diez años de experiencia en periodismo digital y medios tecnológicos. Especializado en análisis de la industria tech, startups y productos digitales. Supervisa la línea editorial para garantizar información rigurosa, veraz y de alto valor para el lector.',
-                    'en' => 'Editor-in-Chief and content strategist with over a decade of experience in digital journalism and tech media. Specializing in technology industry analysis, startups, and digital products, he oversees the editorial pipeline to ensure rigorous, credible, and high-value reporting for modern readers.',
-                ],
-                'voice_style' => 'contundente, directo, con opiniones fundamentadas',
-                'specialty' => 'strategy',
-            ],
-            [
-                'name' => 'María Rodríguez',
-                'slug' => 'maria-rodriguez',
-                'email' => 'maria.rodriguez@glodaxia.com',
-                'bio' => [
-                    'es' => 'Periodista senior con 8 años cubriendo noticias de última hora, ecosistemas de startups y rondas de inversión. Especializada en contrastar fuentes primarias, analizar tendencias de mercado y traducir la actualidad tecnológica en crónicas claras y directas.',
-                    'en' => 'Senior technology journalist with 8 years of experience covering breaking news, startup ecosystems, and venture funding. She specializes in primary-source fact-checking, market trend analysis, and delivering clear, accessible reporting on current tech developments.',
-                ],
-                'voice_style' => 'enérgico, datos primero, párrafos cortos',
-                'specialty' => 'news',
-            ],
-            [
-                'name' => 'Carlos Méndez',
-                'slug' => 'carlos-mendez',
-                'email' => 'carlos.mendez@glodaxia.com',
-                'bio' => [
-                    'es' => 'Desarrollador full-stack y redactor técnico. Con amplia experiencia en arquitecturas cloud, JavaScript moderno y frameworks web, se enfoca en analizar novedades de software, herramientas de desarrollo y buenas prácticas para la comunidad tecnológica.',
-                    'en' => 'Full-stack developer and technical writer with hands-on experience in cloud architecture, modern JavaScript, and web frameworks. He focuses on reviewing software releases, developer tooling, and engineering best practices for the tech community.',
-                ],
-                'voice_style' => 'técnico preciso, usa analogías, referencia buenas prácticas',
-                'specialty' => 'webdev',
-            ],
-            [
-                'name' => 'Elena Morales',
-                'slug' => 'elena-morales',
-                'email' => 'elena.morales@glodaxia.com',
-                'bio' => [
-                    'es' => 'Consultora de SEO técnico y arquitectura de información con 7 años optimizando plataformas digitales. Analiza las actualizaciones de algoritmos de búsqueda, la intención de usuario y las mejores prácticas de visibilidad orgánica y datos estructurados.',
-                    'en' => 'Technical SEO consultant and content strategist with 7 years of experience optimizing digital platforms. She specializes in search algorithm updates, user intent analysis, structured data, and organic visibility strategies.',
-                ],
-                'voice_style' => 'analítico, estructurado, enfocado en intención de búsqueda',
-                'specialty' => 'seo',
-            ],
-            [
-                'name' => 'Javier Ortiz',
-                'slug' => 'javier-ortiz',
-                'email' => 'javier.ortiz@glodaxia.com',
-                'bio' => [
-                    'es' => 'Especialista en marketing digital y campañas de adquisición pagada (SEM). Cuenta con 6 años gestionando estrategias en Google Ads y plataformas sociales, evaluando tendencias de monetización digital, analítica de audiencias y optimización de conversión.',
-                    'en' => 'Digital marketing and paid search (SEM) specialist with 6 years of experience managing multi-channel campaigns on Google Ads and social platforms. He covers monetization trends, digital analytics, and conversion optimization.',
-                ],
-                'voice_style' => 'comercial, práctico, orientado a métricas y resultados',
-                'specialty' => 'marketing',
-            ],
-            [
-                'name' => 'Sofía Castillo',
-                'slug' => 'sofia-castillo',
-                'email' => 'sofia.castillo@glodaxia.com',
-                'bio' => [
-                    'es' => 'Analista de ciberseguridad y privacidad de datos. Con experiencia en auditorías de vulnerabilidades y normativas digitales, redacta análisis sobre incidentes de seguridad, amenazas emergentes y medidas de protección para usuarios y organizaciones.',
-                    'en' => 'Cybersecurity analyst and data privacy researcher with experience in vulnerability assessment and compliance. She covers emerging security threats, data protection policies, and practical privacy guidance for modern users.',
-                ],
-                'voice_style' => 'cauteloso, preventivo, detallista con fuentes técnicas',
-                'specialty' => 'security',
-            ],
-            [
-                'name' => 'Andrés Silva',
-                'slug' => 'andres-silva',
-                'email' => 'andres.silva@glodaxia.com',
-                'bio' => [
-                    'es' => 'Especialista en automatización de procesos y herramientas de inteligencia artificial aplicada. Investiga cómo las nuevas herramientas de productividad y modelos generativos transforman los flujos de trabajo en empresas y creadores de contenido.',
-                    'en' => 'Specialist in workflow automation and applied artificial intelligence. He analyzes generative AI tools, productivity software, and automated workflows reshaping daily operations for businesses and creators.',
-                ],
-                'voice_style' => 'innovador, pragmático, enfocado en productividad real',
-                'specialty' => 'automation',
-            ],
-            [
-                'name' => 'Valentina Gómez',
-                'slug' => 'valentina-gomez',
-                'email' => 'valentina.gomez@glodaxia.com',
-                'bio' => [
-                    'es' => 'Redactora publicitaria y diseñadora de contenido (UX Writer) con 6 años de experiencia en productos digitales. Especializada en microcopy, comunicación clara y diseño centrado en el usuario para interfaces web y móviles.',
-                    'en' => 'Copywriter and UX Content Designer with 6 years of experience in digital products. She specializes in microcopy, clear communication, and user-centered content design for web and mobile interfaces.',
-                ],
-                'voice_style' => 'claro, empático, centrado en la experiencia del usuario',
-                'specialty' => 'copywriting',
-            ],
-            [
-                'name' => 'Diego Herrera',
-                'slug' => 'diego-herrera',
-                'email' => 'diego.herrera@glodaxia.com',
-                'bio' => [
-                    'es' => 'Ingeniero de infraestructura y devops. Con 8 años trabajando en despliegues con contenedores Docker, Kubernetes y entornos cloud (AWS y GCP), escribe análisis claros sobre rendimiento de servidores, escalabilidad y operaciones tecnológicas.',
-                    'en' => 'Infrastructure and DevOps engineer with 8 years of experience managing Docker containers, Kubernetes, and cloud environments (AWS/GCP). He covers server performance, deployment scalability, and backend reliability.',
-                ],
-                'voice_style' => 'directo, pragmático, enfocado en arquitectura y estabilidad',
-                'specialty' => 'cloud',
-            ],
-            [
-                'name' => 'Camila Navarro',
-                'slug' => 'camila-navarro',
-                'email' => 'camila.navarro@glodaxia.com',
-                'bio' => [
-                    'es' => 'Especialista en analítica digital y medición de audiencias con Google Analytics 4 y herramientas de BI. Se enfoca en descifrar métricas clave, comportamiento de usuarios y toma de decisiones basada en datos para medios y negocios digitales.',
-                    'en' => 'Digital analytics and audience measurement specialist proficient in Google Analytics 4 and Business Intelligence tools. She covers key performance indicators, user behavior metrics, and data-driven decision making.',
-                ],
-                'voice_style' => 'metódico, basado en datos, conciso y objetivo',
-                'specialty' => 'analytics',
-            ],
-        ],
+        'authors' => array (
+          0 => 
+          array (
+            'name' => 'Luis Figuera',
+            'slug' => 'luis-figuera',
+            'email' => 'luis.figuera@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Luis Figuera, desarrollador de software freelancer apasionado por la creación de aplicaciones web, móviles y de escritorio. Me encanta explorar arquitecturas de vanguardia, la inteligencia artificial y construir plataformas digitales robustas y de alto rendimiento.',
+              'en' => 'I am Luis Figuera, a freelance software developer passionate about building modern web, mobile, and desktop applications. I love exploring cutting-edge software architecture, artificial intelligence, and crafting high-performance digital platforms.',
+            ),
+            'voice_style' => 'técnico, analítico, enfocado en código y arquitectura robusta',
+            'specialty' => 'development',
+          ),
+          1 => 
+          array (
+            'name' => 'Meudys Vásquez',
+            'slug' => 'meudys-vasquez',
+            'email' => 'meudys.vasquez@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Meudys Vásquez, docente y redactora freelance. Me apasiona la tecnología educativa y cómo las herramientas digitales transforman el aprendizaje moderno, haciendo que el conocimiento complejo sea accesible, didáctico e inspirador para todos.',
+              'en' => 'I am Meudys Vásquez, an educator and freelance writer. I am passionate about EdTech and how digital tools are transforming modern learning, making complex knowledge accessible, engaging, and inspiring for everyone.',
+            ),
+            'voice_style' => 'didáctico, claro, estructurado y accesible',
+            'specialty' => 'edtech',
+          ),
+          2 => 
+          array (
+            'name' => 'Leudys Vásquez',
+            'slug' => 'leudys-vasquez',
+            'email' => 'leudys.vasquez@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Leudys Vásquez, ingeniera industrial y redactora freelance. Me apasiona la optimización de procesos, la automatización inteligente y el análisis de cómo las nuevas tecnologías impulsan la productividad en la industria y en proyectos digitales.',
+              'en' => 'I am Leudys Vásquez, an industrial engineer and freelance writer. I specialize in process optimization, smart automation, and analyzing how emerging technologies drive efficiency across industries and digital ventures.',
+            ),
+            'voice_style' => 'metódico, orientado a procesos y eficiencia operativa',
+            'specialty' => 'automation',
+          ),
+          3 => 
+          array (
+            'name' => 'Wilmer Rivas',
+            'slug' => 'wilmer-rivas',
+            'email' => 'wilmer.rivas@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Wilmer Rivas, ingeniero industrial y redactor freelance. Me encanta la analítica de datos, la logística inteligente y explorar cómo las soluciones tecnológicas resuelven problemas reales en la cadena de suministro y en el mundo empresarial.',
+              'en' => 'I am Wilmer Rivas, an industrial engineer and freelance writer. I am passionate about data analytics, smart logistics, and exploring how tech solutions solve real-world challenges across supply chains and modern businesses.',
+            ),
+            'voice_style' => 'basado en datos, analítico y pragmático',
+            'specialty' => 'data_analytics',
+          ),
+          4 => 
+          array (
+            'name' => 'Mariaurys González',
+            'slug' => 'mariaurys-gonzalez',
+            'email' => 'mariaurys.gonzalez@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Mariaurys González, ingeniera mecánica y redactora freelance. Me apasiona la robótica, los avances en hardware, la mecatrónica y todo lo relacionado con cómo la ingeniería física converge con el software del futuro.',
+              'en' => 'I am Mariaurys González, a mechanical engineer and freelance writer. I am passionate about robotics, hardware advancements, mechatronics, and how physical engineering converges with next-generation software.',
+            ),
+            'voice_style' => 'preciso, orientado a hardware, componentes y robótica',
+            'specialty' => 'hardware_robotics',
+          ),
+          5 => 
+          array (
+            'name' => 'Jesús Millán',
+            'slug' => 'jesus-millan',
+            'email' => 'jesus.millan@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Jesús Millán, redactor freelancer e investigador digital. Me apasiona seguir el pulso de la cultura tecnológica, las tendencias en internet, las herramientas de productividad y el impacto social de la innovación.',
+              'en' => 'I am Jesús Millán, a freelance writer and digital researcher. I love keeping my finger on the pulse of tech culture, internet trends, productivity tools, and the societal impact of modern innovation.',
+            ),
+            'voice_style' => 'dinámico, periodístico, ágil y conversacional',
+            'specialty' => 'trends_culture',
+          ),
+          6 => 
+          array (
+            'name' => 'Andrea García',
+            'slug' => 'andrea-garcia',
+            'email' => 'andrea.garcia@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Andrea García, ingeniera química y redactora freelance. Me fascina la intersección entre la tecnología, la nanotecnología y la sostenibilidad, investigando cómo los materiales avanzados y la biotecnología moldean el futuro.',
+              'en' => 'I am Andrea García, a chemical engineer and freelance writer. I am fascinated by the intersection of technology, nanotechnology, and sustainability, exploring how advanced materials and biotech shape our future.',
+            ),
+            'voice_style' => 'científico, riguroso, enfocado en innovación y sostenibilidad',
+            'specialty' => 'biotech_science',
+          ),
+          7 => 
+          array (
+            'name' => 'Ediliana Figuera',
+            'slug' => 'ediliana-figuera',
+            'email' => 'ediliana.figuera@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Ediliana Figuera, médico cirujano y redactora freelance. Me apasiona la salud digital, la biotecnología y el uso ético de la inteligencia artificial para revolucionar el diagnóstico clínico y el cuidado de los pacientes.',
+              'en' => 'I am Ediliana Figuera, a medical surgeon and freelance writer. I am passionate about digital health, biotechnology, and the ethical application of AI to revolutionize clinical diagnostics and patient care.',
+            ),
+            'voice_style' => 'médico ético, riguroso con fuentes y preventivo',
+            'specialty' => 'health_tech',
+          ),
+          8 => 
+          array (
+            'name' => 'Braniam Figuera',
+            'slug' => 'braniam-figuera',
+            'email' => 'braniam.figuera@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Braniam Figuera, médico cirujano y redactor freelance. Me apasiona la informática médica, los dispositivos biomédicos de última generación y los avances científicos que están transformando la medicina contemporánea.',
+              'en' => 'I am Braniam Figuera, a medical surgeon and freelance writer. I focus on medical informatics, cutting-edge biomedical devices, and scientific breakthroughs transforming contemporary medicine.',
+            ),
+            'voice_style' => 'clínico, informativo, enfocado en telemedicina y dispositivos',
+            'specialty' => 'medical_informatics',
+          ),
+          9 => 
+          array (
+            'name' => 'César Márquez',
+            'slug' => 'cesar-marquez',
+            'email' => 'cesar.marquez@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy César Márquez, redactor freelancer y entusiasta de la tecnología. Me apasiona el ecosistema de startups, las herramientas no-code y analizar cómo las ideas disruptivas se convierten en productos digitales exitosos.',
+              'en' => 'I am César Márquez, a freelance writer and tech enthusiast. I am passionate about the startup ecosystem, no-code platforms, and analyzing how disruptive ideas turn into successful digital products.',
+            ),
+            'voice_style' => 'emprendedor, ágil, enfocado en startups y herramientas no-code',
+            'specialty' => 'startups',
+          ),
+          10 => 
+          array (
+            'name' => 'Roger Figuera',
+            'slug' => 'roger-figuera',
+            'email' => 'roger.figuera@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Roger Figuera, diseñador gráfico y redactor freelance. Me apasiona el diseño de interfaces (UI/UX), la estética visual interactiva y cómo la tecnología eleva la experiencia del usuario a través de la creatividad digital.',
+              'en' => 'I am Roger Figuera, a graphic designer and freelance writer. I am passionate about UI/UX interface design, interactive aesthetics, and how technology elevates user experience through digital creativity.',
+            ),
+            'voice_style' => 'visual, estético, enfocado en diseño UI/UX y creatividad',
+            'specialty' => 'design_ui_ux',
+          ),
+          11 => 
+          array (
+            'name' => 'Robert Figuera',
+            'slug' => 'robert-figuera',
+            'email' => 'robert.figuera@glodaxia.com',
+            'bio' => 
+            array (
+              'es' => 'Soy Robert Figuera, músico saxofonista y redactor freelance. Me apasiona la tecnología de audio digital, la acústica, el software de producción musical y la innovación sonora en la era de los algoritmos generativos.',
+              'en' => 'I am Robert Figuera, a saxophonist musician and freelance writer. I am passionate about digital audio tech, acoustics, music production software, and sonic innovation in the age of generative algorithms.',
+            ),
+            'voice_style' => 'creativo, sonoro, enfocado en audio tech y música digital',
+            'specialty' => 'audio_tech',
+          ),
+        ),
 
         // Default author if no match found
         'default_author' => [
