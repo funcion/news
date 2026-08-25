@@ -1461,186 +1461,45 @@ PROMPT;
      */
     private function generateStyleDNA(): array
     {
-        $styleSeeds = [
-            'skeptical_analyst',
-            'provocative_essayist',
-            'warmer_storyteller',
-            'cold_forensic',
-            'enthusiastic_rebel',
-            'weary_insider',
-        ];
-
-        $structureVariants = [
-            'classic_hook_thesis_body_close',
-            'anecdote_first_then_takeaway',
-            'question_opening_no_answer_until_middle',
-            'prediction_top_analysis_bottom',
-            'counterintuitive_lead_evidence_later',
-        ];
-
-        $hookTypes = [
-            'number_fact',
-            'quote',
-            'question',
-            'scene_setting',
-            'confession',
-        ];
-
-        $imagePlacements = [
-            'both_early',
-            'both_late',
-            'one_early_one_late',
-            'scattered',
-        ];
-
-        $openings = [
-            'Start with a specific number, statistic, or date from the source',
-            'Start mid-scene: describe something already happening',
-            'Start with a blunt declarative claim (3-8 words) that takes a stance',
-            'Start with the least obvious detail from the source facts',
-            'Start by naming a specific entity and what they just did',
-            'Start with a contradiction of the common assumption',
-            'Start with a sensory or practical detail',
-            'Start with a question you immediately answer',
-            'Start in the middle of an argument, as if the reader walked in on you thinking',
-            'Start with an unexpected comparison, then pivot within 2 sentences',
-        ];
-
-        $analogyDomains = [
-            'historical events with specific dates (e.g., the 1929 crash, the Berlin Wall)',
-            'scientific processes (e.g., how antibodies work, plate tectonics)',
-            'architecture and engineering (e.g., building a bridge, structural failure)',
-            'legal cases and regulatory history (e.g., antitrust rulings, patent disputes)',
-            'military strategy and logistics (e.g., supply lines, flanking maneuvers)',
-            'medical diagnosis and treatment (e.g., triage, differential diagnosis)',
-            'ecological systems (e.g., predator-prey dynamics, invasive species)',
-            'financial markets (e.g., arbitrage, liquidity crises, compound interest)',
-            'music composition (e.g., counterpoint, improvisation, key changes)',
-            'cinema and storytelling (e.g., foreshadowing, unreliable narrators)',
-            'manufacturing and quality control (e.g., assembly lines, bottlenecks)',
-            'navigation and cartography (e.g., dead reckoning, uncharted territory)',
-        ];
-
-        $humanNoise = [
-            'Second-guess your own thesis briefly, then recover with stronger evidence',
-            'Address someone who might disagree — a real counterpoint, not a strawman',
-            'Include one aside unrelated to the topic, then snap back',
-            'Admit you do not have the full picture, and that bothers you',
-            'Show a moment of genuine emotional reaction — surprise, frustration, admiration',
-            'Start a sentence mid-thought, as if already thinking before writing',
-            'Ask one rhetorical question you do NOT immediately answer',
-            'Reference a private professional habit (checking a dashboard, a morning routine)',
-        ];
-
-        $toneBlends = [
-            'skeptical_and_sharp',
-            'measured_and_authoritative',
-            'quietly_intense',
-            'conversational_but_precise',
-            'urgently_investigative',
-            'analytically_cold_with_bursts',
-            'provocative_and_combative',
-            'reflective_and_layered',
-        ];
-
-        shuffle($styleSeeds);
-        shuffle($structureVariants);
-        shuffle($hookTypes);
-        shuffle($imagePlacements);
-        shuffle($openings);
-        shuffle($analogyDomains);
-        shuffle($humanNoise);
-        shuffle($toneBlends);
-
-        // Probabilistic paragraph rules — each article gets different counts (no "EXACTLY ONE" fingerprint)
-        $paragraphRules = [
-            'single_sentence'     => random_int(1, 3),
-            'long_paragraphs'     => random_int(0, 2),
-            'fragment_paragraphs' => random_int(0, 2),
-            'analogies'           => random_int(1, 2),
-            'doubt_moments'       => random_int(1, 3),
-            'human_noise'         => random_int(1, 3),
-        ];
-
-        // Temperature per seed — colder for forensic, hotter for rebel, with jitter
-        $temperatureMap = [
-            'skeptical_analyst'    => 0.6,
-            'provocative_essayist' => 0.8,
-            'warmer_storyteller'   => 0.75,
-            'cold_forensic'        => 0.45,
-            'enthusiastic_rebel'   => 0.85,
-            'weary_insider'        => 0.65,
-        ];
-        // Conservative jitter: ±10% of the base temperature (CTO recommended)
-        // cold_forensic (0.45) → jitter ±0.05 | enthusiastic_rebel (0.85) → jitter ±0.09
-        $baseTemp = $temperatureMap[$styleSeeds[0]] ?? 0.7;
-        $jitter = (mt_rand(-10, 10) / 100) * $baseTemp;
-        $temperature = max(0.3, min(1.0, $baseTemp + $jitter));
-
-        // Compatibility matrix — resolve hookType AND toneBlend conflicts per seed
-        $compatMatrix = [
-            'cold_forensic' => [
-                'forbidden_hooks' => ['confession'],
-                'allowed_hooks'   => ['number_fact', 'quote', 'scene_setting'],
-                'allowed_tones'   => ['analytically_cold_with_bursts', 'measured_and_authoritative'],
+        $archetypes = [
+            'concise_punchy_column' => [
+                'name' => 'Columna Agil y Directa (500-800 palabras)',
+                'structure' => '2 secciones principales con <h2>, ritmo rapido, parrafos cortos e incisivos. Enfoque directo al grano.',
+                'image_count' => random_int(1, 2),
             ],
-            'skeptical_analyst' => [
-                'forbidden_hooks' => ['confession'],
-                'allowed_hooks'   => ['number_fact', 'quote', 'question'],
-                'allowed_tones'   => ['skeptical_and_sharp', 'quietly_intense'],
+            'deep_investigative_breakdown' => [
+                'name' => 'Reportaje de Investigacion Profundo (1000-1500 palabras)',
+                'structure' => '3-4 secciones con <h2> y opcionalmente <h3>, desglose minucioso de datos, 1 cita destacada <blockquote> y analisis exhaustivo.',
+                'image_count' => random_int(2, 3),
             ],
-            'enthusiastic_rebel' => [
-                'forbidden_hooks' => [],
-                'allowed_hooks'   => ['confession', 'question', 'number_fact', 'scene_setting'],
-                'allowed_tones'   => ['provocative_and_combative', 'urgently_investigative'],
+            'conversational_essay' => [
+                'name' => 'Ensayo Conversacional y Reflexivo (700-1100 palabras)',
+                'structure' => 'Narrativa fluida que conecta reflexiones de la experiencia del autor con el impacto de la noticia. Uso libre de analogias naturales.',
+                'image_count' => random_int(1, 2),
             ],
-            'warmer_storyteller' => [
-                'forbidden_hooks' => [],
-                'allowed_hooks'   => ['confession', 'scene_setting', 'quote'],
-                'allowed_tones'   => ['conversational_but_precise', 'reflective_and_layered'],
-            ],
-            'provocative_essayist' => [
-                'forbidden_hooks' => [],
-                'allowed_hooks'   => ['confession', 'question', 'number_fact'],
-                'allowed_tones'   => ['provocative_and_combative', 'quietly_intense'],
-            ],
-            'weary_insider' => [
-                'forbidden_hooks' => [],
-                'allowed_hooks'   => ['confession', 'scene_setting', 'quote'],
-                'allowed_tones'   => ['reflective_and_layered', 'measured_and_authoritative'],
+            'comparative_technical_verdict' => [
+                'name' => 'Analisis Comparativo y Veredicto Tecnico (800-1300 palabras)',
+                'structure' => 'Estructura comparativa con <h2> analiticos, lista con vinetas <ul> para contrastar pros/contras o alternativas y balance final.',
+                'image_count' => random_int(2, 3),
             ],
         ];
-        $matrix = $compatMatrix[$styleSeeds[0]] ?? [];
-        // Resolve hookType conflict
-        if (!empty($matrix['forbidden_hooks']) && in_array($hookTypes[0], $matrix['forbidden_hooks'])) {
-            $hookTypes[0] = $matrix['allowed_hooks'][array_rand($matrix['allowed_hooks'])];
-        }
-        // Resolve toneBlend conflict
-        if (!empty($matrix['allowed_tones']) && !in_array($toneBlends[0], $matrix['allowed_tones'])) {
-            $toneBlends[0] = $matrix['allowed_tones'][array_rand($matrix['allowed_tones'])];
-        }
+
+        $archetypeKeys = array_keys($archetypes);
+        shuffle($archetypeKeys);
+        $selectedArchetypeKey = $archetypeKeys[0];
+        $selectedArchetype = $archetypes[$selectedArchetypeKey];
+
+        $temperature = round(0.65 + (mt_rand(-8, 8) / 100), 2);
 
         return [
-            'styleSeed'        => $styleSeeds[0],
-            'structureVariant' => $structureVariants[0],
-            'hookType'         => $hookTypes[0],
-            'imagePlacement'   => $imagePlacements[0],
-            'openingStrategy'  => $openings[0],
-            'analogyDomain'    => $analogyDomains[0],
-            'humanNoise'       => $humanNoise[0],
-            'toneBlend'        => $toneBlends[0],
-            'paragraphRules'   => $paragraphRules,
-            'temperature'      => round($temperature, 2),
-            // Randomized image count — 60% hero-only, 25% 2-3 images, 15% 4-5 images
-            'imageCount'       => $this->rollImageCount(),
+            'archetypeKey'        => $selectedArchetypeKey,
+            'archetypeName'       => $selectedArchetype['name'],
+            'archetypeStructure'  => $selectedArchetype['structure'],
+            'imageCount'          => $selectedArchetype['image_count'],
+            'temperature'         => $temperature,
         ];
     }
 
-    /**
-     * Roll a randomized image count for the article.
-     * Distribution: 60% = 1 (hero only), 25% = 2-3, 15% = 4-5.
-     * This prevents uniform image patterns that could be detected.
-     */
     private function rollImageCount(): int
     {
         $roll = mt_rand(1, 100);
