@@ -6,12 +6,42 @@ use App\Filament\Resources\RawArticleResource;
 use App\Models\RawArticle;
 use Filament\Actions;
 use Filament\Notifications\Notification;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class ListRawArticles extends ListRecords
 {
     protected static string $resource = RawArticleResource::class;
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('Todas')
+                ->badge(RawArticle::count()),
+            'pending' => Tab::make('Pendientes')
+                ->badge(RawArticle::where('status', 'pending')->count())
+                ->badgeColor('gray')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending')),
+            'processing' => Tab::make('Procesando')
+                ->badge(RawArticle::where('status', 'processing')->count())
+                ->badgeColor('info')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'processing')),
+            'processed' => Tab::make('Procesadas')
+                ->badge(RawArticle::where('status', 'processed')->count())
+                ->badgeColor('success')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'processed')),
+            'failed' => Tab::make('Fallidas')
+                ->badge(RawArticle::where('status', 'failed')->count())
+                ->badgeColor('danger')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'failed')),
+            'ignored' => Tab::make('Ignoradas')
+                ->badge(RawArticle::where('status', 'ignored')->count())
+                ->badgeColor('warning')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'ignored')),
+        ];
+    }
 
     protected function getHeaderActions(): array
     {
