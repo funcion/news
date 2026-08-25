@@ -344,10 +344,20 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
                         $mediaEs->getUrl(), $srcsetEs, $sizes, $altEs, $titleEs, $captionEs, $imgId
                     );
 
-                    // --- NEW: Featured image ([IMAGE_1]) should NOT be in the body content ---
+                    // --- Ensure each image token is replaced ONCE (never duplicated) ---
                     if ($placeholder !== '[IMAGE_1]') {
-                        $contentEn = str_replace($placeholder, $imgTagEn, $contentEn);
-                        $contentEs = str_replace($placeholder, $imgTagEs, $contentEs);
+                        // Replace only the FIRST occurrence with the image figure
+                        $posEn = strpos($contentEn, $placeholder);
+                        if ($posEn !== false) {
+                            $contentEn = substr_replace($contentEn, $imgTagEn, $posEn, strlen($placeholder));
+                        }
+                        $contentEn = str_replace($placeholder, '', $contentEn); // strip any extra duplicates
+
+                        $posEs = strpos($contentEs, $placeholder);
+                        if ($posEs !== false) {
+                            $contentEs = substr_replace($contentEs, $imgTagEs, $posEs, strlen($placeholder));
+                        }
+                        $contentEs = str_replace($placeholder, '', $contentEs); // strip any extra duplicates
                     } else {
                         // Safety: remove [IMAGE_1] if AI placed it in content anyway
                         $contentEn = str_replace($placeholder, '', $contentEn);
