@@ -50,29 +50,40 @@
                 {{ $article->title }}
             </h1>
             
-            <div class="flex items-center gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4">
-                <div class="flex items-center gap-3">
-                    @if($article->user?->avatar_url)
-                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="32" height="32" class="h-8 w-8 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm object-cover">
-                    @else
-                        <div translate="no" aria-label="{{ $article->user?->name ?? 'Autor' }}" class="notranslate h-8 w-8 rounded-lg flex items-center justify-center font-black text-xs shadow-sm shrink-0 uppercase select-none text-white bg-gradient-to-tr {{ $article->user?->avatar_color ?? 'from-cyan-600 to-blue-600' }}">
-                            {{ $article->user?->initials ?? 'GL' }}
-                        </div>
-                    @endif
-                    <div class="flex flex-col">
-                         <span class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none mb-1">{{ $article->user?->name ?? __('ui.reporter') }}</span>
-                    </div>
-                </div>
-                <div class="h-6 w-px bg-gray-200 dark:bg-white/5 hidden sm:block"></div>
-                <div class="flex items-center gap-4">
-                    <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">
+            <div class="flex flex-wrap items-center gap-4 sm:gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4 text-xs font-bold text-slate-600 dark:text-slate-400">
+                <!-- Published Date -->
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
                         {{ $article->published_at?->format('M d, Y') }}
                     </time>
-                    <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ __('ui.min_read', ['count' => $article->reading_time ?? 5]) }}</span>
                 </div>
+
+                <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hidden sm:inline-block"></span>
+
+                <!-- Reading Time -->
                 <div class="flex items-center gap-2">
-                    <svg class="h-4 w-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> 
-                    <span class="font-bold text-gray-900 dark:text-gray-200">{{ __('ui.views_count', ['count' => number_format($article->views ?? 0)]) }}</span>
+                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                        {{ __('ui.min_read', ['count' => $article->reading_time ?? 5]) }}
+                    </span>
+                </div>
+
+                <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hidden sm:inline-block"></span>
+
+                <!-- Views Count -->
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg> 
+                    <span class="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">
+                        {{ __('ui.views_count', ['count' => number_format($article->views ?? 0)]) }}
+                    </span>
                 </div>
             </div>
         </header>
