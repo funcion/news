@@ -1479,23 +1479,23 @@ PROMPT;
     {
         $archetypes = [
             'concise_punchy_column' => [
-                'name' => 'Columna Agil y Directa (500-800 palabras)',
-                'structure' => '2 secciones principales con <h2>, ritmo rapido, parrafos cortos e incisivos. Enfoque directo al grano.',
+                'name' => 'Columna Agil y Solida (700-950 palabras)',
+                'structure' => '2-3 secciones con <h2>, minimo estricto de 700 palabras, parrafos con ritmo sostenido y analisis sustancial.',
                 'image_count' => random_int(1, 2),
             ],
             'deep_investigative_breakdown' => [
-                'name' => 'Reportaje de Investigacion Profundo (1000-1500 palabras)',
-                'structure' => '3-4 secciones con <h2> y opcionalmente <h3>, desglose minucioso de datos, 1 cita destacada <blockquote> y analisis exhaustivo.',
+                'name' => 'Reportaje de Investigacion Profundo (1100-1600 palabras)',
+                'structure' => '3-4 secciones con <h2> y opcionalmente <h3>, desglose exhaustivo de datos, 1 cita destacada <blockquote> y analisis de impacto.',
                 'image_count' => random_int(2, 3),
             ],
             'conversational_essay' => [
-                'name' => 'Ensayo Conversacional y Reflexivo (700-1100 palabras)',
-                'structure' => 'Narrativa fluida que conecta reflexiones analiticas con el impacto de la noticia en la industria.',
+                'name' => 'Ensayo Analitico y Reflexivo (800-1200 palabras)',
+                'structure' => 'Narrativa fluida de minimo 800 palabras que conecta implicaciones tecnicas con el impacto en la industria.',
                 'image_count' => random_int(1, 2),
             ],
             'comparative_technical_verdict' => [
-                'name' => 'Analisis Comparativo y Veredicto Tecnico (800-1300 palabras)',
-                'structure' => 'Estructura comparativa con <h2> analiticos, lista con vinetas <ul> para contrastar pros/contras o alternativas y balance final.',
+                'name' => 'Analisis Comparativo y Veredicto Tecnico (900-1400 palabras)',
+                'structure' => 'Estructura comparativa con <h2> analiticos, lista con vinetas <ul> para contrastar alternativas y balance final.',
                 'image_count' => random_int(2, 3),
             ],
         ];

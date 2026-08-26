@@ -278,11 +278,11 @@ return array (
     'focus_rules' => 'STRICTLY ADHERE TO THE FACTS PROVIDED. NEVER invent names, dates, statistics, or events not present in the SOURCE FACTS.',
     'word_targets' => 
     array (
-      'news' => '600-1000 words EN | 600-1000 palabras ES',
-      'blog' => '800-1200 words EN | 800-1200 palabras ES',
-      'guide' => '1000-1500 words EN | 1000-1500 palabras ES',
-      'review' => '800-1200 words EN | 800-1200 palabras ES',
-      'pillar' => '1500-2500 words EN | 1500-2500 palabras ES',
+      'news' => '700-1000 words EN | 700-1000 palabras ES (Mínimo estricto: 700 palabras)',
+      'blog' => '850-1300 words EN | 850-1300 palabras ES (Mínimo estricto: 850 palabras)',
+      'guide' => '1200-1800 words EN | 1200-1800 palabras ES (Mínimo estricto: 1200 palabras)',
+      'review' => '900-1400 words EN | 900-1400 palabras ES (Mínimo estricto: 900 palabras)',
+      'pillar' => '1600-2600 words EN | 1600-2600 palabras ES (Mínimo estricto: 1600 palabras)',
     ),
   ),
   'features' => 
