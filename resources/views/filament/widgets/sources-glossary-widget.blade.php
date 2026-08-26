@@ -1,16 +1,16 @@
 <x-filament-widgets::widget>
     <x-filament::section
-        icon="heroicon-o-book-open"
+        icon="heroicon-o-sparkles"
         collapsible
     >
         <x-slot name="heading">
             <span class="text-base font-black tracking-tight uppercase text-gray-900 dark:text-white">
-                Guía Operativa y Glosario de Ingesta RSS
+                Pipeline de Ingesta Inteligente & Curaduría con IA
             </span>
         </x-slot>
 
         <x-slot name="description">
-            Manual de referencia técnica para la configuración y límites del programador de contenidos.
+            El sistema absorbe todos los feeds RSS y utiliza un Evaluador Editorial con IA para filtrar y publicar únicamente las noticias de mayor impacto periodístico.
         </x-slot>
 
         <x-slot name="headerEnd">
@@ -22,57 +22,27 @@
         </x-slot>
 
         <div class="space-y-6">
-            <!-- Master Switch Info Banner -->
-            <div class="rounded-xl p-4 bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <!-- AI Curation Architecture Banner -->
+            <div class="rounded-xl p-4 bg-gradient-to-r from-cyan-500/10 via-slate-500/5 to-blue-500/10 border border-cyan-500/20 dark:border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
-                        <x-filament::badge color="info">Master Switch Global</x-filament::badge>
-                        <span class="text-xs font-bold text-gray-900 dark:text-white">Interruptor Maestro de Sincronización</span>
+                        <x-filament::badge color="info">AI Editorial Ranker</x-filament::badge>
+                        <span class="text-xs font-bold text-gray-900 dark:text-white">Curaduría Inteligente en 2 Fases</span>
                     </div>
-                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                        Control general en la barra superior. Si se <strong class="text-gray-900 dark:text-white">Pausa</strong>, el sistema aborta de inmediato las lecturas RSS y congela el consumo de tokens en IA a cero sin alterar la configuración de cada feed.
+                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl">
+                        <strong>Fase 1 (Ingesta):</strong> Se descargan las noticias recientes a <code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-[11px]">raw_articles</code> (Costo = $0).<br>
+                        <strong>Fase 2 (Evaluación):</strong> La IA califica del 1 al 10 el Impacto Tecnológico y el Search Intent. Solo las notas con <strong class="text-emerald-600 dark:text-emerald-400 font-bold">Score &ge; 7.0</strong> se redactan a >700 palabras y generan imagen en R2. Las notas menores quedan marcadas como <span class="text-amber-600 dark:text-amber-400 font-semibold">Ignoradas</span>.
                     </p>
                 </div>
                 <div class="shrink-0 font-mono text-[11px] text-gray-500 dark:text-gray-400">
-                    Control CLI: <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-bold">ingestion:control</code>
+                    Umbral Élite: <span class="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">&ge; 7.0 / 10</span>
                 </div>
             </div>
 
             <!-- Native 3-Column Fieldset Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <!-- Fieldset 1: Límite de Ingesta -->
-                <x-filament::fieldset>
-                    <x-slot name="label">
-                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
-                            Límite (Posts)
-                        </span>
-                    </x-slot>
-
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
-                            <x-filament::badge color="info">fetch_limit</x-filament::badge>
-                        </div>
-
-                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Número de artículos a extraer de este feed en cada corrida para evitar saturar la cola de procesamiento.
-                        </p>
-
-                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-cyan-600 dark:text-cyan-400">0</span>
-                                <span class="font-sans text-gray-500">Sin límite (Todo el feed)</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-cyan-600 dark:text-cyan-400">3</span>
-                                <span class="font-sans text-gray-500">Top 3 más recientes</span>
-                            </div>
-                        </div>
-                    </div>
-                </x-filament::fieldset>
-
-                <!-- Fieldset 2: Frecuencia -->
+                <!-- Fieldset 1: Frecuencia -->
                 <x-filament::fieldset>
                     <x-slot name="label">
                         <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
@@ -87,23 +57,23 @@
                         </div>
 
                         <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Minutos que espera el programador en segundo plano entre cada consulta a la URL del feed.
+                            Minutos que espera el cron entre cada consulta al feed RSS (ej. <span class="font-bold text-primary-600 dark:text-primary-400">60</span> = cada hora, <span class="font-bold text-primary-600 dark:text-primary-400">120</span> = cada 2 horas).
                         </p>
 
                         <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-primary-600 dark:text-primary-400">60m</span>
-                                <span class="font-sans text-gray-500">Consulta cada 1 hora</span>
+                                <span class="font-sans text-gray-500">Escaneo cada 1 hora</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-primary-600 dark:text-primary-400">120m</span>
-                                <span class="font-sans text-gray-500">Consulta cada 2 horas</span>
+                                <span class="font-sans text-gray-500">Escaneo cada 2 horas</span>
                             </div>
                         </div>
                     </div>
                 </x-filament::fieldset>
 
-                <!-- Fieldset 3: Score de Salud -->
+                <!-- Fieldset 2: Score de Salud -->
                 <x-filament::fieldset>
                     <x-slot name="label">
                         <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
@@ -118,7 +88,7 @@
                         </div>
 
                         <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Métrica automática de estabilidad. Premia feeds activos y penaliza fuentes con caídas o errores.
+                            Métrica automática de estabilidad técnica. Premia feeds activos y penaliza URLs con caídas o errores.
                         </p>
 
                         <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
@@ -134,7 +104,7 @@
                     </div>
                 </x-filament::fieldset>
 
-                <!-- Fieldset 4: Máx. Días -->
+                <!-- Fieldset 3: Máx. Días -->
                 <x-filament::fieldset>
                     <x-slot name="label">
                         <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
@@ -165,7 +135,7 @@
                     </div>
                 </x-filament::fieldset>
 
-                <!-- Fieldset 5: Verificada -->
+                <!-- Fieldset 4: Verificada (Tier 1) -->
                 <x-filament::fieldset>
                     <x-slot name="label">
                         <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
@@ -196,7 +166,7 @@
                     </div>
                 </x-filament::fieldset>
 
-                <!-- Fieldset 6: Estado Activa -->
+                <!-- Fieldset 5: Estado Activa -->
                 <x-filament::fieldset>
                     <x-slot name="label">
                         <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
@@ -222,6 +192,37 @@
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-rose-500">🔴 Inactiva</span>
                                 <span class="text-gray-500">Pausada por el admin</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 6: Master Switch -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Master Switch Global
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Control Central</span>
+                            <x-filament::badge color="info">Global</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Interruptor superior que congela o reactiva toda la ingesta de noticias del portal a cero llamadas de IA.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">🟢 Ingesta ACTIVA</span>
+                                <span class="text-gray-500">Cron funcionando</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-500">⏸️ Ingesta PAUSADA</span>
+                                <span class="text-gray-500">Cero consumo</span>
                             </div>
                         </div>
                     </div>

@@ -33,11 +33,7 @@ class RssService
         $newArticlesCount = 0;
         $items = $feed->get_items();
 
-        // 1. Check fetch_limit: If fetch_limit > 0, limit to N items. If 0, unlimited!
-        $fetchLimit = (int) ($source->fetch_limit ?? 3);
-        if ($fetchLimit > 0 && count($items) > $fetchLimit) {
-            $items = array_slice($items, 0, $fetchLimit);
-        }
+        
 
         // If it is a GitHub Release Atom feed, filter to get the latest stable release and any newer RC/Beta versions
         if (str_contains($source->url, 'github.com') && (str_contains($source->url, 'releases.atom') || $source->type === 'atom')) {

@@ -54,12 +54,7 @@ class SourceResource extends Resource
                     ->numeric()
                     ->default(60)
                     ->required(),
-                TextInput::make('fetch_limit')
-                    ->label('Límite de Ingesta (Posts)')
-                    ->helperText('Máx. noticias a extraer por escaneo (0 = Sin límite / ilimitado)')
-                    ->numeric()
-                    ->default(3)
-                    ->required(),
+                
                 TextInput::make('score')
                     ->label('Puntuación de Salud')
                     ->helperText('Aumenta (+2) con noticias nuevas, disminuye (-5) si falla la conexión')
@@ -107,13 +102,7 @@ class SourceResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->tooltip('Intervalo en minutos entre cada consulta al feed por el programador.'),
-                TextColumn::make('fetch_limit')
-                    ->label('Límite')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => (int)$state === 0 ? 'Sin límite (0)' : "{$state} posts")
-                    ->color(fn ($state) => (int)$state === 0 ? 'info' : 'primary')
-                    ->sortable()
-                    ->tooltip('Número de noticias a extraer en cada escaneo. 0 = Ilimitado.'),
+                
                 TextColumn::make('score')
                     ->label('Score (Salud)')
                     ->numeric()

@@ -1,63 +1,79 @@
-# 📡 Guía Maestra del Sistema de Ingestión y Fuentes RSS
+# 📡 Guía Maestra del Sistema de Ingestión y Curaduría con IA
 
-> **Glodaxia Ingestion Engine**  
-> **Versión:** 2.0 (Agosto 2026)  
-> **Ubicación en Panel:** `/admin/sources` (Grupo: *Ingesta*)
+> **Glodaxia Ingestion & AI Editorial Curation Engine**  
+> **Versión:** 3.0 (Agosto 2026)  
+> **Ubicación en Panel:** `/admin/sources` y `/admin/raw-articles`
 
 ---
 
-## 🏛️ 1. Arquitectura de Ingestión y Control Editorial
+## 🏛️ 1. Arquitectura en 2 Fases (Two-Stage Pipeline)
 
-El sistema de ingesta de **Glodaxia** está diseñado para extraer noticias de medios internacionales de alta reputación periodística y procesarlas con IA sin saturar la cola ni diluir el *Crawl Budget* de Googlebot.
+Para evitar la pérdida de noticias clave y garantizar que el 100% de los artículos publicados tengan alto impacto y respondan a intenciones reales de búsqueda, el sistema opera en **dos fases desacopladas**:
 
 ```mermaid
-graph TD
-    A[Cron Programado: rss:fetch] --> B{Interruptor Maestro Activo?}
-    B -->|No| C[Pausar Ingesta - 0 llamadas IA]
-    B -->|Sí| D[Recorrer Fuentes Activas según Frecuencia]
+sequenceDiagram
+    autonumber
+    participant Cron as Programador (rss:fetch)
+    participant Feed as Feed RSS / Atom (Ars Technica, The Verge, TC)
+    participant DB as PostgreSQL (raw_articles)
+    participant Ranker as AI Editorial Ranker (DeepSeek V4)
+    participant Queue as Horizon Queue (ProcessArticleWithAIJob)
+    participant R2 as Cloudflare R2 Bucket
+    participant Public as Portada Glodaxia (>700 pal.)
+
+    Cron->>Feed: Consulta feed según frecuencia
+    Feed-->>Cron: Entrega todas las noticias recientes del día
+    Cron->>DB: Guarda en raw_articles (status: pending, Costo = $0)
     
-    D --> E[SimplePie Parser: Leer Feed XML/RSS]
-    E --> F{Límite de Ingesta: fetch_limit}
+    DB->>Ranker: Dispara CurateRawArticleJob
+    Ranker->>Ranker: Evalúa Impacto Tech (1-10) y Search Intent (1-10)
     
-    F -->|fetch_limit > 0| G[Tomar únicamente las N noticias más recientes]
-    F -->|fetch_limit = 0| H[Extraer todas las noticias disponibles]
-    
-    G --> I[Filtro Anti-Ruido: Descartar cupones y textos < 120 pal.]
-    H --> I
-    
-    I --> J[Guardar en RawArticle status: pending]
-    J --> K[Horizon Queue: Redacción bilingüe >700 pal. + Imagen R2]
+    alt Score < 7.0 (Notas menores, cupones, changelogs)
+        Ranker->>DB: Marca status = ignored (Razón: Noticia menor)
+    else Score >= 7.0 (Élite / Breaking News)
+        Ranker->>Queue: Despacha ProcessArticleWithAIJob
+        Queue->>Queue: Redacción bilingüe profunda (>700 palabras)
+        Queue->>R2: Genera y almacena imagen WebP (Thumb, Medium, Large)
+        Queue->>Public: Publica en Portada con Schema.org
+    end
 ```
 
 ---
 
-## 📖 2. Glosario de Columnas y Parámetros de Fuentes (`/admin/sources`)
+## 📊 2. Criterios de Evaluación del AI Editorial Ranker
 
-A continuación se detalla el propósito y comportamiento técnico de cada columna en el panel de administración:
+Cada noticia cruda es calificada automáticamente por la IA en 3 dimensiones:
 
-| Columna en Tabla | Campo en Formulario | Tipo / Rango | Descripción y Comportamiento |
-|---|---|---|---|
-| **Nombre** | `name` | Texto | Nombre público o corporativo del medio (ej. *Ars Technica, TechCrunch, Hugging Face*). |
-| **URL** | `url` | URL válida | Enlace directo al feed público XML, RSS 2.0 o Atom. |
-| **Tipo** | `type` | `rss`, `atom`, `json`, `scraping` | Formato del feed. Generalmente detectado automáticamente. |
-| **Límite (Posts)** ⭐ | `fetch_limit` | Entero (`0` o `N >= 1`) | **Control de volumen por escaneo:**<br>• **`0` = Sin Límite:** Extrae todas las noticias disponibles en el feed.<br>• **`N > 0` (ej: 2, 3, 5):** Extrae únicamente las $N$ noticias más recientes, evitando saturar la cola. |
-| **Freq (min)** | `frequency` | Minutos (ej. `60`, `120`) | Intervalo mínimo entre consultas automáticas del programador en segundo plano. |
-| **Score (Salud)** | `score` | `0 - 100` | Métrica de fiabilidad: **+2** puntos con noticias nuevas, **-5** puntos si el feed falla o da timeout. |
-| **Activa** | `is_active` | Toggle (`true` / `false`) | Interruptor individual de 1 clic para activar o pausar un feed sin borrarlo. |
-| **Verificada** | `trusted` | Toggle (`true` / `false`) | Identifica fuentes de Élite (Tier 1) con máxima prioridad en la cola de procesamiento. |
-| **Default** | `is_default` | Booleano | Marca las fuentes preconfiguradas del núcleo de Glodaxia. |
-| **Máx. Días** | `max_age_days` | Días (ej. `1`, `3`) | Filtro de frescura: Rechaza noticias publicadas hace más de $X$ días. |
-| **Última Ingesta** | `last_fetched_at` | Timestamp | Fecha y hora exacta en la que se completó el último escaneo exitoso. |
+1. **Impacto Tecnológico (1-10):** Hardware de próxima generación, modelos fundacionales de IA, vulnerabilidades zero-day críticas, computación cuántica, infraestructura de servidores.
+2. **Intención de Búsqueda & Relevancia (1-10):** ¿Es un tema que profesionales, ingenieros y lectores buscarán activamente en Google?
+3. **Sustancia Editorial:** Se descartan de forma estricta ofertas de compra, códigos de descuento, cupones y parches rutinarios de una línea.
+
+### Decisiones del Evaluador:
+* **`promote` (Score $\ge$ 7.0 / 10):** Pasa de inmediato a redacción completa con imagen.
+* **`ignore` (Score $<$ 7.0 / 10):** Queda almacenada en `raw_articles` como historial pero no consume créditos de imagen ni satura la portada.
 
 ---
 
-## 🎛️ 3. Comandos Útiles por Consola
+## 🎛️ 3. Control Manual desde Filament 5
+
+1. **En `/admin/sources`:**
+   - **Master Switch Global:** Congela o reactiva toda la ingesta del portal.
+   - **Toggles Individuales:** Activar o pausar fuentes con 1 clic.
+   - **Filtro de Días:** Configurar ventana de frescura (1 a 3 días).
+2. **En `/admin/raw-articles`:**
+   - Ver el **Score Editorial** y la justificación de la IA para cada noticia.
+   - Pestañas organizadas: *Todas, Pendientes, Procesadas, Ignoradas por IA, Fallidas*.
+   - Botón **"Forzar Procesamiento IA"** para que el editor humano pueda publicar manualmente cualquier noticia que haya sido descartada si así lo desea.
+
+---
+
+## 🧪 4. Comandos de Consola
 
 ```bash
-# Ejecutar escaneo respetando frecuencias y límites
+# Ejecutar escaneo de todos los feeds RSS
 docker compose exec app php artisan rss:fetch
 
-# Forzar escaneo de todas las fuentes activas inmediatamente
+# Forzar escaneo inmediato sin esperar frecuencias
 docker compose exec app php artisan rss:fetch --force
 
 # Consultar o alternar el Interruptor Maestro

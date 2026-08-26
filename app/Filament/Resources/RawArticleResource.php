@@ -101,6 +101,19 @@ class RawArticleResource extends Resource
                     ->label('Título')
                     ->searchable()
                     ->limit(50),
+                Tables\Columns\TextColumn::make('metadata.curation.score')
+                    ->label('Score IA')
+                    ->badge()
+                    ->placeholder('—')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state !== null ? number_format((float)$state, 1) . ' / 10' : '—')
+                    ->color(fn ($state) => match (true) {
+                        $state === null => 'gray',
+                        (float)$state >= 8.0 => 'success',
+                        (float)$state >= 7.0 => 'info',
+                        default => 'warning',
+                    })
+                    ->tooltip(fn (RawArticle $record) => $record->metadata['curation']['reason'] ?? 'Sin evaluación editorial previa.'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
