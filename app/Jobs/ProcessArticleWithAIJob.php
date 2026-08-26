@@ -136,16 +136,28 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        // Extract category for partitioned semantic check
-        $categoryName = $classification['category_name'] ?? '';
-        $matchedCategory = \App\Models\Category::active()
-            ->where(function ($q) use ($categoryName) {
-                $q->where('name->en', 'ILIKE', "%{$categoryName}%")
-                  ->orWhere('name->es', 'ILIKE', "%{$categoryName}%")
-                  ->orWhere('slug', 'ILIKE', "%" . \Illuminate\Support\Str::slug($categoryName) . "%");
-            })
-            ->first();
-        $categoryId = $matchedCategory?->id;
+        // Extract category for partitioned semantic check (Optimized JSONB search)
+        $categoryName = trim($classification['category_name'] ?? '');
+        $matchedCategory = null;
+        if ($categoryName) {
+            $matchedCategory = \App\Models\Category::active()
+                ->where(function ($q) use ($categoryName) {
+                    $q->whereRaw("name->>'es' ILIKE ?", [$categoryName])
+                      ->orWhereRaw("name->>'en' ILIKE ?", [$categoryName])
+                      ->orWhere('slug', 'ILIKE', Str::slug($categoryName));
+                })
+                ->first();
+
+            if (!$matchedCategory) {
+                $matchedCategory = \App\Models\Category::active()
+                    ->where(function ($q) use ($categoryName) {
+                        $q->whereRaw("name->>'es' ILIKE ?", ["%{$categoryName}%"])
+                          ->orWhereRaw("name->>'en' ILIKE ?", ["%{$categoryName}%"]);
+                    })
+                    ->first();
+            }
+        }
+        $categoryId = $matchedCategory?->id ?? $source?->category_id ?? 1;
         $canonicalEventSlug = $classification['event_slug_canonical'] ?? null;
         $summaryText = !empty($classification['facts']) ? implode('. ', $classification['facts']) : ($this->rawArticle->summary ?? null);
 
@@ -170,65 +182,22 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
              return;
         }
 
-        $author = User::where('is_active', true)->where('slug', '!=', 'admin')->inRandomOrder()->first() ?: User::first();
+        $author = User::where('is_active', true)->where('slug', '!=', 'admin')->inRandomOrder()->first();
 
         if (!$author) {
-            $author = User::create([
-                'name'      => ['en' => 'Luis Figuera', 'es' => 'Luis Figuera'],
-                'email'     => 'luis@glodaxia.com',
-                'password'  => bcrypt(Str::random(16)),
-                'slug'      => 'luis-figuera',
-                'is_active' => true,
-                'bio'       => [
-                    'es' => '¡Hola! Soy Luis Figuera. Me especializo en escribir textos digitales y tradicionales, asegurando que cada palabra cumpla un objetivo comercial.',
-                    'en' => 'Hello! I\'m Luis Figuera. I specialize in writing digital and traditional copy, ensuring that every word serves a commercial goal.',
-                ],
-            ]);
-        }
-
-        try {
-            $redacted = $this->redactBilingual($ai, $classification, $author);
-        } catch (OpenRouterAuthenticationException $e) {
-            Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401) during redaction. Marking as failed.", [
-                'response' => $e->getResponseBody(),
-            ]);
-            OpenRouterCircuitBreaker::recordFailure();
-            $this->rawArticle->update(['status' => 'failed']);
-            return;
-        }
-
-        if (!$redacted) {
-            throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
-        }
-
-        // --- AUTO-FIX: Truncate fields that exceed limits before validation ---
-        $redacted = $this->autoFixRedactedOutput($redacted);
-
-        // --- VALIDATE: Programmatic checks on AI output before creating Article ---
-        $validationErrors = $this->validateRedactedOutput($redacted);
-        if (!empty($validationErrors)) {
-            Log::warning("redactBilingual validation failed for RawArticle {$this->rawArticle->id}", $validationErrors);
-            throw new \RuntimeException(
-                "AI output failed validation: " . implode('; ', $validationErrors) . " (attempt {$this->attempts()})"
+            $author = User::firstOrCreate(
+                ['email' => 'luis@glodaxia.com'],
+                [
+                    'name'      => ['en' => 'Luis Figuera', 'es' => 'Luis Figuera'],
+                    'password'  => bcrypt(Str::random(16)),
+                    'slug'      => 'luis-figuera',
+                    'is_active' => true,
+                    'bio'       => [
+                        'es' => 'Especialista en redaccion y analisis tecnologico en Glodaxia.',
+                        'en' => 'Technology analysis and digital journalism specialist at Glodaxia.',
+                    ],
+                ]
             );
-        }
-
-        // --- CLEANUP: Remove AI hallucinated image attributes + inline URLs ---
-        $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
-        $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
-        $contentEn = $this->cleanInlineUrls($contentEn);
-        $contentEs = $this->cleanInlineUrls($contentEs);
-        $contentEn = $this->ensureHtmlParagraphs($contentEn);
-        $contentEs = $this->ensureHtmlParagraphs($contentEs);
-
-        // Determine category — STRICT matching, no fallback to generic
-        $categoryId = null;
-        if (!empty($classification['category_name'])) {
-            $matchedCat = \App\Models\Category::whereRaw("name->>'es' ILIKE ?", [trim($classification['category_name'])])->first()
-                ?? \App\Models\Category::whereRaw("name->>'en' ILIKE ?", [trim($classification['category_name'])])->first();
-            if ($matchedCat) {
-                $categoryId = $matchedCat->id;
-            }
         }
 
         // If no strict match, try partial match (contains)
@@ -501,9 +470,10 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $contentEs .= "\n<p class=\"source-reference-card mt-8 pt-4 border-t border-slate-800 text-xs text-slate-400\"><em>Referencia y fuente original: <a href=\"{$sourceUrl}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" class=\"text-brand-teal hover:underline font-medium\">{$sourceNameClean}</a>.</em></p>";
         }
 
-        // Save final bilingual content
-        $article->setTranslation('content', 'en', $contentEn);
-        $article->setTranslation('content', 'es', $contentEs);
+        // --- HTML SANITIZATION (Defense-in-Depth via ultra-fast native C engine) ---
+        $allowedHtml = '<p><h2><h3><strong><em><blockquote><ul><ol><li><figure><figcaption><img><a><span><div>';
+        $contentEn = strip_tags($contentEn, $allowedHtml);
+        $contentEs = strip_tags($contentEs, $allowedHtml);
 
         // Update JSON-LD
         if (!empty($imageObjectsJsonLd)) {
@@ -512,36 +482,48 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $article->ai_metadata = $meta;
         }
 
-        // Dynamic Staggered Publishing (Configurable from /admin/settings-page)
-        if ($imageCount > 0) {
-            $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', false);
-            $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
-            $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
+        // --- ATOMIC DB TRANSACTION: Guarantees full consistency between Article and RawArticle ---
+        \Illuminate\Support\Facades\DB::transaction(function () use ($article, $contentEn, $contentEs, $imageCount, $redacted) {
+            $article->setTranslation('content', 'en', $contentEn);
+            $article->setTranslation('content', 'es', $contentEs);
 
-            if ($isStaggered && $maxDelay > 0) {
-                $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
-                    ->whereNotNull('published_at')
-                    ->max('published_at');
+            // Dynamic Staggered Publishing (Configurable from /admin/settings-page)
+            if ($imageCount > 0) {
+                $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', false);
+                $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
+                $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
 
-                $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
-                    ? \Carbon\Carbon::parse($latestArticleDate)
-                    : now();
+                if ($isStaggered && $maxDelay > 0) {
+                    $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
+                        ->whereNotNull('published_at')
+                        ->max('published_at');
 
-                $delayMinutes = random_int($minDelay, $maxDelay);
-                $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+                    $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
+                        ? \Carbon\Carbon::parse($latestArticleDate)
+                        : now();
 
-                $article->status = 'scheduled';
-                $article->published_at = $publishAt;
-                Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m delay, range: {$minDelay}-{$maxDelay}m).");
+                    $delayMinutes = random_int($minDelay, $maxDelay);
+                    $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+
+                    $article->status = 'scheduled';
+                    $article->published_at = $publishAt;
+                    Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m delay, range: {$minDelay}-{$maxDelay}m).");
+                } else {
+                    $article->status = 'published';
+                    $article->published_at = now();
+                    Log::info("Article {$article->id} published immediately (staggered delay disabled in settings).");
+                }
             } else {
-                $article->status = 'published';
-                $article->published_at = now();
-                Log::info("Article {$article->id} published immediately (staggered delay disabled in settings).");
+                $article->status = 'draft';
             }
-        } else {
-            $article->status = 'draft';
-        }
-        $article->save();
+            $article->save();
+
+            $modelUsed = $redacted['_model_used'] ?? config('ai_models.default');
+            $this->rawArticle->update([
+                'status'   => 'processed',
+                'ai_model' => $modelUsed,
+            ]);
+        });
 
         // --- Generate Embedding ---
         $duplicateChecker->generateAndStoreEmbedding($article, $contentEn);
@@ -552,12 +534,6 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $tagService->syncTagsToArticle($article, $extractedTags);
             Log::info("Tags generated for Article {$article->id}: " . implode(', ', $extractedTags));
         }
-
-        $modelUsed = $redacted['_model_used'] ?? config('ai_models.default');
-        $this->rawArticle->update([
-            'status'   => 'processed',
-            'ai_model' => $modelUsed,
-        ]);
         
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images using model {$modelUsed}.");
     }
@@ -743,7 +719,8 @@ PROMPT;
         $articleAge     = $this->rawArticle->published_at ? $this->rawArticle->published_at->diffForHumans() : 'today';
         $isSeed         = $classification['is_seed'] ?? false;
         $contentType    = $classification['content_type'] ?? 'blog';
-        $facts          = (array) ($classification['facts'] ?? [$this->rawArticle->title ?? 'Tech News']);
+        $rawFacts       = (array) ($classification['facts'] ?? [$this->rawArticle->title ?? 'Tech News']);
+        $facts          = array_slice($rawFacts, 0, 10);
         $topic          = $isSeed ? ($this->rawArticle->title ?? 'Tech News') : implode('; ', $facts);
         // Pass first 2000 chars of raw content for richer source context
         $rawBody            = strip_tags($this->rawArticle->content ?? '');
