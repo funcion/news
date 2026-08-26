@@ -1,0 +1,80 @@
+<div class="max-w-md mx-auto py-8 sm:py-12 px-4">
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-cyan-500/5">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {{ __('ui.auth_reset_password_title') }}
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">
+                {{ __('ui.auth_reset_password_subtitle') }}
+            </p>
+        </div>
+
+        <form wire:submit="resetPassword" class="space-y-4">
+            <input type="hidden" wire:model="token">
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {{ __('ui.auth_email_label') }}
+                </label>
+                <input wire:model.defer="email"
+                       type="email"
+                       id="email"
+                       required
+                       class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
+                @error('email')
+                    <p class="text-rose-500 text-xs font-medium mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- New Password -->
+            <div>
+                <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {{ __('ui.auth_new_password_label') }}
+                </label>
+                <input wire:model.defer="password"
+                       type="password"
+                       id="password"
+                       required
+                       placeholder="••••••••"
+                       class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
+                @error('password')
+                    <p class="text-rose-500 text-xs font-medium mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- New Password Confirmation -->
+            <div>
+                <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {{ __('ui.auth_password_confirm_label') }}
+                </label>
+                <input wire:model.defer="password_confirmation"
+                       type="password"
+                       id="password_confirmation"
+                       required
+                       placeholder="••••••••"
+                       class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
+            </div>
+
+            <button type="submit"
+                    wire:loading.attr="disabled"
+                    class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 mt-4">
+                <span wire:loading.remove>{{ __('ui.auth_update_password_button') }}</span>
+                <span wire:loading class="flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ __('ui.auth_processing') }}</span>
+                </span>
+            </button>
+        </form>
+    </div>
+</div>

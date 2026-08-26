@@ -41,6 +41,10 @@ Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterContro
 Route::get('/newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
 
+
+// Socialite OAuth Routes
+Route::get('/auth/google', [\App\Http\Controllers\Auth\SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::group([
     'prefix'     => LaravelLocalization::setLocale(),
     'middleware' => [
@@ -62,6 +66,21 @@ Route::group([
     Route::get('/privacy', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
     Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
     Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
+
+    // --- AUTHENTICATION ROUTES (Livewire 4 + Fortify Headless) ---
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', \App\Livewire\Auth\LoginComponent::class)->name('login');
+        Route::get('/register', \App\Livewire\Auth\RegisterComponent::class)->name('register');
+        Route::get('/forgot-password', \App\Livewire\Auth\ForgotPasswordComponent::class)->name('password.request');
+        Route::get('/reset-password/{token}', \App\Livewire\Auth\ResetPasswordComponent::class)->name('password.reset');
+    });
+
+    Route::post('/logout', function () {
+        \Illuminate\Support\Facades\Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/'));
+    })->name('logout')->middleware('auth');
 
     // Tags (Must be before root slugs to avoid collisions)
     Route::get('/search', [\App\Http\Controllers\FrontendController::class, 'search'])->name('search');

@@ -277,6 +277,50 @@
                             </svg>
                         </button>
 
+                        <!-- Auth / Profile Button -->
+                        @auth
+                            <div x-data="{ userMenuOpen: false }" class="relative hidden sm:block">
+                                <button @click="userMenuOpen = !userMenuOpen"
+                                        class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden">
+                                        @if (auth()->user()->avatar_url)
+                                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span>{{ auth()->user()->initials }}</span>
+                                        @endif
+                                    </div>
+                                    <svg class="w-3.5 h-3.5 text-slate-500 transition-transform" :class="{ 'rotate-180': userMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                <div x-show="userMenuOpen"
+                                     @click.away="userMenuOpen = false"
+                                     x-transition
+                                     class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50">
+                                    <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                                    </div>
+                                    @if (auth()->user()->slug === 'admin' || auth()->user()->id === 1)
+                                        <a href="/admin" class="block px-4 py-2 text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                            ⚙️ {{ __('ui.admin_panel') }}
+                                        </a>
+                                    @endif
+                                    <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30">
+                                            🚪 {{ __('ui.auth_logout') }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
+                               class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all shadow-xs">
+                                <span>{{ __('ui.auth_sign_in_button') }}</span>
+                            </a>
+                        @endauth
+
                         <!-- Dark Mode Toggle -->
                         <button @click="toggleDarkMode()" 
                                 aria-label="Toggle dark mode"

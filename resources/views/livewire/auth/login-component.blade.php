@@ -1,0 +1,125 @@
+<div class="max-w-md mx-auto py-8 sm:py-12 px-4">
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-cyan-500/5">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {{ __('ui.auth_welcome_back') }}
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">
+                {{ __('ui.auth_login_subtitle') }}
+            </p>
+        </div>
+
+        @if (session('status'))
+            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center gap-3">
+                <span>✓</span>
+                <span>{{ session('status') }}</span>
+            </div>
+        @endif
+
+        <!-- Social Login: Google -->
+        <div class="mb-6">
+            <a href="{{ route('auth.google') }}"
+               class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow group">
+                <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+                    <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                    <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12s.7 2.3 1.9 4.7l3.7-1.9z"/>
+                    <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+                </svg>
+                <span>{{ __('ui.auth_continue_with_google') }}</span>
+            </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative flex items-center justify-center mb-6">
+            <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
+            <span class="bg-white dark:bg-slate-900 px-3 text-xs uppercase tracking-widest text-slate-400 font-bold relative">
+                {{ __('ui.auth_or_email') }}
+            </span>
+        </div>
+
+        <!-- Form -->
+        <form wire:submit="login" class="space-y-4">
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {{ __('ui.auth_email_label') }}
+                </label>
+                <input wire:model.defer="email"
+                       type="email"
+                       id="email"
+                       required
+                       autofocus
+                       placeholder="you@example.com"
+                       class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
+                @error('email')
+                    <p class="text-rose-500 text-xs font-medium mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Password -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        {{ __('ui.auth_password_label') }}
+                    </label>
+                    <a href="{{ LaravelLocalization::localizeUrl('/forgot-password') }}" class="text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:underline">
+                        {{ __('ui.auth_forgot_password_link') }}
+                    </a>
+                </div>
+                <input wire:model.defer="password"
+                       type="password"
+                       id="password"
+                       required
+                       placeholder="••••••••"
+                       class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
+                @error('password')
+                    <p class="text-rose-500 text-xs font-medium mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Remember me -->
+            <div class="flex items-center justify-between pt-1">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input wire:model="remember"
+                           type="checkbox"
+                           class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-cyan-500 focus:ring-cyan-500/50">
+                    <span class="text-xs text-slate-600 dark:text-slate-400 select-none">
+                        {{ __('ui.auth_remember_me') }}
+                    </span>
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                    wire:loading.attr="disabled"
+                    class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50">
+                <span wire:loading.remove>{{ __('ui.auth_sign_in_button') }}</span>
+                <span wire:loading class="flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ __('ui.auth_processing') }}</span>
+                </span>
+                <span wire:loading.remove class="group-hover:translate-x-0.5 transition-transform duration-150">→</span>
+            </button>
+        </form>
+
+        <!-- Footer link: Register -->
+        <div class="text-center mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+            <span>{{ __('ui.auth_no_account') }}</span>
+            <a href="{{ LaravelLocalization::localizeUrl('/register') }}" class="font-bold text-cyan-600 dark:text-cyan-400 hover:underline ml-1">
+                {{ __('ui.auth_create_account') }}
+            </a>
+        </div>
+
+    </div>
+</div>
