@@ -282,18 +282,18 @@
                             <div x-data="{ userMenuOpen: false }" class="relative inline-block">
                                 <button @click="userMenuOpen = !userMenuOpen"
                                         aria-label="{{ auth()->user()->name }}"
-                                        class="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-                                    <!-- Minimalist Fixed-Size Circular Avatar -->
-                                    <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px;"
-                                         class="w-9 h-9 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/30 dark:border-cyan-400/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-xs font-bold tracking-tight shadow-xs overflow-hidden flex-shrink-0 select-none">
+                                        class="flex items-center gap-1 p-0.5 rounded-full hover:opacity-85 transition cursor-pointer">
+                                    <!-- Minimalist Borderless Circular Badge -->
+                                    <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px;"
+                                         class="w-[34px] h-[34px] rounded-full bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[11px] font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
                                         @if (auth()->user()->avatar_url)
                                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
                                         @else
                                             <span class="leading-none text-center">{{ auth()->user()->initials }}</span>
                                         @endif
                                     </div>
-                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': userMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    <svg class="w-3 h-3 text-slate-400 dark:text-slate-500 transition-transform duration-200" :class="{ 'rotate-180': userMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
                                 <div x-show="userMenuOpen"
@@ -304,10 +304,10 @@
                                      x-transition:leave="transition ease-in duration-100"
                                      x-transition:leave-start="opacity-100 scale-100"
                                      x-transition:leave-end="opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden">
-                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 flex items-center gap-3">
-                                        <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px;"
-                                             class="w-9 h-9 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/30 dark:border-cyan-400/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-xs font-bold tracking-tight shadow-xs overflow-hidden flex-shrink-0 select-none">
+                                     class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden">
+                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-850 flex items-center gap-3">
+                                        <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px;"
+                                             class="w-[34px] h-[34px] rounded-full bg-slate-200/70 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[11px] font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
                                             @if (auth()->user()->avatar_url)
                                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
                                             @else
