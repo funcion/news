@@ -138,13 +138,15 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 
         // Extract category for partitioned semantic check (Optimized JSONB search)
         $categoryName = trim($classification['category_name'] ?? '');
+        $slugCat = \Illuminate\Support\Str::slug($categoryName);
         $matchedCategory = null;
         if ($categoryName) {
             $matchedCategory = \App\Models\Category::active()
-                ->where(function ($q) use ($categoryName) {
+                ->where(function ($q) use ($categoryName, $slugCat) {
                     $q->whereRaw("name->>'es' ILIKE ?", [$categoryName])
                       ->orWhereRaw("name->>'en' ILIKE ?", [$categoryName])
-                      ->orWhere('slug', 'ILIKE', Str::slug($categoryName));
+                      ->orWhere('slug_en', 'ILIKE', $slugCat)
+                      ->orWhere('slug_es', 'ILIKE', $slugCat);
                 })
                 ->first();
 
