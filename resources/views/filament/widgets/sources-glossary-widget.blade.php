@@ -46,6 +46,24 @@
 
         <!-- List items with single paragraph per column -->
         <div class="divide-y divide-gray-100 dark:divide-gray-800/60 p-2 sm:p-4">
+            <!-- Límite (Posts) -->
+            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40 bg-cyan-50/30 dark:bg-cyan-950/20 border border-cyan-100 dark:border-cyan-900/30">
+                <div class="shrink-0 pt-0.5">
+                    <span class="inline-flex items-center rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2.5 py-1 text-xs font-black tracking-wider border border-cyan-500/20 shadow-xs">
+                        Límite (Posts)
+                    </span>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        <strong class="font-bold text-gray-900 dark:text-white">Límite Estricto de Noticias por Escaneo:</strong> Controla cuántos artículos extrae el sistema de este feed RSS en cada corrida del cron.
+                    </p>
+                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+                        <li><strong class="font-semibold text-cyan-600 dark:text-cyan-400">Valor = 0 (Sin Límite):</strong> El sistema absorbe <em>todas</em> las noticias disponibles en el feed RSS sin restricción.</li>
+                        <li><strong class="font-semibold text-cyan-600 dark:text-cyan-400">Valor > 0 (ej. 2, 3, 5):</strong> El sistema extrae únicamente las <em>N</em> noticias más recientes y destacadas del feed en cada ciclo, evitando saturar la cola.</li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Freq (min) -->
             <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
                 <div class="shrink-0 pt-0.5">

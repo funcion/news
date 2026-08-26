@@ -20,6 +20,7 @@ class Source extends Model
         'type',
         'category',
         'frequency',
+        'fetch_limit',
         'last_fetched_at',
         'is_active',
         'trusted',
