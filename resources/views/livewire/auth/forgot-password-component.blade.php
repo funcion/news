@@ -40,18 +40,7 @@
                 @enderror
             </div>
 
-            <button type="submit"
-                    wire:loading.attr="disabled"
-                    class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 mt-4">
-                <span wire:loading.remove>{{ __('ui.auth_send_reset_link_button') }}</span>
-                <span wire:loading class="flex items-center gap-2">
-                    <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>{{ __('ui.auth_processing') }}</span>
-                </span>
-            </button>
+            <button type="submit" wire:loading.attr="disabled" class="w-full py-3.5 px-6 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:active:bg-cyan-600 text-white dark:text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-cyan-600/30 dark:shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-600/40 dark:hover:shadow-cyan-500/35 border border-cyan-500/30 dark:border-cyan-400/40 transition-all duration-200 ease-out flex items-center justify-center gap-2.5 cursor-pointer select-none active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed mt-4"><span wire:loading.remove>{{ __('ui.auth_send_reset_link_button') }}</span><span wire:loading class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white dark:text-slate-950" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>{{ __('ui.auth_processing') }}</span></span></button>
         </form>
 
         <div class="text-center mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
