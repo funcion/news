@@ -1,110 +1,132 @@
-# 🛡️ Guía de Blindaje Anti-Canibalización, Deduplicación y Consolidación de Noticias
+# 🛡️ Guía de Blindaje Anti-Canibalización, Deduplicación y Consolidación de Noticias (Arquitectura Grado Industrial)
 
-Este documento describe la arquitectura, fórmulas matemáticas y directrices de ingeniería implementadas en **Glodaxia** para evitar la canibalización de palabras clave en Google y la duplicación de artículos cuando múltiples fuentes cubren la misma noticia.
+Este documento describe la arquitectura, fórmulas matemáticas, lógica de partición y directrices de ingeniería implementadas en **Glodaxia** para evitar la canibalización de palabras clave en Google y la duplicación de artículos cuando múltiples fuentes cubren la misma noticia.
 
 ---
 
-## 🎯 El Problema: Cobertura Concurrente en Medios Tech
+## 🎯 El Desafío: Cobertura Concurrente en 62 Fuentes RSS
 
-Al monitorear **62 fuentes RSS simultáneas** (*The Verge*, *Ars Technica*, *TechCrunch*, *Wired*, *The Register*, etc.), cuando ocurre un evento importante (ej. lanzamiento de hardware, vulnerabilidad zero-day o release de IA), entre 5 y 10 medios publican sobre el mismo hecho con titulares diferentes.
+Al monitorear **62 fuentes RSS simultáneas** (*The Verge*, *Ars Technica*, *TechCrunch*, *Wired*, *The Register*, etc.), cuando ocurre un evento importante de la industria tecnológica, entre 5 y 10 medios publican sobre el mismo hecho con titulares diferentes.
 
-### ⚠️ Consecuencias de No Filtrar:
-1. **Canibalización de Keywords**: 5 artículos compitiendo entre sí en Google Search, dividiendo la autoridad del dominio.
-2. **Crawl Budget Wastage**: Googlebot gasta su cuota de rastreo en páginas redundantes y deja de indexar contenido nuevo.
+### ⚠️ Consecuencias de No Filtrar Quirúrgicamente:
+1. **Canibalización de Keywords**: Múltiples artículos compitiendo entre sí en Google Search, dividiendo el tráfico y la autoridad.
+2. **Crawl Budget Wastage**: Googlebot agota su cuota de rastreo en URLs redundantes y deja sin indexar contenido nuevo.
 3. **Pérdida de Calidad E-E-A-T**: Señales de automatización masiva sin curaduría (*Scaled Content Abuse*).
 
 ---
 
-## 🏗️ La Solución: Pipeline Multi-Nivel de Deduplicación y Consolidación
+## 🏗️ La Solución: Pipeline Multi-Nivel de 5 Fases
 
 ```
-                        ┌─────────────────────────────────────┐
-                        │     Nueva Noticia Cruda Ingerida    │
-                        └──────────────────┬──────────────────┘
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ NIVEL 1: Coincidencia Estricta de URL Canónica           │
-             └─────────────────────────────┬─────────────────────────────┘
-                                           │ (¿Ya existe?)
-                                    No ────┴──── Sí ──► [Ignorado / Actualizado]
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ NIVEL 2: Coincidencia Difusa de Titular (Jaccard + Fuzzy) │
-             │  • Jaccard Token Overlap >= 70%                           │
-             │  • Similar Text >= 78%                                    │
-             └─────────────────────────────┬─────────────────────────────┘
-                                           │ (¿Duplicado?)
-                                    No ────┴──── Sí ──► [Consolidar como Update]
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ NIVEL 2.5: Deduplicación en Cola Concurrente              │
-             │  • Evita procesar dos noticias idénticas en el mismo batch│
-             └─────────────────────────────┬─────────────────────────────┘
-                                           │ (¿En cola?)
-                                    No ────┴──── Sí ──► [Ignorado]
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ NIVEL 3: Similitud Semántica pgvector (Coseno Adaptativo) │
-             │  • Ventana <= 48h: Distancia de Coseno <= 0.28            │
-             │  • Ventana > 48h:  Distancia de Coseno <= 0.20            │
-             └─────────────────────────────┬─────────────────────────────┘
-                                           │ (¿Misma historia?)
-                                    No ────┴──── Sí ──► [Consolidar como Update]
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ NIVEL 4: Guardián Editorial de Relevancia (Gatekeeper)    │
-             │  • Requiere Importancia >= 7 / 10                         │
-             │  • Requiere Fuente Verificada (Trusted) si score < 7      │
-             │  • Filtro de contenido sensible o potencialmente falso    │
-             └─────────────────────────────┬─────────────────────────────┘
-                                           │ (¿Pasa el corte?)
-                                   Sí ─────┴───── No ─► [Ignorado]
-                                           │
-                                           ▼
-             ┌───────────────────────────────────────────────────────────┐
-             │ 🚀 Redacción Bilingüe del Artículo Pilar (700-1300 pal.)  │
-             └───────────────────────────────────────────────────────────┘
+                         ┌──────────────────────────────────────┐
+                         │     Nueva Noticia Cruda Ingerida     │
+                         └──────────────────┬───────────────────┘
+                                            │
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 1: Coincidencia Estricta de URL Canónica              │
+              └─────────────────────────────┬──────────────────────────────┘
+                                            │ (¿Ya existe?)
+                                     No ────┴──── Sí ──► [Ignorado / Actualizado]
+                                            │
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 2: Extracción IA de Slug Canónico (`event_slug`)      │
+              │  • Ejemplo: 'apple-m5-ultra-mac-studio-launch-2026'        │
+              │  • Búsqueda en ventana de 36 horas en base de datos        │
+              └─────────────────────────────┬──────────────────────────────┘
+                                            │ (¿Slug idéntico?)
+                                     No ────┴──── Sí ──► [Consolidar como Update]
+                                            │
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 2.5: Coincidencia Difusa de Titular (Jaccard + Fuzzy) │
+              │  • Jaccard Token Overlap >= 70% | Similar Text >= 78%      │
+              │  • In-Queue Deduplication (evita colisiones en mismo batch)│
+              └─────────────────────────────┬──────────────────────────────┘
+                                            │ (¿Duplicado?)
+                                     No ────┴──── Sí ──► [Consolidar / Ignorado]
+                                            │
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 3: Partición Vectorial por Categoría (`pgvector`)     │
+              │  • Consulta: WHERE category_id = X AND created_at >= -48h  │
+              │  • Fórmula: Cosine Distance (<=>)                          │
+              └─────────────────────────────┬──────────────────────────────┘
+                                            │
+               ┌────────────────────────────┼────────────────────────────┐
+               │                            │                            │
+               ▼ (< 0.18)                   ▼ (0.18 - 0.35)              ▼ (> 0.35)
+      [Duplicado Exacto]             [ZONA GRIS / AMBIGUA]         [Noticia Única]
+               │                            │                            │
+               ▼                            ▼                            │
+      [Consolidar Update]         ┌───────────────────┐                  │
+                                  │   LLM-as-a-Judge  │                  │
+                                  │ (Evaluación Flash)│                  │
+                                  └─────────┬─────────┘                  │
+                                            │                            │
+                            ┌───────────────┼───────────────┐            │
+                            ▼               ▼               ▼            │
+                       [FUSIONAR]      [DESCARTAR]     [PUBLICAR]        │
+                            │               │               │            │
+                            ▼               ▼               └────────────┼──┐
+                   [Consolidar Update]  [Ignorado]                       │  │
+                                                                         │  │
+                                            ┌────────────────────────────┘  │
+                                            │ ◄─────────────────────────────┘
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 4: Guardián Editorial de Importancia (Score >= 7)     │
+              │  • Requiere Importancia >= 7 / 10 (o Fuente Trusted)       │
+              │  • 🚀 BYPASS BREAKING NEWS: Si Score >= 9, publicación     │
+              │    inmediata garantizada                                   │
+              └─────────────────────────────┬──────────────────────────────┘
+                                            │ (¿Pasa el corte?)
+                                    Sí ─────┴───── No ──► [Ignorado]
+                                            │
+                                            ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │ FASE 5: Redacción Bilingüe del Artículo Pilar (700-1300 p) │
+              └────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🧮 1. Distancia de Cosenos Vectorial en PostgreSQL (`pgvector`)
+## 🧮 1. Partición Vectorial por Categoría y Distancia de Cosenos
 
-El sistema convierte el título y resumen de la noticia en un vector denso de **1536 dimensiones** mediante el modelo de embeddings:
+Para evitar falsos positivos entre industrias distintas (ejemplo: *Nvidia anuncia GPU RTX 5000* vs *AMD anuncia GPU RX 9000*), la búsqueda en `pgvector` está estrictamente **particionada por la categoría del artículo**:
 
-$$	ext{Cosine Distance}(u, v) = 1 - rac{u \cdot v}{\|u\|_2 \|v\|_2}$$
-
-* **$	ext{Distancia} = 0.00$**: Textos idénticos.
-* **$	ext{Distancia} \le 0.28$ (en las últimas 48 horas)**: **Misma Noticia** cubierta por dos medios distintos con diferente ángulo (ej: *"Apple unveils M5"* vs *"New Mac Studio launched with M5 Ultra"*).
-* **Acción**: En lugar de crear un segundo post redundante, el sistema anexa la segunda fuente como un **`ArticleUpdate`** en el artículo original.
+$$	ext{Query: } 	ext{SELECT id FROM articles WHERE category\_id = \$cat AND created\_at} \ge 	ext{now() - 48h ORDER BY embedding } \Leftrightarrow 	ext{ \$vector}$$
 
 ---
 
-## 📰 2. Fusión y Enriquecimiento Multi-Fuente (*Story Consolidation*)
+## ⚖️ 2. El "LLM-as-a-Judge" para la Zona Gris ($0.18 \le 	ext{Distancia} \le 0.35$)
 
-Cuando una segunda o tercera fuente cubre una noticia ya existente:
-1. El artículo original conserva su URL y posicionamiento SEO.
-2. Se actualiza su fecha `updated_at`.
-3. Se anexa la fuente a la sección de **Cobertura Multi-Medio / Fuentes Consultadas**.
-4. **Beneficio E-E-A-T**: Para Google, un artículo que cita a *TechCrunch*, *The Verge* y *Reuters* en una sola pieza tiene mucha mayor autoridad que 3 artículos separados de 300 palabras.
+Cuando dos artículos tienen similitud semántica cercana pero no idéntica:
+* Un modelo ultra-rápido evalúa los dos resúmenes y emite un veredicto formal:
+  - **`FUSIONAR`**: Mismo hecho noticioso de otra fuente. Se anexa como actualización complementaria.
+  - **`DESCARTAR`**: Duplicado menor o eco de prensa sin ningún dato nuevo.
+  - **`PUBLICAR`**: Trata un hecho distinto o aporta un ángulo técnico/financiero radicalmente nuevo que amerita un artículo independiente.
 
 ---
 
-## 🎯 3. Guardián Editorial de Importancia ($	ext{Score} \ge 7$)
+## 🔒 3. Fusión E-E-A-T Inmutable (Núcleo + Apéndice con Ventana de 6 Horas)
 
-Para mantener un ritmo editorial humano y profesional de **15 a 30 artículos de élite por día**:
-* La fase de clasificación evalúa la importancia intrínseca de la noticia (1 al 10).
-* Solo pasan a redacción las noticias con **$	ext{Importancia} \ge 7$** (noticias mayores, anuncios oficiales, descubrimientos, lanzamientos y análisis de fondo).
-* Las notas menores, rumores no contrastados o notas de relleno son marcadas como `ignored`, ahorrando tokens y protegiendo el *Crawl Budget*.
+* **Inmutabilidad del Núcleo**: El `H1`, el primer párrafo y la `URL` original son **100% inmutables** para preservar las señales de rastreo e indexación que Googlebot ya procesó.
+* **Apéndice de Cobertura**: Las fuentes consolidadas se agregan como confirmaciones adicionales en la tabla `article_updates`.
+* **Ventana de Frescura**: Solo se actualiza la fecha `updated_at` si el artículo original tiene menos de **6 horas de vida**.
+
+---
+
+## 🚀 4. Bypass de Emergencia para Breaking News ($	ext{Importance} \ge 9$)
+
+Si ocurre un acontecimiento de impacto masivo mundial (ej. falla global de infraestructura, quiebra de una Big Tech o fallo crítico de ciberseguridad nacional):
+* Se activa el **Bypass de Alta Prioridad**.
+* La noticia se redacta y publica de inmediato sin importar cuotas ni límites diarios.
 
 ---
 
 ## ⚙️ Archivos del Sistema Involucrados:
-* [`app/Services/AI/DuplicateCheckerService.php`](../app/Services/AI/DuplicateCheckerService.php): Motor de similitud vectorial y fuzzy.
-* [`app/Jobs/ProcessArticleWithAIJob.php`](../app/Jobs/ProcessArticleWithAIJob.php): Guardián editorial y pipeline de redacción.
+* [`app/Services/AI/DuplicateCheckerService.php`](../app/Services/AI/DuplicateCheckerService.php): Motor de partición vectorial, slug canónico y LLM Judge.
+* [`app/Jobs/ProcessArticleWithAIJob.php`](../app/Jobs/ProcessArticleWithAIJob.php): Guardián editorial, clasificación enriquecida y bypass de Breaking News.
 * [`config/global.php`](../config/global.php): Metas de palabras y reglas editoriales.

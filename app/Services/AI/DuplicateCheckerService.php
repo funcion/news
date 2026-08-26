@@ -10,37 +10,40 @@ use Illuminate\Support\Facades\Log;
 
 class DuplicateCheckerService
 {
-    protected OpenRouterService $ai;
-
-    public function __construct(OpenRouterService $ai)
-    {
-        $this->ai = $ai;
-    }
+    public function __construct(
+        protected OpenRouterService $ai
+    ) {}
 
     /**
      * Comprehensive multi-tier duplicate check:
-     * - Level 1: URL / Canonical / Hash matching
-     * - Level 2: Title normalization and Fuzzy/Lexical similarity (> 75%)
-     * - Level 2.5: In-Queue duplicate check against pending raw articles
-     * - Level 3: Semantic embedding cosine similarity via pgvector (< 0.18 distance)
+     * - Level 1: URL / Canonical matching
+     * - Level 2: Canonical Event Slug matching (within 36h)
+     * - Level 2.5: Title normalization and Fuzzy/Lexical similarity (> 75%)
+     * - Level 3: Category-partitioned Semantic pgvector embedding (< 0.18 exact, 0.18-0.35 LLM Judge)
      *
      * Returns true if a duplicate is found (and handled), false if it is genuinely new.
      */
-    public function checkAndHandleDuplicate(string $title, string $content, string $url, int $rawArticleId): bool
-    {
+    public function checkAndHandleDuplicate(
+        string $title,
+        string $content,
+        string $url,
+        int $rawArticleId,
+        ?int $categoryId = null,
+        ?string $canonicalEventSlug = null,
+        ?string $summary = null
+    ): bool {
         // Sanitize string encodings to guarantee only valid UTF-8
         $title   = mb_convert_encoding(trim($title), 'UTF-8', 'UTF-8');
         $content = mb_convert_encoding(trim($content), 'UTF-8', 'UTF-8');
         $cleanTitle = $this->normalizeTitle($title);
 
-        Log::info("Running Anti-Duplicate Check for RawArticle #{$rawArticleId}: '{$title}'");
+        Log::info("Running Anti-Duplicate Check for RawArticle #{$rawArticleId}: '{$title}' (Category: " . ($categoryId ?? 'None') . ", Slug: " . ($canonicalEventSlug ?? 'None') . ")");
 
         // ═══════════════════════════════════════════════════════════════════════
         // LEVEL 1: Exact URL / Canonical URL Check
         // ═══════════════════════════════════════════════════════════════════════
         $normalizedUrl = $this->normalizeUrl($url);
         
-        // Check if this URL is already attached as an update to an existing article
         $existingUpdate = ArticleUpdate::where('source_url', $url)
             ->orWhere('source_url', $normalizedUrl)
             ->first();
@@ -51,7 +54,6 @@ class DuplicateCheckerService
             return true;
         }
 
-        // Check if another processed raw article has the exact same URL or hash
         $existingRaw = RawArticle::where('id', '!=', $rawArticleId)
             ->whereIn('status', ['processed', 'ignored'])
             ->where(function ($q) use ($url, $normalizedUrl) {
@@ -67,43 +69,40 @@ class DuplicateCheckerService
         }
 
         // ═══════════════════════════════════════════════════════════════════════
-        // LEVEL 2: Title Normalization & Fuzzy / Lexical Similarity
+        // LEVEL 2: Canonical Event Slug Check (Last 36h)
         // ═══════════════════════════════════════════════════════════════════════
-        // 1. Direct and substring matches in published articles
-        $exactOrSubstring = Article::where('status', 'published')
-            ->where(function ($q) use ($title, $cleanTitle) {
-                $q->whereRaw("LOWER(title->>'en') = ?", [mb_strtolower($cleanTitle, 'UTF-8')])
-                  ->orWhereRaw("LOWER(title->>'es') = ?", [mb_strtolower($cleanTitle, 'UTF-8')])
-                  ->orWhereRaw("title->>'en' ILIKE ?", ["%{$cleanTitle}%"])
-                  ->orWhereRaw("title->>'es' ILIKE ?", ["%{$cleanTitle}%"]);
-            })
-            ->first();
+        if (!empty($canonicalEventSlug)) {
+            $eventMatch = Article::where('status', 'published')
+                ->where('created_at', '>=', now()->subHours(36))
+                ->whereRaw("ai_metadata->>'event_slug_canonical' = ?", [$canonicalEventSlug])
+                ->first();
 
-        if ($exactOrSubstring) {
-            Log::info("Level 2 Duplicate found by Title Match: Article ID {$exactOrSubstring->id}");
-            $this->createUpdateEntry($exactOrSubstring, $url, $rawArticleId);
-            return true;
+            if ($eventMatch) {
+                Log::info("Level 2 Canonical Event Match! Article ID {$eventMatch->id} shares event slug '{$canonicalEventSlug}'. Consolidating as update.");
+                $this->createUpdateEntry($eventMatch, $url, $rawArticleId);
+                return true;
+            }
         }
 
-        // 2. Fuzzy / Levenshtein / Token Overlap matching on recent articles (last 30 days)
+        // ═══════════════════════════════════════════════════════════════════════
+        // LEVEL 2.5: Fuzzy/Lexical Title Matching (Last 30 days)
+        // ═══════════════════════════════════════════════════════════════════════
         $recentArticles = Article::where('status', 'published')
             ->where('created_at', '>=', now()->subDays(30))
-            ->get(['id', 'title']);
+            ->get(['id', 'title', 'created_at']);
 
         foreach ($recentArticles as $existingArt) {
             $existingTitleEn = $this->normalizeTitle($existingArt->getTranslation('title', 'en') ?? '');
             $existingTitleEs = $this->normalizeTitle($existingArt->getTranslation('title', 'es') ?? '');
 
             if ($this->isTitleFuzzyMatch($cleanTitle, $existingTitleEn) || $this->isTitleFuzzyMatch($cleanTitle, $existingTitleEs)) {
-                Log::info("Level 2 Fuzzy Duplicate found (>75% similarity): Article ID {$existingArt->id} ('{$existingTitleEn}')");
+                Log::info("Level 2.5 Fuzzy Duplicate found (>75% similarity): Article ID {$existingArt->id} ('{$existingTitleEn}')");
                 $this->createUpdateEntry($existingArt, $url, $rawArticleId);
                 return true;
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // LEVEL 2.5: In-Queue Deduplication against pending raw articles
-        // ═══════════════════════════════════════════════════════════════════════
+        // In-Queue Deduplication against pending raw articles
         $pendingDuplicate = RawArticle::where('id', '<', $rawArticleId)
             ->where('status', 'pending')
             ->where(function ($q) use ($cleanTitle) {
@@ -113,15 +112,15 @@ class DuplicateCheckerService
             ->first();
 
         if ($pendingDuplicate) {
-            Log::info("Level 2.5 In-Queue Duplicate found: RawArticle #{$rawArticleId} duplicate of earlier pending #{$pendingDuplicate->id}");
+            Log::info("Level 2.5 In-Queue Duplicate: RawArticle #{$rawArticleId} duplicate of pending #{$pendingDuplicate->id}");
             RawArticle::where('id', $rawArticleId)->update(['status' => 'ignored']);
             return true;
         }
 
         // ═══════════════════════════════════════════════════════════════════════
-        // LEVEL 3: Advanced Semantic pgvector Embedding Similarity & Clustering
+        // LEVEL 3: Category-Partitioned Semantic pgvector Embedding Similarity
         // ═══════════════════════════════════════════════════════════════════════
-        $textToEmbed = mb_substr($title . ". " . strip_tags($content), 0, 1000, 'UTF-8');
+        $textToEmbed = mb_substr($title . ". " . strip_tags($summary ?? $content), 0, 1000, 'UTF-8');
         $embedding = $this->ai->embeddings($textToEmbed);
 
         if (!$embedding) {
@@ -131,13 +130,17 @@ class DuplicateCheckerService
 
         $vectorString = '[' . implode(',', $embedding) . ']';
 
-        // Query pgvector for closest semantic article in the last 30 days
-        $similarArticle = Article::select('id', 'title', 'embedding', 'created_at')
+        // Query pgvector strictly partitioned within the SAME category (or global if category null) in the last 48 hours
+        $query = Article::select('id', 'title', 'excerpt', 'embedding', 'created_at')
             ->where('status', 'published')
             ->whereNotNull('embedding')
-            ->where('created_at', '>=', now()->subDays(30))
-            ->orderByRaw("embedding <=> ?::vector", [$vectorString])
-            ->first();
+            ->where('created_at', '>=', now()->subHours(48));
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        $similarArticle = $query->orderByRaw("embedding <=> ?::vector", [$vectorString])->first();
 
         if ($similarArticle) {
             $distanceResult = DB::selectOne(
@@ -146,19 +149,30 @@ class DuplicateCheckerService
             );
 
             $distance = (float) ($distanceResult->distance ?? 1.0);
-            $hoursDiff = $similarArticle->created_at ? now()->diffInHours($similarArticle->created_at) : 999;
-            
-            // Adaptive Cosine Distance Threshold:
-            // - Within 48 hours (breaking news cycle): Threshold 0.28 captures cross-outlet coverage (The Verge vs Ars Technica)
-            // - Older than 48 hours: Threshold 0.20 for evergreen/identical topic match
-            $maxDistanceThreshold = ($hoursDiff <= 48) ? 0.28 : 0.20;
+            Log::info("Level 3 Semantic check: Closest Article ID {$similarArticle->id} in category {$categoryId} has cosine distance {$distance}");
 
-            Log::info("Level 3 Semantic check: Closest Article ID {$similarArticle->id} has cosine distance {$distance} (Threshold: {$maxDistanceThreshold}, Age: {$hoursDiff}h)");
-
-            if ($distance <= $maxDistanceThreshold) {
-                Log::info("Level 3 Semantic Duplicate detected! Cosine Distance {$distance} <= {$maxDistanceThreshold} with Article ID {$similarArticle->id}. Consolidating into existing story.");
+            // 1. Exact Semantic Duplicate (< 0.18)
+            if ($distance < 0.18) {
+                Log::info("Level 3 Exact Duplicate: Cosine Distance {$distance} < 0.18 with Article ID {$similarArticle->id}. Consolidating.");
                 $this->createUpdateEntry($similarArticle, $url, $rawArticleId);
                 return true;
+            }
+
+            // 2. Grey Zone (0.18 - 0.35) -> LLM-as-a-Judge Evaluation
+            if ($distance >= 0.18 && $distance <= 0.35) {
+                Log::info("Level 3 Grey Zone ({$distance}): Invoking LLM Judge for disambiguation between Article #{$similarArticle->id} and RawArticle #{$rawArticleId}...");
+                $verdict = $this->evaluateWithLLMJudge($similarArticle, $title, $summary ?? mb_substr(strip_tags($content), 0, 400, 'UTF-8'));
+                
+                Log::info("LLM Judge Verdict: {$verdict} for RawArticle #{$rawArticleId}");
+
+                if ($verdict === 'FUSIONAR') {
+                    $this->createUpdateEntry($similarArticle, $url, $rawArticleId);
+                    return true;
+                } elseif ($verdict === 'DESCARTAR') {
+                    RawArticle::where('id', $rawArticleId)->update(['status' => 'ignored']);
+                    return true;
+                }
+                // If 'PUBLICAR', pass through as a distinct new angle/editorial piece
             }
         }
 
@@ -166,17 +180,57 @@ class DuplicateCheckerService
     }
 
     /**
+     * Ultra-fast, lightweight LLM-as-a-Judge to disambiguate grey-zone story pairs.
+     */
+    protected function evaluateWithLLMJudge(Article $candidateArticle, string $newTitle, string $newSummary): string
+    {
+        $existingTitle = $candidateArticle->getTranslation('title', 'es') ?: $candidateArticle->getTranslation('title', 'en');
+        $existingExcerpt = $candidateArticle->getTranslation('excerpt', 'es') ?: $candidateArticle->getTranslation('excerpt', 'en') ?: mb_substr(strip_tags($candidateArticle->getTranslation('content', 'es') ?? ''), 0, 300);
+
+        $prompt = <<<JUDGE_PROMPT
+Eres un juez editorial de precision para un medio tecnologico.
+Determina la relacion entre un articulo ya publicado (A) y una nueva noticia entrante (B):
+
+ARTICULO A (Ya publicado):
+- Titulo: {$existingTitle}
+- Resumen: {$existingExcerpt}
+
+NOTICIA B (Entrante):
+- Titulo: {$newTitle}
+- Resumen: {$newSummary}
+
+INSTRUCCIONES:
+1. Responde 'FUSIONAR' si B cuenta exactamente el mismo hecho/suceso noticioso que A (misma noticia de diferente fuente).
+2. Responde 'DESCARTAR' si B es un duplicado menor, irrelevante o un eco sin ningun dato nuevo.
+3. Responde 'PUBLICAR' si B trata sobre un hecho distinto, un producto diferente o aporta un angulo de analisis tecnico/financiero radicalmente nuevo que amerita su propio articulo independiente.
+
+Responde UNICAMENTE con una palabra: FUSIONAR, DESCARTAR o PUBLICAR.
+JUDGE_PROMPT;
+
+        try {
+            $response = $this->ai->complete($prompt, [
+                'temperature' => 0.0,
+                'max_tokens'  => 10,
+            ]);
+
+            $cleanVerdict = strtoupper(trim(preg_replace('/[^A-Z]/', '', $response ?? 'PUBLICAR')));
+            if (in_array($cleanVerdict, ['FUSIONAR', 'DESCARTAR', 'PUBLICAR'])) {
+                return $cleanVerdict;
+            }
+        } catch (\Throwable $e) {
+            Log::warning("LLM Judge evaluation failed: " . $e->getMessage() . ". Defaulting to PUBLICAR.");
+        }
+
+        return 'PUBLICAR';
+    }
+
+    /**
      * Clean and normalize title by stripping media outlets branding suffixes and punctuation.
      */
     protected function normalizeTitle(string $title): string
     {
-        // Strip common publication branding (e.g., "- TechCrunch", "| The Verge", " - Reuters")
         $cleaned = preg_replace('/\s*[-|–—]\s*(TechCrunch|The Verge|Wired|Hacker News|Reuters|Bloomberg|CNBC|VentureBeat|Ars Technica|Engadget|Gizmodo|ZDNet|The Information|CoinDesk|Decrypt|Cointelegraph|The Register|9to5Mac|9to5Google|Android Police|The Next Web).*$/iu', '', $title);
-        
-        // Strip non-alphanumeric punctuation (preserve spaces)
         $cleaned = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $cleaned ?? $title);
-        
-        // Collapse multiple whitespaces
         $cleaned = preg_replace('/\s+/', ' ', $cleaned);
 
         return trim($cleaned);
@@ -184,7 +238,6 @@ class DuplicateCheckerService
 
     /**
      * Compare two titles using Token Overlap (Jaccard) and similar_text.
-     * Returns true if similarity exceeds 75%.
      */
     protected function isTitleFuzzyMatch(string $title1, string $title2): bool
     {
@@ -199,13 +252,11 @@ class DuplicateCheckerService
             return true;
         }
 
-        // similar_text percentage
         similar_text($t1, $t2, $percent);
         if ($percent >= 78.0) {
             return true;
         }
 
-        // Token Jaccard overlap for words of length >= 4
         $words1 = array_filter(explode(' ', $t1), fn($w) => mb_strlen($w, 'UTF-8') >= 4);
         $words2 = array_filter(explode(' ', $t2), fn($w) => mb_strlen($w, 'UTF-8') >= 4);
 
@@ -240,7 +291,7 @@ class DuplicateCheckerService
     }
 
     /**
-     * Attach this new raw source as an update to an existing article.
+     * Attach this new raw source as an update to an existing article (Immutable Core + 6h Window).
      */
     protected function createUpdateEntry(Article $article, string $url, int $rawArticleId): void
     {
@@ -261,7 +312,11 @@ class DuplicateCheckerService
         if ($raw) {
             $raw->update(['status' => 'processed']);
         }
-        $article->touch(); // Bump updated_at
+
+        // Only touch updated_at if the article is within the 6-hour breaking news window
+        if ($article->created_at && $article->created_at->greaterThan(now()->subHours(6))) {
+            $article->touch();
+        }
         
         Log::info("Attached RawArticle #{$rawArticleId} as update to Article ID {$article->id}.");
     }

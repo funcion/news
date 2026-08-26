@@ -136,12 +136,33 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        // --- NEW: DUPLICATE CHECK LEVEL 2 & 3 ---
+        // Extract category for partitioned semantic check
+        $categoryName = $classification['category_name'] ?? '';
+        $matchedCategory = \App\Models\Category::active()
+            ->where(function ($q) use ($categoryName) {
+                $q->where('name->en', 'ILIKE', "%{$categoryName}%")
+                  ->orWhere('name->es', 'ILIKE', "%{$categoryName}%")
+                  ->orWhere('slug', 'ILIKE', "%" . \Illuminate\Support\Str::slug($categoryName) . "%");
+            })
+            ->first();
+        $categoryId = $matchedCategory?->id;
+        $canonicalEventSlug = $classification['event_slug_canonical'] ?? null;
+        $summaryText = !empty($classification['facts']) ? implode('. ', $classification['facts']) : ($this->rawArticle->summary ?? null);
+
+        // Priority Bypass for Breaking News (Importance >= 9)
+        if (($classification['importance'] ?? 5) >= 9) {
+            Log::info("🚀 BREAKING NEWS BYPASS: RawArticle #{$this->rawArticle->id} has maximum importance ({$classification['importance']}/10). Expediting.");
+        }
+
+        // --- DUPLICATE CHECK LEVEL 1, 2, 2.5 & 3 WITH CATEGORY PARTITION & LLM JUDGE ---
         $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
              $this->rawArticle->title ?? '',
              $this->rawArticle->content ?? '',
              $this->rawArticle->url ?? '',
-             $this->rawArticle->id
+             $this->rawArticle->id,
+             $categoryId,
+             $canonicalEventSlug,
+             $summaryText
         );
 
         if ($isDuplicate) {
@@ -674,6 +695,8 @@ Respond in STRICT JSON (no markdown):
     "category_name": "AI / IA",
     "content_type": "news",
     "importance": 8,
+    "primary_entity": "Apple",
+    "event_slug_canonical": "apple-m5-ultra-mac-studio-launch-2026",
     "facts": ["key fact 1", "key fact 2", "key fact 3"]
 }
 
@@ -682,6 +705,8 @@ Rules:
 - category_name: MUST exactly match one of the VALID CATEGORIES listed above. Use the English name part before the slash. If NONE of the valid categories fit, set is_relevant to false.
 - content_type: one of: news, blog, guide, review, pillar
 - importance: 1-10 based on editorial relevance
+- primary_entity: Main company, project, technology, or person at the center of the story (e.g., "Apple", "OpenAI", "Nvidia", "Oracle", "Linux Kernel")
+- event_slug_canonical: Lowercase hyphenated canonical event identifier in English, capturing entity, specific action, and year (e.g., "apple-m5-ultra-mac-studio-launch-2026", "oracle-weblogic-zero-day-cisa-deadline-2026", "nvidia-rtx-5090-pricing-announcement-2026")
 - facts: 3-7 concise key facts extracted from the article IN ENGLISH (always translate facts to English)
 - is_sensitive: set to TRUE if the content involves: graphic violence, hate speech, explicit sexual content, illegal activities, self-harm, terrorism, or content that could cause legal liability
 - is_potentially_false: set to TRUE if the article contains obvious misinformation, fabricated statistics, conspiracy theories, unverified claims presented as fact, or reads like propaganda/sponsored content disguised as news
