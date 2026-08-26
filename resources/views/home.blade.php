@@ -60,29 +60,37 @@
     </x-slot>
 
     <!-- Page Header (Magazine Style) -->
-    <div class="mb-8 pb-4 lg:mb-14 lg:pb-8 border-b border-gray-100 dark:border-white/5 relative">
-        <div class="absolute -left-10 top-0 bottom-8 w-1 bg-cyan-500 rounded-lg opacity-0 lg:opacity-100"></div>
+    <div class="mb-8 pb-6 lg:mb-12 lg:pb-8 border-b border-gray-100 dark:border-white/5 relative">
         @if(isset($category))
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.browsing_category') }}</p>
-            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-4">
+                <span>📁</span>
+                <span>{{ __('ui.browsing_category') }}</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
                 {{ $category->name }}
             </h1>
             @if($category->description)
-                <p class="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+                <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed font-normal">
                     {{ $category->description }}
                 </p>
             @endif
         @elseif(isset($tag))
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.topic') }}</p>
-            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-4">
+                <span>🏷️</span>
+                <span>{{ __('ui.topic') }}</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
                 #{{ $tag->name }}
             </h1>
         @else
-            <p class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] mb-4">{{ __('ui.the_editorial') }}</p>
-            <h1 class="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-4">
+                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                <span>{{ __('ui.the_editorial') }}</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
                 {{ __('ui.editorial_title') }}
             </h1>
-            <p class="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed font-medium">
+            <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed font-normal">
                 {{ __('ui.editorial_subtitle') }}
             </p>
         @endif
