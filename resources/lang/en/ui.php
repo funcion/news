@@ -120,4 +120,12 @@ return array (
   'auth_profile' => 'Profile',
   'auth_my_account' => 'My Account',
   'admin_panel' => 'Admin Panel',
+  'auth_verify_email_sent_title' => 'Almost there! Check your email',
+  'auth_verify_email_sent_desc' => 'We have sent a confirmation link to:',
+  'auth_verify_instruction_title' => 'One last step to activate your account',
+  'auth_verify_instruction_text' => 'Click the confirmation button inside the email to activate your account and log in automatically to Glodaxia.',
+  'auth_resend_verification_button' => 'Resend confirmation email',
+  'auth_verification_link_sent' => 'A new confirmation link has been sent to your email.',
+  'auth_email_verified_success' => 'Your email has been successfully verified! Welcome to Glodaxia.',
+  'auth_email_unverified_warning' => 'Your account requires email verification before logging in. Please check your inbox.',
 );

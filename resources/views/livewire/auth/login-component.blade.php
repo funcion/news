@@ -16,6 +16,25 @@
             </p>
         </div>
 
+                @if ($resendSuccess)
+            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center gap-3">
+                <span>✓</span>
+                <span>{{ $resendSuccess }}</span>
+            </div>
+        @endif
+
+        @if ($showResendOption)
+            <div class="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300">
+                <p class="font-bold mb-2 flex items-center gap-1.5">
+                    <span>⚠️</span> {{ __('ui.auth_email_unverified_warning') }}
+                </p>
+                <button wire:click="resendVerification"
+                        type="button"
+                        class="text-xs font-black text-cyan-600 dark:text-cyan-400 hover:underline">
+                    → {{ __('ui.auth_resend_verification_button') }}
+                </button>
+            </div>
+        @endif
         @if (session('status'))
             <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center gap-3">
                 <span>✓</span>

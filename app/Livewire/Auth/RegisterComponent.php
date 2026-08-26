@@ -3,10 +3,10 @@
 namespace App\Livewire\Auth;
 
 use App\Actions\Fortify\CreateNewUser;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class RegisterComponent extends Component
 {
@@ -15,6 +15,10 @@ class RegisterComponent extends Component
     public string $password = '';
     public string $password_confirmation = '';
     public bool $terms = false;
+
+    public bool $registeredSuccess = false;
+    public string $registeredEmail = '';
+    public ?string $resendStatus = null;
 
     public function register(CreateNewUser $creator)
     {
@@ -34,9 +38,21 @@ class RegisterComponent extends Component
             'password_confirmation' => $this->password_confirmation,
         ]);
 
-        Auth::login($user);
+        // Send Email Verification Link
+        event(new Registered($user));
 
-        return redirect()->intended(LaravelLocalization::localizeUrl('/'));
+        $this->registeredEmail = $this->email;
+        $this->registeredSuccess = true;
+    }
+
+    public function resendVerification()
+    {
+        $user = User::where('email', $this->registeredEmail)->first();
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+            $this->resendStatus = __('ui.auth_verification_link_sent');
+        }
     }
 
     #[Layout('components.layouts.app')]

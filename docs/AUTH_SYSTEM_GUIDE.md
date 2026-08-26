@@ -104,6 +104,24 @@ Todas las rutas públicas de autenticación se gestionan con `Mcamara\LaravelLoc
 
 ---
 
+
+---
+
+## ✉️ 5. Flujo de Registro con Verificación por Correo (Double Opt-In + Auto-Login)
+
+Para garantizar la autenticidad de los lectores y proteger la plataforma contra spam o correos falsos:
+
+1. **Registro:** El lector llena el formulario de registro (`/register`).
+2. **Creación con Estado Pendiente:** La cuenta se crea con `email_verified_at = null` y el usuario permanece **cerrado (Logged Out)**.
+3. **Despacho del Enlace Firmado:** Se dispara el evento `Registered`, enviando una notificación con una URL firmada criptográficamente (`/email/verify/{id}/{hash}?expires=...&signature=...`) a su correo (capturado en Mailpit en entorno local).
+4. **Pantalla de Espera Reactiva:** El formulario muestra una pantalla informativa indicando al usuario que revise su bandeja de entrada con opción de reenviar el enlace.
+5. **Verificación e Inicio de Sesión en 1 Clic:** Al hacer clic en el botón de su correo:
+   - Laravel valida la firma digital.
+   - Marca la cuenta como verificada (`email_verified_at = now()`).
+   - **Inicia sesión automáticamente (`Auth::login($user, true)`)**.
+   - Redirige al lector al inicio con un mensaje de bienvenida.
+6. **Protección en el Login:** Si un usuario no verificado intenta ingresar por el formulario de login tradicional, el sistema bloquea el acceso y le ofrece un botón directo para reenviar su enlace de confirmación.
+
 ## 🛠️ 6. Configuración de Google OAuth (Producción y Mock Local)
 
 ### Variables en `.env` para Producción

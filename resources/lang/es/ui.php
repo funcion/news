@@ -120,4 +120,12 @@ return array (
   'auth_profile' => 'Perfil',
   'auth_my_account' => 'Mi Cuenta',
   'admin_panel' => 'Panel de Administración',
+  'auth_verify_email_sent_title' => '¡Casi listo! Revisa tu correo',
+  'auth_verify_email_sent_desc' => 'Hemos enviado un enlace de confirmación a:',
+  'auth_verify_instruction_title' => 'Un último paso para activar tu cuenta',
+  'auth_verify_instruction_text' => 'Haz clic en el botón de confirmación en el correo para activar tu cuenta e ingresar automáticamente a Glodaxia.',
+  'auth_resend_verification_button' => 'Reenviar correo de confirmación',
+  'auth_verification_link_sent' => 'Se ha enviado un nuevo enlace de confirmación a tu correo.',
+  'auth_email_verified_success' => '¡Tu correo ha sido verificado con éxito! Bienvenido a Glodaxia.',
+  'auth_email_unverified_warning' => 'Tu cuenta requiere verificación por correo antes de ingresar. Revisa tu bandeja de entrada.',
 );

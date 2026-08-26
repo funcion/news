@@ -67,6 +67,36 @@ Route::group([
     Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
     Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
 
+    // Email Verification Route (Signed URL with Auto-Login on Click)
+    Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
+        $user = \App\Models\User::findOrFail($id);
+
+        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Invalid verification link.');
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+            event(new \Illuminate\Auth\Events\Verified($user));
+        }
+
+        // Auto-login the user immediately upon clicking the verification link
+        \Illuminate\Support\Facades\Auth::login($user, true);
+
+        return redirect(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/'))
+            ->with('status', __('ui.auth_email_verified_success'));
+    })->middleware(['signed'])->name('verification.verify');
+
+    // Resend Email Verification Route
+    Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+        $email = $request->input('email');
+        $user = \App\Models\User::where('email', $email)->first();
+        if ($user && !$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
+        return back()->with('status', __('ui.auth_verification_link_sent'));
+    })->middleware(['throttle:6,1'])->name('verification.send');
+
     // --- AUTHENTICATION ROUTES (Livewire 4 + Fortify Headless) ---
     Route::middleware('guest')->group(function () {
         Route::get('/login', \App\Livewire\Auth\LoginComponent::class)->name('login');
