@@ -80,6 +80,19 @@ class EditCategory extends EditRecord
                         \Filament\Notifications\Notification::make()->danger()->title('❌ Falló la generación de la imagen.')->send();
                     }
                 }),
+            Actions\Action::make('delete_cover_images')
+                ->label('🗑️ Eliminar Portada R2')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('¿Eliminar portada de Cloudflare R2?')
+                ->modalDescription('Esta acción eliminará de forma permanente los archivos WebP de Cloudflare R2 y de la base de datos.')
+                ->visible(fn () => $this->getRecord()->hasMedia('images_en') || $this->getRecord()->hasMedia('images_es'))
+                ->action(function () {
+                    $category = $this->getRecord();
+                    $category->clearMediaCollection('images_en');
+                    $category->clearMediaCollection('images_es');
+                    \Filament\Notifications\Notification::make()->success()->title('🗑️ Portada eliminada de Cloudflare R2 con éxito.')->send();
+                }),
             Actions\DeleteAction::make(),
         ];
     }

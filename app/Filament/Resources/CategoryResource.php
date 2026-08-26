@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Actions\Action;
@@ -95,12 +96,44 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('description', 'en'));
                                                 }
                                             }),
-                                        SpatieMediaLibraryFileUpload::make('image_en')
+                                        Placeholder::make('image_en')
                                             ->label('Cover Image (EN) - 100% AI Generated')
-                                            ->collection('images_en')
-                                            ->image()
-                                            ->disabled() // Impide subida manual, solo visualización
-                                            ->deletable(false)
+                                            ->content(function ($record) {
+                                                if (!$record) {
+                                                    return new \Illuminate\Support\HtmlString('<p class="text-xs text-slate-500">Guarda la categoría primero para habilitar la generación de portada con IA.</p>');
+                                                }
+                                                $media = $record->getFirstMedia('images_en');
+                                                if (!$media) {
+                                                    return new \Illuminate\Support\HtmlString('
+                                                        <div class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
+                                                            <span class="text-2xl">🖼️</span>
+                                                            <div>
+                                                                <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Aún no se ha generado una portada con IA.</p>
+                                                                <p class="text-[11px] text-slate-500">Haz clic en el botón superior <strong>"🖼️ Generar Portada IA"</strong> para crearla automáticamente.</p>
+                                                            </div>
+                                                        </div>
+                                                    ');
+                                                }
+                                                $url = $media->getUrl();
+                                                return new \Illuminate\Support\HtmlString('
+                                                    <div class="space-y-3">
+                                                        <div class="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md bg-slate-900 max-w-md aspect-video">
+                                                            <img src="' . e($url) . '" alt="' . e($record->getTranslation('name', 'en')) . '" class="w-full h-full object-cover">
+                                                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                                                <a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/95 text-slate-900 text-xs font-bold hover:bg-white transition shadow">
+                                                                    <span>🔍</span> Ver original en Cloudflare R2
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono text-[11px]">
+                                                                ☁️ Cloudflare R2
+                                                            </span>
+                                                            <a href="' . e($url) . '" target="_blank" class="truncate hover:underline text-cyan-600 dark:text-cyan-400 max-w-sm font-mono text-[11px]">' . e($url) . '</a>
+                                                        </div>
+                                                    </div>
+                                                ');
+                                            })
                                             ->columnSpanFull(),
                                     ]),
 
@@ -158,12 +191,44 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('description', 'es'));
                                                 }
                                             }),
-                                        SpatieMediaLibraryFileUpload::make('image_es')
+                                        Placeholder::make('image_es')
                                             ->label('Imagen de Portada (ES) - 100% IA')
-                                            ->collection('images_es')
-                                            ->image()
-                                            ->disabled() // Impide subida manual
-                                            ->deletable(false)
+                                            ->content(function ($record) {
+                                                if (!$record) {
+                                                    return new \Illuminate\Support\HtmlString('<p class="text-xs text-slate-500">Guarda la categoría primero para habilitar la generación de portada con IA.</p>');
+                                                }
+                                                $media = $record->getFirstMedia('images_es');
+                                                if (!$media) {
+                                                    return new \Illuminate\Support\HtmlString('
+                                                        <div class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
+                                                            <span class="text-2xl">🖼️</span>
+                                                            <div>
+                                                                <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Aún no se ha generado una portada con IA.</p>
+                                                                <p class="text-[11px] text-slate-500">Haz clic en el botón superior <strong>"🖼️ Generar Portada IA"</strong> para crearla automáticamente.</p>
+                                                            </div>
+                                                        </div>
+                                                    ');
+                                                }
+                                                $url = $media->getUrl();
+                                                return new \Illuminate\Support\HtmlString('
+                                                    <div class="space-y-3">
+                                                        <div class="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md bg-slate-900 max-w-md aspect-video">
+                                                            <img src="' . e($url) . '" alt="' . e($record->getTranslation('name', 'es')) . '" class="w-full h-full object-cover">
+                                                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                                                <a href="' . e($url) . '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/95 text-slate-900 text-xs font-bold hover:bg-white transition shadow">
+                                                                    <span>🔍</span> Ver original en Cloudflare R2
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono text-[11px]">
+                                                                ☁️ Cloudflare R2
+                                                            </span>
+                                                            <a href="' . e($url) . '" target="_blank" class="truncate hover:underline text-cyan-600 dark:text-cyan-400 max-w-sm font-mono text-[11px]">' . e($url) . '</a>
+                                                        </div>
+                                                    </div>
+                                                ');
+                                            })
                                             ->columnSpanFull(),
                                     ]),
                             ])->columnSpanFull(),
