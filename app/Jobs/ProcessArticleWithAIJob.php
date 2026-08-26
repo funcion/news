@@ -202,23 +202,41 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             );
         }
 
-        // If no strict match, try partial match (contains)
-        if (!$categoryId && !empty($classification['category_name'])) {
-            $partialCat = \App\Models\Category::whereRaw("name->>'es' ILIKE ?", ['%' . trim($classification['category_name']) . '%'])->first()
-                ?? \App\Models\Category::whereRaw("name->>'en' ILIKE ?", ['%' . trim($classification['category_name']) . '%'])->first();
-            if ($partialCat) {
-                $categoryId = $partialCat->id;
-                Log::info("Category matched via partial search: {$partialCat->id}");
-            }
+        // --- REDACTION: Call AI to produce bilingual content ---
+        try {
+            $redacted = $this->redactBilingual($ai, $classification, $author);
+        } catch (OpenRouterAuthenticationException $e) {
+            Log::error("RawArticle {$this->rawArticle->id}: OpenRouter auth failed (401) during redaction. Marking as failed.", [
+                'response' => $e->getResponseBody(),
+            ]);
+            OpenRouterCircuitBreaker::recordFailure();
+            $this->rawArticle->update(['status' => 'failed']);
+            return;
         }
 
-        // If STILL no match → reject to pending_review instead of publishing blindly
-        if (!$categoryId) {
-            Log::warning("RawArticle {$this->rawArticle->id}: No category match for '{$classification['category_name']}'. Setting to pending_review.");
-            $categoryId = $source?->category_id ?? 1; // Use source default but flag it
-            $this->rawArticle->update(['status' => 'processed']);
-            // Article will be created as draft (not published) so admin can review
+        if (!$redacted) {
+            throw new \RuntimeException("AI could not draft bilingual content (attempt {$this->attempts()}).");
         }
+
+        // --- AUTO-FIX: Truncate fields that exceed limits before validation ---
+        $redacted = $this->autoFixRedactedOutput($redacted);
+
+        // --- VALIDATE: Programmatic checks on AI output before creating Article ---
+        $validationErrors = $this->validateRedactedOutput($redacted);
+        if (!empty($validationErrors)) {
+            Log::warning("redactBilingual validation failed for RawArticle {$this->rawArticle->id}", $validationErrors);
+            throw new \RuntimeException(
+                "AI output failed validation: " . implode('; ', $validationErrors) . " (attempt {$this->attempts()})"
+            );
+        }
+
+        // --- CLEANUP: Remove AI hallucinated image attributes + inline URLs ---
+        $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
+        $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
+        $contentEn = $this->cleanInlineUrls($contentEn);
+        $contentEs = $this->cleanInlineUrls($contentEs);
+        $contentEn = $this->ensureHtmlParagraphs($contentEn);
+        $contentEs = $this->ensureHtmlParagraphs($contentEs);
 
         // --- CREATE ARTICLE (Bilingual) ---
         $slugEn = $redacted['slug_en'] ?? Str::slug($redacted['title_en'] ?? $this->rawArticle->title);
