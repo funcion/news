@@ -5,7 +5,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24">
         
         <!-- 1. Hero Section (Minimalist & Sleek) -->
-        <div class="text-center max-w-3xl mx-auto mb-20 sm:mb-28">
+        <div class="text-center max-w-5xl mx-auto mb-20 sm:mb-28">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-6">
                 <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
                 <span>{{ __('ui.about_hero_badge') }}</span>
