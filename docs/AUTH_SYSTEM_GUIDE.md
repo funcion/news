@@ -1,75 +1,148 @@
-# 🔐 Sistema de Autenticación de Glodaxia (Fortify + Livewire 4 + Socialite)
+# 🔐 Guía Maestra de Autenticación: Glodaxia Auth System
 
-> **Stack Oficial:**
-> - **Laravel Fortify** (Motor Backend Headless: seguridad, hashing, rate limiting, tokens, 2FA).
-> - **Livewire 4 + Tailwind CSS** (Frontend UI: Dark mode nativo, reactividad instantánea, sin recargas).
-> - **Laravel Socialite** (OAuth2 Social Login con Google / GitHub en 1 clic).
-> - **Mcamara LaravelLocalization** (Rutas y traducciones bilingües `/es/login`, `/en/login`).
-> - **Filament 5** (Panel de administración seguro en `/admin/login`).
+> **Versión:** 1.0 (Actualizado Agosto 2026)  
+> **Stack Oficial:** Laravel 13 · Filament 5 · Livewire 4 · Laravel Fortify (Headless) · Laravel Socialite · Mcamara LaravelLocalization · Tailwind CSS
 
 ---
 
-## 🏛️ 1. Arquitectura del Sistema
+## 🏛️ 1. Filosofía Arquitectónica y Principios
+
+En **Glodaxia**, la autenticación de lectores y administradores se diseñó bajo tres pilares fundamentales:
+
+1. **Zero Bloat & Zero Overwrite (Headless):** En lugar de usar paquetes con plantillas rígidas (como Laravel Breeze), utilizamos **Laravel Fortify** de forma *headless* (`'views' => false`). Fortify gestiona exclusivamente la seguridad backend (hashing de contraseñas, throttling, recuperación por correo y ciclo de sesiones).
+2. **Experiencia Reactiva Nativa (Livewire 4):** La interfaz gráfica está construida con componentes reactivos de **Livewire 4**, adaptados al diseño visual *dark mode*, paleta de colores cian/azul y tipografía corporativa de Glodaxia.
+3. **Cero Fricción para Lectores (Google OAuth):** Integración con **Laravel Socialite** para permitir el acceso en 1 clic ("Continuar con Google"), obteniendo automáticamente el avatar oficial y el nombre verificado del lector.
+
+---
+
+## 📊 2. Diagrama de Arquitectura y Flujo
 
 ```mermaid
 graph TD
-    A[Lector en Frontend] --> B{¿Cómo desea ingresar?}
-    B -->|1 Clic Social| C[Google OAuth / Socialite]
-    B -->|Formulario Reactivo| D[Livewire 4 Auth Components]
-    C --> E[SocialAuthController]
-    D --> F[Laravel Fortify Backend Engine]
-    E --> G[Auth::login Session & DB]
-    F --> G
-    G --> H[Lector Autenticado en Glodaxia]
-    H --> I[Comentar en Noticias]
-    H --> J[Votar y Guardar Artículos]
-    H --> K[Acceso a /admin si es Editor]
+    A[Lector / Usuario] --> B{Punto de Entrada}
+    
+    B -->|Desktop Navbar| C[Botón Iniciar Sesión]
+    B -->|Mobile Drawer| D[Botón Móvil Acceso Rápido]
+    B -->|Footer| E[Enlace Mi Cuenta]
+    
+    C --> F{Método de Autenticación}
+    D --> F
+    E --> F
+    
+    F -->|1 Clic Social| G[Google OAuth / Socialite]
+    F -->|Email y Contraseña| H[Livewire 4 LoginComponent]
+    
+    G --> I[SocialAuthController]
+    I -->|Validar Google Token| J[User::firstOrCreate / Update Google ID]
+    
+    H -->|Validación Reactiva| K[RateLimiter: 5 intentos / IP]
+    K -->|Éxito| L[Laravel Fortify / Auth::attempt]
+    K -->|Fallo| M[Bloqueo Temporal con Mensaje Bilingüe]
+    
+    J --> N[Sesión Activa en Auth::guard web]
+    L --> N
+    
+    N --> O{Rol de Usuario}
+    O -->|Lector| P[Comentar en Noticias, Votar, Guardar Favoritos]
+    O -->|Editor / Admin| Q[Acceso al Panel Filament 5 /admin]
 ```
 
 ---
 
-## 🚀 2. Componentes y Rutas Bilingües
+## 🗄️ 3. Base de Datos y Modelo `User`
 
-### Rutas Registradas
-| Idioma | Iniciar Sesión | Crear Cuenta | Recuperar Contraseña | Restablecer Contraseña |
-|---|---|---|---|---|
-| **Español** | `/es/login` | `/es/register` | `/es/forgot-password` | `/es/reset-password/{token}` |
-| **English** | `/login` | `/register` | `/forgot-password` | `/reset-password/{token}` |
-| **Social** | `/auth/google` | `/auth/google/callback` | — | — |
-
-### Componentes Livewire 4
-1. **`App\Livewire\Auth\LoginComponent`**:
-   - Throttling con `RateLimiter` (bloqueo tras 5 intentos fallidos).
-   - Botón *"Continuar con Google"* integrado.
-   - Opción *"Recordarme por 30 días"*.
-2. **`App\Livewire\Auth\RegisterComponent`**:
-   - Integración con `CreateNewUser` Action de Fortify.
-   - Guardado automático de nombre bilingüe en JSONB (`name->en`, `name->es`) y generación de slug único.
-   - Validación de aceptación de Términos y Privacidad.
-3. **`App\Livewire\Auth\ForgotPasswordComponent`**:
-   - Envío seguro de enlaces con tokens firmados de Laravel.
-4. **`App\Livewire\Auth\ResetPasswordComponent`**:
-   - Restablecimiento de contraseña con `ResetUserPassword` Action.
+### Modificaciones en la Tabla `users` (PostgreSQL)
+- **`name` (`jsonb`):** Soporta nombres bilingües `{"es": "...", "en": "..."}` mediante `spatie/laravel-translatable`.
+- **`email` (`varchar(255)`):** Único en la base de datos.
+- **`google_id` (`varchar(255)`, `nullable`, `unique`):** Identificador OAuth devuelto por Google.
+- **`avatar_url` (`varchar(255)`, `nullable`):** URL del avatar oficial de Google o imagen subida convertida a `.webp`.
+- **`password` (`varchar(255)`, `nullable`):** Opcional para usuarios que se registran exclusivamente mediante Google OAuth.
+- **`slug` (`varchar(255)`, `unique`):** Identificador amigable para autores y lectores (`luis-figuera`, `demo-reader-x1a2`).
+- **`is_active` (`boolean`):** Estado de activación de la cuenta.
 
 ---
 
-## 🛡️ 3. Social Login (Google OAuth)
+## 🌐 4. Matriz de Rutas Bilingües (i18n)
 
-Configuración en `.env`:
+Todas las rutas públicas de autenticación se gestionan con `Mcamara\LaravelLocalization`:
+
+| Finalidad | Ruta en Español (Locale `es`) | Ruta en Inglés (Default `/`) | Componente / Controlador |
+|---|---|---|---|
+| **Iniciar Sesión** | `/es/login` | `/login` | `App\Livewire\Auth\LoginComponent` |
+| **Crear Cuenta** | `/es/register` | `/register` | `App\Livewire\Auth\RegisterComponent` |
+| **Recuperar Contraseña** | `/es/forgot-password` | `/forgot-password` | `App\Livewire\Auth\ForgotPasswordComponent` |
+| **Restablecer Clave** | `/es/reset-password/{token}` | `/reset-password/{token}` | `App\Livewire\Auth\ResetPasswordComponent` |
+| **Google Redirect** | `/auth/google` | `/auth/google` | `SocialAuthController@redirectToGoogle` |
+| **Google Callback** | `/auth/google/callback` | `/auth/google/callback` | `SocialAuthController@handleGoogleCallback` |
+| **Cerrar Sesión** | `POST /es/logout` | `POST /logout` | Closure con `Auth::logout()` y CSRF |
+
+---
+
+## ⚡ 5. Componentes Reactivos de Livewire 4
+
+### 1. `LoginComponent`
+- **Ruta:** [`app/Livewire/Auth/LoginComponent.php`](file:///Ubuntu-26.04/home/luisf/news/app/Livewire/Auth/LoginComponent.php)
+- **Vista:** [`resources/views/livewire/auth/login-component.blade.php`](file:///Ubuntu-26.04/home/luisf/news/resources/views/livewire/auth/login-component.blade.php)
+- **Características:**
+  - Protección de fuerza bruta: Límite de 5 intentos fallidos por IP antes de bloqueo temporal.
+  - Botón de Google OAuth de 1 clic.
+  - Opción de "Recordarme por 30 días".
+  - Feedback visual animado de carga con SVG spinner.
+
+### 2. `RegisterComponent`
+- **Ruta:** [`app/Livewire/Auth/RegisterComponent.php`](file:///Ubuntu-26.04/home/luisf/news/app/Livewire/Auth/RegisterComponent.php)
+- **Vista:** [`resources/views/livewire/auth/register-component.blade.php`](file:///Ubuntu-26.04/home/luisf/news/resources/views/livewire/auth/register-component.blade.php)
+- **Características:**
+  - Validación de contraseña con confirmación (mínimo 8 caracteres).
+  - Casilla obligatoria de aceptación de Términos de Servicio y Política de Privacidad con enlaces directos.
+  - Invocación de `CreateNewUser` Action de Fortify.
+
+### 3. `ForgotPasswordComponent` & `ResetPasswordComponent`
+- **Rutas:** [`app/Livewire/Auth/ForgotPasswordComponent.php`](file:///Ubuntu-26.04/home/luisf/news/app/Livewire/Auth/ForgotPasswordComponent.php) y [`app/Livewire/Auth/ResetPasswordComponent.php`](file:///Ubuntu-26.04/home/luisf/news/app/Livewire/Auth/ResetPasswordComponent.php)
+- **Características:**
+  - Envío y validación de tokens de recuperación de contraseñas de Laravel mediante `Password::sendResetLink()` y `Password::reset()`.
+
+---
+
+## 🛠️ 6. Configuración de Google OAuth (Producción y Mock Local)
+
+### Variables en `.env` para Producción
 ```env
-GOOGLE_CLIENT_ID=tu_google_client_id
-GOOGLE_CLIENT_SECRET=tu_google_client_secret
+GOOGLE_CLIENT_ID=tu_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=tu_client_secret
 GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 ```
 
-> **⚡ Mock en Entorno Local:** Si las variables `GOOGLE_CLIENT_ID` no están configuradas en `.env`, el sistema entra en modo desarrollo seguro (`mock_google_123456`), permitiendo probar el flujo de lectores de forma instantánea sin necesidad de credenciales de Google Cloud.
+### ⚡ Modo Mock Local Automático
+Si las variables de Google no están definidas en `.env`, el controlador activa el modo simulación para desarrollo:
+- Inicia sesión automáticamente con el usuario demo `reader.demo@glodaxia.com`.
+- Permite a los desarrolladores probar el flujo de lectores autenticados sin necesidad de configurar credenciales en Google Cloud Console.
 
 ---
 
-## 🎨 4. Integración en Navbar y Experiencia de Usuario
+## 📱 7. Puntos de Entrada en la Interfaz (UI)
 
-- **Visitante Anónimo:** Muestra el botón de acceso rápido con acento cian (*"Iniciar Sesión"* / *"Sign In"*).
-- **Usuario Autenticado:** Muestra un botón con el avatar de Google o las iniciales del usuario, desplegando un menú con:
-  - Nombre y correo del lector.
-  - Enlace al **Panel de Administración** (`/admin`) si el usuario tiene rol administrativo.
-  - Botón de **Cerrar Sesión** seguro con token CSRF.
+1. **Desktop Navbar:**
+   - **No autenticado:** Botón cian *"Iniciar Sesión"* / *"Sign In"*.
+   - **Autenticado:** Avatar circular con menú desplegable (Nombre, Email, Enlace a `/admin` si aplica, y Botón de Cerrar Sesión).
+2. **Mobile Navigation Drawer:**
+   - **No autenticado:** Botones de *"Iniciar Sesión"* y *"Crea una cuenta"*.
+   - **Autenticado:** Tarjeta con avatar, correo y botón de desconexión.
+3. **Footer:**
+   - Enlace permanente en la sección legal y de cuenta (`🔑 Iniciar Sesión` / `👤 Mi Cuenta`).
+
+---
+
+## 🧪 8. Verificación y Pruebas Automatizadas
+
+Para validar que los 4 componentes de Livewire 4 renderizan sin errores:
+```bash
+docker compose exec app php artisan test --filter=Auth
+```
+O mediante prueba rápida de Livewire:
+```php
+Livewire::test(\App\Livewire\Auth\LoginComponent::class)->assertStatus(200);
+Livewire::test(\App\Livewire\Auth\RegisterComponent::class)->assertStatus(200);
+Livewire::test(\App\Livewire\Auth\ForgotPasswordComponent::class)->assertStatus(200);
+Livewire::test(\App\Livewire\Auth\ResetPasswordComponent::class, ['token' => 'test'])->assertStatus(200);
+```
