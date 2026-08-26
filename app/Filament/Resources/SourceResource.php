@@ -120,15 +120,9 @@ class SourceResource extends Resource
                 ToggleColumn::make('trusted')
                     ->label('Verificada')
                     ->tooltip('Fuente oficial prioritaria en la cola de procesamiento editorial.'),
-                Tables\Columns\IconColumn::make('is_default')
+                ToggleColumn::make('is_default')
                     ->label('Default')
-                    ->boolean()
-                    ->trueIcon('heroicon-s-check-badge')
-                    ->falseIcon('heroicon-o-minus')
-                    ->trueColor('success')
-                    ->falseColor('gray')
-                    ->sortable()
-                    ->tooltip('Fuente nuclear predeterminada del sistema.'),
+                    ->tooltip('Define si esta fuente debe estar activa por defecto en el sistema y en el seeder.'),
                 TextColumn::make('max_age_days')
                     ->label('Máx. Días')
                     ->numeric()

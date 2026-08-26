@@ -197,6 +197,37 @@
                     </div>
                 </x-filament::fieldset>
 
+                                <!-- Fieldset: Default (Predeterminada) -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Default (Por Defecto)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="info">is_default</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Define si esta fuente forma parte del conjunto nuclear activado por defecto en la ingesta del seeder.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">🟢 ON</span>
+                                <span class="text-gray-500">Activa por defecto en el sistema</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-gray-500">🔴 OFF</span>
+                                <span class="text-gray-500">Fuente secundaria/opcional</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
                 <!-- Fieldset 6: Master Switch -->
                 <x-filament::fieldset>
                     <x-slot name="label">
