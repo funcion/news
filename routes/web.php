@@ -58,8 +58,14 @@ Route::group([
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
     // About Us & Editorial Standards (Bilingual URLs)
-    Route::get('/about', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about');
+        // About Us (Bilingual URLs)
     Route::get('/nosotros', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about.es');
+    Route::get('/about', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/nosotros'), 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->about();
+    })->name('about');
     
     // Contact Us (Bilingual URLs)
     Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
