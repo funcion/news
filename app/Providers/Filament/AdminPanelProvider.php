@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#2b7fff'),
             ])
             ->navigationItems([
                 NavigationItem::make('Ver Sitio Web')
