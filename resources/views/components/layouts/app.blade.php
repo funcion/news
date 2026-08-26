@@ -432,29 +432,31 @@
                     <!-- Mobile User / Auth Action -->
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-3 pb-1">
                         @auth
-                            <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60 mb-2">
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 mb-2">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden flex-shrink-0">
+                                    <!-- Minimalist Circular Avatar with Initials or Photo -->
+                                    <div class="w-10 h-10 rounded-full bg-cyan-500/10 dark:bg-cyan-500/15 border-2 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-xs font-black tracking-wider shadow-xs overflow-hidden flex-shrink-0">
                                         @if (auth()->user()->avatar_url)
                                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
                                         @else
                                             <span>{{ auth()->user()->initials }}</span>
                                         @endif
                                     </div>
-                                    <div class="overflow-hidden">
-                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
-                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                                    <div class="overflow-hidden min-w-0">
+                                        <p class="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{{ auth()->user()->name }}</p>
+                                        <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
                                     </div>
                                 </div>
                                 @if (auth()->user()->slug === 'admin' || auth()->user()->id === 1)
-                                    <a href="/admin" class="mt-3 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 py-1">
+                                    <a href="/admin" class="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
                                         ⚙️ {{ __('ui.admin_panel') }}
                                     </a>
                                 @endif
-                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2">
+                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2.5">
                                     @csrf
-                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition flex items-center justify-center gap-2">
-                                        🚪 {{ __('ui.auth_logout') }}
+                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/15 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <span>🚪</span>
+                                        <span>{{ __('ui.auth_logout') }}</span>
                                     </button>
                                 </form>
                             </div>
@@ -462,7 +464,7 @@
                             <div class="flex flex-col gap-2 pt-1">
                                 <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
                                    @click="mobileMenuOpen = false"
-                                   class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center text-xs font-bold shadow-md shadow-cyan-500/20">
+                                   class="w-full py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 text-white dark:text-slate-950 text-center text-xs font-extrabold shadow-sm uppercase tracking-wide">
                                     {{ __('ui.auth_sign_in_button') }}
                                 </a>
                                 <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/register') }}"
@@ -555,29 +557,31 @@
                     <!-- Mobile User / Auth Action -->
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-3 pb-1">
                         @auth
-                            <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60 mb-2">
+                            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 mb-2">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden flex-shrink-0">
+                                    <!-- Minimalist Circular Avatar with Initials or Photo -->
+                                    <div class="w-10 h-10 rounded-full bg-cyan-500/10 dark:bg-cyan-500/15 border-2 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-xs font-black tracking-wider shadow-xs overflow-hidden flex-shrink-0">
                                         @if (auth()->user()->avatar_url)
                                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
                                         @else
                                             <span>{{ auth()->user()->initials }}</span>
                                         @endif
                                     </div>
-                                    <div class="overflow-hidden">
-                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
-                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                                    <div class="overflow-hidden min-w-0">
+                                        <p class="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{{ auth()->user()->name }}</p>
+                                        <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
                                     </div>
                                 </div>
                                 @if (auth()->user()->slug === 'admin' || auth()->user()->id === 1)
-                                    <a href="/admin" class="mt-3 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 py-1">
+                                    <a href="/admin" class="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
                                         ⚙️ {{ __('ui.admin_panel') }}
                                     </a>
                                 @endif
-                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2">
+                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2.5">
                                     @csrf
-                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition flex items-center justify-center gap-2">
-                                        🚪 {{ __('ui.auth_logout') }}
+                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/15 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <span>🚪</span>
+                                        <span>{{ __('ui.auth_logout') }}</span>
                                     </button>
                                 </form>
                             </div>
@@ -585,7 +589,7 @@
                             <div class="flex flex-col gap-2 pt-1">
                                 <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
                                    @click="mobileMenuOpen = false"
-                                   class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center text-xs font-bold shadow-md shadow-cyan-500/20">
+                                   class="w-full py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 text-white dark:text-slate-950 text-center text-xs font-extrabold shadow-sm uppercase tracking-wide">
                                     {{ __('ui.auth_sign_in_button') }}
                                 </a>
                                 <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/register') }}"
