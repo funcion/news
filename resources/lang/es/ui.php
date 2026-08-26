@@ -2,7 +2,7 @@
 
 return array (
   'site_name' => 'Glodaxia',
-  'meta_desc' => 'Periodismo tecnológico de vanguardia, análisis profundo de Inteligencia Artificial e innovación digital.',
+  'meta_desc' => 'Glodaxia Magazine · Periodismo de tecnología explicado con pasión, claridad y criterio humano. Inteligencia artificial, desarrollo, ciberseguridad y el pulso de la innovación global.',
   'home' => 'Inicio',
   'categories' => 'Categorías',
   'latest_news' => 'Últimas Noticias',
@@ -16,7 +16,7 @@ return array (
   'contact_us' => 'Contáctanos',
   'contact_title' => 'Ponte en contacto con Glodaxia',
   'contact_subtitle' => '¿Tienes una consulta de prensa, filtración, comentario o propuesta de alianza? Nos encantaría escucharte.',
-  'editorial_disclosure_footer' => 'Glodaxia es una plataforma de periodismo digital de investigación de nueva generación que ofrece reportes rigurosos sobre Inteligencia Artificial, ciberseguridad, hardware de semiconductores e infraestructura de software.',
+  'editorial_disclosure_footer' => 'En Glodaxia exploramos el futuro de la tecnología con pasión, criterio humano y honestidad. Acercamos la innovación a las personas mediante historias y análisis claros, rigurosos y respaldados por tecnología de vanguardia.',
   'legal_nav' => 'Legal & Transparencia',
   'privacy_policy' => 'Política de Privacidad',
   'terms_of_service' => 'Términos de Servicio',
@@ -164,4 +164,6 @@ return array (
   'auth_verify_email_sent_desc' => 'Auth Verify Email Sent Desc',
   'auth_verify_instruction_title' => 'Auth Verify Instruction Title',
   'auth_verify_instruction_text' => 'Auth Verify Instruction Text',
+  'about_pillars_more_title' => 'Nuestra curiosidad no tiene límites',
+  'about_pillars_more_desc' => 'Aunque estos son nuestros ejes principales, nos apasiona todo el ecosistema digital: desde el software libre y la ciencia de datos hasta los gadgets, la computación cuántica y la cultura tecnológica que transforma nuestro día a día.',
 );

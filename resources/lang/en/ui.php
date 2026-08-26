@@ -2,7 +2,7 @@
 
 return array (
   'site_name' => 'Glodaxia',
-  'meta_desc' => 'Next-gen technology journalism, AI deep dives, and digital innovation analysis.',
+  'meta_desc' => 'Glodaxia Magazine · Technology journalism powered by human insight, passion, and clarity. Artificial intelligence, software engineering, cybersecurity, and global innovation.',
   'home' => 'Home',
   'categories' => 'Categories',
   'latest_news' => 'Latest News',
@@ -16,7 +16,7 @@ return array (
   'contact_us' => 'Contact Us',
   'contact_title' => 'Get in Touch with Glodaxia',
   'contact_subtitle' => 'Have a press inquiry, tip, feedback, or partnership proposal? We would love to hear from you.',
-  'editorial_disclosure_footer' => 'Glodaxia is a next-generation investigative digital journalism platform providing rigorous reporting on Artificial Intelligence, cybersecurity, semiconductor hardware, and software infrastructure.',
+  'editorial_disclosure_footer' => 'At Glodaxia, we explore the future of technology with passion, human insight, and honesty. We bring innovation closer to people through clear, dependable stories powered by cutting-edge technology.',
   'legal_nav' => 'Legal & Compliance',
   'privacy_policy' => 'Privacy Policy',
   'terms_of_service' => 'Terms of Service',
@@ -164,4 +164,6 @@ return array (
   'auth_verify_email_sent_desc' => 'Auth Verify Email Sent Desc',
   'auth_verify_instruction_title' => 'Auth Verify Instruction Title',
   'auth_verify_instruction_text' => 'Auth Verify Instruction Text',
+  'about_pillars_more_title' => 'Our curiosity knows no bounds',
+  'about_pillars_more_desc' => 'While these represent our core focal points, we love exploring the entire digital spectrum: from open source and data science to smart devices, quantum computing, and the tech culture shaping our daily lives.',
 );

@@ -180,6 +180,17 @@
                     </div>
                 </div>
             </div>
+
+            <!-- "And Much More" Open Curiosity Note -->
+            <div class="mt-10 p-6 sm:p-8 rounded-3xl bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20 text-center max-w-3xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 mb-3">
+                    <span>✨</span>
+                    <span>{{ __('ui.about_pillars_more_title') }}</span>
+                </div>
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+                    {{ __('ui.about_pillars_more_desc') }}
+                </p>
+            </div>
         </div>
 
         <!-- 5. Section: E-E-A-T & AI Transparency (Minimalist Clean Blocks) -->
