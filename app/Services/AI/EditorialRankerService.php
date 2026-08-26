@@ -27,6 +27,11 @@ class EditorialRankerService
      */
     public function evaluate(RawArticle $rawArticle): array
     {
+        // 0. Human Editor Manual Seed (Highest Priority: Always promoted)
+        if ($rawArticle->source_id === null) {
+            Log::info("⭐ EditorialRanker: MANUAL SEED detected for RawArticle #{$rawArticle->id} ('{$rawArticle->title}'). Bypassing heuristics and promoting with Priority 10/10.");
+            return $this->markPromoted($rawArticle, 10.0, 'Semilla Editorial Manual creada directamente por el editor en Filament.');
+        }
         // 1. Fast heuristic pre-checks
         $title = $rawArticle->title ?? '';
         $summary = $rawArticle->summary ?? '';
