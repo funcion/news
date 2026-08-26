@@ -101,7 +101,10 @@ class RawArticleResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label('Título')
                     ->searchable()
-                    ->limit(50),
+                    ->limit(50)
+                    ->tooltip(fn (RawArticle $record): string => $record->title ?? '')
+                    ->url(fn (RawArticle $record): ?string => $record->url, shouldOpenInNewTab: true)
+                    ->color(fn (RawArticle $record): ?string => $record->url ? 'primary' : null),
                 Tables\Columns\TextColumn::make('metadata.curation.score')
                     ->label('Score IA')
                     ->badge()

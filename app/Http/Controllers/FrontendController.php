@@ -13,7 +13,7 @@ class FrontendController extends Controller
     {
         $articles = Article::where('status', 'published')
             ->orderBy('published_at', 'desc')
-            ->paginate(15);
+            ->paginate(21);
 
         $trendingTags = Tag::withMinimumArticles(1)
             ->popular(10)
@@ -63,7 +63,7 @@ class FrontendController extends Controller
         $articles = Article::where('status', 'published')
             ->where('category_id', $category->id)
             ->orderBy('published_at', 'desc')
-            ->paginate(15);
+            ->paginate(21);
 
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
 
@@ -77,7 +77,7 @@ class FrontendController extends Controller
         $articles = $tag->articles()
             ->where('status', 'published')
             ->orderBy('published_at', 'desc')
-            ->paginate(15);
+            ->paginate(21);
 
         $trendingTags = Tag::withMinimumArticles(1)->popular(10)->get();
 
@@ -151,7 +151,7 @@ class FrontendController extends Controller
                       ->orWhereRaw("excerpt->>'es' ILIKE ?", ["%{$query}%"]);
                 })
                 ->orderByDesc('published_at')
-                ->paginate(15);
+                ->paginate(21);
         }
 
         return view('search', compact('articles', 'query', 'trendingTags', 'locale'));
