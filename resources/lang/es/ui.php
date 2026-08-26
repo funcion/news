@@ -132,4 +132,5 @@ return array (
   'syndication_nav' => 'Indexación & Feeds',
   'links_of_interest' => 'Enlaces de Interés',
   'about_us' => 'Sobre Nosotros',
+  'google_news_sitemap' => 'Mapa de Google News (48h)',
 );

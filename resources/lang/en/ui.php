@@ -61,7 +61,7 @@ return array (
   'learn_more' => 'Learn More',
   'sitemap_xml' => 'XML Sitemap',
   'rss_feed' => 'RSS Feed',
-  'legal_nav' => 'Legal & Transparency',
+  'legal_nav' => 'Legal & Compliance',
   'contact_title' => 'Contact Us & Support',
   'contact_subtitle' => 'We are available for editorial inquiries, partnerships, sponsorships, and technical assistance.',
   'full_name' => 'Full Name',
@@ -132,4 +132,5 @@ return array (
   'syndication_nav' => 'Syndication & Feeds',
   'links_of_interest' => 'Links of Interest',
   'about_us' => 'About Us',
+  'google_news_sitemap' => 'Google News Sitemap (48h)',
 );
