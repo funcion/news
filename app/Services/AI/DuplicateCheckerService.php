@@ -313,12 +313,38 @@ JUDGE_PROMPT;
             $raw->update(['status' => 'processed']);
         }
 
-        // Only touch updated_at if the article is within the 6-hour breaking news window
+        // Consolidate secondary source into article ai_metadata for Google E-E-A-T authority
+        $metadata = is_array($article->ai_metadata) ? $article->ai_metadata : (json_decode($article->ai_metadata ?? '[]', true) ?: []);
+        $sources = $metadata['consolidated_sources'] ?? [];
+        $parsedHost = parse_url($url, PHP_URL_HOST);
+        $sourceDomain = $parsedHost ? preg_replace('/^www\./', '', $parsedHost) : 'Source';
+
+        $sourceExists = false;
+        foreach ($sources as $src) {
+            if (isset($src['url']) && $this->normalizeUrl($src['url']) === $this->normalizeUrl($url)) {
+                $sourceExists = true;
+                break;
+            }
+        }
+
+        if (!$sourceExists) {
+            $sources[] = [
+                'name'         => $sourceDomain,
+                'url'          => $url,
+                'title'        => $title,
+                'connected_at' => now()->toIso8601String(),
+            ];
+            $metadata['consolidated_sources'] = $sources;
+            $article->ai_metadata = $metadata;
+            $article->save();
+        }
+
+        // Touch updated_at if the article is within the 6-hour breaking news window
         if ($article->created_at && $article->created_at->greaterThan(now()->subHours(6))) {
             $article->touch();
         }
         
-        Log::info("Attached RawArticle #{$rawArticleId} as update to Article ID {$article->id}.");
+        Log::info("Attached RawArticle #{$rawArticleId} as consolidated source update to Article ID {$article->id} (Total sources: " . count($sources) . ").");
     }
 
     /**
