@@ -1,140 +1,231 @@
 <x-filament-widgets::widget>
-    <div class="mt-8 overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/90 shadow-sm backdrop-blur-sm">
-        <!-- Header banner -->
-        <div class="border-b border-gray-100 dark:border-gray-800/80 bg-gradient-to-r from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-900/90 dark:to-gray-900 px-6 py-4">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div class="flex items-center gap-3">
-                    <span class="flex h-2.5 w-2.5 rounded-full bg-cyan-500 shadow-sm shadow-cyan-500/50"></span>
+    <div class="space-y-6">
+        <!-- Master Switch Executive Banner -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-500/10 via-slate-500/5 to-blue-500/10 p-6 border border-cyan-500/20 dark:border-cyan-500/30 shadow-xs">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center flex-shrink-0 shadow-inner">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
                     <div>
-                        <h3 class="text-sm font-black tracking-tight text-gray-900 dark:text-white uppercase">
-                            Guía Operativa & Glosario de Ingesta RSS
-                        </h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                            Referencia sobre el Interruptor Maestro, parámetros de control y política editorial de fuentes
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <h3 class="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                                Guía Operativa y Control de Ingesta RSS
+                            </h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
+                                Master Switch Global
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-3xl leading-relaxed">
+                            Control central de sincronización. Si está <strong class="text-emerald-600 dark:text-emerald-400 font-bold">Activo</strong>, el programador ejecuta la lectura según los límites individuales. Si se <strong class="text-rose-600 dark:text-rose-400 font-bold">Pausa</strong>, se abortan todas las llamadas HTTP y el consumo de tokens en IA se congela a cero.
                         </p>
                     </div>
                 </div>
 
-                <!-- Live Master Switch Status Pill -->
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border {{ \App\Models\Setting::get('ingestion_enabled', true) ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20' }}">
-                    <span class="w-2 h-2 rounded-full {{ \App\Models\Setting::get('ingestion_enabled', true) ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500' }}"></span>
-                    <span>Interruptor Maestro: {{ \App\Models\Setting::get('ingestion_enabled', true) ? 'ACTIVO (Ingesta en curso)' : 'PAUSADO (Cron en espera)' }}</span>
+                <div class="shrink-0 flex items-center gap-2 bg-white/80 dark:bg-slate-900/80 px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow-xs">
+                    <span class="text-cyan-600 dark:text-cyan-400 font-bold">CLI:</span>
+                    <code>php artisan rss:fetch</code>
                 </div>
             </div>
         </div>
 
-        <!-- Master Switch Section -->
-        <div class="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-800/60 bg-slate-50/50 dark:bg-slate-900/40">
-            <div class="flex items-start gap-4">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-cyan-50 dark:bg-cyan-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-cyan-700 dark:text-cyan-300 border border-cyan-200/60 dark:border-cyan-800/60 shadow-xs">
-                        Master Switch
-                    </span>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                        <strong class="font-bold text-gray-900 dark:text-white">Interruptor Maestro Global:</strong> Control central situado en la cabecera superior derecha (<code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[11px]">Ingesta: ACTIVA / PAUSADA</code>). Permite congelar o reanudar instantáneamente todo el flujo de ingesta sin modificar la configuración individual de cada feed.
+        <!-- 3-Column Modular Parameter Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            <!-- Card 1: Límite (Posts) -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Límite (Posts)</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                            Volumen
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Número de artículos a extraer de este feed en cada corrida del cron para evitar saturar la cola.
                     </p>
-                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                        <li><strong>Al Pausar:</strong> El comando programado (<code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[10px]">rss:fetch</code>) aborta en 1ms, evitando consultas HTTP externas, encolado de trabajos y consumo de tokens en DeepSeek V4 Flash y FLUX.1.</li>
-                        <li><strong>Al Reanudar:</strong> El programador retoma el ciclo normal escaneando únicamente las fuentes con estado <em>Activa</em> según su frecuencia.</li>
-                        <li><strong>Control por Terminal:</strong> <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 font-mono text-[11px]">php artisan ingestion:control [status | pause | resume | toggle]</code></li>
-                    </ul>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-cyan-600 dark:text-cyan-400">0</span>
+                        <span class="text-slate-500 dark:text-slate-400">Sin Límite (Todas las noticias)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-cyan-600 dark:text-cyan-400">3</span>
+                        <span class="text-slate-500 dark:text-slate-400">Top 3 más recientes</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- List items with single paragraph per column -->
-        <div class="divide-y divide-gray-100 dark:divide-gray-800/60 p-2 sm:p-4">
-            <!-- Límite (Posts) -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40 bg-cyan-50/30 dark:bg-cyan-950/20 border border-cyan-100 dark:border-cyan-900/30">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2.5 py-1 text-xs font-black tracking-wider border border-cyan-500/20 shadow-xs">
-                        Límite (Posts)
-                    </span>
-                </div>
-                <div class="space-y-1">
-                    <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                        <strong class="font-bold text-gray-900 dark:text-white">Límite Estricto de Noticias por Escaneo:</strong> Controla cuántos artículos extrae el sistema de este feed RSS en cada corrida del cron.
+            <!-- Card 2: Frecuencia (min) -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-blue-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Freq (minutos)</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                            Tiempo
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Intervalo de tiempo en minutos entre cada consulta que realiza el programador a la URL.
                     </p>
-                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                        <li><strong class="font-semibold text-cyan-600 dark:text-cyan-400">Valor = 0 (Sin Límite):</strong> El sistema absorbe <em>todas</em> las noticias disponibles en el feed RSS sin restricción.</li>
-                        <li><strong class="font-semibold text-cyan-600 dark:text-cyan-400">Valor > 0 (ej. 2, 3, 5):</strong> El sistema extrae únicamente las <em>N</em> noticias más recientes y destacadas del feed en cada ciclo, evitando saturar la cola.</li>
-                    </ul>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-blue-600 dark:text-blue-400">60 min</span>
+                        <span class="text-slate-500 dark:text-slate-400">Escaneo cada 1 hora</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-blue-600 dark:text-blue-400">120 min</span>
+                        <span class="text-slate-500 dark:text-slate-400">Escaneo cada 2 horas</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Freq (min) -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 shadow-xs">
-                        Freq (min)
-                    </span>
+            <!-- Card 3: Score (Salud) -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-emerald-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Score (Salud)</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            0 a 100
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Índice automático de fiabilidad técnica. Si la fuente entrega notas suma puntos; si falla resta.
+                    </p>
                 </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Frecuencia de Ingesta:</strong> Minutos entre cada consulta al feed RSS. El programador en segundo plano solo revisa este feed cuando se cumple este intervalo de tiempo (ej. <span class="font-semibold text-blue-600 dark:text-blue-400">60</span> = cada hora, <span class="font-semibold text-blue-600 dark:text-blue-400">120</span> = cada 2 horas).
-                </p>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">+2 pts</span>
+                        <span class="text-slate-500 dark:text-slate-400">Por cada escaneo con notas</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-rose-500">-5 pts</span>
+                        <span class="text-slate-500 dark:text-slate-400">Por timeout o error de conexión</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Score (Salud) -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs">
-                        Score (Salud)
-                    </span>
+            <!-- Card 4: Máx. Días -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-purple-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Máx. Días</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                            Frescura
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Filtro de antigüedad. Descarta noticias cuya fecha de publicación supere este umbral.
+                    </p>
                 </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Índice de Fiabilidad:</strong> Salud técnica del feed evaluada automáticamente. Suma <strong class="font-bold text-emerald-600 dark:text-emerald-400">+2 puntos</strong> cuando entrega noticias nuevas exitosamente y resta <strong class="font-bold text-rose-600 dark:text-rose-400">-5 puntos</strong> si la URL falla o da error de conexión.
-                </p>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-purple-600 dark:text-purple-400">1 día</span>
+                        <span class="text-slate-500 dark:text-slate-400">Solo noticias del día de hoy</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-mono font-bold text-purple-600 dark:text-purple-400">3 días</span>
+                        <span class="text-slate-500 dark:text-slate-400">Ventana de 72 horas</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Máx. Días -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-purple-50 dark:bg-purple-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60 shadow-xs">
-                        Máx. Días
-                    </span>
+            <!-- Card 5: Verificada (Tier 1) -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-amber-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Verificada</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            Tier 1
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Etiqueta de prestigio periodístico oficial (Ars Technica, MIT Tech, Bleeping Computer, Hugging Face).
+                    </p>
                 </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Filtro de Antigüedad:</strong> Límite de frescura de publicación. El sistema descarta automáticamente cualquier noticia del feed cuya fecha original sea anterior a este número de días (ej. <span class="font-semibold text-purple-600 dark:text-purple-400">1 día</span> para noticias del día).
-                </p>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-amber-600 dark:text-amber-400">Prioridad Alta</span>
+                        <span class="text-slate-500 dark:text-slate-400">Atención rápida en Horizon</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-slate-500">EEAT Score</span>
+                        <span class="text-slate-500 dark:text-slate-400">Citas con autor verificado</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Verificada -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 shadow-xs">
-                        Verificada
-                    </span>
+            <!-- Card 6: Activa (Toggle) -->
+            <div class="rounded-3xl p-5 bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-teal-500/50 transition-all duration-200 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">Estado Activa</h4>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
+                            1 Clic
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        Interruptor de sincronización rápida. Pausa o activa la lectura de este feed sin borrarlo.
+                    </p>
                 </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Fuente Oficial (Tier 1):</strong> Marca de medio o portal verificado de alta reputación periodística (OpenAI, MIT Tech Review, TechCrunch, The Verge, Bleeping Computer, Search Engine Land, Ahrefs, Next.js Releases). Tienen máxima prioridad en la cola de Horizon.
-                </p>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/80 text-[11px] space-y-1.5 font-medium">
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">🟢 Activa</span>
+                        <span class="text-slate-500 dark:text-slate-400">Sincronización en curso</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-rose-500">🔴 Inactiva</span>
+                        <span class="text-slate-500 dark:text-slate-400">Pausada por el admin</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Activa -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-teal-50 dark:bg-teal-950/50 px-2.5 py-1 text-xs font-black tracking-wider text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-800/60 shadow-xs">
-                        Activa
-                    </span>
-                </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Interruptor de Ingesta Individual:</strong> Interruptor rápido para pausar o reactivar la sincronización de este feed específico directamente desde la tabla con un solo clic, sin borrar su configuración.
-                </p>
-            </div>
-
-            <!-- Última Ingesta -->
-            <div class="group flex items-start gap-4 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
-                <div class="shrink-0 pt-0.5">
-                    <span class="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-black tracking-wider text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-xs">
-                        Última Ingesta
-                    </span>
-                </div>
-                <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <strong class="font-bold text-gray-900 dark:text-white">Sincronización:</strong> Registro de fecha y hora exacta del último escaneo completado con éxito por el comando de ingesta en segundo plano.
-                </p>
-            </div>
         </div>
     </div>
 </x-filament-widgets::widget>
