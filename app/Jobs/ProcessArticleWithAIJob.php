@@ -804,7 +804,15 @@ STRICT PERSONA GROUNDING:
 3. Adopt an authoritative yet natural, conversational tone. Write like a real staff writer for Wired, The Verge, MIT Technology Review, or The Atlantic.
 
 ═════════════════════════════════════════════════════════════════════
-═══ 3. ZERO-TOLERANCE ANTI-AI RULES (HUMAN AUTHENTICITY) ═══
+═══ 3. STRICT LENGTH & DEPTH REQUIREMENTS (MANDATORY >= 700 WORDS) ═══
+═════════════════════════════════════════════════════════════════════
+- ABSOLUTE MINIMUM: Each language version (content_en and content_es) MUST contain a STRICT MINIMUM OF 700 WORDS (actual narrative words, excluding HTML tags).
+- FLEXIBLE UPPER CEILING: Write as much as the story needs (850, 1200, 1500, or 1800+ words). There is NO penalty for length or depth. Rich, in-depth technical journalism is celebrated.
+- FORBIDDEN SHORT RECAPS: NEVER write shallow 200-400 word summaries. Expand deeply on the technical architecture, market ripple effects, historical context, benchmarks, and practitioner takeaways.
+- Articles with fewer than 700 words will be automatically REJECTED by programmatic validation.
+
+═════════════════════════════════════════════════════════════════════
+═══ 4. ZERO-TOLERANCE ANTI-AI RULES (HUMAN AUTHENTICITY) ═══
 ═════════════════════════════════════════════════════════════════════
 
 1. ZERO SENTENCE REPETITION OR ECHO (CRITICAL):
@@ -822,7 +830,7 @@ STRICT PERSONA GROUNDING:
    - Integrate the source attribution naturally in the prose (e.g. "According to a detailed report from...", "As documented in recent findings by...").
 
 ═════════════════════════════════════════════════════════════════════
-═══ 4. DYNAMIC EDITORIAL FREEDOM & CONTENT ARCHITECTURE ═══
+═══ 5. DYNAMIC EDITORIAL FREEDOM & CONTENT ARCHITECTURE ═══
 ═════════════════════════════════════════════════════════════════════
 - OPENING HOOK EXECUTION: Use the OPENING HOOK STRATEGY from Section 1 as your entry point and creative impulse for the first paragraph. It is a direction, not a rigid template — interpret it with full professional freedom. The archetype gives you structural guidance, but the hook determines your ANGLE OF ATTACK for this specific story.
 - EDITORIAL FREEDOM: Do NOT follow a rigid formula. You have complete freedom to structure the narrative to best tell this specific story. The archetype is a base — use it as scaffolding, not a cage. Vary paragraph lengths, use lists when comparing features/data, or use pure flowing prose when delivering deep analytical narrative.
@@ -834,7 +842,7 @@ STRICT PERSONA GROUNDING:
 - CLOSING EXECUTION: Implement the CLOSING STYLE from Section 1 precisely for the final paragraph/sentence of the article. You have 5 possible closing styles: reader question, quantified projection, aphoristic close, practitioner action, or open verdict. Use the one assigned. Make it specific to THIS article's content. NEVER say 'In conclusion' or 'En conclusion'.
 
 ═════════════════════════════════════════════════════════════════════
-═══ 5. IMAGE PLACEMENT RULES ═══
+═══ 6. IMAGE PLACEMENT RULES ═══
 ═════════════════════════════════════════════════════════════════════
 - Total images: {$styleDna['imageCount']}
 - [IMAGE_1] = Hero/featured image ONLY (do NOT insert inside content_en or content_es).
@@ -850,7 +858,7 @@ STRICT PERSONA GROUNDING:
 - FLUX.1 Prompts: Photorealistic, 35mm DSLR Nikon D850 style, cinematic natural lighting, 8k, hyper-realistic, no text overlay, no watermarks.
 
 ═════════════════════════════════════════════════════════════════════
-═══ 6. STRICT BILINGUAL INDEPENDENCE ═══
+═══ 7. STRICT BILINGUAL INDEPENDENCE ═══
 ═════════════════════════════════════════════════════════════════════
 The Spanish version MUST read as if originally penned by a native Spanish tech journalist — with natural flow, rich vocabulary, and independent rhetorical strength.
 
@@ -1036,12 +1044,15 @@ PROMPT;
 
         // 5. Title/excerpt length — AUTO-FIXED by autoFixRedactedOutput(), skip validation
 
-        // 6. Content must not be empty
-        if (strlen(strip_tags($contentEn)) < 200) {
-            $errors[] = 'content_en is too short (less than 200 chars stripped)';
+        // 6. Strict Word Count Validation (Strict minimum: 700 words, no upper limit)
+        $wordsEn = str_word_count(strip_tags($contentEn));
+        $wordsEs = str_word_count(strip_tags($contentEs));
+
+        if ($wordsEn < 700) {
+            $errors[] = "content_en has only {$wordsEn} words (STRICT MINIMUM is 700 words). Expand depth and analysis.";
         }
-        if (strlen(strip_tags($contentEs)) < 200) {
-            $errors[] = 'content_es is too short (less than 200 chars stripped)';
+        if ($wordsEs < 700) {
+            $errors[] = "content_es has only {$wordsEs} words (STRICT MINIMUM is 700 words). Expand depth and analysis.";
         }
 
         // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)
@@ -1531,73 +1542,73 @@ PROMPT;
         // ─────────────────────────────────────────────────────────────────
         $archetypes = [
             'concise_punchy_column' => [
-                'name'        => 'Columna Agil y Directa (700-950 palabras)',
+                'name'        => 'Columna Agil y Directa (Minimo estricto: 700 palabras, extensible a 1100+)',
                 'structure'   => 'Abre con dato o afirmacion impactante. 2-3 secciones <h2> cortas y contundentes. Parrafos de 2-3 oraciones maximas. Cada seccion tiene un micro-argumento propio con conclusion parcial. Ritmo rapido estilo The Register.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.72, 0.82],
             ],
             'deep_investigative_breakdown' => [
-                'name'        => 'Reportaje de Investigacion Profundo (1200-1700 palabras)',
+                'name'        => 'Reportaje de Investigacion Profundo (Minimo estricto: 1200 palabras, extensible a 2000+)',
                 'structure'   => '4 secciones <h2>: (1) Hallazgo central y contexto, (2) Analisis tecnico con datos concretos, (3) Impacto en la industria, (4) Proyeccion y consecuencias. Incluye 1 cita en <blockquote>. Tono MIT Technology Review.',
                 'image_count' => random_int(2, 3),
                 'temp_range'  => [0.55, 0.65],
             ],
             'inverted_pyramid_breaking' => [
-                'name'        => 'Piramide Invertida / Breaking News (800-1100 palabras)',
+                'name'        => 'Piramide Invertida / Breaking News (Minimo estricto: 700 palabras, extensible a 1300+)',
                 'structure'   => 'EMPIEZA con la conclusion o dato mas impactante sin preambulo. Luego desciende: Que paso => Por que importa => Que dicen los implicados => Contexto historico => Proyeccion. Cierra con vision de futuro.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.60, 0.70],
             ],
             'faq_driven_explainer' => [
-                'name'        => 'Explicador con Preguntas Clave (900-1300 palabras)',
+                'name'        => 'Explicador con Preguntas Clave (Minimo estricto: 800 palabras, extensible a 1600+)',
                 'structure'   => '4-5 preguntas concretas como secciones <h2>: "Que cambio exactamente?", "A quien afecta y como?", "Por que ahora?", "Que alternativas existen?", "Que debo esperar?". Estructura de Explainer WIRED / The Verge.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.65, 0.75],
             ],
             'verdict_first_review' => [
-                'name'        => 'Veredicto-Primero / Review Ejecutivo (900-1200 palabras)',
+                'name'        => 'Veredicto-Primero / Review Ejecutivo (Minimo estricto: 750 palabras, extensible a 1400+)',
                 'structure'   => 'Primer parrafo: VEREDICTO EDITORIAL en 2-3 oraciones. Cuerpo: justificacion con datos, comparaciones y analisis. Cierre: resumen ejecutivo de una sola frase sintetica. Tono Ars Technica.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.68, 0.78],
             ],
             'timeline_sequential' => [
-                'name'        => 'Cronologia Secuencial / Historia de un Incidente (1000-1400 palabras)',
+                'name'        => 'Cronologia Secuencial / Historia de un Incidente (Minimo estricto: 900 palabras, extensible a 1800+)',
                 'structure'   => 'Estructura de linea de tiempo. <h2> con fechas o fases. Ideal para postmortems, vulnerabilidades, lanzamientos por etapas. Estilo WIRED longform.',
                 'image_count' => random_int(2, 3),
                 'temp_range'  => [0.58, 0.68],
             ],
             'data_driven_analysis' => [
-                'name'        => 'Analisis Centrado en Datos y Metricas (1000-1500 palabras)',
+                'name'        => 'Analisis Centrado en Datos y Metricas (Minimo estricto: 850 palabras, extensible a 1700+)',
                 'structure'   => 'Cada seccion <h2> ancla su argumento en un dato cuantitativo especifico. Usa <ul>/<ol> para cifras comparativas. Al menos 2 contrastes numericos directos. Cierre cuantificando impacto proyectado. Bloomberg Technology.',
                 'image_count' => random_int(2, 3),
                 'temp_range'  => [0.55, 0.65],
             ],
             'narrative_scene_opening' => [
-                'name'        => 'Narrativa Cinematografica con Apertura de Escena (1000-1500 palabras)',
+                'name'        => 'Narrativa Cinematografica con Apertura de Escena (Minimo estricto: 950 palabras, extensible a 1800+)',
                 'structure'   => 'Abre con escena vivida y concreta. 2-3 lineas cinematograficas luego transicion al analisis. 3 secciones <h2> con narrativa rica. Cierra volviendo a la escena inicial. Estilo The Atlantic Tech.',
                 'image_count' => random_int(2, 3),
                 'temp_range'  => [0.78, 0.90],
             ],
             'debate_two_sides' => [
-                'name'        => 'Articulo de Debate: Dos Perspectivas Validas (1000-1400 palabras)',
+                'name'        => 'Articulo de Debate: Dos Perspectivas Validas (Minimo estricto: 850 palabras, extensible a 1600+)',
                 'structure'   => 'Tension genuina entre dos posiciones. Seccion 1: argumento a favor con evidencia. Seccion 2: argumento en contra con evidencia. Seccion 3: balance editorial razonado. Evita falsa neutralidad.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.70, 0.82],
             ],
             'comparison_shootout' => [
-                'name'        => 'Comparativa Tecnica Cara a Cara (900-1400 palabras)',
+                'name'        => 'Comparativa Tecnica Cara a Cara (Minimo estricto: 850 palabras, extensible a 1600+)',
                 'structure'   => 'Comparacion directa 2-3 opciones/tecnologias. Cada dimension de comparacion es un <h2>. Veredicto final claro. Usa <ul> para datos paralelos. Estilo Ars Technica shootout.',
                 'image_count' => random_int(2, 3),
                 'temp_range'  => [0.62, 0.72],
             ],
             'trend_implications_analysis' => [
-                'name'        => 'Analisis de Tendencia e Implicaciones Futuras (900-1300 palabras)',
+                'name'        => 'Analisis de Tendencia e Implicaciones Futuras (Minimo estricto: 800 palabras, extensible a 1500+)',
                 'structure'   => '<h2> 1: Que esta pasando mas alla del titular. <h2> 2: Por que era inevitable (contexto 12-24 meses). <h2> 3: Tres implicaciones concretas para la audiencia. Cierre: pronostico de plazo medio. The Information.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.67, 0.77],
             ],
             'myth_busting_column' => [
-                'name'        => 'Columna Desmontando un Mito o Exageracion (800-1100 palabras)',
+                'name'        => 'Columna Desmontando un Mito o Exageracion (Minimo estricto: 700 palabras, extensible a 1400+)',
                 'structure'   => '(1) El mito que circula, expuesto claramente. (2) Lo que los datos muestran, desmontaje con evidencia. (3) Lo que si es verdad y lo que no, conclusion matizada. Tono critico constructivo. NY Times Tech Opinion.',
                 'image_count' => random_int(1, 2),
                 'temp_range'  => [0.72, 0.85],
