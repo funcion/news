@@ -57,30 +57,92 @@ Route::group([
     // --- PUBLIC ROUTES ---
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
-    // About Us & Editorial Standards (Bilingual URLs)
-        // About Us (Bilingual URLs)
-    Route::get('/nosotros', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about.es');
-    Route::get('/about', function () {
+        // --- BILINGUAL INSTITUTIONAL ROUTES ---
+    
+    // About Us (/about-us in EN, /es/nosotros in ES)
+    Route::get('/about-us', function () {
         if (app()->getLocale() === 'es') {
-            return redirect(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/nosotros'), 301);
+            return redirect('/es/nosotros', 301);
         }
         return app(\App\Http\Controllers\FrontendController::class)->about();
     })->name('about');
-    
-    // Contact Us (Bilingual URLs)
-    Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
-    Route::get('/contacto', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.es');
+
+    Route::get('/about', function () {
+        return redirect(app()->getLocale() === 'es' ? '/es/nosotros' : '/about-us', 301);
+    });
+
+    Route::get('/nosotros', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/about-us', 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->about();
+    })->name('about.es');
+
+    // Contact (/contact in EN, /es/contacto in ES)
+    Route::get('/contact', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/contacto', 301);
+        }
+        return app(\App\Http\Controllers\ContactController::class)->show();
+    })->name('contact.show');
+
+    Route::get('/contacto', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/contact', 301);
+        }
+        return app(\App\Http\Controllers\ContactController::class)->show();
+    })->name('contact.es');
+
     Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
     Route::post('/contacto', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit.es')->middleware('throttle:5,1');
 
-    // Legal and Editorial Transparency Routes (Bilingual URLs)
-    Route::get('/terms', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
-    Route::get('/terminos', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms.es');
-    Route::get('/privacy', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
-    Route::get('/privacidad', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy.es');
+    // Terms of Service (/terms in EN, /es/terminos in ES)
+    Route::get('/terms', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/terminos', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->terms();
+    })->name('legal.terms');
+
+    Route::get('/terminos', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/terms', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->terms();
+    })->name('legal.terms.es');
+
+    // Privacy Policy (/privacy in EN, /es/privacidad in ES)
+    Route::get('/privacy', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/privacidad', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->privacy();
+    })->name('legal.privacy');
+
+    Route::get('/privacidad', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/privacy', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->privacy();
+    })->name('legal.privacy.es');
+
+    // Cookies (/cookies)
     Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
-    Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
-    Route::get('/politica-editorial', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial.es');
+
+    // Editorial Policy (/editorial-policy in EN, /es/politica-editorial in ES)
+    Route::get('/editorial-policy', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/politica-editorial', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->editorialPolicy();
+    })->name('legal.editorial');
+
+    Route::get('/politica-editorial', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/editorial-policy', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->editorialPolicy();
+    })->name('legal.editorial.es');
 
     // Email Verification Route (Signed URL with Auto-Login on Click)
     Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
