@@ -1,229 +1,233 @@
 <x-filament-widgets::widget>
-    <div class="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xs">
-        
-        <!-- Table Header / Title Bar -->
-        <div class="px-6 py-4.5 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-                <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-tight uppercase">
-                    Guía de Referencia Operativa · Parámetros de Ingesta RSS
-                </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                    Especificación de reglas, límites de extracción y comportamiento del programador.
-                </p>
+    <x-filament::section
+        icon="heroicon-o-book-open"
+        collapsible
+    >
+        <x-slot name="heading">
+            <span class="text-base font-black tracking-tight uppercase text-gray-900 dark:text-white">
+                Guía Operativa y Glosario de Ingesta RSS
+            </span>
+        </x-slot>
+
+        <x-slot name="description">
+            Manual de referencia técnica para la configuración y límites del programador de contenidos.
+        </x-slot>
+
+        <x-slot name="headerEnd">
+            <div class="flex items-center gap-2">
+                <x-filament::badge color="gray" icon="heroicon-o-command-line">
+                    php artisan rss:fetch
+                </x-filament::badge>
             </div>
-            <div class="shrink-0 flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-600 dark:text-slate-300 shadow-xs">
-                <span class="text-cyan-600 dark:text-cyan-400 font-bold">CLI:</span>
-                <code>php artisan rss:fetch</code>
+        </x-slot>
+
+        <div class="space-y-6">
+            <!-- Master Switch Info Banner -->
+            <div class="rounded-xl p-4 bg-gray-50 dark:bg-gray-800/60 border border-gray-200/80 dark:border-gray-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <x-filament::badge color="info">Master Switch Global</x-filament::badge>
+                        <span class="text-xs font-bold text-gray-900 dark:text-white">Interruptor Maestro de Sincronización</span>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Control general en la barra superior. Si se <strong class="text-gray-900 dark:text-white">Pausa</strong>, el sistema aborta de inmediato las lecturas RSS y congela el consumo de tokens en IA a cero sin alterar la configuración de cada feed.
+                    </p>
+                </div>
+                <div class="shrink-0 font-mono text-[11px] text-gray-500 dark:text-gray-400">
+                    Control CLI: <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-bold">ingestion:control</code>
+                </div>
+            </div>
+
+            <!-- Native 3-Column Fieldset Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Fieldset 1: Límite de Ingesta -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Límite (Posts)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="info">fetch_limit</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Número de artículos a extraer de este feed en cada corrida para evitar saturar la cola de procesamiento.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-cyan-600 dark:text-cyan-400">0</span>
+                                <span class="font-sans text-gray-500">Sin límite (Todo el feed)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-cyan-600 dark:text-cyan-400">3</span>
+                                <span class="font-sans text-gray-500">Top 3 más recientes</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 2: Frecuencia -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Frecuencia (min)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="primary">frequency</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Minutos que espera el programador en segundo plano entre cada consulta a la URL del feed.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-primary-600 dark:text-primary-400">60m</span>
+                                <span class="font-sans text-gray-500">Consulta cada 1 hora</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-primary-600 dark:text-primary-400">120m</span>
+                                <span class="font-sans text-gray-500">Consulta cada 2 horas</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 3: Score de Salud -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Score (Salud)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="success">0 - 100 pts</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Métrica automática de estabilidad. Premia feeds activos y penaliza fuentes con caídas o errores.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">+2 pts</span>
+                                <span class="font-sans text-gray-500">Por escaneo con notas</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-500">-5 pts</span>
+                                <span class="font-sans text-gray-500">Por error de conexión</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 4: Máx. Días -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Máx. Días (Frescura)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="warning">max_age_days</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Filtro cronológico. Descarta automáticamente noticias que superen este número de días de antigüedad.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs font-mono">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-amber-600 dark:text-amber-400">1 día</span>
+                                <span class="font-sans text-gray-500">Solo noticias de hoy</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-amber-600 dark:text-amber-400">3 días</span>
+                                <span class="font-sans text-gray-500">Ventana de 72 horas</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 5: Verificada -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Verificada (Tier 1)
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="danger">trusted</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Distintivo de medios oficiales de élite (Ars Technica, MIT Tech, Hugging Face, Bleeping Computer).
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-600 dark:text-rose-400">Prioridad Alta</span>
+                                <span class="text-gray-500">En cola de Horizon</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-gray-700 dark:text-gray-300">EEAT Score</span>
+                                <span class="text-gray-500">Autor verificado</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
+                <!-- Fieldset 6: Estado Activa -->
+                <x-filament::fieldset>
+                    <x-slot name="label">
+                        <span class="font-bold text-xs uppercase tracking-wider text-gray-900 dark:text-white">
+                            Estado Activa
+                        </span>
+                    </x-slot>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Parámetro</span>
+                            <x-filament::badge color="success">is_active</x-filament::badge>
+                        </div>
+
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Interruptor individual para pausar o activar la lectura de este feed sin borrarlo de la base de datos.
+                        </p>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">🟢 Activa</span>
+                                <span class="text-gray-500">Sincronización ON</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-500">🔴 Inactiva</span>
+                                <span class="text-gray-500">Pausada por el admin</span>
+                            </div>
+                        </div>
+                    </div>
+                </x-filament::fieldset>
+
             </div>
         </div>
-
-        <!-- Structured Reference Table -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/20 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                        <th class="py-3.5 px-6 w-48">Columna / Campo</th>
-                        <th class="py-3.5 px-6">Propósito y Comportamiento</th>
-                        <th class="py-3.5 px-6 w-72">Valores y Ejemplos</th>
-                        <th class="py-3.5 px-6 w-36 text-center">Impacto</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 font-normal text-slate-700 dark:text-slate-300">
-                    
-                    <!-- Row 1: Límite (Posts) -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">
-                                Límite (Posts)
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">fetch_limit</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Límite estricto de noticias por escaneo.</strong> Controla cuántos artículos extrae el crawler de este feed en cada corrida para evitar saturar la cola de procesamiento.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 font-mono text-[11px]">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-cyan-600 dark:text-cyan-400">0</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Sin límite (Todo el feed)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-cyan-600 dark:text-cyan-400">3</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Top 3 más recientes</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
-                                Crítico (IA/Colas)
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 2: Freq (min) -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">
-                                Freq (min)
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">frequency</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Frecuencia de consulta.</strong> Intervalo mínimo en minutos que espera el programador antes de volver a escanear esta URL.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 font-mono text-[11px]">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-blue-600 dark:text-blue-400">60</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Consulta cada 1 hora</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-blue-600 dark:text-blue-400">120</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Consulta cada 2 horas</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                                Tiempo / Cron
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 3: Score (Salud) -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-                                Score (Salud)
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">score (0 - 100)</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Índice automático de fiabilidad técnica.</strong> Mide la estabilidad del feed en cada conexión HTTP.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 font-mono text-[11px]">
-                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
-                                    <span>+2 pts</span>
-                                    <span class="font-sans font-normal text-slate-600 dark:text-slate-400">Por escaneo con notas</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-rose-500 font-bold">
-                                    <span>-5 pts</span>
-                                    <span class="font-sans font-normal text-slate-600 dark:text-slate-400">Por timeout o caída</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                Auto-Monitoreo
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 4: Máx. Días -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20">
-                                Máx. Días
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">max_age_days</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Filtro de frescura cronológica.</strong> Descarta automáticamente cualquier noticia con fecha anterior al límite.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 font-mono text-[11px]">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-purple-600 dark:text-purple-400">1</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Solo noticias de hoy (24h)</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-purple-600 dark:text-purple-400">3</span>
-                                    <span class="font-sans text-slate-600 dark:text-slate-400">= Ventana de 72 horas</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                                Frescura SEO
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 5: Verificada -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                                Verificada
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">trusted (Tier 1)</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Fuentes oficiales de alta reputación.</strong> (Ars Technica, MIT Tech Review, Hugging Face, Bleeping Computer). Tienen máxima prioridad en la cola de Horizon.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 text-[11px]">
-                                <div><strong class="text-amber-600 dark:text-amber-400">Prioridad Alta:</strong> Pasa directo a IA</div>
-                                <div class="text-slate-500 dark:text-slate-400">Asignación automática de EEAT</div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                Calidad Tier 1
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 6: Activa -->
-                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20">
-                                Activa
-                            </span>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-1">is_active</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Interruptor de ingesta individual.</strong> Permite pausar o reactivar la sincronización de este feed específico directamente desde la tabla con un clic.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 text-[11px]">
-                                <div class="text-emerald-600 dark:text-emerald-400 font-bold">🟢 ON = Sincronizando</div>
-                                <div class="text-slate-500 dark:text-slate-400">🔴 OFF = Pausada por el admin</div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
-                                Control Rápido
-                            </span>
-                        </td>
-                    </tr>
-
-                    <!-- Row 7: Master Switch -->
-                    <tr class="bg-cyan-50/30 dark:bg-cyan-950/20 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/30 transition-colors">
-                        <td class="py-4 px-6 align-top">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-xs">
-                                Master Switch
-                            </span>
-                            <p class="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono mt-1">Botón Superior</p>
-                        </td>
-                        <td class="py-4 px-6 align-top leading-relaxed">
-                            <strong class="font-bold text-slate-900 dark:text-white">Interruptor Maestro Global.</strong> Congela o reanuda instantáneamente todo el flujo de ingesta del portal a cero llamadas de IA.
-                        </td>
-                        <td class="py-4 px-6 align-top">
-                            <div class="space-y-1 text-[11px]">
-                                <div class="font-bold text-emerald-600 dark:text-emerald-400">🟢 Ingesta ACTIVA</div>
-                                <div class="font-bold text-rose-500">⏸️ Ingesta PAUSADA</div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 align-top text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 font-mono">
-                                GLOBAL
-                            </span>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </x-filament::section>
 </x-filament-widgets::widget>
