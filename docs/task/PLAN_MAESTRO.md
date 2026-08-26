@@ -2130,3 +2130,8 @@ Toda la configuración, selección y failover de modelos de Inteligencia Artific
 ### 2. Trazabilidad y Mapeo Visual Dinámico:
 * El panel administrativo de Filament (`RawArticleResource`) consume el registro de `config('ai_models.models')` para generar badges de color y filtros sin valores fijos en el código.
 * Cero modelos hardcodeados en servicios (`OpenRouterService`, `ModelRouterService`, `TagGeneratorService`, `ProcessArticleWithAIJob`).
+
+
+## 📚 Documentación Técnica Adicional
+
+* [Guía Anti-Canibalización y Deduplicación Vectorial](file:///Ubuntu-26.04/home/luisf/news/docs/ANTI_CANNIBALIZATION_AND_DEDUPLICATION_GUIDE.md)

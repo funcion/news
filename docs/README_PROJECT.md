@@ -314,3 +314,8 @@ app/
 | **4** | **Buscador en Vivo con Autocompletado (Spotlight Modal)** | ✅ **Completada** | Endpoint `GET /api/search` optimizado (<10ms), modal interactivo Spotlight con atajo de teclado `⌘K`/`Ctrl+K`, autocompletado en tiempo real con debounce de 250ms, sugerencias bilingües y página dedicada de resultados `/search`. |
 | **5** | **Página de Contacto `/contact`** | ✅ **Completada** | Formulario bilingüe (EN/ES) con protección anti-spam Honeypot (`website_hp`), rate limiting (`throttle:5,1`), base de datos `contact_messages`, despacho de emails a `hi@glodaxia.com` (`ContactMessageMail`), gestión en Filament (`ContactMessageResource`), diseño 100% clases nativas Tailwind CSS y modo Dark/Light. |
 | **6** | **Monetización & Espacios Publicitarios** | ⏳ Pendiente | Zonas de anuncios preparadas para Google AdSense / Sponsors / Mediavine sin afectar E-E-A-T. |
+
+
+## 📚 Guías Técnicas
+* [Guía Anti-Canibalización y Deduplicación Vectorial](AI_MODELS_ROUTING.md)
+* [Guía de Deduplicación y Consolidación](ANTI_CANNIBALIZATION_AND_DEDUPLICATION_GUIDE.md)

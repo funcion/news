@@ -119,7 +119,7 @@ class DuplicateCheckerService
         }
 
         // ═══════════════════════════════════════════════════════════════════════
-        // LEVEL 3: Semantic pgvector Embedding Similarity
+        // LEVEL 3: Advanced Semantic pgvector Embedding Similarity & Clustering
         // ═══════════════════════════════════════════════════════════════════════
         $textToEmbed = mb_substr($title . ". " . strip_tags($content), 0, 1000, 'UTF-8');
         $embedding = $this->ai->embeddings($textToEmbed);
@@ -131,10 +131,11 @@ class DuplicateCheckerService
 
         $vectorString = '[' . implode(',', $embedding) . ']';
 
-        // Query pgvector for cosine distance (<=>)
-        $similarArticle = Article::select('id', 'title', 'embedding')
+        // Query pgvector for closest semantic article in the last 30 days
+        $similarArticle = Article::select('id', 'title', 'embedding', 'created_at')
             ->where('status', 'published')
             ->whereNotNull('embedding')
+            ->where('created_at', '>=', now()->subDays(30))
             ->orderByRaw("embedding <=> ?::vector", [$vectorString])
             ->first();
 
@@ -145,11 +146,17 @@ class DuplicateCheckerService
             );
 
             $distance = (float) ($distanceResult->distance ?? 1.0);
-            Log::info("Level 3 Semantic check: Closest Article ID {$similarArticle->id} has cosine distance {$distance}");
+            $hoursDiff = $similarArticle->created_at ? now()->diffInHours($similarArticle->created_at) : 999;
+            
+            // Adaptive Cosine Distance Threshold:
+            // - Within 48 hours (breaking news cycle): Threshold 0.28 captures cross-outlet coverage (The Verge vs Ars Technica)
+            // - Older than 48 hours: Threshold 0.20 for evergreen/identical topic match
+            $maxDistanceThreshold = ($hoursDiff <= 48) ? 0.28 : 0.20;
 
-            // Distance < 0.18 indicates high semantic similarity (same news story)
-            if ($distance < 0.18) {
-                Log::info("Level 3 Duplicate detected! Cosine Distance {$distance} < 0.18 with Article ID {$similarArticle->id}");
+            Log::info("Level 3 Semantic check: Closest Article ID {$similarArticle->id} has cosine distance {$distance} (Threshold: {$maxDistanceThreshold}, Age: {$hoursDiff}h)");
+
+            if ($distance <= $maxDistanceThreshold) {
+                Log::info("Level 3 Semantic Duplicate detected! Cosine Distance {$distance} <= {$maxDistanceThreshold} with Article ID {$similarArticle->id}. Consolidating into existing story.");
                 $this->createUpdateEntry($similarArticle, $url, $rawArticleId);
                 return true;
             }

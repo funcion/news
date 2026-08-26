@@ -692,7 +692,19 @@ PROMPT;
         $result   = $this->parseJson($response);
 
         if ($result) {
-            Log::info("RawArticle {$this->rawArticle->id} classified. Source language: " . ($result['source_language'] ?? 'unknown'));
+            $importance = (int) ($result['importance'] ?? 5);
+            $isTrusted = $this->rawArticle->source && $this->rawArticle->source->trusted;
+            $isRelevant = (bool) ($result['is_relevant'] ?? true);
+            $isSensitive = (bool) ($result['is_sensitive'] ?? false);
+            $isFalse = (bool) ($result['is_potentially_false'] ?? false);
+
+            Log::info("RawArticle {$this->rawArticle->id} classified. Importance: {$importance}, Relevant: " . ($isRelevant ? 'Y' : 'N') . ", Source language: " . ($result['source_language'] ?? 'unknown'));
+
+            // High-Impact Editorial Gatekeeper: Drop low-importance or sensitive/false news
+            if (!$isRelevant || $isSensitive || $isFalse || (!$isTrusted && $importance < 7)) {
+                Log::info("Editorial Gatekeeper: RawArticle #{$this->rawArticle->id} filtered out (Importance: {$importance}/10, Trusted: " . ($isTrusted ? 'YES' : 'NO') . ")");
+                $result['is_relevant'] = false;
+            }
         }
 
         return $result;
