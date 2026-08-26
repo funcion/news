@@ -151,7 +151,7 @@ return array (
   'browsing_category' => 'Browsing Category',
   'the_editorial' => 'REVISTA DIGITAL · TECNOLOGÍA & VANGUARDIA',
   'editorial_title' => 'Explorando el Futuro de la Tecnología',
-  'editorial_subtitle' => 'Historias, análisis e investigación sobre Inteligencia Artificial, ciberseguridad, desarrollo y la innovación que transforma el mundo.',
+  'editorial_subtitle' => 'Historias, análisis e investigación sobre Inteligencia Artificial, ciberseguridad, desarrollo y la innovación tecnológica que transforma el mundo.',
   'expect_insights' => 'Expect Insights',
   'featured' => 'Featured',
   'staff' => 'Staff',

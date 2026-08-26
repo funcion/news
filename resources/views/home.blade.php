@@ -66,7 +66,7 @@
                 <span>📁</span>
                 <span>{{ __('ui.browsing_category') }}</span>
             </div>
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
                 {{ $category->name }}
             </h1>
             @if($category->description)
@@ -79,7 +79,7 @@
                 <span>🏷️</span>
                 <span>{{ __('ui.topic') }}</span>
             </div>
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
                 #{{ $tag->name }}
             </h1>
         @else
@@ -87,7 +87,7 @@
                 <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
                 <span>{{ __('ui.the_editorial') }}</span>
             </div>
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.15]">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
                 {{ __('ui.editorial_title') }}
             </h1>
             <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed font-normal">

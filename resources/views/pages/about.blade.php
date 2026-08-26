@@ -11,7 +11,7 @@
                 <span>{{ __('ui.about_hero_badge') }}</span>
             </div>
             
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-[1.12] mb-6">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-6">
                 {{ __('ui.about_hero_title') }}
             </h1>
             
@@ -46,7 +46,7 @@
                 <span class="text-xs font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-2 block">
                     Principios
                 </span>
-                <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+                <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                     {{ __('ui.about_mvv_heading') }}
                 </h2>
             </div>
@@ -106,7 +106,7 @@
                 <span class="text-xs font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-2 block">
                     Especialización
                 </span>
-                <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+                <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                     {{ __('ui.about_pillars_heading') }}
                 </h2>
             </div>
@@ -203,7 +203,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"/>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                         {{ __('ui.about_eeat_title') }}
                     </h3>
                 </div>
@@ -220,7 +220,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                         {{ __('ui.about_ai_transparency_title') }}
                     </h3>
                 </div>
@@ -232,7 +232,7 @@
 
         <!-- 6. Section: Editorial Contact CTA (Spacious, Roomy Pill Button) -->
         <div class="text-center pt-20 sm:pt-28">
-            <h3 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight uppercase mb-4">
+            <h3 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
                 {{ __('ui.about_contact_cta') }}
             </h3>
             <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed font-normal">
