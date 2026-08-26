@@ -624,7 +624,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'Hardware & Gadgets',
                 'frequency' => 60,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Ars Technica',
@@ -640,7 +640,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'Tech Industry',
                 'frequency' => 60,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'TechCrunch Startups',
@@ -674,7 +674,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'SEO & Digital Marketing',
                 'frequency' => 60,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Search Engine Journal',
@@ -682,7 +682,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'SEO & Digital Marketing',
                 'frequency' => 60,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Ahrefs Blog',
@@ -690,7 +690,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'SEO & Digital Marketing',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
 
             // --- Software Development & Official Framework Releases (Tier 1) ---
@@ -700,7 +700,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'atom',
                 'category' => 'Web & Backend Development',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Laravel News',
@@ -716,7 +716,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'atom',
                 'category' => 'Web & Backend Development',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Tailwind CSS Releases',
@@ -724,7 +724,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'atom',
                 'category' => 'Web Design & UX/UI',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Node.js Releases',
@@ -732,7 +732,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'atom',
                 'category' => 'Web & Backend Development',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Smashing Magazine',
@@ -750,7 +750,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'Tech Industry',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'HackerNoon AI',
@@ -758,7 +758,7 @@ class DatabaseSeeder extends Seeder
                 'type' => 'rss',
                 'category' => 'Artificial Intelligence',
                 'frequency' => 120,
-                'is_active' => true,
+                'is_active' => false,
             ],
 
             // --- Inactive / Noisy / Low-Signal Feeds (Disabled by default) ---
