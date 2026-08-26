@@ -58,6 +58,7 @@ Route::group([
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
     // Contact Us & Inquiries
+    Route::get('/about', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about');
     Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
     Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
 

@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
+    public function about()
+    {
+        $trendingTags = Tag::withMinimumArticles(1)
+            ->popular(10)
+            ->get();
+
+        return view('pages.about', compact('trendingTags'));
+    }
+
     public function home()
     {
         $articles = Article::where('status', 'published')

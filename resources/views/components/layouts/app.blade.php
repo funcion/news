@@ -630,7 +630,7 @@
                 <div class="footer-col flex flex-col md:pl-6">
                     <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.links_of_interest') }}</h4>
                     <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/#about') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.about_us') }}</a></li>
+                        <li><a href="{{ route('about') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.about_us') }}</a></li>
                         <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.contact') }}</a></li>
                         @auth
                             <li><a href="{{ auth()->user()->slug === 'admin' || auth()->user()->id === 1 ? '/admin' : '#' }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_my_account') }}</a></li>
