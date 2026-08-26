@@ -128,4 +128,6 @@ return array (
   'auth_verification_link_sent' => 'A new confirmation link has been sent to your email.',
   'auth_email_verified_success' => 'Your email has been successfully verified! Welcome to Glodaxia.',
   'auth_email_unverified_warning' => 'Your account requires email verification before logging in. Please check your inbox.',
+  'interest_nav' => 'Of Interest',
+  'syndication_nav' => 'Syndication & Feeds',
 );
