@@ -745,6 +745,11 @@ PROMPT;
         $contentType    = $classification['content_type'] ?? 'blog';
         $facts          = (array) ($classification['facts'] ?? [$this->rawArticle->title ?? 'Tech News']);
         $topic          = $isSeed ? ($this->rawArticle->title ?? 'Tech News') : implode('; ', $facts);
+        // Pass first 2000 chars of raw content for richer source context
+        $rawBody            = strip_tags($this->rawArticle->content ?? '');
+        $rawSourceExcerpt   = mb_strlen($rawBody) > 60
+            ? mb_substr($rawBody, 0, 2000) . (mb_strlen($rawBody) > 2000 ? '...' : '')
+            : '';
         $sourceLang     = $classification['source_language'] ?? 'unknown';
         $sourceLangName = match($sourceLang) {
             'en'    => 'English',
@@ -781,10 +786,13 @@ Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based
 - CURRENT DATE: {$today} (Current Year: {$currentYear})
 - SOURCE PUBLISHED: {$sourceDate} ({$articleAge})
 - VERIFIED SOURCE FACTS: {$topic}
+- RAW SOURCE EXCERPT (first 2000 chars of original content, for tone & context reference only — do NOT copy verbatim): {$rawSourceExcerpt}
 - ARTICLE ARCHETYPE: {$styleDna['archetypeName']}
 - STRUCTURAL GUIDANCE: {$styleDna['archetypeStructure']}
 - NARRATIVE VOICE & PERSPECTIVE: {$styleDna['perspectiveVoice']}
 - PERSPECTIVE RULE: {$styleDna['perspectiveRule']}
+- OPENING HOOK STRATEGY: {$styleDna['openingHook']}
+- CLOSING STYLE: {$styleDna['closingStyle']}
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 2. AUTHOR VOICE & REALISTIC PROFESSIONAL PERSONA ═══
@@ -818,13 +826,14 @@ STRICT PERSONA GROUNDING:
 ═════════════════════════════════════════════════════════════════════
 ═══ 4. DYNAMIC EDITORIAL FREEDOM & CONTENT ARCHITECTURE ═══
 ═════════════════════════════════════════════════════════════════════
-- EDITORIAL FREEDOM: Do NOT follow a rigid formula. You have complete freedom to structure the narrative to best tell this specific story. Vary paragraph lengths, use lists when comparing features/data, or use pure flowing prose when delivering deep analytical narrative.
+- OPENING HOOK EXECUTION: Use the OPENING HOOK STRATEGY from Section 1 as your entry point and creative impulse for the first paragraph. It is a direction, not a rigid template — interpret it with full professional freedom. The archetype gives you structural guidance, but the hook determines your ANGLE OF ATTACK for this specific story.
+- EDITORIAL FREEDOM: Do NOT follow a rigid formula. You have complete freedom to structure the narrative to best tell this specific story. The archetype is a base — use it as scaffolding, not a cage. Vary paragraph lengths, use lists when comparing features/data, or use pure flowing prose when delivering deep analytical narrative.
 - ALLOWED HTML TAGS: <p>, <h2>, <h3>, <strong>, <blockquote>, <ul>, <ol>, <li>.
 - NEVER use <h1>, <h4>, <div>, <span>, or raw markdown bold (**) inside HTML content.
 - PARAGRAPHS: Every narrative block must be wrapped in <p>...</p>. Write with natural rhythm (some paragraphs of 2 sentences, others of 3-4 sentences).
 - HEADINGS (<h2> / <h3>): Use descriptive, incisive subheadings to structure your argument. NEVER use generic headers like "The Context" or "The Impact".
 - CLOSING SECTION: Conclude with an analytical final section that looks toward the future.
-- ENGAGING READER OUTRO: The very last sentence of the article MUST be an incisive, thought-provoking question directly addressing the reader to prompt comments/discussion (e.g. 'What is your take: is this genuine progress or an overhyped transition?' / '¿Cual es tu balance: estamos ante un avance real o ante una promesa sobredimensionada?'). NEVER say 'In conclusion' or 'En conclusion'.
+- CLOSING EXECUTION: Implement the CLOSING STYLE from Section 1 precisely for the final paragraph/sentence of the article. You have 5 possible closing styles: reader question, quantified projection, aphoristic close, practitioner action, or open verdict. Use the one assigned. Make it specific to THIS article's content. NEVER say 'In conclusion' or 'En conclusion'.
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 5. IMAGE PLACEMENT RULES ═══
@@ -1506,71 +1515,262 @@ PROMPT;
      * 6 x 5 x 5 x 4 x 10 x 12 x 8 x 8 = 9,216,000 unique macro-combinations.
      * Each call shuffles arrays and picks one option per dimension.
      */
+    /**
+     * Generates a rich, randomized editorial "Style DNA" for each article.
+     *
+     * Combines:
+     *  - 12 narrative archetypes (structural blueprints with calibrated temperature)
+     *  - 6 narrative voice perspectives
+     *  - 50 dynamic opening hooks (rotated randomly per article)
+     *  - 5 closing styles (varied endings)
+     *
+     * Produces virtually infinite variety across 10,000+ articles with zero structural monotony.
+     */
     private function generateStyleDNA(): array
     {
+        // ─────────────────────────────────────────────────────────────────
+        // 12 NARRATIVE ARCHETYPES — distinct structure + calibrated temperature
+        // ─────────────────────────────────────────────────────────────────
         $archetypes = [
             'concise_punchy_column' => [
-                'name' => 'Columna Agil y Solida (700-950 palabras)',
-                'structure' => '2-3 secciones con <h2>, minimo estricto de 700 palabras, parrafos con ritmo sostenido y analisis sustancial.',
+                'name'        => 'Columna Agil y Directa (700-950 palabras)',
+                'structure'   => 'Abre con dato o afirmacion impactante. 2-3 secciones <h2> cortas y contundentes. Parrafos de 2-3 oraciones maximas. Cada seccion tiene un micro-argumento propio con conclusion parcial. Ritmo rapido estilo The Register.',
                 'image_count' => random_int(1, 2),
+                'temp_range'  => [0.72, 0.82],
             ],
             'deep_investigative_breakdown' => [
-                'name' => 'Reportaje de Investigacion Profundo (1100-1600 palabras)',
-                'structure' => '3-4 secciones con <h2> y opcionalmente <h3>, desglose exhaustivo de datos, 1 cita destacada <blockquote> y analisis de impacto.',
+                'name'        => 'Reportaje de Investigacion Profundo (1200-1700 palabras)',
+                'structure'   => '4 secciones <h2>: (1) Hallazgo central y contexto, (2) Analisis tecnico con datos concretos, (3) Impacto en la industria, (4) Proyeccion y consecuencias. Incluye 1 cita en <blockquote>. Tono MIT Technology Review.',
                 'image_count' => random_int(2, 3),
+                'temp_range'  => [0.55, 0.65],
             ],
-            'conversational_essay' => [
-                'name' => 'Ensayo Analitico y Reflexivo (800-1200 palabras)',
-                'structure' => 'Narrativa fluida de minimo 800 palabras que conecta implicaciones tecnicas con el impacto en la industria.',
+            'inverted_pyramid_breaking' => [
+                'name'        => 'Piramide Invertida / Breaking News (800-1100 palabras)',
+                'structure'   => 'EMPIEZA con la conclusion o dato mas impactante sin preambulo. Luego desciende: Que paso => Por que importa => Que dicen los implicados => Contexto historico => Proyeccion. Cierra con vision de futuro.',
                 'image_count' => random_int(1, 2),
+                'temp_range'  => [0.60, 0.70],
             ],
-            'comparative_technical_verdict' => [
-                'name' => 'Analisis Comparativo y Veredicto Tecnico (900-1400 palabras)',
-                'structure' => 'Estructura comparativa con <h2> analiticos, lista con vinetas <ul> para contrastar alternativas y balance final.',
+            'faq_driven_explainer' => [
+                'name'        => 'Explicador con Preguntas Clave (900-1300 palabras)',
+                'structure'   => '4-5 preguntas concretas como secciones <h2>: "Que cambio exactamente?", "A quien afecta y como?", "Por que ahora?", "Que alternativas existen?", "Que debo esperar?". Estructura de Explainer WIRED / The Verge.',
+                'image_count' => random_int(1, 2),
+                'temp_range'  => [0.65, 0.75],
+            ],
+            'verdict_first_review' => [
+                'name'        => 'Veredicto-Primero / Review Ejecutivo (900-1200 palabras)',
+                'structure'   => 'Primer parrafo: VEREDICTO EDITORIAL en 2-3 oraciones. Cuerpo: justificacion con datos, comparaciones y analisis. Cierre: resumen ejecutivo de una sola frase sintetica. Tono Ars Technica.',
+                'image_count' => random_int(1, 2),
+                'temp_range'  => [0.68, 0.78],
+            ],
+            'timeline_sequential' => [
+                'name'        => 'Cronologia Secuencial / Historia de un Incidente (1000-1400 palabras)',
+                'structure'   => 'Estructura de linea de tiempo. <h2> con fechas o fases. Ideal para postmortems, vulnerabilidades, lanzamientos por etapas. Estilo WIRED longform.',
                 'image_count' => random_int(2, 3),
+                'temp_range'  => [0.58, 0.68],
+            ],
+            'data_driven_analysis' => [
+                'name'        => 'Analisis Centrado en Datos y Metricas (1000-1500 palabras)',
+                'structure'   => 'Cada seccion <h2> ancla su argumento en un dato cuantitativo especifico. Usa <ul>/<ol> para cifras comparativas. Al menos 2 contrastes numericos directos. Cierre cuantificando impacto proyectado. Bloomberg Technology.',
+                'image_count' => random_int(2, 3),
+                'temp_range'  => [0.55, 0.65],
+            ],
+            'narrative_scene_opening' => [
+                'name'        => 'Narrativa Cinematografica con Apertura de Escena (1000-1500 palabras)',
+                'structure'   => 'Abre con escena vivida y concreta. 2-3 lineas cinematograficas luego transicion al analisis. 3 secciones <h2> con narrativa rica. Cierra volviendo a la escena inicial. Estilo The Atlantic Tech.',
+                'image_count' => random_int(2, 3),
+                'temp_range'  => [0.78, 0.90],
+            ],
+            'debate_two_sides' => [
+                'name'        => 'Articulo de Debate: Dos Perspectivas Validas (1000-1400 palabras)',
+                'structure'   => 'Tension genuina entre dos posiciones. Seccion 1: argumento a favor con evidencia. Seccion 2: argumento en contra con evidencia. Seccion 3: balance editorial razonado. Evita falsa neutralidad.',
+                'image_count' => random_int(1, 2),
+                'temp_range'  => [0.70, 0.82],
+            ],
+            'comparison_shootout' => [
+                'name'        => 'Comparativa Tecnica Cara a Cara (900-1400 palabras)',
+                'structure'   => 'Comparacion directa 2-3 opciones/tecnologias. Cada dimension de comparacion es un <h2>. Veredicto final claro. Usa <ul> para datos paralelos. Estilo Ars Technica shootout.',
+                'image_count' => random_int(2, 3),
+                'temp_range'  => [0.62, 0.72],
+            ],
+            'trend_implications_analysis' => [
+                'name'        => 'Analisis de Tendencia e Implicaciones Futuras (900-1300 palabras)',
+                'structure'   => '<h2> 1: Que esta pasando mas alla del titular. <h2> 2: Por que era inevitable (contexto 12-24 meses). <h2> 3: Tres implicaciones concretas para la audiencia. Cierre: pronostico de plazo medio. The Information.',
+                'image_count' => random_int(1, 2),
+                'temp_range'  => [0.67, 0.77],
+            ],
+            'myth_busting_column' => [
+                'name'        => 'Columna Desmontando un Mito o Exageracion (800-1100 palabras)',
+                'structure'   => '(1) El mito que circula, expuesto claramente. (2) Lo que los datos muestran, desmontaje con evidencia. (3) Lo que si es verdad y lo que no, conclusion matizada. Tono critico constructivo. NY Times Tech Opinion.',
+                'image_count' => random_int(1, 2),
+                'temp_range'  => [0.72, 0.85],
             ],
         ];
 
-        // Dynamic narrative perspective rotation for organic human credibility
+        // ─────────────────────────────────────────────────────────────────
+        // 6 NARRATIVE VOICE PERSPECTIVES
+        // ─────────────────────────────────────────────────────────────────
         $perspectives = [
             'editorial_collective' => [
-                'voice' => 'Primera Persona Plural / Redaccion Editorial Colegiada (Nosotros / En nuestro equipo)',
-                'rule'  => 'Escribe desde la perspectiva del equipo editorial de Glodaxia o laboratorio de pruebas ("En nuestras pruebas...", "Al analizar estos datos en el equipo...", "Nuestra evaluacion..."). Transmite el rigor de un medio especializado.',
+                'voice' => 'Redaccion Editorial Colegiada, Primera Persona Plural',
+                'rule'  => 'Escribe desde la perspectiva del equipo de Glodaxia ("En nuestro laboratorio de pruebas...", "Al contrastar estas cifras en la redaccion...", "Lo que observamos tras semanas de seguimiento..."). Rigor de redaccion tecnica especializada.',
             ],
             'technical_observer' => [
-                'voice' => 'Tercera Persona Periodistica Inmersiva (Analisis de Industria)',
-                'rule'  => 'Escribe con tono periodistico analitico, objetivo y riguroso en tercera persona ("Para los equipos de ingenieria...", "Quienes administran sistemas en produccion...", "El ecosistema observa..."). Evita anecdotas personales forzadas.',
+                'voice' => 'Observador Tecnico en Tercera Persona, Periodismo Analitico Inmersivo',
+                'rule'  => 'Tono periodistico objetivo y riguroso. Conecta desde experiencias del ecosistema ("Los equipos de SRE que gestionan miles de instancias se enfrentan a...", "Para cualquier arquitecto que haya disenado sistemas distribuidos, este cambio resuena inmediatamente"). Evita anecdotas personales inventadas.',
             ],
             'individual_columnist' => [
-                'voice' => 'Primera Persona Singular Sobria (Firma de Columnista)',
-                'rule'  => 'Escribe como columnista especializado ("Al revisar este cambio...", "Mi balance tras evaluar la documentacion..."). Usa la primera persona con sobriedad profesional, JAMAS abuses de clichés como "en mi escritorio" o "en mi telefono".',
+                'voice' => 'Columnista de Firma, Primera Persona Singular Sobria',
+                'rule'  => 'Columnista experto con opinion editorial propia ("Al analizar la documentacion tecnica...", "Mi valoracion tras revisar los benchmarks es clara...", "Lo que me sorprende no es el anuncio sino su momento estrategico"). JAMAS cliches de espacio fisico ("en mi laptop", "en mi telefono").',
             ],
             'practitioner_community' => [
-                'voice' => 'Perspectiva Comunitaria y de Practicantes',
-                'rule'  => 'Conecta con la experiencia compartida de la comunidad tech ("Cualquiera que haya optimizado consultas SQL sabe...", "Como desarrolladores a menudo nos encontramos con...").',
+                'voice' => 'Perspectiva Comunitaria, Voz de la Comunidad de Practicantes',
+                'rule'  => 'Conecta con la experiencia compartida ("Cualquiera que haya debuggeado una race condition en produccion entiende...", "Quienes llevamos anos migrando arquitecturas monoliticas sabemos que la promesa suena mejor en el slide de ventas que en el backlog real"). Nosotros implicito sin ser condescendiente.',
+            ],
+            'investigative_journalist' => [
+                'voice' => 'Periodista de Investigacion, Narrativa Profunda con Fuentes',
+                'rule'  => 'Escribe como periodista con semanas de investigacion ("Tras revisar los commits publicos...", "Las conversaciones con ingenieros que prefieren el anonimato sugieren que...", "La documentacion filtrada el mes pasado adelantaba exactamente esto"). Cita fuentes genericas pero creibles.',
+            ],
+            'opinionated_expert' => [
+                'voice' => 'Experto con Opinion Editorial Firme, Autoridad Critica sin Ambiguedad',
+                'rule'  => 'Autoridad critica sin neutralidad falsa ("Esto no es una mejora incremental, es un error de diseno disfrazado de feature", "La industria lleva dos anos hablando de esto y por fin alguien lo hizo bien", "Hay tres razones por las que este anuncio no es lo que parece"). El lector siente que lee a alguien con mas contexto.',
             ],
         ];
 
+        // ─────────────────────────────────────────────────────────────────
+        // 50 DYNAMIC OPENING HOOKS (rotated randomly per article)
+        // The archetype provides STRUCTURAL guidance. The hook provides the ENTRY POINT.
+        // The AI has full creative freedom to use these as starting impulses,
+        // not rigid templates. They are creative provocations, not formulas.
+        // ─────────────────────────────────────────────────────────────────
+        $openingHooks = [
+            // DATOS E IMPACTO ESTADISTICO
+            'stat_scale'        => 'Start with one precise, surprising number from the facts, isolated. Then build the paragraph around why that single figure changes the conversation.',
+            'stat_compression'  => 'Open with a time or effort compression: what used to take X now takes Y. Make the reader feel the magnitude of that delta before explaining how.',
+            'stat_ratio'        => 'Open with a ratio or proportion that reveals a hidden truth. Let the number do the heavy lifting in the first sentence.',
+            'stat_cost'         => 'Open with the real economic or opportunity cost of the old approach vs. the new, in concrete terms, not percentages.',
+            'stat_adoption'     => 'Open with an adoption gap: the distance between what is possible and what is actually deployed at scale in the industry right now.',
+
+            // ESCENAS CINEMATOGRAFICAS
+            'scene_3am'         => 'Open with a specific visceral scene: an engineer at 3 AM, a Slack alert firing, a pipeline silently failing. 2-3 crisp sentences of immersive detail, then pivot to the broader significance.',
+            'scene_midaction'   => 'Drop the reader mid-story, already in motion. No preamble. No "today, company X announced..." Start where it matters.',
+            'scene_before'      => 'Describe the "before" state in precise operational detail: what a team did every week before this change. Let the contrast with the new reality emerge naturally.',
+            'scene_discovery'   => 'Open with the exact moment the discovery, failure, or announcement became real for the people closest to it. Specific, human, grounded.',
+            'scene_decision'    => 'Open with the decision moment: a meeting, a commit, a late-night call, where the direction that led to this announcement was set. Consequential and specific.',
+
+            // PREGUNTAS RETOHRICAS
+            'rq_sharp'          => 'Open with one sharp, specific rhetorical question the article will answer, but not immediately. Let it hang for a beat.',
+            'rq_assumption'     => 'Open with a question that exposes an assumption the reader likely holds, then spend the article rigorously testing it against the evidence.',
+            'rq_tension'        => 'Open with two competing questions framing a genuine tension. "Is this X or Y? The industry is still negotiating the answer."',
+            'rq_impossible'     => 'Open with a question that, a year ago, had an obvious answer. Show how this development just changed it.',
+
+            // DECLARACIONES AUDACES
+            'bold_counter'      => 'Open with a bold, counter-intuitive declarative statement that challenges a prevailing assumption. Defensible. Unexpected enough to stop the reader.',
+            'bold_verdict'      => 'Lead with a direct, unambiguous editorial verdict: "This is not an incremental update. It is a structural shift that most coverage has missed."',
+            'bold_silence'      => 'Open by naming what everyone is NOT saying about this story, then spend the article filling that gap with precision.',
+            'bold_reframe'      => '"The real story is not X. It is Y." One sentence. Then prove it through the rest of the article.',
+            'bold_admission'    => 'Open with the honest admission that the obvious interpretation of this news is wrong, then explain what is actually happening beneath the surface.',
+
+            // CONTEXTO HISTORICO
+            'hist_parallel'     => 'Connect this news to a pivotal historical moment in tech, not as loose metaphor but as genuine structural parallel. Then show what is different this time.',
+            'hist_possible'     => '"Ten years ago, this would have been technically impossible. Here is precisely what changed in the technical and market landscape."',
+            'hist_trajectory'   => 'Open with a compressed trajectory: 3-4 key milestones in 3-4 sentences that made this moment inevitable.',
+            'hist_cycle'        => 'Frame this as part of a recurring industry cycle, show the pattern, then show what is different about this iteration of it.',
+
+            // PARADOJAS Y CONTRAPOSICIONES
+            'paradox_core'      => 'Open with an apparent paradox: two facts that seem to contradict each other, both of which are true. The article resolves the tension.',
+            'paradox_hidden'    => '"While X was happening publicly, Y was quietly occurring beneath it." Surface the hidden dynamic.',
+            'paradox_label'     => '"It is marketed as X. Under the hood, it is doing Y. That distinction matters more than the branding."',
+            'paradox_timing'    => 'Open by noting the paradox of the timing: why this arrives exactly now, and what that timing reveals about the industry.',
+
+            // IMPLICACIONES Y CONSECUENCIAS
+            'conseq_second'     => 'Open with the second-order effect: not the announcement itself but what it enables three steps downstream.',
+            'conseq_ripple'     => '"When X changes, Y must adapt. When Y adapts, Z becomes obsolete." Map the chain of consequence this announcement sets in motion.',
+            'conseq_winners'    => 'Open with a "who benefits and who loses" framing: specific groups, specific positions, concrete not generic.',
+            'conseq_enabled'    => 'Open by stating what is now possible that was categorically impossible before, and why that capability matters for the next generation.',
+
+            // TENSION NARRATIVA
+            'tension_buildup'   => 'Open with the pressure that had been building: the technical debt, market friction, or accumulated frustration that made this development inevitable.',
+            'tension_problem'   => 'Name the specific problem this solves so viscerally that the reader feels the pain of the old situation before learning about the solution.',
+            'tension_old_new'   => 'Contrast the old approach and the new one without using "before" and "after". Let the structural difference emerge from the comparison itself.',
+
+            // DESMITIFICACION
+            'myth_headline'     => '"The headline is technically accurate. What it implies is misleading." Define the gap between the announcement and the reality with precision.',
+            'myth_circulating'  => 'Name the misconception circulating in the ecosystem about this topic, then systematically separate signal from noise with evidence.',
+            'myth_hype'         => 'Acknowledge the hype honestly in one sentence, then immediately pivot to what the data actually shows.',
+            'myth_definition'   => 'Open by defining what this technology actually is vs. what the marketing language suggests. The gap between those two is the story.',
+
+            // CASOS REALES Y ESCENARIOS
+            'case_team'         => 'Open by describing a specific, realistic team scenario that this news directly affects. Ground the abstraction in operational reality without inventing company names.',
+            'case_decision'     => '"The next time a team sits down to architect X, this announcement changes which path they choose, and why." Explain the decision tree.',
+            'case_hypothetical' => '"Imagine a team of N engineers managing X infrastructure. Before this week, their options were A and B. Now they have C." Make it feel real and consequential.',
+
+            // URGENCIA Y VENTANAS
+            'urgency_speed'     => 'Open with the specific speed of this change. "This happened faster than most predicted. The window from announcement to adoption pressure is weeks, not quarters."',
+            'urgency_window'    => '"Organizations that move quickly have a concrete advantage. Those that wait six months will find the landscape has already shifted beneath them."',
+            'urgency_irreversi' => 'Open by naming what becomes irreversible after a certain point: the technical debt that accumulates, the market position that solidifies.',
+
+            // MERCADO Y COMPETENCIA
+            'market_dynamics'   => 'Open with the competitive dynamics this news reshapes: specific players, specific positions, why the equilibrium has shifted.',
+            'market_signal'     => '"This is not just a technical announcement. It is a pricing signal, a competitive repositioning, and a market direction all in one release note."',
+            'market_calc'       => 'Open with the business calculation behind the technical decision. Understanding the economics explains both the timing and the design choices.',
+
+            // SINTESIS DE ALTA DENSIDAD
+            'synthesis_dense'   => 'Pack WHO + WHAT + WHY IT MATTERS into a single crisp opening sentence. No throat-clearing. Pure journalistic efficiency.',
+            'synthesis_three'   => 'Three precise insights. Three punchy sentences. No cliche preamble. Let the density of the opening earn the reader attention.',
+            'synthesis_buried'  => 'Open with the single most important insight buried in this announcement, the one most coverage will miss, then build the article around proving why it is the key signal.',
+
+            // PROYECCION DE FUTURO
+            'future_projection' => 'Open with a projection 18-24 months out if this plays as announced, then walk backwards to show how we get there from today.',
+            'future_enables'    => 'Open by naming what this makes possible that was impossible before, and why that capability matters for the next generation of products or services.',
+            'future_question'   => 'Open with the question the industry will be actively debating 12 months from now as a direct consequence of what is announced today.',
+        ];
+
+        // ─────────────────────────────────────────────────────────────────
+        // 5 CLOSING STYLES — varied endings to prevent pattern recognition
+        // ─────────────────────────────────────────────────────────────────
+        $closingStyles = [
+            'reader_question'       => 'End with one incisive, specific question directly to the reader that invites genuine reflection or debate. Particular to this topic, not generic. Never "In conclusion" or "En conclusion".',
+            'quantified_projection' => 'End with a specific, quantified projection or threshold: name the concrete metric, date, or event that will determine success or failure, and why that number matters.',
+            'aphoristic_close'      => 'End with a single dense, precise, memorable sentence that synthesizes the core argument. Original and specific. Not a cliche. Designed to be quoted.',
+            'practitioner_action'   => 'End with a concrete, actionable next step for the practitioner reader: what to evaluate, test, monitor, or decide in the next 30-90 days.',
+            'open_verdict'          => 'End with an honest "the jury is still out" close that names exactly what evidence or event would shift the verdict in either direction. No false neutrality.',
+        ];
+
+        // ─────────────────────────────────────────────────────────────────
+        // RANDOM SELECTION (true variety across 10,000+ articles)
+        // ─────────────────────────────────────────────────────────────────
         $archetypeKeys = array_keys($archetypes);
         shuffle($archetypeKeys);
         $selectedArchetypeKey = $archetypeKeys[0];
-        $selectedArchetype = $archetypes[$selectedArchetypeKey];
+        $selectedArchetype    = $archetypes[$selectedArchetypeKey];
 
         $perspectiveKeys = array_keys($perspectives);
         shuffle($perspectiveKeys);
-        $selectedPerspectiveKey = $perspectiveKeys[0];
-        $selectedPerspective = $perspectives[$selectedPerspectiveKey];
+        $selectedPerspective = $perspectives[$perspectiveKeys[0]];
 
-        $temperature = round(0.65 + (mt_rand(-8, 8) / 100), 2);
+        $hookKeys = array_keys($openingHooks);
+        shuffle($hookKeys);
+        $selectedHook = $openingHooks[$hookKeys[0]];
+
+        $closingKeys = array_keys($closingStyles);
+        shuffle($closingKeys);
+        $selectedClosing = $closingStyles[$closingKeys[0]];
+
+        // Archetype-calibrated temperature: each archetype has its own tonal range
+        [$tempMin, $tempMax] = $selectedArchetype['temp_range'];
+        $tempRange   = (int)(($tempMax - $tempMin) * 100);
+        $temperature = round($tempMin + (mt_rand(0, $tempRange) / 100), 2);
 
         return [
-            'archetypeKey'          => $selectedArchetypeKey,
-            'archetypeName'         => $selectedArchetype['name'],
-            'archetypeStructure'    => $selectedArchetype['structure'],
-            'perspectiveVoice'      => $selectedPerspective['voice'],
-            'perspectiveRule'       => $selectedPerspective['rule'],
-            'imageCount'            => $selectedArchetype['image_count'],
-            'temperature'           => $temperature,
+            'archetypeKey'       => $selectedArchetypeKey,
+            'archetypeName'      => $selectedArchetype['name'],
+            'archetypeStructure' => $selectedArchetype['structure'],
+            'perspectiveVoice'   => $selectedPerspective['voice'],
+            'perspectiveRule'    => $selectedPerspective['rule'],
+            'openingHook'        => $selectedHook,
+            'closingStyle'       => $selectedClosing,
+            'imageCount'         => $selectedArchetype['image_count'],
+            'temperature'        => $temperature,
         ];
     }
 
