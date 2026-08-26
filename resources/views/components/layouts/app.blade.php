@@ -279,7 +279,7 @@
 
                         <!-- Auth / Profile Button -->
                         @auth
-                            <div x-data="{ userMenuOpen: false }" class="relative hidden sm:block">
+                            <div x-data="{ userMenuOpen: false }" class="relative inline-block">
                                 <button @click="userMenuOpen = !userMenuOpen"
                                         class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden">
@@ -316,7 +316,7 @@
                             </div>
                         @else
                             <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
-                               class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all shadow-xs">
+                               class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 dark:hover:text-white transition-all shadow-xs">
                                 <span>{{ __('ui.auth_sign_in_button') }}</span>
                             </a>
                         @endauth
