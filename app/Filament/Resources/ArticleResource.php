@@ -213,6 +213,7 @@ class ArticleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('published_at', 'desc')
             ->columns([
                 ImageColumn::make('image_url')
                     ->label('Image'),
