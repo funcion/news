@@ -637,19 +637,13 @@
     <!-- Rich Professional Footer with AI Transparency & Legal Compliance -->
     <footer role="contentinfo" class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 transition-colors" style="padding-top: 50px; padding-bottom: 20px;">
         <style>
-            .footer-grid-4cols {
+            .footer-grid-3cols {
                 display: grid !important;
-                grid-template-columns: 1.4fr 1fr 1fr 1fr !important;
-                gap: 2.5rem !important;
+                grid-template-columns: 1.5fr 1fr 1fr !important;
+                gap: 3rem !important;
             }
-            @media (max-width: 1024px) {
-                .footer-grid-4cols {
-                    grid-template-columns: 1fr 1fr !important;
-                    gap: 2.5rem !important;
-                }
-            }
-            @media (max-width: 640px) {
-                .footer-grid-4cols {
+            @media (max-width: 860px) {
+                .footer-grid-3cols {
                     grid-template-columns: 1fr !important;
                     gap: 2.5rem !important;
                     text-align: center !important;
@@ -670,21 +664,21 @@
             }
         </style>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="footer-grid-4cols pb-12 border-b border-gray-100 dark:border-white/5">
+            <div class="footer-grid-3cols pb-12 border-b border-gray-100 dark:border-white/5">
                 <!-- Columna 1: Marca & Declaración de Especialización -->
                 <div class="footer-col flex flex-col gap-4">
-                    <div class="mb-1 flex items-center justify-start max-[640px]:justify-center">
+                    <div class="mb-1 flex items-center justify-start max-[860px]:justify-center">
                         <x-ui.logo size="lg" />
                     </div>
-                    <p class="text-sm md:text-[14px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-sm">
+                    <p class="text-sm md:text-[15px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-md">
                         {{ __('ui.editorial_disclosure_footer') }}
                     </p>
                 </div>
 
                 <!-- Columna 2: Legal & Transparencia -->
-                <div class="footer-col flex flex-col md:pl-2">
+                <div class="footer-col flex flex-col md:pl-6">
                     <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.legal_nav') }}</h4>
-                    <ul class="footer-links flex flex-col gap-2.5 text-sm text-slate-600 dark:text-slate-300 font-medium">
+                    <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
                         <li><a href="{{ route('legal.privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
                         <li><a href="{{ route('legal.terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
                         <li><a href="{{ route('legal.cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
@@ -693,25 +687,17 @@
                     </ul>
                 </div>
 
-                <!-- Columna 3: De Interés / Cuenta -->
-                <div class="footer-col flex flex-col md:pl-2">
-                    <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.interest_nav') }}</h4>
-                    <ul class="footer-links flex flex-col gap-2.5 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold text-cyan-600 dark:text-cyan-400">{{ __('ui.contact_us') }}</a></li>
+                <!-- Columna 3: Enlaces de Interés -->
+                <div class="footer-col flex flex-col md:pl-6">
+                    <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.links_of_interest') }}</h4>
+                    <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/#about') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.about_us') }}</a></li>
+                        <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.contact') }}</a></li>
                         @auth
-                            <li><a href="{{ auth()->user()->slug === 'admin' || auth()->user()->id === 1 ? '/admin' : '#' }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold">👤 {{ __('ui.auth_my_account') }}</a></li>
+                            <li><a href="{{ auth()->user()->slug === 'admin' || auth()->user()->id === 1 ? '/admin' : '#' }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_my_account') }}</a></li>
                         @else
-                            <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold">🔑 {{ __('ui.auth_sign_in_button') }}</a></li>
-                            <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/register') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_create_account') }}</a></li>
+                            <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_sign_in_button') }}</a></li>
                         @endauth
-                        <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/#about') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.about') }}</a></li>
-                    </ul>
-                </div>
-
-                <!-- Columna 4: Syndication & Feeds -->
-                <div class="footer-col flex flex-col md:pl-2">
-                    <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.syndication_nav') }}</h4>
-                    <ul class="footer-links flex flex-col gap-2.5 text-sm text-slate-600 dark:text-slate-300 font-medium">
                         <li>
                             <a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
                                 {{ __('ui.sitemap_xml') }}

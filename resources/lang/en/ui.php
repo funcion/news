@@ -130,4 +130,6 @@ return array (
   'auth_email_unverified_warning' => 'Your account requires email verification before logging in. Please check your inbox.',
   'interest_nav' => 'Of Interest',
   'syndication_nav' => 'Syndication & Feeds',
+  'links_of_interest' => 'Links of Interest',
+  'about_us' => 'About Us',
 );

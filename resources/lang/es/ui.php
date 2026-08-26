@@ -130,4 +130,6 @@ return array (
   'auth_email_unverified_warning' => 'Tu cuenta requiere verificación por correo antes de ingresar. Revisa tu bandeja de entrada.',
   'interest_nav' => 'De Interés',
   'syndication_nav' => 'Indexación & Feeds',
+  'links_of_interest' => 'Enlaces de Interés',
+  'about_us' => 'Sobre Nosotros',
 );
