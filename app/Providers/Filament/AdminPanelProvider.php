@@ -30,8 +30,11 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::hex('#2b7fff'),
+                'primary' => Color::hex('#0072ff'),
             ])
+            ->brandLogo(fn () => asset('images/Glodaxia Logo.png'))
+            ->brandLogoHeight('2.2rem')
+            ->favicon(asset('images/Glodaxia Logo sm.png'))
             ->navigationItems([
                 NavigationItem::make('Ver Sitio Web')
                     ->url('/', shouldOpenInNewTab: true)
