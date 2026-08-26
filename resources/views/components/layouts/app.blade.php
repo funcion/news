@@ -194,35 +194,48 @@
                             {{ __('ui.home') }}
                         </a>
                         
-                        <!-- Categories Dropdown -->
+                        <!-- Categories Dropdown (Multi-Column Grid) -->
                         <div class="relative group nav-item" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                            <button type="button" :aria-expanded="open" aria-haspopup="true" class="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-md px-1">
-                                {{ __('ui.categories') }}
-                                <svg class="w-4 h-4 transition-transform duration-200 dropdown-arrow" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <button type="button" :aria-expanded="open" aria-haspopup="true" class="flex items-center gap-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-md px-1 cursor-pointer select-none">
+                                <span>{{ __('ui.categories') }}</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                             
-                            <!-- Dropdown Menu -->
+                            <!-- Multi-Column Dropdown Menu -->
                             <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-150"
-                                 x-transition:leave-start="opacity-100 scale-100"
-                                 x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-xl categories-dropdown border border-gray-200 dark:border-slate-800 py-2 z-50"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                 class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[480px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3 z-50 overflow-hidden"
                                  @click.away="open = false">
+                                
                                 @php
                                     $categories = \App\Models\Category::whereNull('parent_id')->whereHas('articles', fn($q) => $q->published())->get();
                                 @endphp
+
+                                <!-- Dropdown Header -->
+                                <div class="px-3 py-1.5 mb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ __('ui.categories') }}</span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                                        {{ $categories->count() }}
+                                    </span>
+                                </div>
                                 
-                                @foreach($categories as $category)
-                                    <a href="{{ $category->url }}" 
-                                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
-                                        {{ $category->name }}
-                                    </a>
-                                @endforeach
+                                <!-- 2-Column Grid of Categories -->
+                                <div class="grid grid-cols-2 gap-1 max-h-[340px] overflow-y-auto pr-1">
+                                    @foreach($categories as $category)
+                                        <a href="{{ $category->url }}" 
+                                           class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all duration-150 group">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-500/30 group-hover:bg-cyan-500 group-hover:scale-125 transition-all flex-shrink-0"></span>
+                                            <span class="truncate">{{ $category->name }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
 
