@@ -502,8 +502,10 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             $article->ai_metadata = $meta;
         }
 
+        $modelUsed = $redacted['__model_used'] ?? $redacted['_model_used'] ?? config('ai_models.default');
+
         // --- ATOMIC DB TRANSACTION: Guarantees full consistency between Article and RawArticle ---
-        \Illuminate\Support\Facades\DB::transaction(function () use ($article, $contentEn, $contentEs, $imageCount, $redacted) {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($article, $contentEn, $contentEs, $imageCount, $modelUsed) {
             $article->setTranslation('content', 'en', $contentEn);
             $article->setTranslation('content', 'es', $contentEs);
 
@@ -538,7 +540,6 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             }
             $article->save();
 
-            $modelUsed = $redacted['_model_used'] ?? config('ai_models.default');
             $this->rawArticle->update([
                 'status'   => 'processed',
                 'ai_model' => $modelUsed,

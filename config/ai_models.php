@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     | The main model used across all services (redaction, classification, tags).
     */
-    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-v4-flash-0731'),
+    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-chat'),
 
     /*
     |--------------------------------------------------------------------------
@@ -17,7 +17,7 @@ return [
     | the system automatically fails over in sequence to the next model.
     */
     'pool' => array_values(array_filter(
-        explode(',', env('AI_MODELS_POOL', 'deepseek/deepseek-v4-flash-0731,qwen/qwen3.7-flash,deepseek/deepseek-chat'))
+        explode(',', env('AI_MODELS_POOL', 'deepseek/deepseek-chat,qwen/qwen3.7-flash,deepseek/deepseek-v4-flash-0731'))
     )),
 
     /*
