@@ -324,7 +324,7 @@
                                      x-transition:leave-start="opacity-100 scale-100"
                                      x-transition:leave-end="opacity-0 scale-95"
                                      class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden">
-                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-850 flex items-center gap-3">
+                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex items-center gap-3">
                                         <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px;"
                                              class="w-[34px] h-[34px] rounded-full bg-slate-200/70 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[11px] font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
                                             @if (auth()->user()->avatar_url)
