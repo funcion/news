@@ -1,4 +1,4 @@
-<section class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800" id="comments">
+<section class="mt-16 sm:mt-20 pt-12 border-t border-slate-200 dark:border-slate-800" id="comments">
     
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
@@ -48,7 +48,7 @@
                                   rows="3"
                                   placeholder="{{ __('ui.leave_a_comment') }}"
                                   required
-                                  class="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition resize-y"></textarea>
+                                  class="w-full px-4 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm font-medium transition resize-y shadow-xs"></textarea>
                         @error('newComment')
                             <p class="text-rose-500 text-xs font-medium mt-1">{{ $message }}</p>
                         @enderror
@@ -166,7 +166,7 @@
                                       rows="2"
                                       placeholder="{{ __('ui.replying_to') }} {{ $comment->user->name }}..."
                                       required
-                                      class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"></textarea>
+                                      class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-xs font-medium transition"></textarea>
                             @error('replyContent')
                                 <p class="text-rose-500 text-[11px] font-medium">{{ $message }}</p>
                             @enderror
