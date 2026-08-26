@@ -1,4 +1,4 @@
-<x-layouts.app :title="$title" :metaDescription="$metaDescription">
+<x-layouts.app :title="$title ?? null" :metaDescription="$metaDescription ?? null">
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
         <div class="mb-10 text-center md:text-left">
