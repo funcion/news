@@ -24,9 +24,10 @@ class CurateRawArticleJob implements ShouldQueue
 
     public function handle(EditorialRankerService $ranker): void
     {
-        // Only curate if raw article is pending
-        if ($this->rawArticle->status !== 'pending') {
-            Log::info("CurateRawArticleJob: Skipping #{$this->rawArticle->id} because status is '{$this->rawArticle->status}'.");
+        // Fail-Fast Guard: Refresh from DB to verify if user changed status to 'ignored'
+        $this->rawArticle->refresh();
+        if (!$this->rawArticle->exists || $this->rawArticle->status !== 'pending') {
+            Log::info("🛑 CurateRawArticleJob: Skipping #{$this->rawArticle->id} because current DB status is '{$this->rawArticle->status}'.");
             return;
         }
 

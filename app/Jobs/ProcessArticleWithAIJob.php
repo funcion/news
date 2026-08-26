@@ -59,13 +59,15 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $today = now()->format('l, F j, Y');
-        Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
-
-        if ($this->rawArticle->status !== 'pending') {
-            Log::warning("RawArticle {$this->rawArticle->id} already processed.");
+        // Fail-Fast Guard: Refresh from DB to verify if user changed status to 'ignored' or cancelled
+        $this->rawArticle->refresh();
+        if (!$this->rawArticle->exists || $this->rawArticle->status !== 'pending') {
+            Log::info("🛑 ProcessArticleWithAIJob: Aborting execution for RawArticle #{$this->rawArticle->id} because current DB status is '{$this->rawArticle->status}'.");
             return;
         }
+
+        $today = now()->format('l, F j, Y');
+        Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
 
         // --- Guard against incomplete/failed previous attempts ---
         $existing = Article::where('raw_article_id', $this->rawArticle->id)->first();
