@@ -719,20 +719,14 @@ PROMPT;
             default => 'an automatically detected language',
         };
 
-        $wordTargets = config('global.editorial.word_targets') ?? [
-            'news'   => '600-1000 words EN | 600-1000 palabras ES',
-            'blog'   => '800-1200 words EN | 800-1200 palabras ES',
-            'guide'  => '1000-1500 words EN | 1000-1500 palabras ES',
-            'review' => '800-1200 words EN | 800-1200 palabras ES',
-            'pillar' => '1500-2500 words EN | 1500-2500 palabras ES',
-        ];
-        $wordTarget = $wordTargets[$contentType] ?? $wordTargets['blog'] ?? '800-1200 words';
+        $wordTargets = (array) config('global.editorial.word_targets', []);
+        $wordTarget = $wordTargets[$contentType] ?? ($wordTargets['blog'] ?? '850-1300 words EN | 850-1300 palabras ES (Mínimo estricto: 850 palabras)');
 
         $authorNameEn = $author->getTranslation('name', 'en') ?: $author->getTranslation('name', 'es') ?: $author->name;
         $authorBioEn  = $author->getTranslation('bio', 'en') ?: $author->getTranslation('bio', 'es') ?: $author->bio;
 
-        $persona = config('global.editorial.persona') ?? 'world-class Senior Technology Journalist and elite SEO copywriter (15+ years experience) working for Glodaxia, a premium tech publication.';
-        $rules   = config('global.editorial.focus_rules') ?? 'STRICTLY ADHERE TO THE FACTS PROVIDED. NEVER invent names, dates, statistics, or events not present in the SOURCE FACTS.';
+        $persona = config('global.editorial.persona');
+        $rules   = config('global.editorial.focus_rules');
 
         // Generate clean editorial style DNA
         $styleDna    = $this->generateStyleDNA();
