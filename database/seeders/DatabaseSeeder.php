@@ -308,6 +308,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Create Categories (Deduplicated with updateOrCreate)
+        // Master Taxonomy: 8 Core Pillars
         $categories = array (
   0 => 
   array (
@@ -315,8 +316,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Inteligencia Artificial',
     'slug_en' => 'artificial-intelligence',
     'slug_es' => 'inteligencia-artificial',
-    'desc_es' => 'Exploramos los avances que están transformando la computación: modelos de lenguaje, visión artificial, agentes autónomos y las herramientas de IA que potencian el trabajo diario.',
-    'desc_en' => 'Explore the breakthroughs reshaping computing: large language models, computer vision, autonomous agents, and practical AI tools empowering modern workflows.',
+    'desc_es' => 'Investigamos a fondo la revolución de la IA: desde modelos fundacionales, agentes autónomos y visión computacional, hasta herramientas generativas, robótica y su impacto práctico en la sociedad.',
+    'desc_en' => 'In-depth reporting on the AI revolution: from frontier models, autonomous agents, and computer vision, to generative workflows, robotics, and transformative industry breakthroughs.',
   ),
   1 => 
   array (
@@ -324,8 +325,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Desarrollo & Software',
     'slug_en' => 'development-software',
     'slug_es' => 'desarrollo-software',
-    'desc_es' => 'Arquitecturas modernas, lenguajes de programación, código abierto, bases de datos y buenas prácticas de ingeniería para construir software rápido y escalable.',
-    'desc_en' => 'Modern architectures, programming languages, open source ecosystems, databases, and engineering best practices for building scalable software.',
+    'desc_es' => 'El epicentro del código y la ingeniería de software: arquitecturas web, ecosistemas móviles, bases de datos, herramientas para desarrolladores, código abierto y todo el universo del desarrollo.',
+    'desc_en' => 'The heart of software engineering and code: modern web architectures, mobile ecosystems, databases, developer tooling, open source, and the entire programming universe.',
   ),
   2 => 
   array (
@@ -333,8 +334,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Ciberseguridad',
     'slug_en' => 'cybersecurity',
     'slug_es' => 'ciberseguridad',
-    'desc_es' => 'Investigación de vulnerabilidades, protección de datos, análisis de amenazas, hacking ético y estrategias de defensa para proteger la infraestructura digital.',
-    'desc_en' => 'Vulnerability research, data privacy, threat intelligence, ethical hacking, and defense strategies to keep global digital infrastructure secure.',
+    'desc_es' => 'Análisis riguroso de la seguridad digital: investigación de vulnerabilidades, respuesta a incidentes, defensa corporativa, privacidad, criptografía y las leyes que protegen el ecosistema digital.',
+    'desc_en' => 'Rigorous digital security intelligence: vulnerability research, threat response, enterprise defense, privacy protocols, cryptography, and the policies shaping cyber resilience.',
   ),
   3 => 
   array (
@@ -342,8 +343,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Cloud & Infraestructura',
     'slug_en' => 'cloud-infrastructure',
     'slug_es' => 'cloud-infraestructura',
-    'desc_es' => 'Infraestructura en la nube, contenedores, automatización CI/CD, servidores, redes y observabilidad para sistemas de alta disponibilidad.',
-    'desc_en' => 'Cloud infrastructure, containerization, CI/CD automation, servers, networking, and observability for resilient high-availability systems.',
+    'desc_es' => 'La columna vertebral de Internet: arquitectura en la nube, prácticas DevOps, centros de datos, redes de telecomunicaciones, servidores y las tecnologías que hacen posible la computación global.',
+    'desc_en' => 'The backbone of the modern internet: cloud platforms, DevOps culture, scalable data centers, high-speed networks, and infrastructure powering global distributed computing.',
   ),
   4 => 
   array (
@@ -351,8 +352,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Hardware & Semiconductores',
     'slug_en' => 'hardware-silicon',
     'slug_es' => 'hardware-semiconductores',
-    'desc_es' => 'Análisis a fondo de procesadores, silicio de nueva generación, robótica, dispositivos de consumo y hardware tangible que redefine el rendimiento.',
-    'desc_en' => 'In-depth analysis on processors, next-gen silicon, robotics, consumer electronics, and tangible hardware redefining computing performance.',
+    'desc_es' => 'Exploramos la tecnología tangible: arquitecturas de silicio, procesadores de vanguardia, dispositivos de consumo, sistemas embebidos y la ingeniería física que impulsa la era digital.',
+    'desc_en' => 'Exploring tangible technology: next-gen semiconductor silicon, advanced processors, consumer gear, embedded systems, and the physical engineering powering computing.',
   ),
   5 => 
   array (
@@ -360,8 +361,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Diseño & Producto Digital',
     'slug_en' => 'design-digital-product',
     'slug_es' => 'diseno-producto-digital',
-    'desc_es' => 'Diseño centrado en las personas, sistemas de diseño UX/UI, herramientas no-code, motores de videojuegos 3D y experiencias de computación espacial.',
-    'desc_en' => 'Human-centered design, UX/UI design systems, no-code platforms, 3D game engines, and immersive spatial computing experiences.',
+    'desc_es' => 'La intersección entre personas y tecnología: diseño de experiencia UX/UI, plataformas no-code, desarrollo de videojuegos 3D, interfaces espaciales y la creación de productos digitales excepcionales.',
+    'desc_en' => 'Where humans and technology connect: UX/UI design systems, no-code platforms, 3D game development, spatial computing, and crafting remarkable digital products.',
   ),
   6 => 
   array (
@@ -369,8 +370,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Negocios & Startups',
     'slug_en' => 'business-startups',
     'slug_es' => 'negocios-startups',
-    'desc_es' => 'Ecosistema emprendedor, rondas de inversión, modelos de negocio digitales, FinTech, comercio electrónico y los líderes de la economía digital.',
-    'desc_en' => 'Venture capital, startup growth playbooks, FinTech, e-commerce, and the visionary founders and builders shaping the digital economy.',
+    'desc_es' => 'El pulso de la economía digital: innovación financiera FinTech, comercio electrónico, capital de riesgo, estrategias de crecimiento, Web3 y las historias de los creadores que transforman industrias.',
+    'desc_en' => 'Tracking the digital economy: FinTech innovation, e-commerce, venture capital, growth strategies, Web3, and the builders transforming global commercial ecosystems.',
   ),
   7 => 
   array (
@@ -378,105 +379,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Ciencia & Futuro',
     'slug_en' => 'science-frontier-tech',
     'slug_es' => 'ciencia-futuro',
-    'desc_es' => 'Computación cuántica, biotecnología, exploración espacial, tecnologías de energía limpia y los descubrimientos que amplían el conocimiento humano.',
-    'desc_en' => 'Quantum computing, biotechnology, space exploration, clean energy innovation, and scientific discoveries expanding human capability.',
-  ),
-);
-
-        foreach ($categories as $catData) {
-            Category::updateOrCreate(
-                ['slug_en' => $catData['slug_en']],
-                [
-                    'name' => ['en' => $catData['en'], 'es' => $catData['es']],
-                    'slug_es' => $catData['slug_es'],
-                    'description' => [
-                        'en' => $catData['desc_en'],
-                        'es' => $catData['desc_es'],
-                    ],
-                    'is_active' => true,
-                ]
-            );
-        }
-  22 => 
-  array (
-    'en' => 'SaaS & Developer Tools',
-    'es' => 'SaaS & Herramientas DevTools',
-    'slug_en' => 'saas-developer-tools',
-    'slug_es' => 'saas-herramientas-desarrollo',
-    'desc_es' => 'Análisis de software como servicio, utilidades de línea de comandos, editores de código y herramientas que aceleran el desarrollo de software.',
-    'desc_en' => 'Software-as-a-Service teardowns, command-line utilities, code editors, and modern dev tools crafted to supercharge engineering velocity.',
-  ),
-  23 => 
-  array (
-    'en' => 'Generative AI & Media',
-    'es' => 'IA Generativa & Medios',
-    'slug_en' => 'generative-ai-media',
-    'slug_es' => 'ia-generativa-medios',
-    'desc_es' => 'Modelos generativos de imagen, audio, video y texto: aplicaciones creativas, consideraciones éticas y el futuro de la producción multimedia.',
-    'desc_en' => 'Diffusion models, voice synthesis, video generation, and creative multimodal AI workflows reshaping content creation and digital media production.',
-  ),
-  24 => 
-  array (
-    'en' => 'Telecom & Networking',
-    'es' => 'Telecomunicaciones & Redes',
-    'slug_en' => 'telecom-networking',
-    'slug_es' => 'telecomunicaciones-redes',
-    'desc_es' => 'Redes 5G/6G, conectividad satelital, protocolos de enrutamiento, fibra óptica y la infraestructura física que conecta el planeta.',
-    'desc_en' => '5G/6G cellular networks, satellite internet, routing protocols, optical fiber, and the physical communications infrastructure wiring the world.',
-  ),
-  25 => 
-  array (
-    'en' => 'Ethical Hacking & Pentesting',
-    'es' => 'Hacking Ético & Pentesting',
-    'slug_en' => 'ethical-hacking-pentesting',
-    'slug_es' => 'hacking-etico-pentesting',
-    'desc_es' => 'Auditorías de seguridad, pruebas de penetración, red teaming, análisis de exploits y metodologías ofensivas para fortalecer la defensa digital.',
-    'desc_en' => 'Security audits, penetration testing, red teaming methodology, exploit analysis, and offensive security research to fortify digital defenses.',
-  ),
-  26 => 
-  array (
-    'en' => 'LegalTech & AI Regulation',
-    'es' => 'LegalTech & Regulación Digital',
-    'slug_en' => 'legaltech-regulation',
-    'slug_es' => 'derecho-tecnologico-regulacion',
-    'desc_es' => 'Marco regulatorio de la inteligencia artificial, privacidad digital, gobernanza de datos y el impacto del derecho en la innovación tecnológica.',
-    'desc_en' => 'AI compliance frameworks, global privacy regulations, data governance, intellectual property, and tech policy shaping the digital frontier.',
-  ),
-  27 => 
-  array (
-    'en' => 'Tech Education & Tutorials',
-    'es' => 'Educación Tech & Tutoriales',
-    'slug_en' => 'tech-education-tutorials',
-    'slug_es' => 'educacion-tech-tutoriales',
-    'desc_es' => 'Guías prácticas paso a paso, tutoriales de programación y explicaciones didácticas para dominar las tecnologías más demandadas del mercado.',
-    'desc_en' => 'Step-by-step practical guides, hands-on programming tutorials, and deep-dive conceptual walkthroughs to master high-demand modern tech skills.',
-  ),
-  28 => 
-  array (
-    'en' => 'Robotics & Embedded Systems',
-    'es' => 'Robótica & Sistemas Embebidos',
-    'slug_en' => 'robotics-embedded-systems',
-    'slug_es' => 'robotica-sistemas-embebidos',
-    'desc_es' => 'Automatización industrial, microrcontroladores, computación en el borde y robots autónomos que interactúan con el mundo físico.',
-    'desc_en' => 'Industrial automation, microcontrollers, edge compute, kinematics, and autonomous robotics bridging software with the physical universe.',
-  ),
-  29 => 
-  array (
-    'en' => '3D Printing & Maker Culture',
-    'es' => 'Impresión 3D & Cultura Maker',
-    'slug_en' => '3d-printing-maker-culture',
-    'slug_es' => 'impresion-3d-cultura-maker',
-    'desc_es' => 'Fabricación digital, diseño CAD, prototipado rápido y la comunidad global de creadores que materializan ideas desde su escritorio.',
-    'desc_en' => 'Additive manufacturing, parametric CAD modeling, rapid prototyping, and the global maker movement bringing digital ideas into physical reality.',
-  ),
-  30 => 
-  array (
-    'en' => 'Electronics & DIY Hardware',
-    'es' => 'Electrónica & Hardware DIY',
-    'slug_en' => 'electronics-diy-hardware',
-    'slug_es' => 'electronica-hardware-diy',
-    'desc_es' => 'Diseño de circuitos, placas PCB, microelectrónica y proyectos de hardware casero para apasionados de la tecnología tangible.',
-    'desc_en' => 'Circuit board design, custom PCBs, microelectronics, and hands-on hardware hacking projects for builders who love tangible technology.',
+    'desc_es' => 'La vanguardia del descubrimiento humano: computación cuántica, tecnologías climáticas, biotecnología, exploración espacial, domótica inteligente y las innovaciones que definen nuestro futuro.',
+    'desc_en' => 'The frontier of human progress: quantum computing, climate tech, biotechnology, space exploration, smart environments, and deep scientific innovations defining tomorrow.',
   ),
 );
 
@@ -495,7 +399,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // Create Featured/Sample Tags
+                // Create Featured/Sample Tags
         $tags = [
             ['en' => 'OpenAI', 'es' => 'OpenAI'],
             ['en' => 'GPT', 'es' => 'GPT'],
