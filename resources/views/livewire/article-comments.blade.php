@@ -1,4 +1,4 @@
-<section class="pt-10 border-t border-slate-200 dark:border-slate-800" id="comments" style="margin-top: 50px !important;">
+<section class="border-t border-slate-200 dark:border-slate-800" id="comments" style="margin-top: 50px !important; padding-top: 35px !important;">
     
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
