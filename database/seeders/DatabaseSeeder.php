@@ -320,193 +320,83 @@ class DatabaseSeeder extends Seeder
   ),
   1 => 
   array (
-    'en' => 'Web & Backend Development',
-    'es' => 'Desarrollo Web & Backend',
-    'slug_en' => 'web-backend-development',
-    'slug_es' => 'desarrollo-web-backend',
-    'desc_es' => 'Arquitecturas modernas, frameworks, APIs y buenas prácticas de ingeniería para desarrolladores que construyen aplicaciones escalables, rápidas y seguras.',
-    'desc_en' => 'Modern architectures, frameworks, APIs, and software engineering best practices for developers building scalable, lightning-fast, and secure web applications.',
+    'en' => 'Development & Software',
+    'es' => 'Desarrollo & Software',
+    'slug_en' => 'development-software',
+    'slug_es' => 'desarrollo-software',
+    'desc_es' => 'Arquitecturas modernas, lenguajes de programación, código abierto, bases de datos y buenas prácticas de ingeniería para construir software rápido y escalable.',
+    'desc_en' => 'Modern architectures, programming languages, open source ecosystems, databases, and engineering best practices for building scalable software.',
   ),
   2 => 
-  array (
-    'en' => 'Mobile Development',
-    'es' => 'Desarrollo Móvil',
-    'slug_en' => 'mobile-development',
-    'slug_es' => 'desarrollo-movil',
-    'desc_es' => 'Ecosistemas iOS, Android y multiplataforma. Novedades, rendimiento, diseño de interfaces y las herramientas para crear experiencias móviles de primer nivel.',
-    'desc_en' => 'iOS, Android, and cross-platform ecosystems. Discover updates, performance insights, UI design patterns, and tools to build world-class mobile experiences.',
-  ),
-  3 => 
   array (
     'en' => 'Cybersecurity',
     'es' => 'Ciberseguridad',
     'slug_en' => 'cybersecurity',
     'slug_es' => 'ciberseguridad',
-    'desc_es' => 'Investigación de vulnerabilidades, protección de datos, análisis de amenazas y estrategias de defensa para mantener seguros tus sistemas y tu identidad digital.',
-    'desc_en' => 'Vulnerability research, data privacy, threat intelligence, and defense strategies to keep your systems, business infrastructure, and digital identity secure.',
+    'desc_es' => 'Investigación de vulnerabilidades, protección de datos, análisis de amenazas, hacking ético y estrategias de defensa para proteger la infraestructura digital.',
+    'desc_en' => 'Vulnerability research, data privacy, threat intelligence, ethical hacking, and defense strategies to keep global digital infrastructure secure.',
+  ),
+  3 => 
+  array (
+    'en' => 'Cloud & Infrastructure',
+    'es' => 'Cloud & Infraestructura',
+    'slug_en' => 'cloud-infrastructure',
+    'slug_es' => 'cloud-infraestructura',
+    'desc_es' => 'Infraestructura en la nube, contenedores, automatización CI/CD, servidores, redes y observabilidad para sistemas de alta disponibilidad.',
+    'desc_en' => 'Cloud infrastructure, containerization, CI/CD automation, servers, networking, and observability for resilient high-availability systems.',
   ),
   4 => 
   array (
-    'en' => 'Cloud & DevOps',
-    'es' => 'Cloud & DevOps',
-    'slug_en' => 'cloud-devops',
-    'slug_es' => 'cloud-devops',
-    'desc_es' => 'Infraestructura en la nube, contenedores, automatización CI/CD y observabilidad para equipos que buscan resiliencia, alta disponibilidad y despliegues ágiles.',
-    'desc_en' => 'Cloud infrastructure, containerization, CI/CD automation, and observability for engineering teams pursuing high availability, resilience, and agile deployments.',
+    'en' => 'Hardware & Silicon',
+    'es' => 'Hardware & Semiconductores',
+    'slug_en' => 'hardware-silicon',
+    'slug_es' => 'hardware-semiconductores',
+    'desc_es' => 'Análisis a fondo de procesadores, silicio de nueva generación, robótica, dispositivos de consumo y hardware tangible que redefine el rendimiento.',
+    'desc_en' => 'In-depth analysis on processors, next-gen silicon, robotics, consumer electronics, and tangible hardware redefining computing performance.',
   ),
   5 => 
   array (
-    'en' => 'Databases & Data Engineering',
-    'es' => 'Bases de Datos & Data',
-    'slug_en' => 'databases-data-engineering',
-    'slug_es' => 'bases-de-datos-data',
-    'desc_es' => 'De SQL a bases vectoriales y pipelines distribuidos: técnicas y tecnologías para modelar, almacenar y analizar datos con máxima eficiencia.',
-    'desc_en' => 'From SQL and vector stores to distributed pipelines: techniques and database technologies to model, store, and analyze high-volume data efficiently.',
+    'en' => 'Design & Digital Product',
+    'es' => 'Diseño & Producto Digital',
+    'slug_en' => 'design-digital-product',
+    'slug_es' => 'diseno-producto-digital',
+    'desc_es' => 'Diseño centrado en las personas, sistemas de diseño UX/UI, herramientas no-code, motores de videojuegos 3D y experiencias de computación espacial.',
+    'desc_en' => 'Human-centered design, UX/UI design systems, no-code platforms, 3D game engines, and immersive spatial computing experiences.',
   ),
   6 => 
   array (
-    'en' => 'Hardware & Gadgets',
-    'es' => 'Hardware & Gadgets',
-    'slug_en' => 'hardware-gadgets',
-    'slug_es' => 'hardware-gadgets',
-    'desc_es' => 'Análisis a fondo de procesadores, silicio de nueva generación, periféricos y dispositivos tecnológicos que marcan el rumbo del consumo y la productividad.',
-    'desc_en' => 'In-depth reviews and analysis on processors, next-gen silicon, high-performance peripherals, and tech gear shaping modern consumer productivity.',
+    'en' => 'Business & Startups',
+    'es' => 'Negocios & Startups',
+    'slug_en' => 'business-startups',
+    'slug_es' => 'negocios-startups',
+    'desc_es' => 'Ecosistema emprendedor, rondas de inversión, modelos de negocio digitales, FinTech, comercio electrónico y los líderes de la economía digital.',
+    'desc_en' => 'Venture capital, startup growth playbooks, FinTech, e-commerce, and the visionary founders and builders shaping the digital economy.',
   ),
   7 => 
   array (
-    'en' => 'Web Design & UX/UI',
-    'es' => 'Diseño Web & UX/UI',
-    'slug_en' => 'web-design-ux-ui',
-    'slug_es' => 'diseno-web-ux-ui',
-    'desc_es' => 'Diseño centrado en las personas, sistemas de diseño, micro-interacciones y accesibilidad para construir interfaces intuitivas, elegantes y memorables.',
-    'desc_en' => 'Human-centered design, design systems, micro-interactions, and accessibility to craft intuitive, beautiful, and memorable digital interfaces.',
+    'en' => 'Science & Frontier Tech',
+    'es' => 'Ciencia & Futuro',
+    'slug_en' => 'science-frontier-tech',
+    'slug_es' => 'ciencia-futuro',
+    'desc_es' => 'Computación cuántica, biotecnología, exploración espacial, tecnologías de energía limpia y los descubrimientos que amplían el conocimiento humano.',
+    'desc_en' => 'Quantum computing, biotechnology, space exploration, clean energy innovation, and scientific discoveries expanding human capability.',
   ),
-  8 => 
-  array (
-    'en' => 'SEO & Digital Marketing',
-    'es' => 'SEO & Marketing Digital',
-    'slug_en' => 'seo-digital-marketing',
-    'slug_es' => 'seo-marketing-digital',
-    'desc_es' => 'Estrategias de posicionamiento orgánico, optimización para motores de búsqueda, analítica y visibilidad digital basada en datos reales y cero humo.',
-    'desc_en' => 'Organic growth strategies, search engine optimization, web analytics, and data-driven digital visibility techniques that deliver measurable results.',
-  ),
-  9 => 
-  array (
-    'en' => 'Startups & Business',
-    'es' => 'Startups & Negocios',
-    'slug_en' => 'startups-business',
-    'slug_es' => 'startups-negocios',
-    'desc_es' => 'Estrategias de crecimiento, rondas de inversión, modelos de negocio digitales y las historias detrás de los emprendedores que lideran la economía digital.',
-    'desc_en' => 'Growth playbooks, venture capital rounds, scalable business models, and the stories behind founders and builders shaping the digital economy.',
-  ),
-  10 => 
-  array (
-    'en' => 'Open Source & Linux',
-    'es' => 'Open Source & Linux',
-    'slug_en' => 'open-source-linux',
-    'slug_es' => 'open-source-linux',
-    'desc_es' => 'La fuerza del código abierto: distribuciones Linux, proyectos comunitarios, licencias y las herramientas que sostienen los cimientos de Internet.',
-    'desc_en' => 'The power of open collaboration: Linux distributions, community-driven projects, licensing, and the foundational tools powering the modern internet.',
-  ),
-  11 => 
-  array (
-    'en' => 'Cryptocurrency & Web3',
-    'es' => 'Criptomonedas & Web3',
-    'slug_en' => 'crypto-web3',
-    'slug_es' => 'criptomonedas-web3',
-    'desc_es' => 'Protocolos descentralizados, tecnología blockchain, contratos inteligentes y análisis objetivo del ecosistema financiero y tecnológico de Web3.',
-    'desc_en' => 'Decentralized protocols, blockchain technology, smart contracts, and objective analysis on the evolving Web3 and digital asset ecosystem.',
-  ),
-  12 => 
-  array (
-    'en' => 'FinTech & Digital Economy',
-    'es' => 'FinTech & Economía Digital',
-    'slug_en' => 'fintech-digital-economy',
-    'slug_es' => 'fintech-economia-digital',
-    'desc_es' => 'La transformación digital del dinero: pasarelas de pago, banca abierta, neobancos y la tecnología que redefine las transacciones globales.',
-    'desc_en' => 'The digital transformation of finance: payment gateways, open banking, neobanks, and the tech infrastructure redefining global financial commerce.',
-  ),
-  13 => 
-  array (
-    'en' => 'Gaming & 3D Tech',
-    'es' => 'Videojuegos & Tecnología 3D',
-    'slug_en' => 'gaming-3d-tech',
-    'slug_es' => 'videojuegos-tecnologia-3d',
-    'desc_es' => 'Motores gráficos, renderizado en tiempo real, trazado de rayos y la convergencia técnica entre la industria del videojuego y la simulación interactiva.',
-    'desc_en' => 'Graphics engines, real-time rendering, ray tracing, and the technical convergence between game development and interactive simulation.',
-  ),
-  14 => 
-  array (
-    'en' => 'Science & Innovation',
-    'es' => 'Ciencia & Innovación',
-    'slug_en' => 'science-innovation',
-    'slug_es' => 'ciencia-innovacion',
-    'desc_es' => 'Computación cuántica, biotecnología, exploración espacial y los descubrimientos científicos que amplían los límites del conocimiento humano.',
-    'desc_en' => 'Quantum computing, biotechnology, space exploration, and scientific discoveries expanding the frontiers of human knowledge and capability.',
-  ),
-  15 => 
-  array (
-    'en' => 'IoT & Smart Home',
-    'es' => 'IoT & Domótica',
-    'slug_en' => 'iot-smart-home',
-    'slug_es' => 'iot-domotica',
-    'desc_es' => 'Dispositivos conectados, automatización del hogar, sensores inteligentes y protocolos de comunicación para un entorno más eficiente y cómodo.',
-    'desc_en' => 'Connected devices, home automation, smart sensor networks, and communication protocols for more efficient, sustainable, and intelligent living.',
-  ),
-  16 => 
-  array (
-    'en' => 'No-Code & Automation',
-    'es' => 'No-Code & Automatización',
-    'slug_en' => 'nocode-automation',
-    'slug_es' => 'nocode-automatizacion',
-    'desc_es' => 'Crea productos, automatiza flujos de trabajo y lanza ideas sin programar gracias a la nueva generación de herramientas visuales y de integración.',
-    'desc_en' => 'Build products, automate complex workflows, and launch digital ideas rapidly using modern visual platforms and intelligent integration tools.',
-  ),
-  17 => 
-  array (
-    'en' => 'Virtual Reality & Spatial Computing',
-    'es' => 'Realidad Virtual & Computación Espacial',
-    'slug_en' => 'vr-spatial-computing',
-    'slug_es' => 'vr-computacion-espacial',
-    'desc_es' => 'Visores inmersivos, interfaces espaciales, realidad aumentada y las tecnologías que transforman cómo interactuamos con la información digital.',
-    'desc_en' => 'Immersive headsets, spatial interfaces, augmented reality, and the computing technologies transforming how we interact with digital information.',
-  ),
-  18 => 
-  array (
-    'en' => 'ClimateTech & Clean Energy',
-    'es' => 'ClimaTech & Energía Limpia',
-    'slug_en' => 'climatech-clean-energy',
-    'slug_es' => 'climatech-energia-limpia',
-    'desc_es' => 'Tecnologías para la sostenibilidad: captura de carbono, redes eléctricas inteligentes, baterías avanzadas e innovación para el futuro del planeta.',
-    'desc_en' => 'Technologies for a sustainable future: carbon capture, smart grids, next-gen energy storage, and engineering innovations fighting climate change.',
-  ),
-  19 => 
-  array (
-    'en' => 'Tech Career & Productivity',
-    'es' => 'Carrera Tech & Productividad',
-    'slug_en' => 'tech-career-productivity',
-    'slug_es' => 'carrera-tech-productividad',
-    'desc_es' => 'Consejos para desarrolladores y profesionales digitales: gestión del tiempo, herramientas de productividad, liderazgo técnico y crecimiento profesional.',
-    'desc_en' => 'Career playbooks for software engineers and digital builders: productivity systems, technical leadership, remote work mastery, and long-term career growth.',
-  ),
-  20 => 
-  array (
-    'en' => 'Servers, Hosting & Infrastructure',
-    'es' => 'Servidores & Hosting',
-    'slug_en' => 'servers-hosting-infrastructure',
-    'slug_es' => 'servidores-hosting-infraestructura',
-    'desc_es' => 'Administración de sistemas, servidores dedicados, virtualización, redes de entrega de contenido y optimización de infraestructura web.',
-    'desc_en' => 'System administration, dedicated bare-metal servers, virtualization, content delivery networks, and resilient web infrastructure optimization.',
-  ),
-  21 => 
-  array (
-    'en' => 'E-Commerce & Digital Retail',
-    'es' => 'E-Commerce & Tiendas Digitales',
-    'slug_en' => 'ecommerce-digital-retail',
-    'slug_es' => 'comercio-electronico-tiendas',
-    'desc_es' => 'Estrategias técnicas para comercio electrónico: plataformas omnicanal, optimización de checkout, personalización y conversión digital.',
-    'desc_en' => 'Technical strategies for modern e-commerce: omnichannel platforms, high-converting checkout flows, personalization engines, and retail innovation.',
-  ),
+);
+
+        foreach ($categories as $catData) {
+            Category::updateOrCreate(
+                ['slug_en' => $catData['slug_en']],
+                [
+                    'name' => ['en' => $catData['en'], 'es' => $catData['es']],
+                    'slug_es' => $catData['slug_es'],
+                    'description' => [
+                        'en' => $catData['desc_en'],
+                        'es' => $catData['desc_es'],
+                    ],
+                    'is_active' => true,
+                ]
+            );
+        }
   22 => 
   array (
     'en' => 'SaaS & Developer Tools',
