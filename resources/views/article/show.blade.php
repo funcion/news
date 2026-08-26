@@ -82,7 +82,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg> 
                     <span class="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">
-                        {{ __('ui.views_count', ['count' => number_format($article->views ?? 0)]) }}
+                        @if(($article->views ?? 0) == 1)
+                            {{ __('ui.view_single') }}
+                        @else
+                            {{ __('ui.views_count', ['count' => number_format($article->views ?? 0)]) }}
+                        @endif
                     </span>
                 </div>
             </div>

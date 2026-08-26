@@ -167,7 +167,7 @@ return array (
   'about_pillars_more_title' => 'Nuestra curiosidad no tiene límites',
   'about_pillars_more_desc' => 'Aunque estos son nuestros ejes principales, nos apasiona todo el ecosistema digital: desde el software libre y la ciencia de datos hasta los gadgets, la computación cuántica y la cultura tecnológica que transforma nuestro día a día.',
   'min_read' => ':count min de lectura',
-  'views_count' => ':count lecturas',
+  'views_count' => ':count vistas',
   'views' => 'vistas',
   'read_more' => 'Leer más',
   'related_articles' => 'Artículos relacionados',
@@ -193,4 +193,5 @@ return array (
   'comment_posted_success' => 'Comment Posted Success',
   'comment_too_fast' => 'Comment Too Fast',
   'tag_meta_desc' => 'Tag Meta Desc',
+  'view_single' => '1 vista',
 );

@@ -193,4 +193,5 @@ return array (
   'comment_posted_success' => 'Comment Posted Success',
   'comment_too_fast' => 'Comment Too Fast',
   'tag_meta_desc' => 'Tag Meta Desc',
+  'view_single' => '1 view',
 );
