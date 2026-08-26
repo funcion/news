@@ -57,17 +57,24 @@ Route::group([
     // --- PUBLIC ROUTES ---
     Route::get('/', [\App\Http\Controllers\FrontendController::class, 'home'])->name('home');
 
-    // Contact Us & Inquiries
+    // About Us & Editorial Standards (Bilingual URLs)
     Route::get('/about', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about');
     Route::get('/nosotros', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about.es');
+    
+    // Contact Us (Bilingual URLs)
     Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
+    Route::get('/contacto', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.es');
     Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
+    Route::post('/contacto', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit.es')->middleware('throttle:5,1');
 
-    // Legal and Editorial Transparency Routes
+    // Legal and Editorial Transparency Routes (Bilingual URLs)
     Route::get('/terms', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
+    Route::get('/terminos', [\App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms.es');
     Route::get('/privacy', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
+    Route::get('/privacidad', [\App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy.es');
     Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
     Route::get('/editorial-policy', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial');
+    Route::get('/politica-editorial', [\App\Http\Controllers\LegalController::class, 'editorialPolicy'])->name('legal.editorial.es');
 
     // Email Verification Route (Signed URL with Auto-Login on Click)
     Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
