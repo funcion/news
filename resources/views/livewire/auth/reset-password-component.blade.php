@@ -63,7 +63,23 @@
                        class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition">
             </div>
 
-            <button type="submit" wire:loading.attr="disabled" class="w-full py-3.5 px-6 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:active:bg-cyan-600 text-white dark:text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-cyan-600/30 dark:shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-600/40 dark:hover:shadow-cyan-500/35 border border-cyan-500/30 dark:border-cyan-400/40 transition-all duration-200 ease-out flex items-center justify-center gap-2.5 cursor-pointer select-none active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed mt-4"><span wire:loading.remove>{{ __('ui.auth_update_password_button') }}</span><span wire:loading class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white dark:text-slate-950" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>{{ __('ui.auth_processing') }}</span></span></button>
+                        <!-- Submit Button (Spacious & Uppercase with High Contrast) -->
+            <button type="submit"
+                    wire:loading.attr="disabled"
+                    style="min-height: 54px; padding: 14px 28px;"
+                    class="w-full min-h-[54px] py-4 px-6 rounded-2xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:active:bg-cyan-600 text-white dark:text-slate-950 font-black text-sm uppercase tracking-widest shadow-lg shadow-cyan-600/25 dark:shadow-cyan-500/20 hover:shadow-xl hover:shadow-cyan-600/35 dark:hover:shadow-cyan-500/30 border border-cyan-500/40 dark:border-cyan-400/50 transition-all duration-200 ease-out flex items-center justify-center gap-3 cursor-pointer select-none active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed mt-4">
+                <svg wire:loading.remove class="w-5 h-5 text-white/90 dark:text-slate-950/90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                <span wire:loading.remove>{{ __('ui.auth_update_password_button') }}</span>
+                <span wire:loading class="flex items-center gap-2">
+                    <svg class="animate-spin h-5 w-5 text-white dark:text-slate-950" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ __('ui.auth_processing') }}</span>
+                </span>
+            </button>
         </form>
     </div>
 </div>
