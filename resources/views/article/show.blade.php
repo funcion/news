@@ -197,6 +197,8 @@
                 </a>
             @endif
         </div>
+            <!-- Livewire Community Comments Component -->
+        <livewire:article-comments :article="$article" />
     </article>
 
     <x-slot:sidebar>

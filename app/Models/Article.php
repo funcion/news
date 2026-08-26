@@ -200,4 +200,14 @@ class Article extends Model implements HasMedia
         // Spatie will return original URL if conversion is missing
         return $media->getUrl($conversion);
     }
+
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class)->approved()->root()->with(['user', 'replies.user'])->orderBy('created_at', 'desc');
+    }
+
+    public function allComments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
