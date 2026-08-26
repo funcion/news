@@ -308,7 +308,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Create Categories (Deduplicated with updateOrCreate)
-        // Master Taxonomy: 8 Core Pillars
+        // Master Taxonomy: 8 Core Pillars (Broad & Open Scope)
         $categories = array (
   0 => 
   array (
@@ -316,8 +316,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Inteligencia Artificial',
     'slug_en' => 'artificial-intelligence',
     'slug_es' => 'inteligencia-artificial',
-    'desc_es' => 'Investigamos a fondo la revolución de la IA: desde modelos fundacionales, agentes autónomos y visión computacional, hasta herramientas generativas, robótica y su impacto práctico en la sociedad.',
-    'desc_en' => 'In-depth reporting on the AI revolution: from frontier models, autonomous agents, and computer vision, to generative workflows, robotics, and transformative industry breakthroughs.',
+    'desc_es' => 'Investigamos a fondo la revolución de la IA: modelos fundacionales, agentes autónomos, visión computacional, herramientas generativas, robótica, y todos los avances y temas relevantes que transforman el ecosistema de la inteligencia artificial.',
+    'desc_en' => 'In-depth reporting on the AI revolution: frontier models, autonomous agents, computer vision, generative tools, robotics, and all relevant breakthroughs shaping the artificial intelligence landscape.',
   ),
   1 => 
   array (
@@ -325,8 +325,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Desarrollo & Software',
     'slug_en' => 'development-software',
     'slug_es' => 'desarrollo-software',
-    'desc_es' => 'El epicentro del código y la ingeniería de software: arquitecturas web, ecosistemas móviles, bases de datos, herramientas para desarrolladores, código abierto y todo el universo del desarrollo.',
-    'desc_en' => 'The heart of software engineering and code: modern web architectures, mobile ecosystems, databases, developer tooling, open source, and the entire programming universe.',
+    'desc_es' => 'El epicentro del código y la ingeniería de software: arquitecturas web, ecosistemas móviles, bases de datos, herramientas para desarrolladores, código abierto, y toda la actualidad y temas relevantes del desarrollo de software.',
+    'desc_en' => 'The heart of software engineering and code: web architectures, mobile ecosystems, databases, developer tooling, open source, and all relevant topics across the software development landscape.',
   ),
   2 => 
   array (
@@ -334,8 +334,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Ciberseguridad',
     'slug_en' => 'cybersecurity',
     'slug_es' => 'ciberseguridad',
-    'desc_es' => 'Análisis riguroso de la seguridad digital: investigación de vulnerabilidades, respuesta a incidentes, defensa corporativa, privacidad, criptografía y las leyes que protegen el ecosistema digital.',
-    'desc_en' => 'Rigorous digital security intelligence: vulnerability research, threat response, enterprise defense, privacy protocols, cryptography, and the policies shaping cyber resilience.',
+    'desc_es' => 'Análisis riguroso de la seguridad digital: investigación de vulnerabilidades, respuesta a incidentes, defensa corporativa, privacidad, criptografía, y todos los temas relevantes y amenazas que definen la ciberseguridad.',
+    'desc_en' => 'Rigorous digital security intelligence: vulnerability research, threat response, enterprise defense, privacy protocols, cryptography, and all critical topics safeguarding modern cybersecurity.',
   ),
   3 => 
   array (
@@ -343,8 +343,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Cloud & Infraestructura',
     'slug_en' => 'cloud-infrastructure',
     'slug_es' => 'cloud-infraestructura',
-    'desc_es' => 'La columna vertebral de Internet: arquitectura en la nube, prácticas DevOps, centros de datos, redes de telecomunicaciones, servidores y las tecnologías que hacen posible la computación global.',
-    'desc_en' => 'The backbone of the modern internet: cloud platforms, DevOps culture, scalable data centers, high-speed networks, and infrastructure powering global distributed computing.',
+    'desc_es' => 'La columna vertebral de Internet: arquitectura en la nube, prácticas DevOps, centros de datos, redes de telecomunicaciones, servidores, y todas las tecnologías relevantes que impulsan la infraestructura global.',
+    'desc_en' => 'The backbone of the modern internet: cloud platforms, DevOps practices, data centers, telecom networks, servers, and all essential technologies powering global infrastructure.',
   ),
   4 => 
   array (
@@ -352,8 +352,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Hardware & Semiconductores',
     'slug_en' => 'hardware-silicon',
     'slug_es' => 'hardware-semiconductores',
-    'desc_es' => 'Exploramos la tecnología tangible: arquitecturas de silicio, procesadores de vanguardia, dispositivos de consumo, sistemas embebidos y la ingeniería física que impulsa la era digital.',
-    'desc_en' => 'Exploring tangible technology: next-gen semiconductor silicon, advanced processors, consumer gear, embedded systems, and the physical engineering powering computing.',
+    'desc_es' => 'Exploramos la tecnología tangible: arquitecturas de silicio, procesadores de vanguardia, dispositivos de consumo, sistemas embebidos, y todos los temas y lanzamientos relevantes en hardware.',
+    'desc_en' => 'Exploring tangible technology: semiconductor silicon, advanced processors, consumer devices, embedded systems, and all relevant innovations across the hardware industry.',
   ),
   5 => 
   array (
@@ -361,8 +361,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Diseño & Producto Digital',
     'slug_en' => 'design-digital-product',
     'slug_es' => 'diseno-producto-digital',
-    'desc_es' => 'La intersección entre personas y tecnología: diseño de experiencia UX/UI, plataformas no-code, desarrollo de videojuegos 3D, interfaces espaciales y la creación de productos digitales excepcionales.',
-    'desc_en' => 'Where humans and technology connect: UX/UI design systems, no-code platforms, 3D game development, spatial computing, and crafting remarkable digital products.',
+    'desc_es' => 'La intersección entre personas y tecnología: diseño de experiencia UX/UI, plataformas no-code, desarrollo de videojuegos 3D, interfaces espaciales, y todas las disciplinas relevantes en la creación de productos digitales.',
+    'desc_en' => 'Where humans and technology connect: UX/UI design systems, no-code platforms, 3D game engines, spatial interfaces, and all relevant disciplines in digital product creation.',
   ),
   6 => 
   array (
@@ -370,8 +370,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Negocios & Startups',
     'slug_en' => 'business-startups',
     'slug_es' => 'negocios-startups',
-    'desc_es' => 'El pulso de la economía digital: innovación financiera FinTech, comercio electrónico, capital de riesgo, estrategias de crecimiento, Web3 y las historias de los creadores que transforman industrias.',
-    'desc_en' => 'Tracking the digital economy: FinTech innovation, e-commerce, venture capital, growth strategies, Web3, and the builders transforming global commercial ecosystems.',
+    'desc_es' => 'El pulso de la economía digital: innovación financiera FinTech, comercio electrónico, capital de riesgo, estrategias de crecimiento, Web3, y todos los temas clave que impulsan el mundo de los negocios y las startups.',
+    'desc_en' => 'Tracking the digital economy: FinTech innovation, e-commerce, venture capital, growth strategies, Web3, and all critical topics driving modern business and startups.',
   ),
   7 => 
   array (
@@ -379,8 +379,8 @@ class DatabaseSeeder extends Seeder
     'es' => 'Ciencia & Futuro',
     'slug_en' => 'science-frontier-tech',
     'slug_es' => 'ciencia-futuro',
-    'desc_es' => 'La vanguardia del descubrimiento humano: computación cuántica, tecnologías climáticas, biotecnología, exploración espacial, domótica inteligente y las innovaciones que definen nuestro futuro.',
-    'desc_en' => 'The frontier of human progress: quantum computing, climate tech, biotechnology, space exploration, smart environments, and deep scientific innovations defining tomorrow.',
+    'desc_es' => 'La vanguardia del descubrimiento humano: computación cuántica, tecnologías climáticas, biotecnología, exploración espacial, domótica inteligente, y todos los avances científicos relevantes que moldean nuestro futuro.',
+    'desc_en' => 'The frontier of human progress: quantum computing, climate tech, biotechnology, space exploration, smart environments, and all groundbreaking scientific developments shaping our future.',
   ),
 );
 
@@ -399,7 +399,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-                // Create Featured/Sample Tags
+                        // Create Featured/Sample Tags
         $tags = [
             ['en' => 'OpenAI', 'es' => 'OpenAI'],
             ['en' => 'GPT', 'es' => 'GPT'],
