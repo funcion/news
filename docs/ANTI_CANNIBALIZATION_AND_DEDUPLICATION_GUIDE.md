@@ -130,3 +130,51 @@ Si ocurre un acontecimiento de impacto masivo mundial (ej. falla global de infra
 * [`app/Services/AI/DuplicateCheckerService.php`](../app/Services/AI/DuplicateCheckerService.php): Motor de partición vectorial, slug canónico y LLM Judge.
 * [`app/Jobs/ProcessArticleWithAIJob.php`](../app/Jobs/ProcessArticleWithAIJob.php): Guardián editorial, clasificación enriquecida y bypass de Breaking News.
 * [`config/global.php`](../config/global.php): Metas de palabras y reglas editoriales.
+
+
+---
+
+## 🧬 Matriz Editorial de 18,000 Variaciones (Actualizado 2026)
+
+Para erradicar por completo cualquier patrón detectable de generación sintética y garantizar máxima autenticidad periodística humana, el sistema implementa la matriz **Style DNA**:
+
+### 1. 12 Arquetipos Narrativos Estructurales
+Cada arquetipo cuenta con su propio rango de temperatura calibrado:
+- **Columna Ágil y Directa (700-950 palabras)** `0.72 - 0.82` (Ritmo The Register / BBC Tech)
+- **Reportaje de Investigación Profundo (1200-1700 palabras)** `0.55 - 0.65` (Tono MIT Technology Review)
+- **Pirámide Invertida / Breaking News (800-1100 palabras)** `0.60 - 0.70` (Conclusión al inicio)
+- **Explicador con Preguntas Clave (900-1300 palabras)** `0.65 - 0.75` (Formato Explainer The Verge)
+- **Veredicto-Primero / Review Ejecutivo (900-1200 palabras)** `0.68 - 0.78` (Tono Ars Technica)
+- **Cronología Secuencial / Historia de Incidente (1000-1400 palabras)** `0.58 - 0.68` (Estilo Wired Longform)
+- **Análisis Centrado en Datos y Métricas (1000-1500 palabras)** `0.55 - 0.65` (Estilo Bloomberg Technology)
+- **Narrativa Cinematográfica con Escena (1000-1500 palabras)** `0.78 - 0.90` (Estilo The Atlantic Tech)
+- **Debate: Dos Perspectivas Válidas (1000-1400 palabras)** `0.70 - 0.82` (Contraste equilibrado)
+- **Comparativa Técnica Cara a Cara (900-1400 palabras)** `0.62 - 0.72` (Shootout directo)
+- **Análisis de Tendencia e Implicaciones (900-1300 palabras)** `0.67 - 0.77` (The Information)
+- **Columna Desmontando un Mito o Exageración (800-1100 palabras)** `0.72 - 0.85` (NYT Tech Opinion)
+
+### 2. 50 Hooks de Apertura Dinámicos
+Los artículos inician con ángulos rotativos:
+- Datos numéricos y compresión de tiempos
+- Escenas cinematográficas y salas de crisis
+- Preguntas retóricas de tensión
+- Declaraciones audaces contra-intuitivas
+- Paralelos históricos y ciclos de industria
+- Paradojas técnicas
+- Consecuencias y efectos de segundo orden
+- Desmitificación de titulares exagerados
+- Escenarios reales de infraestructura
+- Proyecciones de futuro cuantificadas
+
+### 3. 5 Estilos de Cierre Diferenciados
+Se eliminó la pregunta de cierre obligatoria uniforme, permitiendo:
+1. **Pregunta incisiva al lector**
+2. **Proyección cuantificada con fecha/métrica**
+3. **Cierre aforístico sintético**
+4. **Llamada a la acción para el profesional técnico**
+5. **Veredicto abierto y honesto**
+
+### 4. Integridad Transaccional y Sanitización
+- **DB::transaction**: Toda la persistencia de artículos se ejecuta atómicamente.
+- **Sanitización Nativa en C**: `strip_tags` con lista blanca estricta para eliminar scripts o inyecciones XSS con 0 MB de consumo de RAM adicional.
+- **E-E-A-T Multi-Source Consolidation**: Las fuentes secundarias se agregan en `ai_metadata['consolidated_sources']` fortaleciendo la autoridad de dominio en Google.
