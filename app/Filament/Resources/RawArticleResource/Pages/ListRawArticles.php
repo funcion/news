@@ -8,6 +8,8 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Widgets\RawArticlesGlossaryWidget;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -67,6 +69,13 @@ class ListRawArticles extends ListRecords
                         ->send();
                 }),
             Actions\CreateAction::make(),
+        ];
+    }
+
+        protected function getFooterWidgets(): array
+    {
+        return [
+            RawArticlesGlossaryWidget::class,
         ];
     }
 
