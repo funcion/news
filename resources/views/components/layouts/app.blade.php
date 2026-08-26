@@ -430,6 +430,52 @@
                     </div>
                     
                     <!-- Separador -->
+                    <!-- Mobile User / Auth Action -->
+                    <div class="border-t border-gray-100 dark:border-slate-800 pt-3 pb-1">
+                        @auth
+                            <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60 mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden flex-shrink-0">
+                                        @if (auth()->user()->avatar_url)
+                                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span>{{ auth()->user()->initials }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                                    </div>
+                                </div>
+                                @if (auth()->user()->slug === 'admin' || auth()->user()->id === 1)
+                                    <a href="/admin" class="mt-3 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 py-1">
+                                        ⚙️ {{ __('ui.admin_panel') }}
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2">
+                                    @csrf
+                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition flex items-center justify-center gap-2">
+                                        🚪 {{ __('ui.auth_logout') }}
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="flex flex-col gap-2 pt-1">
+                                <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
+                                   @click="mobileMenuOpen = false"
+                                   class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center text-xs font-bold shadow-md shadow-cyan-500/20">
+                                    {{ __('ui.auth_sign_in_button') }}
+                                </a>
+                                <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/register') }}"
+                                   @click="mobileMenuOpen = false"
+                                   class="w-full py-2 px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-center text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+                                    {{ __('ui.auth_create_account') }}
+                                </a>
+                            </div>
+                        @endauth
+                    </div>
+
+                    <!-- Separador -->
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-4">
                         <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{{ __('ui.preferences') }}</h3>
                         
@@ -507,6 +553,52 @@
                     </div>
                     
                     <!-- Información adicional -->
+                    <!-- Mobile User / Auth Action -->
+                    <div class="border-t border-gray-100 dark:border-slate-800 pt-3 pb-1">
+                        @auth
+                            <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60 mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm overflow-hidden flex-shrink-0">
+                                        @if (auth()->user()->avatar_url)
+                                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span>{{ auth()->user()->initials }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                                    </div>
+                                </div>
+                                @if (auth()->user()->slug === 'admin' || auth()->user()->id === 1)
+                                    <a href="/admin" class="mt-3 flex items-center gap-2 text-xs font-bold text-cyan-600 dark:text-cyan-400 py-1">
+                                        ⚙️ {{ __('ui.admin_panel') }}
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}" class="mt-2">
+                                    @csrf
+                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition flex items-center justify-center gap-2">
+                                        🚪 {{ __('ui.auth_logout') }}
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="flex flex-col gap-2 pt-1">
+                                <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}"
+                                   @click="mobileMenuOpen = false"
+                                   class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center text-xs font-bold shadow-md shadow-cyan-500/20">
+                                    {{ __('ui.auth_sign_in_button') }}
+                                </a>
+                                <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/register') }}"
+                                   @click="mobileMenuOpen = false"
+                                   class="w-full py-2 px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-center text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+                                    {{ __('ui.auth_create_account') }}
+                                </a>
+                            </div>
+                        @endauth
+                    </div>
+
+                    <!-- Separador -->
                     <div class="border-t border-gray-100 dark:border-slate-800 pt-4">
                         <div class="text-center">
                             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -594,6 +686,11 @@
                         <li><button type="button" data-cc="show-preferencesModal" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-left">{{ __('ui.cookie_settings') }}</button></li>
                         <li><a href="{{ route('legal.editorial') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.editorial_policy') }}</a></li>
                         <li><a href="{{ route('contact.show') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block font-semibold text-cyan-600 dark:text-cyan-400">{{ __('ui.contact_us') }}</a></li>
+                        @auth
+                            <li><a href="{{ auth()->user()->slug === 'admin' || auth()->user()->id === 1 ? '/admin' : '#' }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-cyan-600 dark:text-cyan-400 font-bold">👤 {{ __('ui.auth_my_account') }}</a></li>
+                        @else
+                            <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-cyan-600 dark:text-cyan-400 font-bold">🔑 {{ __('ui.auth_sign_in_button') }}</a></li>
+                        @endauth
                     </ul>
                 </div>
 
