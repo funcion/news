@@ -39,9 +39,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create Editorial Team & Freelance Writers (12 Human Authors with Unique Creative Voices)
-        $authorsList = config('global.editorial.authors', []);
-        
-        if (empty($authorsList)) {
+        $authorsList =
             $authorsList = array (
               0 => 
               array (
@@ -291,8 +289,6 @@ class DatabaseSeeder extends Seeder
                 'specialty' => 'product_ux',
               ),
             );
-        }
-
         foreach ($authorsList as $authorData) {
             User::updateOrCreate([
                 'slug' => $authorData['slug'],
