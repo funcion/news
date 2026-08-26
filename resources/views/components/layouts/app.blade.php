@@ -194,7 +194,7 @@
                             {{ __('ui.home') }}
                         </a>
                         
-                        <!-- Categories Dropdown (Seamless Multi-Column Grid) -->
+                        <!-- Categories Dropdown (CSS Multi-Column Dynamic Flow) -->
                         <div class="relative group nav-item" 
                              x-data="{ open: false }" 
                              @mouseenter="open = true" 
@@ -219,19 +219,19 @@
                                  x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                                  x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
                                  class="absolute top-full left-1/2 -translate-x-1/2 pt-1.5 z-[100]"
-                                 style="width: 400px;"
+                                 style="width: 440px;"
                                  @click.away="open = false">
                                 
                                 @php
                                     $categories = \App\Models\Category::whereNull('parent_id')->whereHas('articles', fn($q) => $q->published())->get();
                                 @endphp
 
-                                <div class="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2.5 overflow-hidden">
-                                    <!-- 2-Column Balanced Grid -->
-                                    <div class="grid grid-cols-2 gap-1 max-h-[350px] overflow-y-auto pr-0.5">
+                                <div class="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3 overflow-hidden">
+                                    <!-- CSS Multi-Column Flow (No Scrollbar, Naturally Balanced) -->
+                                    <div style="column-count: 2; column-gap: 8px; max-height: 400px;">
                                         @foreach($categories as $category)
                                             <a href="{{ $category->url }}" 
-                                               class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all duration-150 group">
+                                               class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all duration-150 group break-inside-avoid mb-1">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-500/30 group-hover:bg-cyan-500 group-hover:scale-125 transition-all flex-shrink-0"></span>
                                                 <span class="truncate">{{ $category->name }}</span>
                                             </a>
