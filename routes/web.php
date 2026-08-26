@@ -59,6 +59,7 @@ Route::group([
 
     // Contact Us & Inquiries
     Route::get('/about', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about');
+    Route::get('/nosotros', [\App\Http\Controllers\FrontendController::class, 'about'])->name('about.es');
     Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact.show');
     Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
 
