@@ -36,9 +36,8 @@ class UserResource extends Resource
     {
         return $form
             ->components([
-                Section::make('Credenciales y Configuración')
+                Section::make('Credenciales y Cuenta')
                     ->columnSpanFull()
-                    ->columns(1)
                     ->schema([
                         TextInput::make('email')
                             ->label('Correo Electrónico')
@@ -52,30 +51,44 @@ class UserResource extends Resource
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->required(fn (string $context): bool => $context === 'create'),
                         TextInput::make('slug')
+                            ->label('Slug / Identificador')
                             ->required()
                             ->unique(User::class, 'slug', ignoreRecord: true),
+                        Toggle::make('is_active')
+                            ->label('Cuenta Activa')
+                            ->default(true),
                         FileUpload::make('avatar_url')
-                            ->label('Avatar')
+                            ->label('Avatar / Foto de Perfil')
                             ->image()
-                            ->disk('public')
+                            ->disk('r2')
                             ->directory('avatars')
                             ->imageCropAspectRatio('1:1')
-                            ->imageResizeTargetWidth('100')
-                            ->imageResizeTargetHeight('100')
-                            ->imageResizeMode('cover')
-                            ->maxSize(2048)
+                            ->maxSize(5120)
                             ->columnSpanFull(),
+                    ])->columns(2),
+
+                Section::make('Control de Acceso: Roles y Permisos Directos')
+                    ->description('Asigna roles generales y/o permisos individuales específicos a este usuario.')
+                    ->columnSpanFull()
+                    ->schema([
                         Select::make('roles')
-                            ->label('Roles de Acceso')
+                            ->label('Roles Asignados')
                             ->relationship('roles', 'name')
                             ->multiple()
                             ->preload()
                             ->searchable()
+                            ->helperText('Los roles otorgan paquetes completos de permisos preconfigurados.')
                             ->columnSpanFull(),
-                        Toggle::make('is_active')
-                            ->label('Activo')
-                            ->default(true),
-                    ])->columns(2),
+
+                        Select::make('permissions')
+                            ->label('Permisos Específicos Directos (Opcional)')
+                            ->relationship('permissions', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Otorga permisos específicos adicionales a este usuario sin necesidad de crear un nuevo rol.')
+                            ->columnSpanFull(),
+                    ]),
 
                 Section::make('Información del Usuario (Bilingüe)')
                     ->columnSpanFull()
@@ -163,6 +176,12 @@ class UserResource extends Resource
                         'lector'      => 'gray',
                         default       => 'gray',
                     }),
+                TextColumn::make('permissions.name')
+                    ->label('Permisos Directos')
+                    ->badge()
+                    ->separator(', ')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ToggleColumn::make('is_active')
                     ->label('Activo'),
                 TextColumn::make('created_at')

@@ -127,3 +127,29 @@ php artisan permission:cache-reset
 
 * Los permisos de cada usuario se compilan y almacenan en la memoria RAM de **Redis** en la primera solicitud.
 * Las validaciones de acceso subsiguientes se ejecutan en **0.1 milisegundos**, garantizando cero impacto en el tiempo de carga del portal.
+---
+
+## 🎯 7. Asignación de Permisos Específicos Directos a Usuarios
+
+Además de los roles (que agrupan paquetes de permisos), el sistema permite otorgar **permisos individuales específicos a cualquier usuario**:
+
+### ¿Cómo funciona en el Panel de Administración?
+1. Ve a **Seguridad y Roles ➔ Usuarios** ([`/admin/users`](http://localhost:8000/admin/users)).
+2. Edita cualquier usuario o crea uno nuevo.
+3. En la sección **"Control de Acceso: Roles y Permisos Directos"**:
+   * **Roles Asignados:** Selecciona uno o varios roles generales (*Editor Jefe, Redactor, Moderador, etc.*).
+   * **Permisos Específicos Directos (Opcional):** Selecciona permisos individuales adicionales (ej. si un Redactor necesita permisos de `Update:Source` o `ViewAny:Comment` sin cambiarle su rol principal).
+4. Guarda los cambios. El usuario tendrá inmediatamente sus permisos combinados (los heredados de sus roles + los directos asignados).
+
+### Verificación en Código:
+```php
+// Comprobar si el usuario tiene el permiso (ya sea por Rol o Directo)
+if ($user->can('Update:Article')) {
+    // Permitido
+}
+
+// Comprobar si el permiso fue asignado de forma directa e individual
+if ($user->hasDirectPermission('Update:Article')) {
+    // Es un permiso directo
+}
+```

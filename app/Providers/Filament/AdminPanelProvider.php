@@ -64,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()->navigationGroup('Seguridad y Roles'),
             ])
             ->authMiddleware([
                 Authenticate::class,
