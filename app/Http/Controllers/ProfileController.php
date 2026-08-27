@@ -39,7 +39,7 @@ class ProfileController extends Controller
         $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
 
         // Handle Avatar Removal from Cloudflare R2
-        if ($request->boolean('remove_avatar') && $user->getRawOriginal('avatar_url')) {
+        if (!$request->hasFile('avatar') && $request->boolean('remove_avatar') && $user->getRawOriginal('avatar_url')) {
             $raw = $user->getRawOriginal('avatar_url');
             $cleanPath = ltrim(str_replace([$r2PublicUrl, 'https://media.glodaxia.com', 'storage/'], '', $raw), '/');
             Storage::disk('r2')->delete($cleanPath);
@@ -55,7 +55,7 @@ class ProfileController extends Controller
             }
 
             $file = $request->file('avatar');
-            $image = Image::read($file->getRealPath());
+            $image = Image::make($file->getRealPath());
             $webpData = (string) $image->fit(256, 256)->encode('webp', 90);
 
             $filename = 'avatars/user_' . $user->id . '_' . bin2hex(random_bytes(8)) . '.webp';
