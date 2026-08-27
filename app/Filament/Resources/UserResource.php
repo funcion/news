@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -63,6 +64,13 @@ class UserResource extends Resource
                             ->imageResizeTargetHeight('100')
                             ->imageResizeMode('cover')
                             ->maxSize(2048)
+                            ->columnSpanFull(),
+                        Select::make('roles')
+                            ->label('Roles de Acceso')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('Activo')
@@ -143,6 +151,18 @@ class UserResource extends Resource
                     ->label('Correo Electrónico')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->separator(', ')
+                    ->color(fn (string $state): string => match ($state) {
+                        'super_admin' => 'danger',
+                        'editor_jefe' => 'primary',
+                        'redactor'    => 'info',
+                        'moderador'   => 'warning',
+                        'lector'      => 'gray',
+                        default       => 'gray',
+                    }),
                 ToggleColumn::make('is_active')
                     ->label('Activo'),
                 TextColumn::make('created_at')

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
@@ -30,7 +31,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         });
     }
 
-    use HasFactory, Notifiable, HasTranslations;
+    use HasFactory, Notifiable, HasTranslations, HasRoles;
 
     /**
      * The translatable attributes.
@@ -83,7 +84,21 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        if (!$this->is_active) {
+            return false;
+        }
+
+        // Super admins and staff members
+        if ($this->hasAnyRole(['super_admin', 'editor_jefe', 'redactor', 'moderador'])) {
+            return true;
+        }
+
+        // Hardcoded root admin safety check
+        if (in_array($this->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
