@@ -6,7 +6,13 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto" x-data="{ activeTab: 'info' }">
-        
+        <!-- Accessible Breadcrumbs (ADA / WCAG Compliant) -->
+        <nav aria-label="{{ __('ui.breadcrumbs') }}" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-8">
+            <a href="{{ url(app()->getLocale() === 'es' ? '/es' : '/') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded">{{ __('ui.home') }}</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="text-slate-800 dark:text-slate-200 truncate" aria-current="page">{{ __('ui.my_profile') }}</span>
+        </nav>
+
         <!-- Header Section -->
         <div class="mb-8 pb-6 border-b border-gray-100 dark:border-white/5">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-3">
