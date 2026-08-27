@@ -255,7 +255,20 @@ Route::group([
     })->name('logout')->middleware('auth');
 
     // Tags (Must be before root slugs to avoid collisions)
-    Route::get('/search', [\App\Http\Controllers\FrontendController::class, 'search'])->name('search');
+        // Search (/search in EN, /es/buscar in ES)
+    Route::get('/search', function (\Illuminate\Http\Request $request) {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/buscar' . ($request->getQueryString() ? ('?' . $request->getQueryString()) : ''), 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->search($request);
+    })->name('search');
+
+    Route::get('/buscar', function (\Illuminate\Http\Request $request) {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/search' . ($request->getQueryString() ? ('?' . $request->getQueryString()) : ''), 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->search($request);
+    })->name('search.es');
     Route::get('/tag/{slug}', [\App\Http\Controllers\FrontendController::class, 'tag'])->name('tags.show');
 
     // Root-level slugs (Articles & Categories)

@@ -148,7 +148,7 @@ class FrontendController extends Controller
             });
 
         $viewAllUrl = $locale === 'es'
-            ? url('/es/search?q=' . urlencode($query))
+            ? url('/es/buscar?q=' . urlencode($query))
             : url('/search?q=' . urlencode($query));
 
         return response()->json([

@@ -680,6 +680,14 @@
                                 </svg>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ app()->getLocale() === 'es' ? url('/es/buscar') : url('/search') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                                <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.7; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                {{ app()->getLocale() === 'es' ? 'Buscar Noticias y Artículos' : 'Search News & Articles' }}
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -792,7 +800,7 @@
             },
             submitSearch() {
                 if (this.query.trim().length > 0) {
-                    const target = '{{ app()->getLocale() === 'es' ? '/es/search?q=' : '/search?q=' }}' + encodeURIComponent(this.query.trim());
+                    const target = '{{ app()->getLocale() === 'es' ? '/es/buscar?q=' : '/search?q=' }}' + encodeURIComponent(this.query.trim());
                     window.location.href = target;
                 }
             }
