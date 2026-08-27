@@ -1,6 +1,6 @@
 <x-layouts.app>
     <x-slot:title>{{ __('ui.editorial_policy') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
-    <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Estándares de ética periodística, verificación de fuentes, correcciones y directrices de transparencia en IA de Glodaxia.' : 'Editorial standards, source verification rigor, correction transparency, and ethical AI integration policy on Glodaxia.' }}</x-slot>
+    <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Lee nuestro código de ética editorial: verificación rigurosa de fuentes primarias, transparencia en correcciones y uso responsable de IA en ' . config('app.name', 'Glodaxia') . '.' : 'Read our editorial code of ethics: primary source verification rigor, correction transparency, and responsible AI integration guidelines at ' . config('app.name', 'Glodaxia') . '.' }}</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
         <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">

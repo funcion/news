@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('ui.contact_title') . ' | ' . config('app.name', 'Glodaxia')" 
-               :metaDescription="__('ui.contact_subtitle')">
+               :metaDescription="app()->getLocale() === 'es' ? 'Ponte en contacto con la redacción de ' . config('app.name', 'Glodaxia') . ': envía sugerencias de noticias, dudas técnicas o propuestas de alianza a nuestro equipo editorial.' : 'Get in touch with ' . config('app.name', 'Glodaxia') . ': report a news tip, submit technical questions, or discuss partnership and editorial opportunities with our team.'">
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
         <div class="mb-10 text-center md:text-left">

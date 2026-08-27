@@ -2,7 +2,7 @@
 
 return array (
   'site_name' => 'Glodaxia',
-  'meta_desc' => 'Glodaxia Magazine · Technology journalism powered by human insight, passion, and clarity. Artificial intelligence, software engineering, cybersecurity, and global innovation.',
+  'meta_desc' => 'Glodaxia Magazine: Technology journalism powered by human passion and clarity. Explore artificial intelligence, software, cybersecurity, and news.',
   'home' => 'Home',
   'categories' => 'Categories',
   'latest_news' => 'Latest news',
@@ -236,7 +236,9 @@ return array (
   'delete_account_notice_desc' => 'To request the permanent deletion of your account and complete removal of all personal data under our privacy policy, please contact us directly at our official email.',
   'delete_account_btn' => 'Request Account Deletion',
   'breadcrumbs' => 'Breadcrumbs',
-  'categories_meta_desc' => 'Explore all technology, artificial intelligence, and digital innovation categories on Glodaxia.',
+  'categories_meta_desc' => 'Explore our complete catalog of technology, artificial intelligence, software engineering, cloud computing, and cybersecurity categories on Glodaxia.',
   'category_meta_desc' => 'Discover the latest news, breakthrough analysis, and insights on :category.',
   'pagination' => 'Pagination',
+  'about_meta_desc' => 'Learn about Glodaxia: our independent editorial mission, passionate team of journalists, and strict standards for clear and accessible tech news.',
+  'contact_meta_desc' => 'Get in touch with the Glodaxia editorial desk, report a news tip, submit technical inquiries, or discuss partnership opportunities with our team.',
 );

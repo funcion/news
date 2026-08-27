@@ -1,6 +1,6 @@
 <x-layouts.app>
     <x-slot:title>{{ __('ui.cookie_policy') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
-    <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Política de cookies detallada, gestión de consentimiento y transparencia de tecnologías de analítica en Glodaxia.' : 'Detailed cookie policy, consent management, and tracking technology transparency on Glodaxia.' }}</x-slot>
+    <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Descubre cómo ' . config('app.name', 'Glodaxia') . ' utiliza cookies esenciales y analíticas para garantizar una navegación segura y ofrecerte la mejor experiencia de lectura.' : 'Learn how ' . config('app.name', 'Glodaxia') . ' uses essential cookies and performance analytics to ensure secure browsing and deliver the best reading experience on our site.' }}</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
         <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">

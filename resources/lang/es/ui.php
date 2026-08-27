@@ -2,7 +2,7 @@
 
 return array (
   'site_name' => 'Glodaxia',
-  'meta_desc' => 'Glodaxia Magazine · Periodismo de tecnología explicado con pasión, claridad y criterio humano. Inteligencia artificial, desarrollo, ciberseguridad y el pulso de la innovación global.',
+  'meta_desc' => 'Glodaxia Magazine: Periodismo de tecnología explicado con pasión, claridad y criterio. Inteligencia artificial, desarrollo, ciberseguridad y noticias.',
   'home' => 'Inicio',
   'categories' => 'Categorías',
   'latest_news' => 'Últimas noticias',
@@ -236,7 +236,9 @@ return array (
   'delete_account_notice_desc' => 'Para solicitar la eliminación definitiva de tu cuenta y la purga completa de tus datos personales conforme a nuestras políticas de privacidad, por favor contáctanos directamente a nuestro correo oficial.',
   'delete_account_btn' => 'Solicitar Eliminación de Cuenta',
   'breadcrumbs' => 'Miga de pan',
-  'categories_meta_desc' => 'Explora todas las categorías de tecnología, inteligencia artificial y desarrollo en Glodaxia.',
+  'categories_meta_desc' => 'Explora nuestro catálogo completo de tecnología, inteligencia artificial, ingeniería de software, cloud computing y ciberseguridad en Glodaxia.',
   'category_meta_desc' => 'Descubre las últimas noticias, análisis y avances tecnológicos sobre :category.',
   'pagination' => 'Paginación',
+  'about_meta_desc' => 'Conoce Glodaxia: nuestra misión editorial independiente, equipo apasionado y rigurosos estándares de periodismo tecnológico claro y accesible.',
+  'contact_meta_desc' => 'Ponte en contacto con la redacción de Glodaxia: envía sugerencias de noticias, consultas técnicas o propuestas de colaboración a nuestro equipo.',
 );

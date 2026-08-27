@@ -1,6 +1,6 @@
 <x-layouts.app :trendingTags="$trendingTags ?? collect()">
     <x-slot:title>{{ __('ui.about_hero_title') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
-    <x-slot:metaDescription>{{ __('ui.about_hero_subtitle') ?? 'Conoce la misión y estándares de periodismo tecnológico de ' . config('app.name', 'Glodaxia') }}</x-slot>
+    <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Conoce ' . config('app.name', 'Glodaxia') . ': periodismo tecnológico independiente, un equipo apasionado y rigurosos estándares para explicar la innovación digital con claridad.' : 'Learn about ' . config('app.name', 'Glodaxia') . ': independent tech journalism, a passionate editorial team, and strict standards to explain modern digital innovation clearly.' }}</x-slot>
     @section('title', __('ui.about_hero_title') . ' — ' . __('ui.site_name'))
     @section('meta_description', __('ui.about_hero_subtitle'))
 
