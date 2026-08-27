@@ -89,7 +89,7 @@
                         </h2>
                         <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-4">{{ $article->excerpt }}</p>
                         <div class="mt-auto flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
-                            <span class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->user?->name ?? 'Glodaxia' }}</span>
+                            <span class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">{{ $article->user?->name ?? config('app.name', 'Glodaxia') }}</span>
                             <span class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-auto">{{ $article->reading_time ?? 5 }} min</span>
                         </div>
                     </article>

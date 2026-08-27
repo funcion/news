@@ -401,8 +401,8 @@ class DatabaseSeeder extends Seeder
                         'es' => $catData['desc_es'],
                     ],
                     'meta_title' => [
-                        'en' => "{$catData['en']} News, Analysis & Tech Trends | Glodaxia",
-                        'es' => "Noticias de {$catData['es']}, Análisis y Tendencias | Glodaxia",
+                        'en' => "{$catData['en']} News, Analysis & Tech Trends | ' . config('app.name', 'Glodaxia')",
+                        'es' => "Noticias de {$catData['es']}, Análisis y Tendencias | ' . config('app.name', 'Glodaxia')",
                     ],
                     'meta_description' => [
                         'en' => "Explore the latest breaking news, technical analysis, and industry research on {$catData['en']} in the global AI & tech ecosystem.",
@@ -434,8 +434,8 @@ class DatabaseSeeder extends Seeder
                         'es' => "Últimas noticias, investigación y análisis sobre {$tagName}.",
                     ],
                     'meta_title' => [
-                        'en' => "#{$tagName} - Latest Tech News & Articles | Glodaxia",
-                        'es' => "#{$tagName} - Últimas Noticias y Artículos de Tecnología | Glodaxia",
+                        'en' => "#{$tagName} - Latest Tech News & Articles | ' . config('app.name', 'Glodaxia')",
+                        'es' => "#{$tagName} - Últimas Noticias y Artículos de Tecnología | ' . config('app.name', 'Glodaxia')",
                     ],
                     'meta_description' => [
                         'en' => "Curated feed of tech intelligence, research papers, and breaking news tagged with #{$tagName} on Glodaxia.",

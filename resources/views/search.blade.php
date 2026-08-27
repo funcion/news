@@ -1,5 +1,5 @@
 <x-layouts.app :title="($query ? ($locale === 'es' ? 'Resultados para: ' : 'Search results for: ') . $query : ($locale === 'es' ? 'Buscador' : 'Search')) . ' | ' . config('app.name')"
-               :metaDescription="($query ? ($locale === 'es' ? 'Resultados de búsqueda para: ' : 'Search results for: ') . $query : 'Buscador de noticias de inteligencia artificial, ciberseguridad y tecnología en Glodaxia.')">
+               :metaDescription="($query ? ($locale === 'es' ? 'Resultados de búsqueda para: ' : 'Search results for: ') . $query : 'Buscador de noticias de inteligencia artificial, ciberseguridad y tecnología en ' . config('app.name', 'Glodaxia'))">
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-14">
         <!-- Breadcrumbs -->
         <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-8">

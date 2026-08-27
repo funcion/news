@@ -36,11 +36,13 @@ class TagResource extends Resource
     {
         return $form
             ->components([
-                Section::make('Tag Details')
-                    ->description('Define the tag name, description, and slug in both languages.')
+                Section::make('Gestión de Etiqueta (Tag)')
+                    ->description('Define la información de la etiqueta, traducciones y metadatos SEO en una sola interfaz organizada.')
+                    ->columnSpanFull()
                     ->schema([
-                        Tabs::make('Languages')
+                        Tabs::make('Tag_Tabs')
                             ->tabs([
+                                // ─── 1. ENGLISH ──────────────────────────────────────────
                                 Tabs\Tab::make('🇺🇸 English')
                                     ->schema([
                                         TextInput::make('name_en')
@@ -62,8 +64,8 @@ class TagResource extends Resource
                                                             Notification::make()->warning()->title('Ingresa un Nombre en Inglés primero')->send();
                                                             return;
                                                         }
-                                                        
-                                                        $prompt = "Generate Spanish name, descriptions, and high-CTR SEO meta title and meta description for the tech tag: '{$state}'. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
+                                                        $appName = config('app.name', 'Glodaxia');
+                                                        $prompt = "For the tech tag '{$state}' on {$appName} news, generate Spanish name, descriptions, and high-CTR SEO meta title and meta description. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
                                                         
                                                         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
                                                         
@@ -84,7 +86,7 @@ class TagResource extends Resource
                                             ),
                                         Textarea::make('description_en')
                                             ->label('Description (EN)')
-                                            ->rows(2)
+                                            ->rows(3)
                                             ->columnSpanFull()
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
@@ -93,6 +95,7 @@ class TagResource extends Resource
                                             }),
                                     ]),
 
+                                // ─── 2. ESPAÑOL ──────────────────────────────────────────
                                 Tabs\Tab::make('🇪🇸 Español')
                                     ->schema([
                                         TextInput::make('name_es')
@@ -106,7 +109,7 @@ class TagResource extends Resource
                                             }),
                                         Textarea::make('description_es')
                                             ->label('Descripción (ES)')
-                                            ->rows(2)
+                                            ->rows(3)
                                             ->columnSpanFull()
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
@@ -114,6 +117,45 @@ class TagResource extends Resource
                                                 }
                                             }),
                                     ]),
+
+                                // ─── 3. SEO ──────────────────────────────────────────────
+                                Tabs\Tab::make('🔍 SEO')
+                                    ->schema([
+                                        TextInput::make('meta_title_en')
+                                            ->label('Meta Title (EN)')
+                                            ->maxLength(70)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_title', 'en'));
+                                                }
+                                            }),
+                                        TextInput::make('meta_title_es')
+                                            ->label('Meta Título (ES)')
+                                            ->maxLength(70)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_title', 'es'));
+                                                }
+                                            }),
+                                        Textarea::make('meta_description_en')
+                                            ->label('Meta Description (EN)')
+                                            ->rows(3)
+                                            ->maxLength(160)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_description', 'en'));
+                                                }
+                                            }),
+                                        Textarea::make('meta_description_es')
+                                            ->label('Meta Descripción (ES)')
+                                            ->rows(3)
+                                            ->maxLength(160)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_description', 'es'));
+                                                }
+                                            }),
+                                    ])->columns(2),
                             ])->columnSpanFull(),
 
                         TextInput::make('slug')
@@ -130,56 +172,6 @@ class TagResource extends Resource
                             ->default(0)
                             ->disabled(),
                     ])->columns(2),
-
-                Section::make('🔍 Optimización para Motores de Búsqueda (SEO & Metadatos)')
-                    ->description('Configura los meta títulos y meta descripciones bilingües para el feed de este tag.')
-                    ->columnSpanFull()
-                    ->schema([
-                        Tabs::make('SEO_Languages')
-                            ->tabs([
-                                Tabs\Tab::make('🇺🇸 English SEO')
-                                    ->schema([
-                                        TextInput::make('meta_title_en')
-                                            ->label('Meta Title (EN)')
-                                            ->maxLength(70)
-                                            ->afterStateHydrated(function ($component, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('meta_title', 'en'));
-                                                }
-                                            }),
-                                        Textarea::make('meta_description_en')
-                                            ->label('Meta Description (EN)')
-                                            ->rows(3)
-                                            ->maxLength(160)
-                                            ->afterStateHydrated(function ($component, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('meta_description', 'en'));
-                                                }
-                                            }),
-                                    ]),
-
-                                Tabs\Tab::make('🇪🇸 Español SEO')
-                                    ->schema([
-                                        TextInput::make('meta_title_es')
-                                            ->label('Meta Título (ES)')
-                                            ->maxLength(70)
-                                            ->afterStateHydrated(function ($component, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('meta_title', 'es'));
-                                                }
-                                            }),
-                                        Textarea::make('meta_description_es')
-                                            ->label('Meta Descripción (ES)')
-                                            ->rows(3)
-                                            ->maxLength(160)
-                                            ->afterStateHydrated(function ($component, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('meta_description', 'es'));
-                                                }
-                                            }),
-                                    ]),
-                            ])->columnSpanFull(),
-                    ]),
             ]);
     }
 

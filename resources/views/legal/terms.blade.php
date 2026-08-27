@@ -1,6 +1,6 @@
 <x-layouts.app>
     <x-slot:title>{{ __('ui.terms_of_service') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
-    <x-slot:metaDescription>Términos y condiciones de uso legal y normativo del portal Glodaxia.</x-slot>
+    <x-slot:metaDescription>Términos y condiciones de uso legal y normativo del portal {{ config('app.name', 'Glodaxia') }}.</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
         <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">

@@ -36,11 +36,13 @@ class CategoryResource extends Resource
     {
         return $form
             ->components([
-                Section::make('Información Básica y Contenido (Bilingüe)')
-                    ->description('Define el nombre, descripción y slugs de la categoría en inglés y español.')
+                Section::make('Gestión de Categoría')
+                    ->description('Define la información editorial, traducciones y metadatos SEO en una sola interfaz organizada.')
+                    ->columnSpanFull()
                     ->schema([
-                        Tabs::make('Languages')
+                        Tabs::make('Category_Tabs')
                             ->tabs([
+                                // ─── 1. ENGLISH ──────────────────────────────────────────
                                 Tabs\Tab::make('🇺🇸 English')
                                     ->schema([
                                         TextInput::make('name_en')
@@ -62,8 +64,8 @@ class CategoryResource extends Resource
                                                             Notification::make()->warning()->title('Ingresa un Nombre en Inglés primero')->send();
                                                             return;
                                                         }
-                                                        
-                                                        $prompt = "You are an elite bilingual SEO copywriter for Glodaxia news. For the category '{$state}', generate Spanish name, descriptions, and high-CTR meta titles & descriptions. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
+                                                        $appName = config('app.name', 'Glodaxia');
+                                                        $prompt = "You are an elite bilingual SEO copywriter for {$appName} news. For the category '{$state}', generate Spanish name, descriptions, and high-CTR meta titles & descriptions. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
                                                         
                                                         $response = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
                                                         
@@ -98,6 +100,7 @@ class CategoryResource extends Resource
                                             }),
                                     ]),
 
+                                // ─── 2. ESPAÑOL ──────────────────────────────────────────
                                 Tabs\Tab::make('🇪🇸 Español')
                                     ->schema([
                                         TextInput::make('name_es')
@@ -124,24 +127,9 @@ class CategoryResource extends Resource
                                                 }
                                             }),
                                     ]),
-                            ])->columnSpanFull(),
 
-                        TextInput::make('order')
-                            ->label('Orden de Visualización')
-                            ->numeric()
-                            ->default(0),
-                        Toggle::make('is_active')
-                            ->label('Categoría Activa')
-                            ->default(true),
-                    ])->columns(2),
-
-                Section::make('🔍 Optimización para Motores de Búsqueda (SEO & Metadatos)')
-                    ->description('Configura los meta títulos y meta descripciones en ambos idiomas para optimizar el posicionamiento en Google y Discover.')
-                    ->columnSpanFull()
-                    ->schema([
-                        Tabs::make('SEO_Languages')
-                            ->tabs([
-                                Tabs\Tab::make('🇺🇸 English SEO')
+                                // ─── 3. SEO ──────────────────────────────────────────────
+                                Tabs\Tab::make('🔍 SEO')
                                     ->schema([
                                         TextInput::make('meta_title_en')
                                             ->label('Meta Title (EN)')
@@ -150,6 +138,15 @@ class CategoryResource extends Resource
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_title', 'en'));
+                                                }
+                                            }),
+                                        TextInput::make('meta_title_es')
+                                            ->label('Meta Título (ES)')
+                                            ->maxLength(70)
+                                            ->helperText('Recomendado: 50-60 caracteres para Google.')
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_title', 'es'));
                                                 }
                                             }),
                                         Textarea::make('meta_description_en')
@@ -162,32 +159,27 @@ class CategoryResource extends Resource
                                                     $component->state($record->getTranslation('meta_description', 'en'));
                                                 }
                                             }),
-                                    ]),
-
-                                Tabs\Tab::make('🇪🇸 Español SEO')
-                                    ->schema([
-                                        TextInput::make('meta_title_es')
-                                            ->label('Meta Título (ES)')
-                                            ->maxLength(70)
-                                            ->helperText('Recomendado: 50-60 caracteres para los resultados de búsqueda de Google.')
-                                            ->afterStateHydrated(function ($component, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('meta_title', 'es'));
-                                                }
-                                            }),
                                         Textarea::make('meta_description_es')
                                             ->label('Meta Descripción (ES)')
                                             ->rows(3)
                                             ->maxLength(160)
-                                            ->helperText('Recomendado: 120-155 caracteres para maximizar el CTR orgánico.')
+                                            ->helperText('Recomendado: 120-155 caracteres para maximizar el CTR.')
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_description', 'es'));
                                                 }
                                             }),
-                                    ]),
+                                    ])->columns(2),
                             ])->columnSpanFull(),
-                    ]),
+
+                        TextInput::make('order')
+                            ->label('Orden de Visualización')
+                            ->numeric()
+                            ->default(0),
+                        Toggle::make('is_active')
+                            ->label('Categoría Activa')
+                            ->default(true),
+                    ])->columns(2),
             ]);
     }
 
