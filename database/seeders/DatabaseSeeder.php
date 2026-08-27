@@ -21,8 +21,14 @@ class DatabaseSeeder extends Seeder
         Setting::set('rate_limits.max_articles_per_hour', '2,7', 'string', 'rate_limits');
         Setting::set('rate_limits.max_articles_per_category_per_day', '1,5', 'string', 'rate_limits');
 
-                                // Create SuperAdmin User
-        User::updateOrCreate([
+                                // Initialize the 4 Official Roles
+        $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $adminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $redactorRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'redactor', 'guard_name' => 'web']);
+        $panelUserRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'web']);
+
+        // Create SuperAdmin User
+        $adminUser = User::updateOrCreate([
             'email' => 'admin@glodaxia.com',
         ], [
             'name' => [

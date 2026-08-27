@@ -170,10 +170,9 @@ class UserResource extends Resource
                     ->separator(', ')
                     ->color(fn (string $state): string => match ($state) {
                         'super_admin' => 'danger',
-                        'editor_jefe' => 'primary',
+                        'admin'       => 'primary',
                         'redactor'    => 'info',
-                        'moderador'   => 'warning',
-                        'lector'      => 'gray',
+                        'panel_user'  => 'gray',
                         default       => 'gray',
                     }),
                 TextColumn::make('permissions.name')

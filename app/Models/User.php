@@ -17,6 +17,13 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     {
         parent::boot();
 
+        // Automatically assign default panel_user role on registration
+        static::created(function ($user) {
+            if ($user->roles()->count() === 0) {
+                $user->assignRole('panel_user');
+            }
+        });
+
         // Automatically purge avatar from Cloudflare R2 when user is deleted
         static::deleted(function ($user) {
             if ($raw = $user->getRawOriginal('avatar_url')) {
@@ -89,7 +96,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         }
 
         // Super admins and staff members
-        if ($this->hasAnyRole(['super_admin', 'editor_jefe', 'redactor', 'moderador'])) {
+        if ($this->hasAnyRole(['super_admin', 'admin', 'redactor'])) {
             return true;
         }
 

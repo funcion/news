@@ -32,11 +32,10 @@ graph TD
 
 | Rol | Guard | Panel Admin (`/admin`) | Alcance Editorial y Capacidades |
 | :--- | :---: | :---: | :--- |
-| **`super_admin`** | `web` | ✅ Total | Acceso absoluto a todas las configuraciones, API keys, logs, bases de datos y roles vía `Gate::before`. |
-| **`editor_jefe`** | `web` | ✅ Total | Puede crear, editar, revisar, programar y publicar noticias de cualquier redactor. Gestiona Fuentes RSS, Categorías y Tags. |
-| **`redactor`** | `web` | ✅ Restringido | Puede crear y editar sus propios artículos en estado *Borrador* y enviarlos a revisión. Visualiza Noticias Crudas. |
-| **`moderador`** | `web` | ✅ Restringido | Acceso exclusivo al módulo de **Comentarios** para aprobar, rechazar o marcar spam. |
-| **`lector`** | `web` | ❌ Bloqueado | Usuario registrado en la web. Puede comentar (sujeto a moderación), dar likes y gestionar su perfil/foto en Cloudflare R2. |
+| **`super_admin`** | `web` | ✅ Total | Acceso absoluto a todas las configuraciones, API keys, logs, bases de datos y roles vía `Gate::before`. (Tú) |
+| **`admin`** | `web` | ✅ Total | Administrador / Editor Jefe. Gestiona artículos, aprueba noticias, fuentes RSS, categorías y tags. |
+| **`redactor`** | `web` | ✅ Restringido | Periodista / Redactor. Puede crear y editar artículos y ver noticias crudas. |
+| **`panel_user`** | `web` | ❌ Bloqueado del Admin | **Rol por defecto para todo usuario registrado.** Puede comentar, dar likes y gestionar su perfil/avatar en Cloudflare R2. |
 
 ---
 
