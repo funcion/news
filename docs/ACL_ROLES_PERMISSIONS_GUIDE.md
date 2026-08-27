@@ -110,14 +110,17 @@ Filament y Laravel consultan automáticamente las Policies generadas para cada m
 Si en el futuro agregas un nuevo recurso, página o widget a Filament, puedes sincronizar los permisos con:
 
 ```bash
-# Escanear y regenerar permisos y policies de todos los recursos
-php artisan shield:generate --all --panel=admin --option=policies_and_permissions --no-interaction
+# 🐳 Escanear y regenerar permisos y policies de todos los recursos (Vía Docker)
+docker compose exec app php artisan shield:generate --all --panel=admin --option=policies_and_permissions --no-interaction
 
-# Asignar rol Super Admin a un usuario específico por ID
-php artisan shield:super-admin --user=1
+# 🐳 Asignar rol Super Admin a un usuario específico por ID (Vía Docker)
+docker compose exec app php artisan shield:super-admin --user=1
 
-# Limpiar la memoria caché de permisos en Redis
-php artisan permission:cache-reset
+# 🐳 Limpiar y resetear la memoria caché de permisos en Redis (Vía Docker)
+docker compose exec app php artisan permission:cache-reset
+
+# 🐳 Re-ejecutar seeders de roles y permisos si reinicias la base de datos
+docker compose exec app php artisan db:seed
 ```
 
 ---

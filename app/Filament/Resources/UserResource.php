@@ -27,7 +27,7 @@ class UserResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
     
-    protected static string|\UnitEnum|null $navigationGroup = 'Administración';
+    protected static string|\UnitEnum|null $navigationGroup = 'Seguridad y Roles';
 
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
@@ -67,8 +67,8 @@ class UserResource extends Resource
                             ->columnSpanFull(),
                     ])->columns(2),
 
-                Section::make('Control de Acceso: Roles y Permisos Directos')
-                    ->description('Asigna roles generales y/o permisos individuales específicos a este usuario.')
+                Section::make('Seguridad y Control de Acceso (Roles y Permisos)')
+                    ->description('Asigna roles generales y/o permisos específicos directos a este usuario.')
                     ->columnSpanFull()
                     ->schema([
                         Select::make('roles')
@@ -77,16 +77,16 @@ class UserResource extends Resource
                             ->multiple()
                             ->preload()
                             ->searchable()
-                            ->helperText('Los roles otorgan paquetes completos de permisos preconfigurados.')
+                            ->helperText('Selecciona los roles que corresponden a este usuario (super_admin, admin, redactor, panel_user).')
                             ->columnSpanFull(),
 
                         Select::make('permissions')
-                            ->label('Permisos Específicos Directos (Opcional)')
+                            ->label('Permisos Específicos Directos')
                             ->relationship('permissions', 'name')
                             ->multiple()
                             ->preload()
                             ->searchable()
-                            ->helperText('Otorga permisos específicos adicionales a este usuario sin necesidad de crear un nuevo rol.')
+                            ->helperText('Otorga o revoca permisos individuales específicos directamente a este usuario.')
                             ->columnSpanFull(),
                     ]),
 
