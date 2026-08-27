@@ -14,7 +14,9 @@ class CreateTag extends CreateRecord
     {
         $data['name']        = ['en' => $data['name_en'] ?? '', 'es' => $data['name_es'] ?? ''];
         $data['description'] = ['en' => $data['description_en'] ?? '', 'es' => $data['description_es'] ?? ''];
-        $data['slug']        = $data['slug'] ?? Str::slug($data['name_en'] ?? '');
+        $data['slug_en']     = $data['slug_en'] ?? Str::slug($data['name_en'] ?? '');
+        $data['slug_es']     = $data['slug_es'] ?? Str::slug($data['name_es'] ?? $data['name_en'] ?? '');
+        $data['slug']        = $data['slug_en'];
 
         foreach (['name_en', 'name_es', 'description_en', 'description_es'] as $key) {
             unset($data[$key]);

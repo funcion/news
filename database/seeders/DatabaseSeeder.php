@@ -421,35 +421,28 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-                        // Seed Official Master Taxonomy (33 High-Density Hubs)
-        $masterTags = [
-            'OpenAI', 'Google', 'Meta', 'Microsoft', 'NVIDIA', 'Apple', 'Anthropic', 'Amazon', 'Tesla',
-            'Artificial Intelligence', 'Large Language Models', 'AI Agents', 'Computer Vision', 'Robotics & Automation',
-            'Reinforcement Learning', 'AI Ethics & Safety', 'AI Regulation & Policy', 'Cybersecurity', 'Vulnerabilities & Exploits',
-            'Ransomware & Malware', 'Data Privacy & Protection', 'Cloud Computing', 'Digital Infrastructure', 'Hardware & Semiconductors',
-            'Software Engineering', 'DevOps & CI/CD', 'Open Source', 'Databases & Storage', 'Web Development', 'APIs & Microservices',
-            'Science & Innovation', 'Startups & Venture Capital', 'E-Commerce & Digital Economy'
-        ];
+                                // Seed Official Master Taxonomy (33 High-Density Hubs with EN & ES Slugs)
+        $masterTags = \App\Services\AI\TagGeneratorService::$taxonomyMap;
 
-        foreach ($masterTags as $tagName) {
-            $slug = \Illuminate\Support\Str::slug($tagName);
+        foreach ($masterTags as $key => $tagData) {
             Tag::updateOrCreate(
-                ['slug' => $slug],
+                ['slug_en' => $tagData['slug_en']],
                 [
-                    'name' => ['en' => $tagName, 'es' => $tagName],
+                    'slug' => $tagData['slug_en'],
+                    'slug_es' => $tagData['slug_es'],
+                    'name' => ['en' => $tagData['en'], 'es' => $tagData['es']],
                     'description' => [
-                        'en' => "Latest tech intelligence, research papers, and news on {$tagName}.",
-                        'es' => "Últimas noticias, investigación y análisis sobre {$tagName}.",
+                        'en' => "Latest tech intelligence, research papers, and news on {$tagData['en']}.",
+                        'es' => "Últimas noticias, investigación y análisis sobre {$tagData['es']}.",
                     ],
                     'meta_title' => [
-                        'en' => "#{$tagName} - Latest Tech News & Articles | ' . config('app.name', 'Glodaxia')",
-                        'es' => "#{$tagName} - Últimas Noticias y Artículos de Tecnología | ' . config('app.name', 'Glodaxia')",
+                        'en' => "#{$tagData['en']} - Latest Tech News & Analysis | " . config('app.name', 'Glodaxia'),
+                        'es' => "#{$tagData['es']} - Noticias y Análisis de Tecnología | " . config('app.name', 'Glodaxia'),
                     ],
                     'meta_description' => [
-                        'en' => "Curated feed of tech intelligence, research papers, and breaking news tagged with #{$tagName} on Glodaxia.",
-                        'es' => "Archivo especializado de noticias, investigaciones y novedades tecnológicas sobre #{$tagName} en Glodaxia.",
+                        'en' => "Curated feed of tech intelligence, research papers, and breaking news tagged with #{$tagData['en']} on " . config('app.name', 'Glodaxia') . ".",
+                        'es' => "Archivo especializado de noticias, investigaciones y novedades tecnológicas sobre #{$tagData['es']} en " . config('app.name', 'Glodaxia') . ".",
                     ],
-                    'is_featured' => true,
                     'is_indexable' => true,
                     'is_followable' => true,
                 ]

@@ -79,6 +79,48 @@ class TagGeneratorService
     /**
      * Sync extracted tags to an article with a strict limit of 3 tags.
      */
+        /**
+     * Master Taxonomy mapping dictionary (EN and ES slugs and names)
+     */
+    public static array $taxonomyMap = [
+        'openai' => ['en' => 'OpenAI', 'es' => 'OpenAI', 'slug_en' => 'openai', 'slug_es' => 'openai'],
+        'google' => ['en' => 'Google', 'es' => 'Google', 'slug_en' => 'google', 'slug_es' => 'google'],
+        'meta' => ['en' => 'Meta', 'es' => 'Meta', 'slug_en' => 'meta', 'slug_es' => 'meta'],
+        'microsoft' => ['en' => 'Microsoft', 'es' => 'Microsoft', 'slug_en' => 'microsoft', 'slug_es' => 'microsoft'],
+        'nvidia' => ['en' => 'NVIDIA', 'es' => 'NVIDIA', 'slug_en' => 'nvidia', 'slug_es' => 'nvidia'],
+        'apple' => ['en' => 'Apple', 'es' => 'Apple', 'slug_en' => 'apple', 'slug_es' => 'apple'],
+        'anthropic' => ['en' => 'Anthropic', 'es' => 'Anthropic', 'slug_en' => 'anthropic', 'slug_es' => 'anthropic'],
+        'amazon' => ['en' => 'Amazon', 'es' => 'Amazon', 'slug_en' => 'amazon', 'slug_es' => 'amazon'],
+        'tesla' => ['en' => 'Tesla', 'es' => 'Tesla', 'slug_en' => 'tesla', 'slug_es' => 'tesla'],
+        'artificial-intelligence' => ['en' => 'Artificial Intelligence', 'es' => 'Inteligencia Artificial', 'slug_en' => 'artificial-intelligence', 'slug_es' => 'inteligencia-artificial'],
+        'large-language-models' => ['en' => 'Large Language Models', 'es' => 'Modelos de Lenguaje', 'slug_en' => 'large-language-models', 'slug_es' => 'modelos-de-lenguaje'],
+        'ai-agents' => ['en' => 'AI Agents', 'es' => 'Agentes de IA', 'slug_en' => 'ai-agents', 'slug_es' => 'agentes-de-ia'],
+        'computer-vision' => ['en' => 'Computer Vision', 'es' => 'Visión Computacional', 'slug_en' => 'computer-vision', 'slug_es' => 'vision-computacional'],
+        'robotics-automation' => ['en' => 'Robotics & Automation', 'es' => 'Robótica & Automatización', 'slug_en' => 'robotics-automation', 'slug_es' => 'robotica-automatizacion'],
+        'reinforcement-learning' => ['en' => 'Reinforcement Learning', 'es' => 'Aprendizaje por Refuerzo', 'slug_en' => 'reinforcement-learning', 'slug_es' => 'aprendizaje-por-refuerzo'],
+        'ai-ethics-safety' => ['en' => 'AI Ethics & Safety', 'es' => 'Ética & Seguridad en IA', 'slug_en' => 'ai-ethics-safety', 'slug_es' => 'etica-seguridad-ia'],
+        'ai-regulation-policy' => ['en' => 'AI Regulation & Policy', 'es' => 'Regulación & Políticas de IA', 'slug_en' => 'ai-regulation-policy', 'slug_es' => 'regulacion-politicas-ia'],
+        'cybersecurity' => ['en' => 'Cybersecurity', 'es' => 'Ciberseguridad', 'slug_en' => 'cybersecurity', 'slug_es' => 'ciberseguridad'],
+        'vulnerabilities-exploits' => ['en' => 'Vulnerabilities & Exploits', 'es' => 'Vulnerabilidades & Exploits', 'slug_en' => 'vulnerabilities-exploits', 'slug_es' => 'vulnerabilidades-exploits'],
+        'ransomware-malware' => ['en' => 'Ransomware & Malware', 'es' => 'Ransomware & Malware', 'slug_en' => 'ransomware-malware', 'slug_es' => 'ransomware-malware'],
+        'data-privacy-protection' => ['en' => 'Data Privacy & Protection', 'es' => 'Privacidad & Protección de Datos', 'slug_en' => 'data-privacy-protection', 'slug_es' => 'privacidad-proteccion-datos'],
+        'cloud-computing' => ['en' => 'Cloud Computing', 'es' => 'Computación en la Nube', 'slug_en' => 'cloud-computing', 'slug_es' => 'computacion-en-la-nube'],
+        'digital-infrastructure' => ['en' => 'Digital Infrastructure', 'es' => 'Infraestructura Digital', 'slug_en' => 'digital-infrastructure', 'slug_es' => 'infraestructura-digital'],
+        'hardware-semiconductors' => ['en' => 'Hardware & Semiconductors', 'es' => 'Hardware & Semiconductores', 'slug_en' => 'hardware-semiconductors', 'slug_es' => 'hardware-semiconductores'],
+        'software-engineering' => ['en' => 'Software Engineering', 'es' => 'Ingeniería de Software', 'slug_en' => 'software-engineering', 'slug_es' => 'ingenieria-de-software'],
+        'devops-cicd' => ['en' => 'DevOps & CI/CD', 'es' => 'DevOps & CI/CD', 'slug_en' => 'devops-cicd', 'slug_es' => 'devops-cicd'],
+        'open-source' => ['en' => 'Open Source', 'es' => 'Código Abierto', 'slug_en' => 'open-source', 'slug_es' => 'codigo-abierto'],
+        'databases-storage' => ['en' => 'Databases & Storage', 'es' => 'Bases de Datos & Almacenamiento', 'slug_en' => 'databases-storage', 'slug_es' => 'bases-de-datos-almacenamiento'],
+        'web-development' => ['en' => 'Web Development', 'es' => 'Desarrollo Web', 'slug_en' => 'web-development', 'slug_es' => 'desarrollo-web'],
+        'apis-microservices' => ['en' => 'APIs & Microservices', 'es' => 'APIs & Microservicios', 'slug_en' => 'apis-microservices', 'slug_es' => 'apis-microservicios'],
+        'science-innovation' => ['en' => 'Science & Innovation', 'es' => 'Ciencia & Innovación', 'slug_en' => 'science-innovation', 'slug_es' => 'ciencia-innovacion'],
+        'startups-venture-capital' => ['en' => 'Startups & Venture Capital', 'es' => 'Startups & Capital de Riesgo', 'slug_en' => 'startups-venture-capital', 'slug_es' => 'startups-capital-riesgo'],
+        'e-commerce-digital-economy' => ['en' => 'E-Commerce & Digital Economy', 'es' => 'Comercio Electrónico & Economía Digital', 'slug_en' => 'e-commerce-digital-economy', 'slug_es' => 'comercio-electronico-economia-digital'],
+    ];
+
+    /**
+     * Sync extracted tags to an article with a strict limit of 3 tags.
+     */
     public function syncTagsToArticle(Article $article, array $tagNames): void
     {
         if (empty($tagNames)) {
@@ -89,27 +131,59 @@ class TagGeneratorService
         $tagIds = [];
 
         foreach ($tagNames as $name) {
-            $slug = Str::slug($name);
-            if (empty($slug)) {
+            $normalizedKey = Str::slug($name);
+            if (empty($normalizedKey)) {
                 continue;
             }
 
-            // Check if tag exists by slug
-            $tag = Tag::firstOrCreate(
-                ['slug' => $slug],
-                [
-                    'name' => [
-                        'en' => ucwords($name),
-                        'es' => ucwords($name),
-                    ],
-                    'description' => [
-                        'en' => "Latest news and analysis on " . ucwords($name),
-                        'es' => "Últimas noticias y análisis sobre " . ucwords($name),
-                    ],
-                    'is_indexable' => true,
-                    'is_followable' => true,
-                ]
-            );
+            $meta = self::$taxonomyMap[$normalizedKey] ?? null;
+
+            if ($meta) {
+                $tag = Tag::where('slug_en', $meta['slug_en'])
+                    ->orWhere('slug_es', $meta['slug_es'])
+                    ->orWhere('slug', $normalizedKey)
+                    ->first();
+
+                if (!$tag) {
+                    $tag = Tag::create([
+                        'slug' => $meta['slug_en'],
+                        'slug_en' => $meta['slug_en'],
+                        'slug_es' => $meta['slug_es'],
+                        'name' => ['en' => $meta['en'], 'es' => $meta['es']],
+                        'description' => [
+                            'en' => "Latest news and analysis on " . $meta['en'],
+                            'es' => "Últimas noticias y análisis sobre " . $meta['es'],
+                        ],
+                        'is_indexable' => true,
+                        'is_followable' => true,
+                    ]);
+                }
+            } else {
+                $slugEn = $normalizedKey;
+                $slugEs = $normalizedKey;
+                $tag = Tag::where('slug', $normalizedKey)
+                    ->orWhere('slug_en', $slugEn)
+                    ->orWhere('slug_es', $slugEs)
+                    ->first();
+
+                if (!$tag) {
+                    $tag = Tag::create([
+                        'slug' => $slugEn,
+                        'slug_en' => $slugEn,
+                        'slug_es' => $slugEs,
+                        'name' => [
+                            'en' => ucwords(str_replace('-', ' ', $name)),
+                            'es' => ucwords(str_replace('-', ' ', $name)),
+                        ],
+                        'description' => [
+                            'en' => "Latest news and analysis on " . ucwords(str_replace('-', ' ', $name)),
+                            'es' => "Últimas noticias y análisis sobre " . ucwords(str_replace('-', ' ', $name)),
+                        ],
+                        'is_indexable' => true,
+                        'is_followable' => true,
+                    ]);
+                }
+            }
 
             $tagIds[$tag->id] = ['relevance_score' => 100];
         }

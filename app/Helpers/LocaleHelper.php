@@ -75,9 +75,22 @@ class LocaleHelper
             return $targetLocale === 'es' ? url('/es/registro' . $queryString) : url('/register' . $queryString);
         }
 
-        // 12. Tag Show Route (/tag/{slug} <-> /es/tag/{slug})
+                // 12. Tag Show Route (/tag/{slug} <-> /es/tag/{slug})
         if (preg_match('/^(es\/)?tag\/([^\/]+)$/', $path, $matches)) {
             $tagSlug = $matches[2];
+            $tag = \App\Models\Tag::where('slug_en', $tagSlug)
+                ->orWhere('slug_es', $tagSlug)
+                ->orWhere('slug', $tagSlug)
+                ->first();
+
+            if ($tag) {
+                $targetSlug = $targetLocale === 'es' 
+                    ? ($tag->slug_es ?: ($tag->slug_en ?: $tag->slug)) 
+                    : ($tag->slug_en ?: ($tag->slug_es ?: $tag->slug));
+
+                return $targetLocale === 'es' ? url('/es/tag/' . $targetSlug . $queryString) : url('/tag/' . $targetSlug . $queryString);
+            }
+
             return $targetLocale === 'es' ? url('/es/tag/' . $tagSlug . $queryString) : url('/tag/' . $tagSlug . $queryString);
         }
 

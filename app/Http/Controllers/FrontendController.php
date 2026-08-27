@@ -94,9 +94,21 @@ class FrontendController extends Controller
         return view('home', compact('articles', 'category', 'trendingTags'));
     }
 
-    public function tag(string $slug)
+        public function tag(string $slug)
     {
-        $tag = Tag::where('slug', $slug)->firstOrFail();
+        $locale = app()->getLocale();
+
+        $tag = Tag::where('slug_en', $slug)
+            ->orWhere('slug_es', $slug)
+            ->orWhere('slug', $slug)
+            ->firstOrFail();
+
+        // 301 Canonical redirect if accessing with wrong language slug
+        $expectedSlug = $locale === 'es' ? ($tag->slug_es ?: $tag->slug) : ($tag->slug_en ?: $tag->slug);
+        if ($slug !== $expectedSlug) {
+            $targetUrl = $locale === 'es' ? "/es/tag/{$expectedSlug}" : "/tag/{$expectedSlug}";
+            return redirect(url($targetUrl), 301);
+        }
 
         $articles = $tag->articles()
             ->where('status', 'published')

@@ -32,58 +32,37 @@ class TagResource extends Resource
     protected static ?string $modelLabel = 'Tag';
     protected static ?string $pluralModelLabel = 'Tags';
 
-    public static function form(Schema $form): Schema
+        public static function form(Schema $form): Schema
     {
         return $form
             ->components([
-                Section::make('Gestión de Etiqueta (Tag)')
-                    ->description('Define la información de la etiqueta, traducciones y metadatos SEO en una sola interfaz organizada.')
+                Section::make('Información del Tag / Etiqueta')
                     ->columnSpanFull()
                     ->schema([
-                        Tabs::make('Tag_Tabs')
+                        Tabs::make('Translations')
                             ->tabs([
                                 // ─── 1. ENGLISH ──────────────────────────────────────────
-                                Tabs\Tab::make('🇺🇸 English')
+                                Tabs\Tab::make('🇬🇧 English')
                                     ->schema([
                                         TextInput::make('name_en')
-                                            ->label('Name (EN)')
+                                            ->label('Tag Name (EN)')
                                             ->required()
                                             ->live(onBlur: true)
+                                            ->afterStateUpdated(fn ($state, callable $set) => $set('slug_en', Str::slug($state)))
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('name', 'en'));
                                                 }
-                                            })
-                                            ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug($state ?? '')))
-                                            ->suffixAction(
-                                                Action::make('generate_ai_tag_seo')
-                                                    ->icon('heroicon-m-sparkles')
-                                                    ->tooltip('✨ Generar traducciones y SEO con IA')
-                                                    ->action(function ($state, $set, OpenRouterService $ai) {
-                                                        if (empty($state)) {
-                                                            Notification::make()->warning()->title('Ingresa un Nombre en Inglés primero')->send();
-                                                            return;
-                                                        }
-                                                        $appName = config('app.name', 'Glodaxia');
-                                                        $prompt = "For the tech tag '{$state}' on {$appName} news, generate Spanish name, descriptions, and high-CTR SEO meta title and meta description. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
-                                                        
-                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
-                                                        
-                                                        if ($response) {
-                                                            $clean = preg_replace('/```json|```/', '', $response);
-                                                            $data = json_decode(trim($clean), true);
-                                                            if (isset($data['name_es'])) $set('name_es', $data['name_es']);
-                                                            if (isset($data['description_en'])) $set('description_en', $data['description_en']);
-                                                            if (isset($data['description_es'])) $set('description_es', $data['description_es']);
-                                                            if (isset($data['meta_title_en'])) $set('meta_title_en', $data['meta_title_en']);
-                                                            if (isset($data['meta_title_es'])) $set('meta_title_es', $data['meta_title_es']);
-                                                            if (isset($data['meta_description_en'])) $set('meta_description_en', $data['meta_description_en']);
-                                                            if (isset($data['meta_description_es'])) $set('meta_description_es', $data['meta_description_es']);
-                                                            
-                                                            Notification::make()->success()->title('✨ Contenido y SEO de Tag generados')->send();
-                                                        }
-                                                    })
-                                            ),
+                                            }),
+                                        TextInput::make('slug_en')
+                                            ->label('Slug EN (Sin prefijo de idioma)')
+                                            ->required()
+                                            ->helperText('Identificador en inglés: /tag/artificial-intelligence')
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->slug_en ?: $record->slug);
+                                                }
+                                            }),
                                         Textarea::make('description_en')
                                             ->label('Description (EN)')
                                             ->rows(3)
@@ -93,7 +72,7 @@ class TagResource extends Resource
                                                     $component->state($record->getTranslation('description', 'en'));
                                                 }
                                             }),
-                                    ]),
+                                    ])->columns(2),
 
                                 // ─── 2. ESPAÑOL ──────────────────────────────────────────
                                 Tabs\Tab::make('🇪🇸 Español')
@@ -102,9 +81,19 @@ class TagResource extends Resource
                                             ->label('Nombre (ES)')
                                             ->required()
                                             ->live(onBlur: true)
+                                            ->afterStateUpdated(fn ($state, callable $set) => $set('slug_es', Str::slug($state)))
                                             ->afterStateHydrated(function ($component, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('name', 'es'));
+                                                }
+                                            }),
+                                        TextInput::make('slug_es')
+                                            ->label('Slug ES (Con prefijo de idioma /es/)')
+                                            ->required()
+                                            ->helperText('Identificador en español: /es/tag/inteligencia-artificial')
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->slug_es ?: $record->slug);
                                                 }
                                             }),
                                         Textarea::make('description_es')
@@ -116,7 +105,7 @@ class TagResource extends Resource
                                                     $component->state($record->getTranslation('description', 'es'));
                                                 }
                                             }),
-                                    ]),
+                                    ])->columns(2),
 
                                 // ─── 3. SEO ──────────────────────────────────────────────
                                 Tabs\Tab::make('🔍 SEO')
@@ -169,11 +158,6 @@ class TagResource extends Resource
                                     ])->columns(2),
                             ])->columnSpanFull(),
 
-                        TextInput::make('slug')
-                            ->label('Slug (Identificador URL)')
-                            ->required()
-                            ->unique(Tag::class, 'slug', ignoreRecord: true)
-                            ->helperText('El slug se genera automáticamente a partir del nombre en inglés.'),
                         Toggle::make('is_featured')
                             ->label('Tag Destacado')
                             ->default(false),

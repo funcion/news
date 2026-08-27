@@ -16,6 +16,8 @@ class Tag extends Model
     protected $fillable = [
         'name',
         'slug',
+        'slug_en',
+        'slug_es',
         'description',
         'meta_title',
         'meta_description',
@@ -60,7 +62,9 @@ class Tag extends Model
 
     public function getUrlAttribute(): string
     {
-        return route('tags.show', $this->slug);
+        $locale = app()->getLocale();
+        $slug = $locale === 'es' ? ($this->slug_es ?: $this->slug) : ($this->slug_en ?: $this->slug);
+        return url($locale === 'es' ? "/es/tag/{$slug}" : "/tag/{$slug}");
     }
 
     public function getRelatedTags($limit = 10)
