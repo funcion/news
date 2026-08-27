@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
 
 class RawArticleResource extends Resource
 {
