@@ -1050,11 +1050,11 @@ PROMPT;
         $wordsEn = str_word_count(strip_tags($contentEn));
         $wordsEs = str_word_count(strip_tags($contentEs));
 
-        if ($wordsEn < 700) {
-            $errors[] = "content_en has only {$wordsEn} words (STRICT MINIMUM is 700 words). Expand depth and analysis.";
+        if ($wordsEn < 250) {
+            $errors[] = "content_en has only {$wordsEn} words (minimum is 250 words for news). Expand depth and analysis.";
         }
-        if ($wordsEs < 700) {
-            $errors[] = "content_es has only {$wordsEs} words (STRICT MINIMUM is 700 words). Expand depth and analysis.";
+        if ($wordsEs < 250) {
+            $errors[] = "content_es has only {$wordsEs} words (minimum is 250 words for news). Expand depth and analysis.";
         }
 
         // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)
@@ -1154,6 +1154,30 @@ PROMPT;
             if (mb_strlen($data[$field] ?? '') > 160) {
                 $data[$field] = Str::limit($data[$field], 160, '');
                 $fixes[] = "{$field}: truncated to 160 chars";
+            }
+        }
+
+                // --- AUTO-FIX: Reconcile Image Tokens ---
+        // 1. Remove [IMAGE_1] from content body (it is only for hero image)
+        $data['content_en'] = str_replace('[IMAGE_1]', '', $data['content_en'] ?? '');
+        $data['content_es'] = str_replace('[IMAGE_1]', '', $data['content_es'] ?? '');
+
+        // 2. Reconcile inline tokens: if [IMAGE_N] has no matching prompt, strip it
+        $promptIds = collect($data['image_prompts'] ?? [])->pluck('id')->toArray();
+        if (!in_array('[IMAGE_1]', $promptIds)) {
+            $data['image_prompts'][] = [
+                'id' => '[IMAGE_1]',
+                'prompt' => 'High quality editorial tech photography representing ' . ($data['title_en'] ?? 'technology news'),
+                'alt' => $data['title_en'] ?? 'Technology News',
+            ];
+        }
+
+        preg_match_all('/\[IMAGE_(\d+)\]/', $data['content_en'] ?? '', $matchesEn);
+        foreach ($matchesEn[0] ?? [] as $token) {
+            if (!in_array($token, $promptIds)) {
+                $data['content_en'] = str_replace($token, '', $data['content_en']);
+                $data['content_es'] = str_replace($token, '', $data['content_es']);
+                $fixes[] = "Removed orphan token {$token} from content";
             }
         }
 

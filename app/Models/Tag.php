@@ -42,9 +42,7 @@ class Tag extends Model
 
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured',
-        'is_indexable',
-        'is_followable', true);
+        return $query->where('is_featured', true);
     }
 
     public function scopePopular($query, $limit = 20)

@@ -23,7 +23,7 @@ class TagGeneratorService
     public function generateTags(string $content): array
     {
         // 1. Fetch the existing Master Tags Catalog from database
-        $catalogTags = Tag::where('is_active', true)
+        $catalogTags = Tag::where('is_indexable', true)
             ->pluck('name')
             ->map(fn ($n) => is_array($n) ? ($n['en'] ?? reset($n)) : (json_decode($n, true)['en'] ?? $n))
             ->filter()
@@ -106,7 +106,8 @@ class TagGeneratorService
                         'en' => "Latest news and analysis on " . ucwords($name),
                         'es' => "Últimas noticias y análisis sobre " . ucwords($name),
                     ],
-                    'is_active' => true,
+                    'is_indexable' => true,
+                    'is_followable' => true,
                 ]
             );
 

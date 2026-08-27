@@ -55,9 +55,7 @@ class Category extends Model implements HasMedia
 
     public function scopeActive($query)
     {
-        return $query->where('is_active',
-        'is_indexable',
-        'is_followable', true);
+        return $query->where('is_active', true);
     }
 
     public function scopeRoot($query)
