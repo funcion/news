@@ -127,7 +127,7 @@ class Article extends Model implements HasMedia
     {
         $locale = app()->getLocale();
         $slug = $locale === 'es' ? ($this->slug_es ?? $this->slug_en) : ($this->slug_en ?? $this->slug_es);
-        return route('articles.show', ['slug' => $slug]);
+        return url($locale === 'es' ? "/es/{$slug}" : "/{$slug}");
     }
 
     public function incrementViews(): void

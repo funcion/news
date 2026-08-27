@@ -15,6 +15,12 @@ class EditArticle extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('view_live')
+                ->label('Ver en la Web')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->color('info')
+                ->url(fn () => $this->record->url)
+                ->openUrlInNewTab(),
             Actions\DeleteAction::make(),
             Actions\Action::make('approve')
                 ->label('Aprobar')
@@ -93,6 +99,16 @@ class EditArticle extends EditRecord
                     $record->setTranslation($field, $locale, $value);
                 }
             }
+        }
+
+        if (!empty($data['slug_en'])) {
+            $record->slug_en = $data['slug_en'];
+        }
+        if (!empty($data['slug_es'])) {
+            $record->slug_es = $data['slug_es'];
+        }
+        if (!empty($data['user_id'])) {
+            $record->user_id = $data['user_id'];
         }
 
         $record->save();

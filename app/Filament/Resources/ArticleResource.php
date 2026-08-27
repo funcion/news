@@ -320,6 +320,35 @@ class ArticleResource extends Resource
                     ->relationship('category', 'name'),
             ])
             ->actions([
+                \Filament\Actions\Action::make('view_live')
+                    ->label('Ver en la Web')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->color('info')
+                    ->tooltip('Abrir noticia publicada en la web pública')
+                    ->url(fn (Article $record) => $record->url)
+                    ->openUrlInNewTab(),
+
+                \Filament\Actions\Action::make('change_author')
+                    ->label('Cambiar Autor')
+                    ->icon('heroicon-o-user-circle')
+                    ->color('warning')
+                    ->tooltip('Reasignar redactor / autor de la noticia')
+                    ->form([
+                        Select::make('user_id')
+                            ->label('Nuevo Autor / Redactor Asignado')
+                            ->options(fn () => \App\Models\User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->pluck('name', 'id'))
+                            ->default(fn (Article $record) => $record->user_id)
+                            ->required()
+                            ->searchable(),
+                    ])
+                    ->action(function (Article $record, array $data) {
+                        $record->update(['user_id' => $data['user_id']]);
+                        \Filament\Notifications\Notification::make()
+                            ->title('Autor reasignado exitosamente')
+                            ->success()
+                            ->send();
+                    }),
+
                 \Filament\Actions\EditAction::make(),
                 \Filament\Actions\Action::make('publish_now')
                     ->label('Publicar Ahora')
