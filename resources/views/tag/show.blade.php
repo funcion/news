@@ -118,7 +118,7 @@
             </h2>
             <div class="flex flex-wrap gap-2">
                 @foreach($trendingTags ?? [] as $ttag)
-                    <a href="{{ route('tags.show', $ttag->slug) }}" class="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wide hover:border-cyan-600 hover:text-cyan-600 dark:hover:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 transition-all shadow-xs">
+                    <a href="{{ $ttag->url }}" class="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wide hover:border-cyan-600 hover:text-cyan-600 dark:hover:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 transition-all shadow-xs">
                         #{{ $ttag->name }}
                     </a>
                 @endforeach
