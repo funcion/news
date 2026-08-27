@@ -1,4 +1,5 @@
-<x-layouts.app :title="$title ?? null" :metaDescription="$metaDescription ?? null">
+<x-layouts.app :title="__('ui.contact_title') . ' | ' . config('app.name', 'Glodaxia')" 
+               :metaDescription="__('ui.contact_subtitle')">
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
         <div class="mb-10 text-center md:text-left">

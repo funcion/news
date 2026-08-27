@@ -1,45 +1,46 @@
 <x-layouts.app>
-    <x-slot:title>{{ $tag->meta_title ?: ('#' . $tag->name . ' | ' . config('app.name')) }}</x-slot>
-    <x-slot:metaDescription>{{ $tag->meta_description ?: ($tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name])) }}</x-slot>
+    <x-slot:title>{{ $tag->meta_title ?: ('#' . $tag->name . ' | ' . config('app.name', 'Glodaxia')) }}</x-slot>
+    <x-slot:metaDescription>{{ $tag->meta_description ?: ($tag->description ?: ($tag->name . ' - ' . __('ui.tag_meta_desc', ['tag' => $tag->name]))) }}</x-slot>
 
     <x-slot:head>
-        <meta property="og:title" content="#{{ $tag->name }} | {{ config('app.name') }}" />
-        <meta property="og:description" content="{{ $tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name]) }}" />
+        <meta property="og:title" content="#{{ $tag->name }} | {{ config('app.name', 'Glodaxia') }}" />
+        <meta property="og:description" content="{{ $tag->meta_description ?: ($tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name])) }}" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="#{{ $tag->name }} | {{ config('app.name') }}" />
-        <meta name="twitter:description" content="{{ $tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name]) }}" />
+        <meta name="twitter:title" content="#{{ $tag->name }} | {{ config('app.name', 'Glodaxia') }}" />
+        <meta name="twitter:description" content="{{ $tag->meta_description ?: ($tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name])) }}" />
         <link rel="canonical" href="{{ url()->current() }}" />
 
-        <!-- JSON-LD Schema: CollectionPage / ItemList -->
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "#{{ $tag->name }} - {{ config('app.name') }}",
-            "description": "{{ $tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name]) }}",
-            "url": "{{ url()->current() }}",
-            "mainEntity": {
-                "@type": "ItemList",
-                "itemListElement": [
-                    @foreach($articles->take(10) as $index => $art)
-                    {
-                        "@type": "ListItem",
-                        "position": {{ $index + 1 }},
-                        "url": "{{ route('articles.show', app()->getLocale() === 'es' ? ($art->slug_es ?? $art->slug_en) : ($art->slug_en ?? $art->slug_es)) }}",
-                        "name": "{{ addslashes($art->title) }}"
-                    }{{ !$loop->last ? ',' : '' }}
-                    @endforeach
+        <!-- JSON-LD Schema: CollectionPage -->
+        @php
+            $schemaData = [
+                '@context' => 'https://schema.org',
+                '@type' => 'CollectionPage',
+                'name' => '#' . $tag->name . ' - ' . config('app.name', 'Glodaxia'),
+                'description' => $tag->meta_description ?: ($tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name])),
+                'url' => url()->current(),
+                'mainEntity' => [
+                    '@type' => 'ItemList',
+                    'itemListElement' => $articles->take(10)->values()->map(function($art, $idx) {
+                        return [
+                            '@type' => 'ListItem',
+                            'position' => $idx + 1,
+                            'url' => route('articles.show', app()->getLocale() === 'es' ? ($art->slug_es ?? $art->slug_en) : ($art->slug_en ?? $art->slug_es)),
+                            'name' => $art->title,
+                        ];
+                    })->all()
                 ]
-            }
-        }
+            ];
+        @endphp
+        <script type="application/ld+json">
+        {!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
         </script>
     </x-slot>
 
     <div class="max-w-4xl">
         <!-- Accessible Breadcrumbs (ADA / WCAG Compliant) -->
-        <nav aria-label="{{ __('ui.breadcrumbs') ?? 'Breadcrumb' }}" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-8">
+        <nav aria-label="{{ __('ui.breadcrumbs') }}" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-8">
             <a href="{{ url('/') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded">{{ __('ui.home') }}</a>
             <svg class="w-3 h-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             <span class="text-slate-800 dark:text-slate-200 truncate" aria-current="page">{{ $tag->name }}</span>
@@ -48,7 +49,7 @@
         <!-- Tag Header -->
         <header class="mb-12">
             <span class="inline-block px-3 py-1 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-[0.3em] rounded-lg mb-4 leading-none border border-cyan-500/20">
-                {{ __('ui.topic') ?? 'TEMA' }}
+                {{ __('ui.topic') }}
             </span>
             <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.08] mb-4">
                 #{{ $tag->name }}
@@ -61,7 +62,7 @@
         </header>
 
         @if($articles->count() > 0)
-            <!-- Feed Grid (Strict Heading Hierarchy: h2 for article titles) -->
+            <!-- Feed Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16" role="feed" aria-label="Noticias sobre {{ $tag->name }}">
                 @foreach($articles as $article)
                     <article class="flex flex-col group focus-within:ring-2 focus-within:ring-cyan-500 rounded-2xl p-2 -m-2 transition-all">
@@ -97,7 +98,7 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-12 border-t border-slate-200 dark:border-white/5 pt-8" aria-label="{{ __('ui.pagination') ?? 'Paginación' }}">
+            <div class="mt-12 border-t border-slate-200 dark:border-white/5 pt-8" aria-label="{{ __('ui.pagination') }}">
                 {{ $articles->links() }}
             </div>
         @else
@@ -109,7 +110,7 @@
     </div>
 
     <x-slot:sidebar>
-        <aside aria-label="{{ __('ui.trending_topics') ?? 'Temas de Tendencia' }}" class="relative">
+        <aside aria-label="{{ __('ui.trending_topics') }}" class="relative">
             <h2 class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400 mb-6 flex items-center gap-2.5">
                 <span class="w-1.5 h-1.5 bg-cyan-600 dark:bg-cyan-500 rounded-full" aria-hidden="true"></span>
                 {{ __('ui.trending_topics') }}

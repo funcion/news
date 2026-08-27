@@ -235,4 +235,8 @@ return array (
   'delete_account_notice_title' => 'Account Deletion & Data Privacy',
   'delete_account_notice_desc' => 'To request the permanent deletion of your account and complete removal of all personal data under our privacy policy, please contact us directly at our official email.',
   'delete_account_btn' => 'Request Account Deletion',
+  'breadcrumbs' => 'Breadcrumbs',
+  'categories_meta_desc' => 'Explore all technology, artificial intelligence, and digital innovation categories on Glodaxia.',
+  'category_meta_desc' => 'Discover the latest news, breakthrough analysis, and insights on :category.',
+  'pagination' => 'Pagination',
 );

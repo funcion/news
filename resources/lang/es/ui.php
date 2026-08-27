@@ -235,4 +235,8 @@ return array (
   'delete_account_notice_title' => 'Eliminación de Cuenta y Privacidad',
   'delete_account_notice_desc' => 'Para solicitar la eliminación definitiva de tu cuenta y la purga completa de tus datos personales conforme a nuestras políticas de privacidad, por favor contáctanos directamente a nuestro correo oficial.',
   'delete_account_btn' => 'Solicitar Eliminación de Cuenta',
+  'breadcrumbs' => 'Miga de pan',
+  'categories_meta_desc' => 'Explora todas las categorías de tecnología, inteligencia artificial y desarrollo en Glodaxia.',
+  'category_meta_desc' => 'Descubre las últimas noticias, análisis y avances tecnológicos sobre :category.',
+  'pagination' => 'Paginación',
 );
