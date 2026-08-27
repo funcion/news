@@ -164,10 +164,10 @@
                 <!-- Avatar Container -->
                 <div class="relative shrink-0">
                     @if($article->user?->avatar_url)
-                        <img src="{{ asset('storage/' . $article->user->avatar_url) }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-lg border-2 border-white dark:border-gray-800 object-cover shadow-xl">
+                        <img src="{{ $article->user->avatar_url }}" alt="{{ $article->user->name }}" width="80" height="80" class="relative h-20 w-20 rounded-full border-2 border-white dark:border-gray-800 object-cover shadow-xl">
                     @else
-                        <div translate="no" aria-label="{{ $article->user?->name ?? 'Autor' }}" class="notranslate relative h-20 w-20 rounded-lg flex items-center justify-center font-black text-2xl border-2 border-white dark:border-gray-800 shadow-xl shrink-0 uppercase select-none text-white bg-gradient-to-tr {{ $article->user?->avatar_color ?? 'from-cyan-600 to-blue-600' }}">
-                            {{ $article->user?->initials ?? 'GL' }}
+                        <div translate="no" aria-label="{{ $article->user?->name ?? 'Autor' }}" class="notranslate relative h-20 w-20 rounded-full flex items-center justify-center font-black text-2xl border-2 border-white dark:border-gray-800 shadow-xl shrink-0 uppercase select-none text-white bg-cyan-600">
+                            <span class="leading-none text-center text-white font-black select-none">{{ $article->user?->initials ?? 'GL' }}</span>
                         </div>
                     @endif
                 </div>
