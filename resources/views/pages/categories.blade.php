@@ -4,7 +4,7 @@
     </x-slot>
 
     <!-- Header Section (Centered & Full-width Container) -->
-    <div class="mb-12 pb-6 border-b border-gray-100 dark:border-white/5 text-center max-w-4xl mx-auto">
+    <div class="mb-12 pb-8 border-b border-gray-100 dark:border-white/5 text-center w-full max-w-5xl mx-auto">
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-4">
             <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
             <span>{{ __('ui.categories_badge') }}</span>
