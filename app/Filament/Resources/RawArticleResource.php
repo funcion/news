@@ -141,14 +141,46 @@ class RawArticleResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('periodo')
+                    ->label('Período')
                     ->options([
-                        'pending' => 'Pendiente',
+                        'today'      => '📅 Hoy',
+                        'yesterday'  => '📅 Ayer',
+                        'this_week'  => '🗓️ Última semana (7 días)',
+                        'this_month' => '🗓️ Último mes (30 días)',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return match ($data['value'] ?? null) {
+                            'today'      => $query->where(fn ($q) => $q->whereDate('published_at', now()->today())->orWhere(fn($sq) => $sq->whereNull('published_at')->whereDate('created_at', now()->today()))),
+                            'yesterday'  => $query->where(fn ($q) => $q->whereDate('published_at', now()->yesterday())->orWhere(fn($sq) => $sq->whereNull('published_at')->whereDate('created_at', now()->yesterday()))),
+                            'this_week'  => $query->where(fn ($q) => $q->where('published_at', '>=', now()->subDays(7))->orWhere(fn($sq) => $sq->whereNull('published_at')->where('created_at', '>=', now()->subDays(7)))),
+                            'this_month' => $query->where(fn ($q) => $q->where('published_at', '>=', now()->subDays(30))->orWhere(fn($sq) => $sq->whereNull('published_at')->where('created_at', '>=', now()->subDays(30)))),
+                            default      => $query,
+                        };
+                    }),
+
+                Tables\Filters\Filter::make('rango_personalizado')
+                    ->label('Rango Personalizado')
+                    ->form([
+                        Forms\Components\DatePicker::make('desde')->label('Fecha Desde'),
+                        Forms\Components\DatePicker::make('hasta')->label('Fecha Hasta'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['desde'] ?? null, fn (Builder $q, $date) => $q->where(fn ($sq) => $sq->whereDate('published_at', '>=', $date)->orWhere(fn($ssq) => $ssq->whereNull('published_at')->whereDate('created_at', '>=', $date))))
+                            ->when($data['hasta'] ?? null, fn (Builder $q, $date) => $q->where(fn ($sq) => $sq->whereDate('published_at', '<=', $date)->orWhere(fn($ssq) => $ssq->whereNull('published_at')->whereDate('created_at', '<=', $date))));
+                    }),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options([
+                        'pending'    => 'Pendiente',
                         'processing' => 'Procesando',
-                        'processed' => 'Procesada',
-                        'ignored' => 'Ignorada',
-                        'failed' => 'Fallida',
+                        'processed'  => 'Procesada',
+                        'ignored'    => 'Ignorada',
+                        'failed'     => 'Fallida',
                     ]),
+
                 Tables\Filters\SelectFilter::make('ai_model')
                     ->label('Modelo IA')
                     ->options(collect(config('ai_models.models', []))->mapWithKeys(fn ($item, $key) => [$key => $item['name']])->toArray()),
