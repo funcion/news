@@ -314,13 +314,13 @@
                                 <button @click="userMenuOpen = !userMenuOpen"
                                         aria-label="{{ auth()->user()->name }}"
                                         class="flex items-center gap-1 p-0.5 rounded-full hover:opacity-85 transition cursor-pointer">
-                                    <!-- Minimalist Borderless Circular Badge -->
-                                    <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px;"
-                                         class="w-[34px] h-[34px] rounded-full bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[11px] font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
+                                    <!-- Minimalist Borderless Circular Badge (Primary Blue Default with White Initials) -->
+                                    <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px; max-width: 34px; max-height: 34px;"
+                                         class="w-[34px] h-[34px] rounded-full bg-cyan-600 text-white flex items-center justify-center text-[11px] font-black tracking-normal overflow-hidden flex-shrink-0 select-none shadow-xs">
                                         @if (auth()->user()->avatar_url)
-                                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
+                                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full" style="width: 34px; height: 34px; object-fit: cover;">
                                         @else
-                                            <span class="leading-none text-center">{{ auth()->user()->initials }}</span>
+                                            <span class="leading-none text-center text-white font-black select-none">{{ auth()->user()->initials }}</span>
                                         @endif
                                     </div>
                                     <svg class="w-3 h-3 text-slate-400 dark:text-slate-500 transition-transform duration-200" :class="{ 'rotate-180': userMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -337,12 +337,12 @@
                                      x-transition:leave-end="opacity-0 scale-95"
                                      class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden">
                                     <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex items-center gap-3">
-                                        <div style="width: 34px; height: 34px; min-width: 34px; min-height: 34px;"
-                                             class="w-[34px] h-[34px] rounded-full bg-slate-200/70 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[11px] font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
+                                        <div style="width: 38px; height: 38px; min-width: 38px; min-height: 38px; max-width: 38px; max-height: 38px;"
+                                             class="w-[38px] h-[38px] rounded-full bg-cyan-600 text-white flex items-center justify-center text-[12px] font-black tracking-normal overflow-hidden flex-shrink-0 select-none shadow-xs">
                                             @if (auth()->user()->avatar_url)
-                                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
+                                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full" style="width: 38px; height: 38px; object-fit: cover;">
                                             @else
-                                                <span class="leading-none text-center">{{ auth()->user()->initials }}</span>
+                                                <span class="leading-none text-center text-white font-black select-none">{{ auth()->user()->initials }}</span>
                                             @endif
                                         </div>
                                         <div class="min-w-0 flex-1">

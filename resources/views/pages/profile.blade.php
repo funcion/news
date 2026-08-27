@@ -86,17 +86,15 @@
                          }
                      }">
                     
-                    <!-- Fixed Dimensions Avatar Frame -->
+                    <!-- Fixed Dimensions Avatar Frame (Primary Blue + White Initials in Light & Dark Mode) -->
                     <div class="relative shrink-0" style="width: 96px; height: 96px; min-width: 96px; min-height: 96px; max-width: 96px; max-height: 96px;">
-                        <div class="w-full h-full rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-md">
-                            <div class="w-full h-full rounded-full bg-white dark:bg-slate-900 overflow-hidden flex items-center justify-center">
-                                <template x-if="previewUrl && !removeAvatar">
-                                    <img :src="previewUrl" alt="{{ $user->name }}" class="w-full h-full object-cover rounded-full" style="width: 92px; height: 92px; object-fit: cover;">
-                                </template>
-                                <template x-if="!previewUrl || removeAvatar">
-                                    <span class="text-2xl font-black text-cyan-600 dark:text-cyan-400 select-none">{{ $user->initials }}</span>
-                                </template>
-                            </div>
+                        <div class="w-full h-full rounded-full bg-cyan-600 text-white flex items-center justify-center shadow-lg overflow-hidden select-none" style="width: 96px; height: 96px;">
+                            <template x-if="previewUrl && !removeAvatar">
+                                <img :src="previewUrl" alt="{{ $user->name }}" class="w-full h-full object-cover rounded-full" style="width: 96px; height: 96px; object-fit: cover;">
+                            </template>
+                            <template x-if="!previewUrl || removeAvatar">
+                                <span class="text-3xl font-black text-white leading-none tracking-widest select-none drop-shadow-xs">{{ $user->initials }}</span>
+                            </template>
                         </div>
                     </div>
 

@@ -34,7 +34,7 @@
                 <div class="flex items-start gap-3.5">
                     <!-- User Avatar -->
                     <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px;"
-                         class="w-9 h-9 rounded-full bg-slate-200/70 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
+                         class="w-9 h-9 rounded-full bg-cyan-600 text-white shadow-xs">
                         @if (auth()->user()->avatar_url)
                             <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
                         @else
@@ -190,7 +190,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2.5">
                                         <div style="width: 28px; height: 28px; min-width: 28px; min-height: 28px;"
-                                             class="w-7 h-7 rounded-full bg-slate-200/80 dark:bg-slate-700 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-[10px] font-bold overflow-hidden flex-shrink-0">
+                                             class="w-7 h-7 rounded-full bg-cyan-600 text-white shadow-xs">
                                             @if ($reply->user->avatar_url)
                                                 <img src="{{ $reply->user->avatar_url }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover rounded-full">
                                             @else
