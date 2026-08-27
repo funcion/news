@@ -1,4 +1,6 @@
-<x-layouts.app :title="__('ui.editorial_policy') . ' | ' . config('app.name')">
+<x-layouts.app>
+    <x-slot:title>{{ __('ui.editorial_policy') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
+    <x-slot:metaDescription>Directrices de ética editorial, verificación de fuentes y transparencia de IA en Glodaxia.</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">
         <!-- Header -->
         <div class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">

@@ -1,7 +1,6 @@
 <x-layouts.app :trendingTags="$trendingTags">
-    <x-slot:title>
-        {{ __('ui.categories_title') }} | {{ config('app.name') }}
-    </x-slot>
+    <x-slot:title>{{ __('ui.categories_title') }} | {{ config('app.name') }}</x-slot>
+    <x-slot:metaDescription>{{ __('ui.categories_meta_desc') ?? 'Explora todas las categorías de tecnología, inteligencia artificial y ciberseguridad en Glodaxia.' }}</x-slot>
 
     <!-- Header Section (Centered & Full-width Container) -->
     <div class="mb-12 pb-8 border-b border-gray-100 dark:border-white/5 text-center w-full max-w-5xl mx-auto">

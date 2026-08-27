@@ -1,4 +1,6 @@
 <x-layouts.app :trendingTags="$trendingTags ?? collect()">
+    <x-slot:title>{{ __('ui.about_hero_title') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
+    <x-slot:metaDescription>{{ __('ui.about_hero_subtitle') ?? 'Conoce la misión y estándares de periodismo tecnológico de Glodaxia.' }}</x-slot>
     @section('title', __('ui.about_hero_title') . ' — ' . __('ui.site_name'))
     @section('meta_description', __('ui.about_hero_subtitle'))
 
