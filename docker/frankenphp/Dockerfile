@@ -1,5 +1,5 @@
 # ===================================================
-# FrankenPHP + Laravel 12
+# FrankenPHP + Laravel 13
 # Nota: docker-compose monta ./:/app:cached, as� que
 # el c�digo se monta desde el host. Este Dockerfile
 # instala el entorno de ejecuci�n y Composer.

@@ -50,7 +50,7 @@
     </div>
 
     <footer class="text-center py-8 text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-white/10">
-        <p>Noticias Platform © {{ date('Y') }} - Desarrollado con Laravel 12, Filament v3 y FrankenPHP</p>
+        <p>Noticias Platform © {{ date('Y') }} - Desarrollado con Laravel 13, Filament v5 y FrankenPHP</p>
     </footer>
 </body>
 </html>

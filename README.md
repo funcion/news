@@ -1,6 +1,6 @@
 # 🗞️ Noticias Platform - Plataforma de Noticias Automatizada con IA
 
-Plataforma de noticias automatizada con IA y RSS construida con Laravel 13, FrankenPHP, PostgreSQL (pgvector), Redis, Ably Realtime WebSockets, Horizon y Filament v3.
+Plataforma de noticias automatizada con IA y RSS construida con Laravel 13, FrankenPHP, PostgreSQL (pgvector), Redis, Ably Realtime WebSockets, Horizon y Filament v5.
 
 ## 🚀 Características Principales
 
@@ -11,7 +11,7 @@ Plataforma de noticias automatizada con IA y RSS construida con Laravel 13, Fran
 - **Frontend en Tiempo Real**: Actualizaciones instantáneas vía WebSockets en la nube con Ably.
 - **SEO Técnico Avanzado**: Schema Markup, OpenGraph, Twitter Cards y Sitemaps dinámicos optimizados para Google News.
 - **Sistema de Tags Inteligente**: Extracción y asignación automática de etiquetas temáticas.
-- **Panel de Administración**: Panel completo y moderno basado en Filament v3.
+- **Panel de Administración**: Panel completo y moderno basado en Filament v5.
 
 ---
 
@@ -21,7 +21,7 @@ Plataforma de noticias automatizada con IA y RSS construida con Laravel 13, Fran
 - **Servidor Web**: FrankenPHP (Caddy Server + Worker Mode + HTTP/3)
 - **Base de Datos**: PostgreSQL 17 + extensión `pgvector`
 - **Cache y Colas**: Redis 7
-- **Panel Administrativo**: Filament v3
+- **Panel Administrativo**: Filament v5
 - **WebSockets / Realtime**: Ably Realtime (`ably/ably-php` + `laravel-echo`)
 - **Gestión de Colas**: Laravel Horizon
 - **Frontend**: Blade + Alpine.js + Tailwind CSS v4 (Vite)
@@ -116,7 +116,7 @@ docker compose restart horizon
 | Servicio | URL Local | Puerto | Descripción |
 | :--- | :--- | :--- | :--- |
 | **FrankenPHP (App)** | [http://localhost:8000](http://localhost:8000) | `8000` | Frontend de noticias |
-| **Panel de Administración** | [http://localhost:8000/admin](http://localhost:8000/admin) | `8000` | Panel Filament v3 |
+| **Panel de Administración** | [http://localhost:8000/admin](http://localhost:8000/admin) | `8000` | Panel Filament v5 |
 | **Horizon Dashboard** | [http://localhost:8000/horizon](http://localhost:8000/horizon) | `8000` | Monitor de colas y tareas |
 | **Ably Realtime** | Cloud Service | WSS / HTTPS | WebSockets en la nube (Eventos en vivo) |
 | **Mailpit (Email UI)** | [http://localhost:8025](http://localhost:8025) | `8025` | Bandeja de pruebas de email |

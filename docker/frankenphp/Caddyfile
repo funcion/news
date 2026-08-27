@@ -1,4 +1,4 @@
-# Configuración FrankenPHP para Laravel 12
+# Configuración FrankenPHP para Laravel 13
 {
     auto_https off
     http_port 80
