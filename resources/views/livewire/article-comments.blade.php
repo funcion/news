@@ -34,11 +34,11 @@
                 <div class="flex items-start gap-3.5">
                     <!-- User Avatar -->
                     <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px;"
-                         class="w-9 h-9 rounded-full bg-cyan-600 text-white shadow-xs">
+                         class="w-9 h-9 rounded-full bg-cyan-600 text-white flex items-center justify-center text-xs font-black tracking-normal overflow-hidden flex-shrink-0 select-none shadow-xs">
                         @if (auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full" style="width: 36px; height: 36px; object-fit: cover;">
                         @else
-                            <span class="leading-none text-center">{{ auth()->user()->initials }}</span>
+                            <span class="leading-none text-center text-white font-black select-none">{{ auth()->user()->initials }}</span>
                         @endif
                     </div>
 
@@ -107,11 +107,11 @@
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-3">
                         <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px;"
-                             class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs font-bold tracking-normal overflow-hidden flex-shrink-0 select-none">
+                             class="w-9 h-9 rounded-full bg-cyan-600 text-white flex items-center justify-center text-xs font-black tracking-normal overflow-hidden flex-shrink-0 select-none shadow-xs">
                             @if ($comment->user->avatar_url)
-                                <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover rounded-full">
+                                <img src="{{ $comment->user->avatar_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover rounded-full" style="width: 36px; height: 36px; object-fit: cover;">
                             @else
-                                <span class="leading-none text-center">{{ $comment->user->initials }}</span>
+                                <span class="leading-none text-center text-white font-black select-none">{{ $comment->user->initials }}</span>
                             @endif
                         </div>
                         <div>
@@ -190,11 +190,11 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2.5">
                                         <div style="width: 28px; height: 28px; min-width: 28px; min-height: 28px;"
-                                             class="w-7 h-7 rounded-full bg-cyan-600 text-white shadow-xs">
+                                             class="w-7 h-7 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[10px] font-black tracking-normal overflow-hidden flex-shrink-0 select-none shadow-xs">
                                             @if ($reply->user->avatar_url)
-                                                <img src="{{ $reply->user->avatar_url }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover rounded-full">
+                                                <img src="{{ $reply->user->avatar_url }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover rounded-full" style="width: 28px; height: 28px; object-fit: cover;">
                                             @else
-                                                <span class="leading-none">{{ $reply->user->initials }}</span>
+                                                <span class="leading-none text-center text-white font-black select-none">{{ $reply->user->initials }}</span>
                                             @endif
                                         </div>
                                         <div>
