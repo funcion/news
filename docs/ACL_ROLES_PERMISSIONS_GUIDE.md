@@ -187,3 +187,21 @@ Para proteger la integridad editorial y evitar que usuarios lectores o registrad
      ```
 4. **Usuarios Lectores (`panel_user`):**
    * Todo usuario registrado de forma pública recibe el rol `panel_user`. Este rol les otorga acceso a comentar y personalizar su perfil, pero **nunca** aparecerán en los listados de redactores ni podrán ser seleccionados como autores de noticias.
+---
+
+## 👑 9. Regla de Oro: Unicidad del SuperAdmin y Reasignación Automática
+
+Para garantizar la máxima seguridad y la integridad referencial de los contenidos:
+
+### 1. Regla de SuperAdmin Único (No pueden existir 2 SuperAdmins):
+* En toda la plataforma existe **1 solo y único usuario con el rol `super_admin`** (`admin@glodaxia.com`).
+* El Super Administrador principal está **blindado por Observer y Policies**:
+  * No puede ser eliminado ni por el panel administrativo ni por comandos de base de datos accidentales.
+  * El botón "Eliminar" en Filament está deshabilitado para el Super Administrador.
+* Los demás miembros del equipo directivo (como los fundadores y directores de tecnología) cuentan con el rol **`admin`** (Editor Jefe / Administrador).
+
+### 2. Reasignación Automática de Artículos al Eliminar un Redactor (`UserObserver`):
+* Si en algún momento se da de baja o se elimina a un redactor del equipo (`UserObserver::deleting`):
+  * **Los artículos NO se eliminan ni quedan huérfanos con enlaces rotos.**
+  * El sistema transfiere automáticamente la autoría de todos sus artículos creados al **Super Administrador titular (`super_admin`)**.
+  * La plataforma registra en los logs de auditoría la cantidad exacta de artículos transferidos.

@@ -146,6 +146,8 @@ class UserResource extends Resource
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make()
+                    ->hidden(fn (User $record) => $record->hasRole('super_admin') || $record->email === 'admin@glodaxia.com'),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([

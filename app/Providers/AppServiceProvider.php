@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\RawArticle;
 use App\Observers\RawArticleObserver;
+use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RawArticle::observe(RawArticleObserver::class);
+        User::observe(UserObserver::class);
 
         // Set the primary locale to English
         App::setLocale(config('app.locale', 'en'));
