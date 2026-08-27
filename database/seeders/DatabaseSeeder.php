@@ -400,29 +400,47 @@ class DatabaseSeeder extends Seeder
                         'en' => $catData['desc_en'],
                         'es' => $catData['desc_es'],
                     ],
+                    'meta_title' => [
+                        'en' => "{$catData['en']} News, Analysis & Tech Trends | Glodaxia",
+                        'es' => "Noticias de {$catData['es']}, Análisis y Tendencias | Glodaxia",
+                    ],
+                    'meta_description' => [
+                        'en' => "Explore the latest breaking news, technical analysis, and industry research on {$catData['en']} in the global AI & tech ecosystem.",
+                        'es' => "Explora las últimas noticias de última hora, análisis técnico e investigación sobre {$catData['es']} en el ecosistema global de IA y tecnología.",
+                    ],
                     'is_active' => true,
                 ]
             );
         }
 
-                        // Create Featured/Sample Tags
-        $tags = [
-            ['en' => 'OpenAI', 'es' => 'OpenAI'],
-            ['en' => 'GPT', 'es' => 'GPT'],
-            ['en' => 'Neural Networks', 'es' => 'Redes Neuronales'],
-            ['en' => 'Deep Learning', 'es' => 'Deep Learning'],
-            ['en' => 'Robotics', 'es' => 'Robótica'],
-            ['en' => 'Data Science', 'es' => 'Ciencia de Datos'],
-            ['en' => 'Cloud Computing', 'es' => 'Cloud Computing'],
-            ['en' => 'Blockchain', 'es' => 'Blockchain'],
+                        // Seed Official Master Taxonomy (33 High-Density Hubs)
+        $masterTags = [
+            'OpenAI', 'Google', 'Meta', 'Microsoft', 'NVIDIA', 'Apple', 'Anthropic', 'Amazon', 'Tesla',
+            'Artificial Intelligence', 'Large Language Models', 'AI Agents', 'Computer Vision', 'Robotics & Automation',
+            'Reinforcement Learning', 'AI Ethics & Safety', 'AI Regulation & Policy', 'Cybersecurity', 'Vulnerabilities & Exploits',
+            'Ransomware & Malware', 'Data Privacy & Protection', 'Cloud Computing', 'Digital Infrastructure', 'Hardware & Semiconductors',
+            'Software Engineering', 'DevOps & CI/CD', 'Open Source', 'Databases & Storage', 'Web Development', 'APIs & Microservices',
+            'Science & Innovation', 'Startups & Venture Capital', 'E-Commerce & Digital Economy'
         ];
 
-        foreach ($tags as $tagData) {
-            $slug = strtolower(str_replace(' ', '-', $tagData['en']));
+        foreach ($masterTags as $tagName) {
+            $slug = \Illuminate\Support\Str::slug($tagName);
             Tag::updateOrCreate(
                 ['slug' => $slug],
                 [
-                    'name' => ['en' => $tagData['en'], 'es' => $tagData['es']],
+                    'name' => ['en' => $tagName, 'es' => $tagName],
+                    'description' => [
+                        'en' => "Latest tech intelligence, research papers, and news on {$tagName}.",
+                        'es' => "Últimas noticias, investigación y análisis sobre {$tagName}.",
+                    ],
+                    'meta_title' => [
+                        'en' => "#{$tagName} - Latest Tech News & Articles | Glodaxia",
+                        'es' => "#{$tagName} - Últimas Noticias y Artículos de Tecnología | Glodaxia",
+                    ],
+                    'meta_description' => [
+                        'en' => "Curated feed of tech intelligence, research papers, and breaking news tagged with #{$tagName} on Glodaxia.",
+                        'es' => "Archivo especializado de noticias, investigaciones y novedades tecnológicas sobre #{$tagName} en Glodaxia.",
+                    ],
                     'is_featured' => true,
                 ]
             );

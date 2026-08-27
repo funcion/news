@@ -11,12 +11,14 @@ class Tag extends Model
 {
     use HasFactory, HasTranslations;
 
-    public array $translatable = ['name', 'description'];
+    public array $translatable = ['name', 'description', 'meta_title', 'meta_description'];
 
     protected $fillable = [
         'name',
         'slug',
         'description',
+        'meta_title',
+        'meta_description',
         'article_count',
         'is_featured',
         'metadata',

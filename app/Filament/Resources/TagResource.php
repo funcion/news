@@ -9,8 +9,11 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use App\Services\AI\OpenRouterService;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -26,13 +29,15 @@ class TagResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'Taxonomy';
 
     protected static ?string $navigationLabel = 'Tags';
+    protected static ?string $modelLabel = 'Tag';
+    protected static ?string $pluralModelLabel = 'Tags';
 
     public static function form(Schema $form): Schema
     {
         return $form
             ->components([
                 Section::make('Tag Details')
-                    ->description('Define the tag name and description in both languages. Tags are used to classify articles.')
+                    ->description('Define the tag name, description, and slug in both languages.')
                     ->schema([
                         Tabs::make('Languages')
                             ->tabs([
@@ -47,7 +52,36 @@ class TagResource extends Resource
                                                     $component->state($record->getTranslation('name', 'en'));
                                                 }
                                             })
-                                            ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug($state ?? ''))),
+                                            ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug($state ?? '')))
+                                            ->suffixAction(
+                                                Action::make('generate_ai_tag_seo')
+                                                    ->icon('heroicon-m-sparkles')
+                                                    ->tooltip('✨ Generar traducciones y SEO con IA')
+                                                    ->action(function ($state, $set, OpenRouterService $ai) {
+                                                        if (empty($state)) {
+                                                            Notification::make()->warning()->title('Ingresa un Nombre en Inglés primero')->send();
+                                                            return;
+                                                        }
+                                                        
+                                                        $prompt = "Generate Spanish name, descriptions, and high-CTR SEO meta title and meta description for the tech tag: '{$state}'. Response STRICTLY in JSON without markdown: { \"name_es\": \"...\", \"description_en\": \"...\", \"description_es\": \"...\", \"meta_title_en\": \"...\", \"meta_title_es\": \"...\", \"meta_description_en\": \"...\", \"meta_description_es\": \"...\" }";
+                                                        
+                                                        $response = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
+                                                        
+                                                        if ($response) {
+                                                            $clean = preg_replace('/```json|```/', '', $response);
+                                                            $data = json_decode(trim($clean), true);
+                                                            if (isset($data['name_es'])) $set('name_es', $data['name_es']);
+                                                            if (isset($data['description_en'])) $set('description_en', $data['description_en']);
+                                                            if (isset($data['description_es'])) $set('description_es', $data['description_es']);
+                                                            if (isset($data['meta_title_en'])) $set('meta_title_en', $data['meta_title_en']);
+                                                            if (isset($data['meta_title_es'])) $set('meta_title_es', $data['meta_title_es']);
+                                                            if (isset($data['meta_description_en'])) $set('meta_description_en', $data['meta_description_en']);
+                                                            if (isset($data['meta_description_es'])) $set('meta_description_es', $data['meta_description_es']);
+                                                            
+                                                            Notification::make()->success()->title('✨ Contenido y SEO de Tag generados')->send();
+                                                        }
+                                                    })
+                                            ),
                                         Textarea::make('description_en')
                                             ->label('Description (EN)')
                                             ->rows(2)
@@ -83,18 +117,68 @@ class TagResource extends Resource
                             ])->columnSpanFull(),
 
                         TextInput::make('slug')
-                            ->label('Slug (shared)')
+                            ->label('Slug (Identificador URL)')
                             ->required()
                             ->unique(Tag::class, 'slug', ignoreRecord: true)
-                            ->helperText('A single slug is used for tags (auto-generated from EN name)'),
+                            ->helperText('El slug se genera automáticamente a partir del nombre en inglés.'),
                         Toggle::make('is_featured')
-                            ->label('Featured Tag')
+                            ->label('Tag Destacado')
                             ->default(false),
                         TextInput::make('article_count')
-                            ->label('Article Count')
+                            ->label('Total Artículos')
                             ->numeric()
                             ->default(0)
                             ->disabled(),
+                    ])->columns(2),
+
+                Section::make('🔍 Optimización para Motores de Búsqueda (SEO & Metadatos)')
+                    ->description('Configura los meta títulos y meta descripciones bilingües para el feed de este tag.')
+                    ->columnSpanFull()
+                    ->schema([
+                        Tabs::make('SEO_Languages')
+                            ->tabs([
+                                Tabs\Tab::make('🇺🇸 English SEO')
+                                    ->schema([
+                                        TextInput::make('meta_title_en')
+                                            ->label('Meta Title (EN)')
+                                            ->maxLength(70)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_title', 'en'));
+                                                }
+                                            }),
+                                        Textarea::make('meta_description_en')
+                                            ->label('Meta Description (EN)')
+                                            ->rows(3)
+                                            ->maxLength(160)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_description', 'en'));
+                                                }
+                                            }),
+                                    ]),
+
+                                Tabs\Tab::make('🇪🇸 Español SEO')
+                                    ->schema([
+                                        TextInput::make('meta_title_es')
+                                            ->label('Meta Título (ES)')
+                                            ->maxLength(70)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_title', 'es'));
+                                                }
+                                            }),
+                                        Textarea::make('meta_description_es')
+                                            ->label('Meta Descripción (ES)')
+                                            ->rows(3)
+                                            ->maxLength(160)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record) {
+                                                    $component->state($record->getTranslation('meta_description', 'es'));
+                                                }
+                                            }),
+                                    ]),
+                            ])->columnSpanFull(),
                     ]),
             ]);
     }
@@ -115,11 +199,11 @@ class TagResource extends Resource
                 TextColumn::make('slug')
                     ->copyable(),
                 TextColumn::make('article_count')
-                    ->label('Articles')
+                    ->label('Artículos')
                     ->numeric()
                     ->sortable(),
                 ToggleColumn::make('is_featured')
-                    ->label('Featured'),
+                    ->label('Destacado'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -127,7 +211,7 @@ class TagResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_featured')
-                    ->label('Featured'),
+                    ->label('Destacado'),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

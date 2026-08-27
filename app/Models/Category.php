@@ -13,13 +13,15 @@ class Category extends Model implements HasMedia
 {
     use HasFactory, HasTranslations, InteractsWithMedia;
 
-    public array $translatable = ['name', 'description'];
+    public array $translatable = ['name', 'description', 'meta_title', 'meta_description'];
 
     protected $fillable = [
         'name',
         'slug_en',
         'slug_es',
         'description',
+        'meta_title',
+        'meta_description',
         'parent_id',
         'order',
         'is_active',

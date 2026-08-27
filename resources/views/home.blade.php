@@ -1,6 +1,6 @@
 <x-layouts.app>
-    <x-slot:title>{{ isset($category) ? ($category->name . ' | ' . config('app.name', 'Glodaxia')) : (config('app.name', 'Glodaxia') . ' | Tech, AI & Digital Intelligence') }}</x-slot>
-    <x-slot:metaDescription>{{ isset($category) ? ($category->description ?: __('ui.category_meta_desc', ['category' => $category->name])) : __('ui.meta_desc') }}</x-slot>
+    <x-slot:title>{{ isset($category) ? ($category->meta_title ?: ($category->name . ' | ' . config('app.name', 'Glodaxia'))) : (config('app.name', 'Glodaxia') . ' | Tech, AI & Digital Intelligence') }}</x-slot>
+    <x-slot:metaDescription>{{ isset($category) ? ($category->meta_description ?: ($category->description ?: __('ui.category_meta_desc', ['category' => $category->name]))) : __('ui.meta_desc') }}</x-slot>
 <!-- Real-time Notifier -->
     <div x-data="{ 
             newArticle: null, 

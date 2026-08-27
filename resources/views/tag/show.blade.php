@@ -1,6 +1,6 @@
 <x-layouts.app>
-    <x-slot:title>#{{ $tag->name }} | {{ config('app.name') }}</x-slot>
-    <x-slot:metaDescription>{{ $tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name]) }}</x-slot>
+    <x-slot:title>{{ $tag->meta_title ?: ('#' . $tag->name . ' | ' . config('app.name')) }}</x-slot>
+    <x-slot:metaDescription>{{ $tag->meta_description ?: ($tag->description ?: __('ui.tag_meta_desc', ['tag' => $tag->name])) }}</x-slot>
 
     <x-slot:head>
         <meta property="og:title" content="#{{ $tag->name }} | {{ config('app.name') }}" />

@@ -79,3 +79,16 @@ docker compose exec app php artisan view:clear && docker compose exec app php ar
 # 🐳 Verificar el listado de tags consolidados
 docker compose exec app php artisan tinker --execute="App\Models\Tag::orderByDesc('article_count')->get(['name', 'slug', 'article_count'])->take(15)->dump();"
 ```
+---
+
+## 🔍 6. Metadatos SEO Bilingües en Categorías y Etiquetas
+
+Tanto las **Categorías** ([`/admin/categories`](http://localhost:8000/admin/categories)) como los **Tags** ([`/admin/tags`](http://localhost:8000/admin/tags)) disponen de una sección dedicada de **Optimización SEO y Metadatos**:
+
+### Campos Disponibles (En Inglés y Español):
+1. **Meta Title (EN / ES):** Optimizado para los primeros 50-60 caracteres de los resultados de búsqueda de Google.
+2. **Meta Description (EN / ES):** Redacción persuasiva de 120-155 caracteres para maximizar el CTR orgánico.
+3. **Generación con IA (Botón ✨):** Al crear o editar cualquier Categoría o Tag, el botón de IA genera automáticamente las descripciones, nombres traducidos y metaetiquetas SEO en ambos idiomas.
+
+### Persistencia en Seeders:
+* [`database/seeders/DatabaseSeeder.php`](file:///Ubuntu-26.04/home/luisf/news/database/seeders/DatabaseSeeder.php) contiene los 8 Pilares de Categorías y los 33 Hubs Temáticos con sus títulos y descripciones SEO preconfigurados en inglés y español.
