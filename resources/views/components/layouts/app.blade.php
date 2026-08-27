@@ -680,9 +680,9 @@
                 <div class="footer-col flex flex-col md:pl-6">
                     <h4 class="text-base font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">{{ __('ui.legal_nav') }}</h4>
                     <ul class="footer-links flex flex-col gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/privacidad') : url('/privacy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
-                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/terminos') : url('/terms') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
-                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/cookies') : url('/cookies') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
+                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/politica-de-privacidad') : url('/privacy-policy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.privacy_policy') }}</a></li>
+                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/terminos-y-condiciones') : url('/terms-and-conditions') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.terms_of_service') }}</a></li>
+                        <li><a href="{{ app()->getLocale() === 'es' ? url('/es/politica-de-cookies') : url('/cookie-policy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.cookie_policy') }}</a></li>
                         <li><button type="button" data-cc="show-preferencesModal" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block text-left">{{ __('ui.cookie_settings') }}</button></li>
                         <li><a href="{{ app()->getLocale() === 'es' ? url('/es/politica-editorial') : url('/editorial-policy') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.editorial_policy') }}</a></li>
                     </ul>

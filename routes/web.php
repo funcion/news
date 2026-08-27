@@ -111,40 +111,67 @@ Route::group([
     Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,1');
     Route::post('/contacto', [\App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit.es')->middleware('throttle:5,1');
 
-    // Terms of Service (/terms in EN, /es/terminos in ES)
-    Route::get('/terms', function () {
+    // --- LEGAL & TRANSPARENCY BILINGUAL ROUTES ---
+
+    // 1. Terms & Conditions (/terms-and-conditions in EN, /es/terminos-y-condiciones in ES)
+    Route::get('/terms-and-conditions', function () {
         if (app()->getLocale() === 'es') {
-            return redirect('/es/terminos', 301);
+            return redirect('/es/terminos-y-condiciones', 301);
         }
         return app(\App\Http\Controllers\LegalController::class)->terms();
     })->name('legal.terms');
 
-    Route::get('/terminos', function () {
+    Route::get('/terminos-y-condiciones', function () {
         if (app()->getLocale() !== 'es') {
-            return redirect('/terms', 301);
+            return redirect('/terms-and-conditions', 301);
         }
         return app(\App\Http\Controllers\LegalController::class)->terms();
     })->name('legal.terms.es');
 
-    // Privacy Policy (/privacy in EN, /es/privacidad in ES)
-    Route::get('/privacy', function () {
+    // Legacy redirects for terms
+    Route::get('/terms', fn() => redirect(app()->getLocale() === 'es' ? '/es/terminos-y-condiciones' : '/terms-and-conditions', 301));
+    Route::get('/terminos', fn() => redirect(app()->getLocale() === 'es' ? '/es/terminos-y-condiciones' : '/terms-and-conditions', 301));
+    Route::get('/terms-of-service', fn() => redirect(app()->getLocale() === 'es' ? '/es/terminos-y-condiciones' : '/terms-and-conditions', 301));
+    Route::get('/terminos-de-servicio', fn() => redirect(app()->getLocale() === 'es' ? '/es/terminos-y-condiciones' : '/terms-and-conditions', 301));
+
+    // 2. Privacy Policy (/privacy-policy in EN, /es/politica-de-privacidad in ES)
+    Route::get('/privacy-policy', function () {
         if (app()->getLocale() === 'es') {
-            return redirect('/es/privacidad', 301);
+            return redirect('/es/politica-de-privacidad', 301);
         }
         return app(\App\Http\Controllers\LegalController::class)->privacy();
     })->name('legal.privacy');
 
-    Route::get('/privacidad', function () {
+    Route::get('/politica-de-privacidad', function () {
         if (app()->getLocale() !== 'es') {
-            return redirect('/privacy', 301);
+            return redirect('/privacy-policy', 301);
         }
         return app(\App\Http\Controllers\LegalController::class)->privacy();
     })->name('legal.privacy.es');
 
-    // Cookies (/cookies)
-    Route::get('/cookies', [\App\Http\Controllers\LegalController::class, 'cookies'])->name('legal.cookies');
+    // Legacy redirects for privacy
+    Route::get('/privacy', fn() => redirect(app()->getLocale() === 'es' ? '/es/politica-de-privacidad' : '/privacy-policy', 301));
+    Route::get('/privacidad', fn() => redirect(app()->getLocale() === 'es' ? '/es/politica-de-privacidad' : '/privacy-policy', 301));
 
-    // Editorial Policy (/editorial-policy in EN, /es/politica-editorial in ES)
+    // 3. Cookie Policy (/cookie-policy in EN, /es/politica-de-cookies in ES)
+    Route::get('/cookie-policy', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/politica-de-cookies', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->cookies();
+    })->name('legal.cookies');
+
+    Route::get('/politica-de-cookies', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/cookie-policy', 301);
+        }
+        return app(\App\Http\Controllers\LegalController::class)->cookies();
+    })->name('legal.cookies.es');
+
+    // Legacy redirects for cookies
+    Route::get('/cookies', fn() => redirect(app()->getLocale() === 'es' ? '/es/politica-de-cookies' : '/cookie-policy', 301));
+
+    // 4. Editorial Policy (/editorial-policy in EN, /es/politica-editorial in ES)
     Route::get('/editorial-policy', function () {
         if (app()->getLocale() === 'es') {
             return redirect('/es/politica-editorial', 301);
