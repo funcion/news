@@ -13,6 +13,8 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,6 +25,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
+    use HasShieldFormComponents;
+
     protected static ?string $model = User::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
@@ -67,78 +71,27 @@ class UserResource extends Resource
                             ->columnSpanFull(),
                     ])->columns(2),
 
-                Section::make('Seguridad y Control de Acceso (Roles y Permisos)')
-                    ->description('Asigna roles generales y/o permisos específicos directos a este usuario.')
+                                Section::make('Roles Asignados')
+                    ->description('Selecciona los roles generales asignados a este usuario.')
                     ->columnSpanFull()
                     ->schema([
-                        Select::make('roles')
-                            ->label('Roles Asignados')
+                        CheckboxList::make('roles')
+                            ->label('Roles de Usuario')
                             ->relationship('roles', 'name')
-                            ->multiple()
-                            ->preload()
-                            ->searchable()
-                            ->helperText('Selecciona los roles que corresponden a este usuario (super_admin, admin, redactor, panel_user).')
-                            ->columnSpanFull(),
-
-                        Select::make('permissions')
-                            ->label('Permisos Específicos Directos')
-                            ->relationship('permissions', 'name')
-                            ->multiple()
-                            ->preload()
-                            ->searchable()
-                            ->helperText('Otorga o revoca permisos individuales específicos directamente a este usuario.')
+                            ->columns([
+                                'sm' => 2,
+                                'lg' => 4,
+                            ])
+                            ->helperText('Marca uno o varios roles (super_admin, admin, redactor, panel_user).')
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('Información del Usuario (Bilingüe)')
+                Section::make('Permisos Específicos Directos (Matriz Visual)')
+                    ->description('Otorga o revoca permisos individuales específicos directamente a este usuario mediante la matriz de checkboxes.')
                     ->columnSpanFull()
-                    ->columns(1)
+                    ->collapsed()
                     ->schema([
-                        Tabs::make('Languages')
-                            ->tabs([
-                                Tabs\Tab::make('🇺🇸 English')
-                                    ->schema([
-                                        TextInput::make('name_en')
-                                            ->label('Name (EN)')
-                                            ->required()
-                                            ->live(onBlur: true)
-                                            ->afterStateHydrated(function ($component, $state, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('name', 'en'));
-                                                }
-                                            })
-                                            ->afterStateUpdated(fn ($operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                                        Textarea::make('bio_en')
-                                            ->label('Bio (EN)')
-                                            ->rows(4)
-                                            ->afterStateHydrated(function ($component, $state, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('bio', 'en'));
-                                                }
-                                            }),
-                                    ]),
-                                Tabs\Tab::make('🇪🇸 Español')
-                                    ->schema([
-                                        TextInput::make('name_es')
-                                            ->label('Nombre (ES)')
-                                            ->required()
-                                            ->live(onBlur: true)
-                                            ->afterStateHydrated(function ($component, $state, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('name', 'es'));
-                                                }
-                                            })
-                                            ->afterStateUpdated(fn ($operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                                        Textarea::make('bio_es')
-                                            ->label('Biografía (ES)')
-                                            ->rows(4)
-                                            ->afterStateHydrated(function ($component, $state, $record) {
-                                                if ($record) {
-                                                    $component->state($record->getTranslation('bio', 'es'));
-                                                }
-                                            }),
-                                    ]),
-                            ])->columnSpanFull(),
+                        static::getShieldFormComponents(),
                     ]),
             ]);
     }

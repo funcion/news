@@ -136,7 +136,11 @@ docker compose exec app php artisan db:seed
 Además de los roles (que agrupan paquetes de permisos), el sistema permite otorgar **permisos individuales específicos a cualquier usuario**:
 
 ### ¿Cómo funciona en el Panel de Administración?
-1. Ve a **Seguridad y Roles ➔ Usuarios** ([`/admin/users`](http://localhost:8000/admin/users)).
+1. Ve a **Administración ➔ Usuarios** ([`/admin/users`](http://localhost:8000/admin/users)).
+2. Edita cualquier usuario o crea uno nuevo.
+3. Dispones de dos secciones visuales:
+   * **Roles Asignados:** Checkboxes visuales en 4 columnas para marcar los roles del usuario (`super_admin`, `admin`, `redactor`, `panel_user`).
+   * **Permisos Específicos Directos (Matriz Visual):** La misma matriz interactiva de Shield con tarjetas por recurso (*Articles, Comments, Sources, etc.*), pestañas de Páginas/Widgets, checkboxes por acción y botón *Select All* por entidad.
 2. Edita cualquier usuario o crea uno nuevo.
 3. En la sección **"Control de Acceso: Roles y Permisos Directos"**:
    * **Roles Asignados:** Selecciona uno o varios roles generales (*Editor Jefe, Redactor, Moderador, etc.*).
