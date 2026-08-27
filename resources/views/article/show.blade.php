@@ -31,10 +31,10 @@
         <!-- Breadcrumbs (Minimalist) -->
         <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-6 lg:mb-10">
             <a href="{{ url('/') }}" class="hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors">{{ __('ui.home') }}</a>
-            <svg class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg aria-hidden="true"  class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             @if($article->category)
                 <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? ($article->category->slug_es ?? $article->category->slug) : ($article->category->slug_en ?? $article->category->slug)) }}" class="hover:text-cyan-600 dark:hover:text-cyan-500 transition-colors">{{ $article->category->name }}</a>
-                <svg class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg aria-hidden="true"  class="w-3 h-3 opacity-30 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             @endif
             <span class="text-slate-600 dark:text-slate-400 truncate max-w-[150px]">{{ __('ui.current_post') }}</span>
         </nav>
@@ -53,7 +53,7 @@
             <div class="flex flex-wrap items-center gap-4 sm:gap-6 border-y border-gray-200 dark:border-white/5 py-3 lg:py-4 text-xs font-bold text-slate-600 dark:text-slate-400">
                 <!-- Published Date -->
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg aria-hidden="true"  class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                     <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
@@ -65,7 +65,7 @@
 
                 <!-- Reading Time -->
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg aria-hidden="true"  class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span class="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
@@ -77,7 +77,7 @@
 
                 <!-- Views Count -->
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg aria-hidden="true"  class="w-4 h-4 text-cyan-600 dark:text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg> 
@@ -151,7 +151,7 @@
                     <a href="{{ $p['url'] }}" target="_blank" 
                        class="{{ $p['bg'] }} h-12 w-12 flex items-center justify-center rounded-lg text-white hover:scale-110 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-black/10 group" 
                        title="{{ $p['id'] }}">
-                        <svg class="h-6 w-6 {{ $p['id'] === 'em' ? '' : 'fill-current' }} group-hover:drop-shadow-md" {!! $p['id'] === 'em' ? 'fill="none" stroke="currentColor"' : '' !!} viewBox="0 0 24 24">
+                        <svg aria-hidden="true"  class="h-6 w-6 {{ $p['id'] === 'em' ? '' : 'fill-current' }} group-hover:drop-shadow-md" {!! $p['id'] === 'em' ? 'fill="none" stroke="currentColor"' : '' !!} viewBox="0 0 24 24">
                             {!! $p['icon'] !!}
                         </svg>
                     </a>
@@ -205,7 +205,7 @@
             @if(!empty($article->ai_metadata['origin_url']))
                 <a href="{{ $article->ai_metadata['origin_url'] }}" target="_blank" rel="noopener noreferrer" 
                    class="inline-flex items-center gap-3 bg-slate-100 dark:bg-white/5 hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-500 px-5 py-3 rounded-xl text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 group shadow-sm">
-                    <svg class="w-4 h-4 text-cyan-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg aria-hidden="true"  class="w-4 h-4 text-cyan-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
                     {{ __('ui.read_original_source') }}
@@ -276,9 +276,9 @@
                         <button type="submit" 
                                 :disabled="loading" 
                                 class="w-full h-12 sm:h-14 px-6 rounded-xl bg-cyan-500 hover:bg-cyan-600 active:scale-[0.99] disabled:opacity-50 text-white text-sm sm:text-base font-bold tracking-wide transition-all shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2.5">
-                            <span x-show="!loading" class="flex items-center gap-2">{{ __('ui.subscribe_now') }} <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
+                            <span x-show="!loading" class="flex items-center gap-2">{{ __('ui.subscribe_now') }} <svg aria-hidden="true"  class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
                             <span x-show="loading" class="flex items-center gap-2">
-                                <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg aria-hidden="true"  class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                 {{ app()->getLocale() === 'es' ? 'Enviando...' : 'Subscribing...' }}
                             </span>
                         </button>

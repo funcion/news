@@ -78,7 +78,7 @@
                         <div class="flex items-center justify-between pt-1">
                             <a href="{{ $catUrl }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                                 <span>{{ __('ui.category_explore') }}</span>
-                                <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg aria-hidden="true"  class="w-3.5 h-3.5 transform group-hover:translate-x-1.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                 </svg>
                             </a>

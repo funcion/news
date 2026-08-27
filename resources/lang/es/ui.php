@@ -203,4 +203,12 @@ return array (
   'category_articles_count' => ':count artículos',
   'category_single_article' => '1 artículo',
   'category_no_articles' => 'Próximamente',
+  'skip_to_content' => 'Saltar al contenido principal',
+  'toggle_dark_mode' => 'Alternar modo oscuro',
+  'toggle_menu' => 'Abrir menú de navegación',
+  'close_dialog' => 'Cerrar diálogo',
+  'main_navigation' => 'Navegación principal',
+  'footer_navigation' => 'Navegación del pie de página',
+  'user_menu' => 'Menú de usuario',
+  'search_articles' => 'Buscar artículos e investigaciones',
 );

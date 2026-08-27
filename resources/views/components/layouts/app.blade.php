@@ -176,6 +176,11 @@
             this.isScrolled = window.scrollY > 10;
         }
     }">
+    <!-- Skip to Content Link (ADA / WCAG 2.1 AA Compliance) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2.5 focus:bg-cyan-600 focus:text-white focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-cyan-600 font-bold text-xs uppercase tracking-wider">
+        {{ __('ui.skip_to_content') }}
+    </a>
+
     {{-- Custom Body Codes (GTM noscript, Body Start JS) --}}
     {!! \App\Models\CustomCode::getActive('header_body') !!}
     

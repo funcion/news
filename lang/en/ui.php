@@ -203,4 +203,12 @@ return array (
   'category_articles_count' => ':count articles',
   'category_single_article' => '1 article',
   'category_no_articles' => 'Coming soon',
+  'skip_to_content' => 'Skip to main content',
+  'toggle_dark_mode' => 'Toggle dark mode',
+  'toggle_menu' => 'Toggle navigation menu',
+  'close_dialog' => 'Close dialog',
+  'main_navigation' => 'Main navigation',
+  'footer_navigation' => 'Footer navigation',
+  'user_menu' => 'User menu',
+  'search_articles' => 'Search articles and insights',
 );
