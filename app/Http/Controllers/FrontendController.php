@@ -9,6 +9,21 @@ use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
+    public function categories()
+    {
+        $categories = Category::where('is_active', true)
+            ->withCount(['articles' => function ($query) {
+                $query->where('status', 'published');
+            }])
+            ->get();
+
+        $trendingTags = Tag::withMinimumArticles(1)
+            ->popular(10)
+            ->get();
+
+        return view('pages.categories', compact('categories', 'trendingTags'));
+    }
+
     public function about()
     {
         $trendingTags = Tag::withMinimumArticles(1)

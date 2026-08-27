@@ -241,6 +241,13 @@
                                             </a>
                                         @endforeach
                                     </div>
+                                    <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(app()->getLocale() === 'es' ? '/categorias' : '/categories') }}" 
+                                           class="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline py-1">
+                                            <span>{{ __('ui.view_all_categories') }}</span>
+                                            <span>→</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -194,4 +194,13 @@ return array (
   'comment_too_fast' => 'Comment Too Fast',
   'tag_meta_desc' => 'Tag Meta Desc',
   'view_single' => '1 vista',
+  'nav_categories' => 'Categorías',
+  'categories_badge' => 'DIRECTORIO TEMÁTICO',
+  'categories_title' => 'Explora Nuestros Pilares Temáticos',
+  'categories_subtitle' => 'Historias rigurosas, investigación y análisis técnico organizados en 8 áreas estratégicas de la vanguardia tecnológica.',
+  'category_explore' => 'Explorar Categoría',
+  'view_all_categories' => 'Ver todas las categorías',
+  'category_articles_count' => ':count artículos',
+  'category_single_article' => '1 artículo',
+  'category_no_articles' => 'Próximamente',
 );

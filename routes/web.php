@@ -59,6 +59,21 @@ Route::group([
 
         // --- BILINGUAL INSTITUTIONAL ROUTES ---
     
+        // Categories Index (/categories in EN, /es/categorias in ES)
+    Route::get('/categories', function () {
+        if (app()->getLocale() === 'es') {
+            return redirect('/es/categorias', 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->categories();
+    })->name('categories');
+
+    Route::get('/categorias', function () {
+        if (app()->getLocale() !== 'es') {
+            return redirect('/categories', 301);
+        }
+        return app(\App\Http\Controllers\FrontendController::class)->categories();
+    })->name('categories.es');
+
     // About Us (/about-us in EN, /es/nosotros in ES)
     Route::get('/about-us', function () {
         if (app()->getLocale() === 'es') {

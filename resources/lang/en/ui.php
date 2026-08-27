@@ -194,4 +194,13 @@ return array (
   'comment_too_fast' => 'Comment Too Fast',
   'tag_meta_desc' => 'Tag Meta Desc',
   'view_single' => '1 view',
+  'nav_categories' => 'Categories',
+  'categories_badge' => 'TOPIC DIRECTORY',
+  'categories_title' => 'Explore Our Core Editorial Pillars',
+  'categories_subtitle' => 'In-depth investigative reporting, news, and technical analysis organized across 8 strategic technology pillars.',
+  'category_explore' => 'Explore Category',
+  'view_all_categories' => 'View all categories',
+  'category_articles_count' => ':count articles',
+  'category_single_article' => '1 article',
+  'category_no_articles' => 'Coming soon',
 );
