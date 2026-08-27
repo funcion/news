@@ -7,6 +7,7 @@ use App\Observers\RawArticleObserver;
 use App\Models\User;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
     {
         RawArticle::observe(RawArticleObserver::class);
         User::observe(UserObserver::class);
+
+        // Implicitly grant "super_admin" and admin@glodaxia.com all permissions
+        Gate::before(function ($user, $ability) {
+            return ($user->hasRole('super_admin') || $user->email === 'admin@glodaxia.com') ? true : null;
+        });
 
         // Set the primary locale to English
         App::setLocale(config('app.locale', 'en'));
