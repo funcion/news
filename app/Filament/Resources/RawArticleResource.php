@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
@@ -185,7 +186,8 @@ class RawArticleResource extends Resource
                 Tables\Filters\SelectFilter::make('ai_model')
                     ->label('Modelo IA')
                     ->options(collect(config('ai_models.models', []))->mapWithKeys(fn ($item, $key) => [$key => $item['name']])->toArray()),
-            ])
+            ], layout: FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(4)
             ->actions([
                 Action::make('procesar_ia')
                     ->label(fn (RawArticle $record) => in_array($record->status, ['ignored', 'failed']) ? 'Forzar Re-procesamiento IA' : 'Procesar con IA')
