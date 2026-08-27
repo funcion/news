@@ -121,6 +121,17 @@ class TagResource extends Resource
                                 // ─── 3. SEO ──────────────────────────────────────────────
                                 Tabs\Tab::make('🔍 SEO')
                                     ->schema([
+                                        \Filament\Schemas\Components\Grid::make(2)
+                                            ->schema([
+                                                Toggle::make('is_indexable')
+                                                    ->label('¿Permitir Indexación en Motores de Búsqueda? (index / noindex)')
+                                                    ->helperText('Activado: Los buscadores como Google indexarán esta etiqueta en sus resultados.')
+                                                    ->default(true),
+                                                Toggle::make('is_followable')
+                                                    ->label('¿Permitir Rastreo de Enlaces? (follow / nofollow)')
+                                                    ->helperText('Activado: Los rastreadores seguirán los enlaces de esta etiqueta.')
+                                                    ->default(true),
+                                            ])->columnSpanFull(),
                                         TextInput::make('meta_title_en')
                                             ->label('Meta Title (EN)')
                                             ->maxLength(70)

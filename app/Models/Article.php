@@ -41,6 +41,8 @@ class Article extends Model implements HasMedia
         'meta_description',
         'meta_keywords',
         'status',
+        'is_indexable',
+        'is_followable',
         'published_at',
         'views',
         'reading_time',
@@ -52,6 +54,8 @@ class Article extends Model implements HasMedia
     protected $casts = [
         'published_at' => 'datetime',
         'views' => 'integer',
+        'is_indexable' => 'boolean',
+        'is_followable' => 'boolean',
         'reading_time' => 'integer',
         'seo_score' => 'integer',
         'meta_keywords' => 'array',
@@ -209,5 +213,11 @@ class Article extends Model implements HasMedia
     public function allComments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+    public function getRobotsMetaAttribute(): string
+    {
+        $index = ($this->is_indexable ?? true) ? 'index' : 'noindex';
+        $follow = ($this->is_followable ?? true) ? 'follow' : 'nofollow';
+        return "{$index}, {$follow}, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
     }
 }

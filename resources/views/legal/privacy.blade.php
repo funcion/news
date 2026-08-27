@@ -1,4 +1,5 @@
 <x-layouts.app>
+    <x-slot:robots>noindex, nofollow</x-slot>
     <x-slot:title>{{ __('ui.privacy_policy') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
     <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Conoce nuestra política de privacidad: cumplimiento de GDPR y CCPA, garantía de no venta de datos y protección total de tu información en ' . config('app.name', 'Glodaxia') . '.' : 'Read our comprehensive privacy policy: GDPR & CCPA compliance, zero-data-selling guarantee, and strict user information safeguards on ' . config('app.name', 'Glodaxia') . '.' }}</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">

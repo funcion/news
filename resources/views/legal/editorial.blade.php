@@ -1,4 +1,5 @@
 <x-layouts.app>
+    <x-slot:robots>noindex, nofollow</x-slot>
     <x-slot:title>{{ __('ui.editorial_policy') }} | {{ config('app.name', 'Glodaxia') }}</x-slot>
     <x-slot:metaDescription>{{ app()->getLocale() === 'es' ? 'Lee nuestro código de ética editorial: verificación rigurosa de fuentes primarias, transparencia en correcciones y uso responsable de IA en ' . config('app.name', 'Glodaxia') . '.' : 'Read our editorial code of ethics: primary source verification rigor, correction transparency, and responsible AI integration guidelines at ' . config('app.name', 'Glodaxia') . '.' }}</x-slot>
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-16">

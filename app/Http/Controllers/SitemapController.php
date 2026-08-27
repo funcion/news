@@ -52,7 +52,7 @@ class SitemapController extends Controller
     public function articlesEn()
     {
         $xml = Cache::remember('sitemap.articles.en', 3600, function () {
-            $articles = Article::where('status', 'published')
+            $articles = Article::where('status', 'published')->where('is_indexable', true)
                 ->whereNotNull('slug_en')
                 ->orderByDesc('published_at')
                 ->get();
@@ -104,7 +104,7 @@ class SitemapController extends Controller
     public function articlesEs()
     {
         $xml = Cache::remember('sitemap.articles.es', 3600, function () {
-            $articles = Article::where('status', 'published')
+            $articles = Article::where('status', 'published')->where('is_indexable', true)
                 ->whereNotNull('slug_es')
                 ->orderByDesc('published_at')
                 ->get();
@@ -156,7 +156,7 @@ class SitemapController extends Controller
     public function categories()
     {
         $xml = Cache::remember('sitemap.categories', 3600, function () {
-            $categories = Category::where('is_active', true)->get();
+            $categories = Category::where('is_active', true)->where('is_indexable', true)->get();
 
             $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
             $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
@@ -230,7 +230,7 @@ class SitemapController extends Controller
     public function news()
     {
         $xml = Cache::remember('sitemap.news', 1800, function () {
-            $articles = Article::where('status', 'published')
+            $articles = Article::where('status', 'published')->where('is_indexable', true)
                 ->whereNotNull('published_at')
                 ->where('published_at', '>=', now()->subDays(2))
                 ->orderByDesc('published_at')
@@ -274,7 +274,7 @@ class SitemapController extends Controller
     public function images()
     {
         $xml = Cache::remember('sitemap.images', 3600, function () {
-            $articles = Article::where('status', 'published')
+            $articles = Article::where('status', 'published')->where('is_indexable', true)
                 ->whereNotNull('image_url')
                 ->orderByDesc('published_at')
                 ->get();
@@ -336,7 +336,7 @@ class SitemapController extends Controller
 
     private function latestArticleDate(string $locale): string
     {
-        $article = Article::where('status', 'published')
+        $article = Article::where('status', 'published')->where('is_indexable', true)
             ->whereNotNull('slug_' . $locale)
             ->orderByDesc('updated_at')
             ->first();

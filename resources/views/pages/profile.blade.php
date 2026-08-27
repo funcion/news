@@ -1,5 +1,6 @@
 <x-layouts.app :trendingTags="$trendingTags">
     <x-slot:metaDescription>{{ __('ui.my_profile') }} - {{ auth()->user()->name }} en {{ config('app.name', 'Glodaxia') }}.</x-slot>
+    <x-slot:robots>noindex, nofollow</x-slot>
     <x-slot:title>
         {{ __('ui.profile_title') }} | {{ config('app.name') }}
     </x-slot>

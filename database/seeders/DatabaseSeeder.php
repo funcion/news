@@ -409,6 +409,8 @@ class DatabaseSeeder extends Seeder
                         'es' => "Explora las últimas noticias de última hora, análisis técnico e investigación sobre {$catData['es']} en el ecosistema global de IA y tecnología.",
                     ],
                     'is_active' => true,
+                    'is_indexable' => true,
+                    'is_followable' => true,
                 ]
             );
         }
@@ -442,6 +444,8 @@ class DatabaseSeeder extends Seeder
                         'es' => "Archivo especializado de noticias, investigaciones y novedades tecnológicas sobre #{$tagName} en Glodaxia.",
                     ],
                     'is_featured' => true,
+                    'is_indexable' => true,
+                    'is_followable' => true,
                 ]
             );
         }

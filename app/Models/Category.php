@@ -25,12 +25,16 @@ class Category extends Model implements HasMedia
         'parent_id',
         'order',
         'is_active',
+        'is_indexable',
+        'is_followable',
         'metadata',
     ];
 
     protected $casts = [
         'order' => 'integer',
         'is_active' => 'boolean',
+        'is_indexable' => 'boolean',
+        'is_followable' => 'boolean',
         'metadata' => 'array',
     ];
 
@@ -51,7 +55,9 @@ class Category extends Model implements HasMedia
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active',
+        'is_indexable',
+        'is_followable', true);
     }
 
     public function scopeRoot($query)
@@ -131,5 +137,11 @@ class Category extends Model implements HasMedia
     {
         $categoryIds = $this->getAllDescendants()->pluck('id')->push($this->id);
         return Article::whereIn('category_id', $categoryIds)->published();
+    }
+    public function getRobotsMetaAttribute(): string
+    {
+        $index = ($this->is_indexable ?? true) ? 'index' : 'noindex';
+        $follow = ($this->is_followable ?? true) ? 'follow' : 'nofollow';
+        return "{$index}, {$follow}, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
     }
 }

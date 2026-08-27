@@ -92,3 +92,24 @@ Tanto las **Categorías** ([`/admin/categories`](http://localhost:8000/admin/cat
 
 ### Persistencia en Seeders:
 * [`database/seeders/DatabaseSeeder.php`](file:///Ubuntu-26.04/home/luisf/news/database/seeders/DatabaseSeeder.php) contiene los 8 Pilares de Categorías y los 33 Hubs Temáticos con sus títulos y descripciones SEO preconfigurados en inglés y español.
+---
+
+## 🤖 7. Control de Indexación y Rastreo de Google (Robots Meta: Index / Follow)
+
+Siguiendo las mejores prácticas de **Yoast SEO** y los estándares de Google Search Console, cada recurso dispone de interruptores directos de control de rastreo:
+
+### Controles Disponibles en la Pestaña `🔍 SEO`:
+* **`¿Permitir Indexación en Motores de Búsqueda? (index / noindex)`:**
+  * **Activado (`index`):** Google indexará y mostrará la página en sus resultados de búsqueda y Google Discover.
+  * **Desactivado (`noindex`):** Se inyecta la etiqueta `noindex`, impidiendo que Google posicione la página. Además, se **excluye automáticamente del `sitemap.xml`**.
+* **`¿Permitir Rastreo de Enlaces? (follow / nofollow)`:**
+  * **Activado (`follow`):** Los bots de Google seguirán los enlaces internos y externos presentes en el contenido.
+  * **Desactivado (`nofollow`):** Los bots ignorarán los enlaces de la página.
+
+### Blindaje de Páginas Legales y de Transparencia (`noindex, nofollow`):
+Por directriz editorial y técnica, todas las páginas institucionales de carácter legal no compiten en los rankings orgánicos:
+* **Términos y Condiciones (`/terms-and-conditions` / `/es/terminos-y-condiciones`)** -> `noindex, nofollow`
+* **Política de Privacidad (`/privacy-policy` / `/es/politica-de-privacidad`)** -> `noindex, nofollow`
+* **Política de Cookies (`/cookie-policy` / `/es/politica-de-cookies`)** -> `noindex, nofollow`
+* **Política Editorial (`/editorial-policy` / `/es/politica-editorial`)** -> `noindex, nofollow`
+* **Página de Perfil y Resultados de Búsqueda Interna** -> `noindex, nofollow`

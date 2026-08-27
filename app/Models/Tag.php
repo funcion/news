@@ -21,12 +21,16 @@ class Tag extends Model
         'meta_description',
         'article_count',
         'is_featured',
+        'is_indexable',
+        'is_followable',
         'metadata',
     ];
 
     protected $casts = [
         'article_count' => 'integer',
         'is_featured' => 'boolean',
+        'is_indexable' => 'boolean',
+        'is_followable' => 'boolean',
         'metadata' => 'array',
     ];
 
@@ -38,7 +42,9 @@ class Tag extends Model
 
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured', true);
+        return $query->where('is_featured',
+        'is_indexable',
+        'is_followable', true);
     }
 
     public function scopePopular($query, $limit = 20)
@@ -91,5 +97,11 @@ class Tag extends Model
         $name = preg_replace('/[^a-z0-9\s-]/', '', $name);
         $name = preg_replace('/\s+/', ' ', $name);
         return str_replace(' ', '-', $name);
+    }
+    public function getRobotsMetaAttribute(): string
+    {
+        $index = ($this->is_indexable ?? true) ? 'index' : 'noindex';
+        $follow = ($this->is_followable ?? true) ? 'follow' : 'nofollow';
+        return "{$index}, {$follow}, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
     }
 }

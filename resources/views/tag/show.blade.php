@@ -1,5 +1,6 @@
 <x-layouts.app>
     <x-slot:title>{{ $tag->meta_title ?: ('#' . $tag->name . ' | ' . config('app.name', 'Glodaxia')) }}</x-slot>
+    <x-slot:robots>{{ $tag->robots_meta }}</x-slot>
     <x-slot:metaDescription>{{ $tag->meta_description ?: ($tag->description ?: ($tag->name . ' - ' . __('ui.tag_meta_desc', ['tag' => $tag->name]))) }}</x-slot>
 
     <x-slot:head>

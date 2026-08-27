@@ -34,7 +34,7 @@
     <link rel="canonical" href="{{ url()->current() }}" />
     
     <!-- Robots (index/follow by default) -->
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="robots" content="{{ $robots ?? 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }}" />
     
         <!-- Favicons & Modern Web App Suite (Clean SEO Standard) -->
     <link rel="icon" href="/favicon.ico" sizes="any">

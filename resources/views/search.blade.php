@@ -1,4 +1,4 @@
-<x-layouts.app :title="($query ? ($locale === 'es' ? 'Resultados para: ' : 'Search results for: ') . $query : ($locale === 'es' ? 'Buscador' : 'Search')) . ' | ' . config('app.name')"
+<x-layouts.app :robots="'noindex, nofollow'" :title="($query ? ($locale === 'es' ? 'Resultados para: ' : 'Search results for: ') . $query : ($locale === 'es' ? 'Buscador' : 'Search')) . ' | ' . config('app.name')"
                :metaDescription="($query ? ($locale === 'es' ? 'Resultados de búsqueda para: ' : 'Search results for: ') . $query : 'Buscador de noticias de inteligencia artificial, ciberseguridad y tecnología en ' . config('app.name', 'Glodaxia'))">
     <div class="max-w-4xl mx-auto px-4 py-8 lg:py-14">
         <!-- Breadcrumbs -->

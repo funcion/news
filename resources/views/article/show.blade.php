@@ -3,6 +3,7 @@
         {{ $article->meta_title ?? $article->title }} | {{ config('app.name') }}
     </x-slot>
 
+    <x-slot:robots>{{ $article->robots_meta }}</x-slot>
     <x-slot:metaDescription>{{ $article->meta_description ?? $article->excerpt }}</x-slot>
 
     @if($article->meta_keywords)
