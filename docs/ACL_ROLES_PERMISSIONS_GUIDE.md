@@ -159,3 +159,31 @@ if ($user->hasDirectPermission('Update:Article')) {
     // Es un permiso directo
 }
 ```
+---
+
+## ✍️ 8. Regla Estricta de Autoría de Artículos (Exclusión de `panel_user`)
+
+Para proteger la integridad editorial y evitar que usuarios lectores o registrados desde el frontend aparezcan como creadores de noticias:
+
+### 🔒 Reglas de Negocio Implementadas:
+1. **Solo Redactores y Staff Editorial:**
+   * Únicamente los usuarios con roles **`redactor`**, **`admin`** o **`super_admin`** pueden ser vinculados como autores (`user_id`) de un artículo.
+2. **Generador Autónomo de IA (`ProcessArticleWithAIJob`):**
+   * Al seleccionar aleatoriamente el autor de la noticia, el pipeline filtra estrictamente con:
+     ```php
+     $author = User::role(['redactor', 'admin', 'super_admin'])
+         ->where('is_active', true)
+         ->inRandomOrder()
+         ->first();
+     ```
+3. **Panel Administrativo Filament (`ArticleResource`):**
+   * El campo desplegable **"Autor"** (`user_id`) está filtrado a nivel de consulta Eloquent:
+     ```php
+     Select::make('user_id')
+         ->relationship('user', 'name', fn ($query) => $query->role(['redactor', 'admin', 'super_admin'])->where('is_active', true))
+         ->searchable()
+         ->preload()
+         ->required();
+     ```
+4. **Usuarios Lectores (`panel_user`):**
+   * Todo usuario registrado de forma pública recibe el rol `panel_user`. Este rol les otorga acceso a comentar y personalizar su perfil, pero **nunca** aparecerán en los listados de redactores ni podrán ser seleccionados como autores de noticias.

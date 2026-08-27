@@ -133,7 +133,9 @@ class ArticleResource extends Resource
                                 Tabs\Tab::make('Metadata')
                                     ->schema([
                                         Select::make('user_id')
-                                            ->relationship('user', 'name')
+                                            ->relationship('user', 'name', fn ($query) => $query->role(['redactor', 'admin', 'super_admin'])->where('is_active', true))
+                                            ->searchable()
+                                            ->preload()
                                             ->required(),
                                         Select::make('category_id')
                                             ->relationship('category', 'name')

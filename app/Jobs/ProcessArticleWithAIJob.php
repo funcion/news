@@ -186,7 +186,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
              return;
         }
 
-        $author = User::where('is_active', true)->where('slug', '!=', 'admin')->inRandomOrder()->first();
+        $author = User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->inRandomOrder()->first();
 
         if (!$author) {
             $author = User::firstOrCreate(

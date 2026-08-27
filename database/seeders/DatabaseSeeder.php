@@ -311,7 +311,13 @@ class DatabaseSeeder extends Seeder
                 ],
                 'is_active' => true,
             ]);
+            if (!$authorUser = User::where('slug', $authorData['slug'])->first()) continue;
+            if (!$authorUser->hasRole('super_admin') && !$authorUser->hasRole('admin')) {
+                $authorUser->syncRoles(['redactor']);
+            }
         }
+
+        $adminUser->syncRoles(['super_admin']);
 
         // Create Categories (Deduplicated with updateOrCreate)
         // Master Taxonomy: 8 Core Pillars (Broad & Open Scope)
