@@ -59,7 +59,30 @@ Route::group([
 
         // --- BILINGUAL INSTITUTIONAL ROUTES ---
     
-        // Categories Index (/categories in EN, /es/categorias in ES)
+            // --- USER PROFILE & ACCOUNT ROUTES (PROTECTED) ---
+    Route::group(['middleware' => ['auth']], function () {
+        Route::get('/profile', function () {
+            if (app()->getLocale() === 'es') {
+                return redirect('/es/perfil', 301);
+            }
+            return app(\App\Http\Controllers\ProfileController::class)->show();
+        })->name('profile');
+
+        Route::get('/perfil', function () {
+            if (app()->getLocale() !== 'es') {
+                return redirect('/profile', 301);
+            }
+            return app(\App\Http\Controllers\ProfileController::class)->show();
+        })->name('profile.es');
+
+        Route::post('/profile/info', [\App\Http\Controllers\ProfileController::class, 'updateInfo'])->name('profile.info');
+        Route::post('/perfil/info', [\App\Http\Controllers\ProfileController::class, 'updateInfo'])->name('profile.info.es');
+
+        Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/perfil/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.es');
+    });
+
+    // Categories Index (/categories in EN, /es/categorias in ES)
     Route::get('/categories', function () {
         if (app()->getLocale() === 'es') {
             return redirect('/es/categorias', 301);

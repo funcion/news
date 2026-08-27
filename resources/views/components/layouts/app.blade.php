@@ -357,6 +357,10 @@
                                                 <span>{{ __('ui.admin_panel') }}</span>
                                             </a>
                                         @endif
+                                                                                <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(app()->getLocale() === 'es' ? '/perfil' : '/profile') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                            <span>👤</span>
+                                            <span>{{ __('ui.my_profile') }}</span>
+                                        </a>
                                         <form method="POST" action="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/logout') }}">
                                             @csrf
                                             <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer text-left">
@@ -645,7 +649,7 @@
                         <li><a href="{{ app()->getLocale() === 'es' ? url('/es/nosotros') : url('/about-us') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.about_us') }}</a></li>
                         <li><a href="{{ app()->getLocale() === 'es' ? url('/es/contacto') : url('/contact') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.contact') }}</a></li>
                         @auth
-                            <li><a href="{{ auth()->user()->slug === 'admin' || auth()->user()->id === 1 ? '/admin' : '#' }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_my_account') }}</a></li>
+                            <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(app()->getLocale() === 'es' ? '/perfil' : '/profile') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_my_account') }}</a></li>
                         @else
                             <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_sign_in_button') }}</a></li>
                         @endauth
