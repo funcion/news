@@ -31,6 +31,10 @@
     @endif
     
     <!-- Canonical URL -->
+        <!-- Hreflang Alternates (Multi-Language SEO Standards) -->
+    <link rel="alternate" hreflang="en" href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('en') }}" />
+    <link rel="alternate" hreflang="es" href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('es') }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('en') }}" />
     <link rel="canonical" href="{{ url()->current() }}" />
     
     <!-- Robots (index/follow by default) -->
@@ -269,7 +273,7 @@
                             @if(app()->getLocale() === 'es')
                                 <!-- Currently Spanish -> Show USA Flag to Switch to English -->
                                 <a hreflang="en" 
-                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
+                                   href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('en') }}" 
                                    title="Switch to English"
                                    aria-label="{{ app()->getLocale() === 'es' ? 'Cambiar idioma a Inglés (Switch to English)' : 'Switch language to Spanish (Cambiar a Español)' }}"
                                    class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
@@ -282,7 +286,7 @@
                             @else
                                 <!-- Currently English -> Show Spain Flag to Switch to Spanish -->
                                 <a hreflang="es" 
-                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" 
+                                   href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('es') }}" 
                                    title="Cambiar a Español"
                                    aria-label="{{ app()->getLocale() === 'es' ? 'Cambiar idioma a Inglés (Switch to English)' : 'Switch language to Spanish (Cambiar a Español)' }}"
                                    class="relative block w-6 h-4 rounded-[3px] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xs transition-transform duration-200 hover:scale-110">
@@ -521,7 +525,7 @@
                             <div class="flex gap-3">
                                 <!-- Bandera USA -->
                                 <a hreflang="en" 
-                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en') }}" 
+                                   href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('en') }}" 
                                    class="flex-1 flex flex-col items-center p-3 rounded-lg border transition-all duration-200 {{ app()->getLocale() === 'en' ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-gray-50 dark:hover:bg-slate-800' }}"
                                    @click="mobileMenuOpen = false">
                                     <div class="w-8 h-6 mb-2 rounded overflow-hidden shadow-sm relative bg-white border border-gray-100 dark:border-white/10">
@@ -552,7 +556,7 @@
                                 
                                 <!-- Bandera España -->
                                 <a hreflang="es" 
-                                   href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('es') }}" 
+                                   href="{{ \App\Helpers\LocaleHelper::getAlternateUrl('es') }}" 
                                    class="flex-1 flex flex-col items-center p-3 rounded-lg border transition-all duration-200 {{ app()->getLocale() === 'es' ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-cyan-300 dark:hover:border-cyan-600 hover:bg-gray-50 dark:hover:bg-slate-800' }}"
                                    @click="mobileMenuOpen = false">
                                     <div class="w-8 h-6 mb-2 rounded overflow-hidden shadow-sm">
