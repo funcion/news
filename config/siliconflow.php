@@ -4,11 +4,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | SiliconFlow Image Generation Configuration
+    | SiliconFlow Image Generation Configuration (STRICTLY IMAGES ONLY)
     |--------------------------------------------------------------------------
     |
-    | Credentials for SiliconFlow AI image generation API.
-    | Uses config() instead of env() to work correctly with config:cache.
+    | REGLA ARQUITECTÓNICA ESTRICTA:
+    | La API de SiliconFlow se utiliza 100% EXCLUSIVAMENTE para la generación
+    | de imágenes fotorrealistas con FLUX.1 (black-forest-labs/FLUX.1-schnell).
+    |
+    | Queda ESTRICTAMENTE PROHIBIDO utilizar SiliconFlow para modelos de texto,
+    | chat, o embeddings. Todos los modelos de texto deben cursar por OpenRouter.
     |
     */
 
