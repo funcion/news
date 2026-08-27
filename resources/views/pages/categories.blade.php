@@ -12,7 +12,7 @@
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-4">
             {{ __('ui.categories_title') }}
         </h1>
-        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-3xl mx-auto">
             {{ __('ui.categories_subtitle') }}
         </p>
     </div>
