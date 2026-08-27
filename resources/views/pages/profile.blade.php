@@ -75,7 +75,7 @@
                 <!-- Avatar Upload Section (Fixed Explicit Dimensions 96x96px) -->
                 <div class="mb-8 pb-8 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-6"
                      x-data="{ 
-                         previewUrl: '{{ $user->avatar_url ? asset($user->avatar_url) : '' }}',
+                         previewUrl: '{{ $user->avatar_url ?? '' }}',
                          removeAvatar: false,
                          handleFileSelect(e) {
                              const file = e.target.files[0];

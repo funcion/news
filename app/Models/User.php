@@ -12,6 +12,24 @@ use Spatie\Translatable\HasTranslations;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically purge avatar from Cloudflare R2 when user is deleted
+        static::deleted(function ($user) {
+            if ($raw = $user->getRawOriginal('avatar_url')) {
+                $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
+                $cleanPath = ltrim(str_replace([$r2PublicUrl, 'https://media.glodaxia.com', 'storage/'], '', $raw), '/');
+                try {
+                    \Illuminate\Support\Facades\Storage::disk('r2')->delete($cleanPath);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Could not delete avatar from R2 on user deletion: {$e->getMessage()}");
+                }
+            }
+        });
+    }
+
     use HasFactory, Notifiable, HasTranslations;
 
     /**
@@ -34,34 +52,23 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'remember_token',
     ];
 
-    protected static function boot()
+    /**
+     * Resolve Avatar URL ensuring Cloudflare R2 CDN is always used.
+     */
+    public function getAvatarUrlAttribute(?string $value): ?string
     {
-        parent::boot();
+        if (empty($value)) {
+            return null;
+        }
 
-        // Convert avatar to webp (100px) after upload
-        static::saved(function ($user) {
-            if (!$user->wasChanged('avatar_url') || !$user->avatar_url) return;
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
 
-            $path = $user->avatar_url;
-            $fullPath = storage_path('app/public/' . $path);
+        $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
+        $cleanPath = ltrim(str_replace('storage/', '', $value), '/');
 
-            if (!file_exists($fullPath) || pathinfo($path, PATHINFO_EXTENSION) === 'webp') return;
-
-            try {
-                $image = \Intervention\Image\Laravel\Facades\Image::read($fullPath);
-                $newPath = pathinfo($path, PATHINFO_DIRNAME) . '/' . pathinfo($path, PATHINFO_FILENAME) . '.webp';
-                $newFullPath = storage_path('app/public/' . $newPath);
-
-                $image->toWebp(90)->save($newFullPath);
-
-                if ($newPath !== $path) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
-                    \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->update(['avatar_url' => $newPath]);
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning('Avatar webp conversion failed: ' . $e->getMessage());
-            }
-        });
+        return "{$r2PublicUrl}/{$cleanPath}";
     }
 
     protected function casts(): array
