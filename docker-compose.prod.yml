@@ -14,12 +14,12 @@ services:
       - storage_data:/app/storage/app
       - logs_data:/app/storage/logs
     networks:
-      - glodaxia_network
+      - coolify
 
 volumes:
   storage_data:
   logs_data:
 
 networks:
-  glodaxia_network:
-    driver: bridge
+  coolify:
+    external: true
