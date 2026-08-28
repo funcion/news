@@ -28,26 +28,33 @@ RUN apt-get update && apt-get install -y curl gnupg supervisor git unzip libpq-d
 
 WORKDIR /app
 
-# 3. Copiar todo el código fuente del proyecto
+# 3. Copiar todo el codigo fuente del proyecto
 COPY . /app
 
-# 4. Limpieza absoluta de caches locales heredados
-RUN rm -rf /app/vendor /app/node_modules /app/bootstrap/cache/*.php /app/public/build
+# 4. Garantizar estructura de directorios + limpieza de caches locales
+RUN mkdir -p /app/storage/framework/{cache,sessions,testing,views} \
+    && mkdir -p /app/storage/logs \
+    && mkdir -p /app/storage/app/public \
+    && mkdir -p /app/bootstrap/cache \
+    && rm -rf /app/vendor /app/node_modules /app/bootstrap/cache/*.php /app/public/build
 
-# 5. Instalar dependencias de producción, compilar Vite y generar autoload limpio
+# 5. Instalar dependencias de produccion, compilar Vite y generar autoload limpio
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
     && (npm ci --no-audit --prefer-offline || npm install) \
     && npm run build \
     && composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts
 
-# 6. Configuración de FrankenPHP, Caddy, PHP y Supervisor
+# 6. Limpiar node_modules tras compilar Vite (reduce tamano de imagen ~200MB)
+RUN rm -rf /app/node_modules
+
+# 7. Configuracion de FrankenPHP, Caddy, PHP y Supervisor
 COPY docker/frankenphp/entrypoint.sh /entrypoint.sh
 COPY docker/frankenphp/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
 COPY docker/frankenphp/supervisord.conf /etc/supervisor/supervisord.conf
 COPY docker/frankenphp/conf.d/ /etc/supervisor/conf.d/
 
-# 7. Permisos de storage y bootstrap/cache
+# 8. Permisos de storage y bootstrap/cache
 RUN chmod +x /entrypoint.sh \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache

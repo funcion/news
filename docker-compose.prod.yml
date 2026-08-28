@@ -1,8 +1,8 @@
 # ===================================================
 # Production Docker Compose for Coolify (Glodaxia News)
+# Un solo contenedor: FrankenPHP + Horizon + Scheduler via supervisord
 # ===================================================
 services:
-  # 1. Servidor Web FrankenPHP
   app:
     build:
       context: .
@@ -10,29 +10,7 @@ services:
     restart: unless-stopped
     environment:
       - auto_https=off
-      - APP_ENV=      - APP_DEBUG=      - APP_KEY=      - APP_URL=      - DB_CONNECTION=pgsql
-      - DB_HOST=      - DB_PORT=      - DB_DATABASE=      - DB_USERNAME=      - DB_PASSWORD=      - REDIS_HOST=      - REDIS_PORT=      - REDIS_PASSWORD=      - CACHE_STORE=redis
-      - SESSION_DRIVER=redis
-      - QUEUE_CONNECTION=redis
-      - OPENROUTER_API_KEY=      - OPENROUTER_BASE_URL=      - SILICONFLOW_API_KEY=      - SILICONFLOW_IMAGE_MODEL=      - JINA_API_KEY=      - INDEXNOW_KEY=    volumes:
-      - storage_data:/app/storage/app
-      - logs_data:/app/storage/logs
-    networks:
-      - glodaxia_network
-
-  # 2. Horizon + Scheduler (Procesamiento de IA y Cronjobs)
-  horizon:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    command: /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
-    environment:
-      - APP_ENV=      - APP_DEBUG=      - APP_KEY=      - APP_URL=      - DB_CONNECTION=pgsql
-      - DB_HOST=      - DB_PORT=      - DB_DATABASE=      - DB_USERNAME=      - DB_PASSWORD=      - REDIS_HOST=      - REDIS_PORT=      - REDIS_PASSWORD=      - CACHE_STORE=redis
-      - SESSION_DRIVER=redis
-      - QUEUE_CONNECTION=redis
-      - OPENROUTER_API_KEY=      - OPENROUTER_BASE_URL=      - SILICONFLOW_API_KEY=      - SILICONFLOW_IMAGE_MODEL=      - JINA_API_KEY=    volumes:
+    volumes:
       - storage_data:/app/storage/app
       - logs_data:/app/storage/logs
     networks:
