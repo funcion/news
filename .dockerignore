@@ -2,42 +2,40 @@
 .git
 .gitignore
 
-# Node (will be installed fresh for production build)
+# Composer & Node (Must be installed fresh in Docker build)
+/vendor
 /node_modules
 npm-debug.log
 yarn-error.log
 
-# Laravel
+# Laravel Cache & Local Storage
 .env
 .env.backup
 .env.production
+/bootstrap/cache/*.php
 /storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/framework/testing/*
 /storage/framework/views/*
 /storage/logs/*
+/storage/app/*
+!/storage/app/.gitignore
 /storage/debugbar
 .phpunit.result.cache
 .phpunit.cache
 
-# Build assets (will be generated fresh)
+# Build assets (Generated fresh in Docker build)
 /public/build
 /public/hot
 /public/storage
 
-# IDE
+# IDE & OS
 /.idea
 /.vscode
 /.fleet
-
-# OS
 .DS_Store
 Thumbs.db
 
 # Docker
 docker-compose.override.yml
-
-# Docs & Tests
-/docs
-/tests
 *.log
