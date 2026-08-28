@@ -36,12 +36,12 @@ class ProfileController extends Controller
         $user->email = $validated['email'];
         $user->bio = $validated['bio'] ?? null;
 
-        $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
+        $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? config('global.media.public_url'), '/');
 
         // Handle Avatar Removal from Cloudflare R2
         if (!$request->hasFile('avatar') && $request->boolean('remove_avatar') && $user->getRawOriginal('avatar_url')) {
             $raw = $user->getRawOriginal('avatar_url');
-            $cleanPath = ltrim(str_replace([$r2PublicUrl, 'https://media.glodaxia.com', 'storage/'], '', $raw), '/');
+            $cleanPath = ltrim(str_replace([$r2PublicUrl, config('global.media.public_url'), 'storage/'], '', $raw), '/');
             Storage::disk('r2')->delete($cleanPath);
             $user->avatar_url = null;
         }
@@ -50,7 +50,7 @@ class ProfileController extends Controller
         if ($request->hasFile('avatar')) {
             if ($user->getRawOriginal('avatar_url')) {
                 $raw = $user->getRawOriginal('avatar_url');
-                $cleanPath = ltrim(str_replace([$r2PublicUrl, 'https://media.glodaxia.com', 'storage/'], '', $raw), '/');
+                $cleanPath = ltrim(str_replace([$r2PublicUrl, config('global.media.public_url'), 'storage/'], '', $raw), '/');
                 Storage::disk('r2')->delete($cleanPath);
             }
 

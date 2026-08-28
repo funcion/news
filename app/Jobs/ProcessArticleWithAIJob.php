@@ -189,15 +189,16 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $author = User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->inRandomOrder()->first();
 
         if (!$author) {
+            $defaultAuthor = config('global.editorial.default_author');
             $author = User::firstOrCreate(
-                ['email' => 'luis@glodaxia.com'],
+                ['email' => $defaultAuthor['email'] ?? 'luis@glodaxia.com'],
                 [
-                    'name'      => ['en' => 'Luis Figuera', 'es' => 'Luis Figuera'],
+                    'name'      => $defaultAuthor['name'] ?? ['en' => 'Luis Figuera', 'es' => 'Luis Figuera'],
                     'password'  => bcrypt(Str::random(16)),
-                    'slug'      => 'luis-figuera',
+                    'slug'      => $defaultAuthor['slug'] ?? 'luis-figuera',
                     'is_active' => true,
-                    'bio'       => [
-                        'es' => 'Especialista en redaccion y analisis tecnologico en Glodaxia.',
+                    'bio'       => $defaultAuthor['bio'] ?? [
+                        'es' => 'Especialista en redacción y análisis tecnológico en Glodaxia.',
                         'en' => 'Technology analysis and digital journalism specialist at Glodaxia.',
                     ],
                 ]
@@ -1061,17 +1062,7 @@ PROMPT;
         // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)
         // Hard-failing on blocked phrases wastes API credits on retries. The auto-fix
         // silently strips them in PHP, and we log warnings here for monitoring.
-        $blockedPhrases = [
-            'paradigm shift', 'game-changer', 'revolutionary', 'democratization of',
-            'inflection point', 'trajectory points toward', 'unprecedented scale',
-            'seamlessly integrate', 'robust ecosystem', 'the digital landscape',
-            'it remains to be seen', 'only time will tell', 'it\'s worth noting',
-            'in today\'s rapidly evolving', 'at the end of the day',
-            'raises important questions', 'a bold step forward', 'double-edged sword',
-            'the implications are profound', 'a testament to',
-            'let\'s dive in', 'let me break this down', 'in my experience',
-            'low-hanging fruit', 'home run', 'slam dunk', 'picture this',
-        ];
+        $blockedPhrases = config('global.editorial.blocked_phrases.en', []);
         $contentEnLower = strtolower($contentEn);
         foreach ($blockedPhrases as $phrase) {
             if (str_contains($contentEnLower, $phrase)) {
@@ -1080,15 +1071,7 @@ PROMPT;
         }
 
         // 8. Check for blocked AI-fingerprint phrases in SPANISH (WARNING ONLY)
-        $blockedPhrasesEs = [
-            'cambio de paradigma', 'en conclusión', 'sin lugar a dudas',
-            'cabe destacar', 'queda por ver', 'un arma de doble filo',
-            'marca un antes y un después', 'las implicaciones son profundas',
-            'en el mundo de', 'sin ir más lejos',
-            'como ya hemos mencionado', 'en última instancia',
-            'es importante destacar',
-            'sin duda alguna', 'no cabe duda', 'vale la pena mencionar',
-        ];
+        $blockedPhrasesEs = config('global.editorial.blocked_phrases.es', []);
         $contentEsLower = strtolower($contentEs);
         foreach ($blockedPhrasesEs as $phrase) {
             if (str_contains($contentEsLower, $phrase)) {

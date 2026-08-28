@@ -19,7 +19,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
         // Automatically assign default panel_user role on registration
         static::created(function ($user) {
-            if (in_array($user->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) {
+            if (in_array($user->email, config('global.security.super_admins', []))) {
                 $user->assignRole('super_admin');
             } elseif ($user->roles()->count() === 0) {
                 $user->assignRole('panel_user');
@@ -29,8 +29,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         // Automatically purge avatar from Cloudflare R2 when user is deleted
         static::deleted(function ($user) {
             if ($raw = $user->getRawOriginal('avatar_url')) {
-                $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
-                $cleanPath = ltrim(str_replace([$r2PublicUrl, 'https://media.glodaxia.com', 'storage/'], '', $raw), '/');
+                $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? config('global.media.public_url'), '/');
+                $cleanPath = ltrim(str_replace([$r2PublicUrl, config('global.media.public_url'), 'storage/'], '', $raw), '/');
                 try {
                     \Illuminate\Support\Facades\Storage::disk('r2')->delete($cleanPath);
                 } catch (\Throwable $e) {
@@ -75,7 +75,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             return $value;
         }
 
-        $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? env('R2_PUBLIC_URL', 'https://media.glodaxia.com'), '/');
+        $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?? config('global.media.public_url'), '/');
         $cleanPath = ltrim(str_replace('storage/', '', $value), '/');
 
         return "{$r2PublicUrl}/{$cleanPath}";
@@ -103,7 +103,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         }
 
         // Hardcoded root admin safety check
-        if (in_array($this->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) {
+        if (in_array($this->email, config('global.security.super_admins', []))) {
             return true;
         }
 
