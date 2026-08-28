@@ -449,3 +449,11 @@ git commit -m "feat: descripción del cambio"
 git push origin master
 # Coolify despliega automáticamente
 ```
+
+### 11. 💥 Error 404 en rutas traducidas (/es/...) al usar 
+oute:cache
+- **Causa**: El paquete mcamara/laravel-localization compila las rutas dinámicamente según el idioma actual con LaravelLocalization::setLocale(). Al ejecutar php artisan route:cache durante el deploy de producción, Laravel congela solo las rutas del idioma por defecto (inglés) y destruye todas las rutas prefijadas con /es.
+- **Solución**: NUNCA ejecutar php artisan route:cache cuando se use mcamara/laravel-localization. Se deben mantener activas config:cache, iew:cache y event:cache, pero dejar 
+oute:cache deshabilitado.
+- **Regla**: Paquetes de localización con prefijos dinámicos en rutas son incompatibles con 
+oute:cache de Laravel.
