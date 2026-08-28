@@ -808,10 +808,11 @@ STRICT PERSONA GROUNDING:
 ═════════════════════════════════════════════════════════════════════
 ═══ 3. STRICT LENGTH & DEPTH REQUIREMENTS (MANDATORY >= 700 WORDS) ═══
 ═════════════════════════════════════════════════════════════════════
-- ABSOLUTE MINIMUM: Each language version (content_en and content_es) MUST contain a STRICT MINIMUM OF 700 WORDS (actual narrative words, excluding HTML tags).
-- FLEXIBLE UPPER CEILING: Write as much as the story needs (850, 1200, 1500, or 1800+ words). There is NO penalty for length or depth. Rich, in-depth technical journalism is celebrated.
-- FORBIDDEN SHORT RECAPS: NEVER write shallow 200-400 word summaries. Expand deeply on the technical architecture, market ripple effects, historical context, benchmarks, and practitioner takeaways.
-- Articles with fewer than 700 words will be automatically REJECTED by programmatic validation.
+- ABSOLUTE MINIMUM: Each language version (content_en and content_es) MUST contain a STRICT MINIMUM OF 700 WORDS (actual narrative words, excluding HTML tags). This is a HARD LIMIT — the article will be automatically REJECTED and retried if it falls short.
+- OPTIMAL RANGE: Aim for {$wordTarget}. Rich, in-depth technical journalism is celebrated. Write as much as the story demands.
+- FLEXIBLE UPPER CEILING: There is NO penalty for exceeding the target. 1500-2000 word articles are preferred when the story warrants it.
+- FORBIDDEN THIN CONTENT: NEVER write shallow 200-400 word summaries. Expand deeply on technical architecture, market ripple effects, historical context, benchmarks, expert opinions, and practitioner takeaways. Every section must add NEW information.
+- Articles with fewer than 700 words will be automatically REJECTED by programmatic validation and the job will be retried.
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 4. ZERO-TOLERANCE ANTI-AI RULES (HUMAN AUTHENTICITY) ═══
@@ -874,8 +875,8 @@ CRITICAL JSON FORMATTING RULES:
     "title_es": "Titular completo, descriptivo y optimizado para SEO en Espanol (60-120 caracteres). Debe describir completamente de que trata la noticia — NUNCA truncar o acortar. Incluir sujeto, accion e impacto clave.",
     "slug_en": "short-english-slug-max-6-words",
     "slug_es": "slug-espanol-corto-max-6-palabras",
-    "excerpt_en": "Sharply written teaser in English (max 155 chars)",
-    "excerpt_es": "Extracto agil en Espanol (max 155 chars)",
+    "excerpt_en": "Sharply written teaser in English (160-250 chars). Must summarize WHO, WHAT, WHY it matters — enough context for a reader to decide to click. NEVER write fewer than 160 chars.",
+    "excerpt_es": "Extracto detallado en Espanol (160-250 caracteres). Debe resumir QUIÉN, QUÉ, POR QUÉ importa — suficiente contexto para que el lector decida hacer clic. NUNCA escribir menos de 160 caracteres.",
     "content_en": "Full article in English with <p>, <h2>, [IMAGE_2], etc.",
     "content_es": "Articulo completo en Espanol con <p>, <h2>, [IMAGE_2], etc.",
     "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
@@ -1050,11 +1051,11 @@ PROMPT;
         $wordsEn = str_word_count(strip_tags($contentEn));
         $wordsEs = str_word_count(strip_tags($contentEs));
 
-        if ($wordsEn < 250) {
-            $errors[] = "content_en has only {$wordsEn} words (minimum is 250 words for news). Expand depth and analysis.";
+        if ($wordsEn < 700) {
+            $errors[] = "content_en has only {$wordsEn} words (STRICT minimum is 700 words). The article is too thin — expand depth, analysis, and context.";
         }
-        if ($wordsEs < 250) {
-            $errors[] = "content_es has only {$wordsEs} words (minimum is 250 words for news). Expand depth and analysis.";
+        if ($wordsEs < 700) {
+            $errors[] = "content_es has only {$wordsEs} words (STRICT minimum is 700 words). El artículo es demasiado corto — expandir análisis, contexto y profundidad.";
         }
 
         // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)
@@ -1120,32 +1121,32 @@ PROMPT;
     {
         $fixes = [];
 
-        // Truncate titles (max 80 chars, cut at last word boundary)
+        // Truncate titles (max 120 chars — SEO-optimal for full descriptive headlines)
         foreach (['title_en', 'title_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 80) {
+            if (mb_strlen($data[$field] ?? '') > 120) {
                 $original = $data[$field];
-                $data[$field] = Str::limit($data[$field], 80, '');
+                $data[$field] = Str::limit($data[$field], 120, '');
                 // Cut at last space to avoid mid-word truncation
-                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 55) {
+                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 80) {
                     $data[$field] = mb_substr($data[$field], 0, $lastSpace);
                 }
                 $fixes[] = "{$field}: truncated from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
             }
         }
 
-        // Truncate excerpts (max 155 chars)
+        // Truncate excerpts (max 250 chars — rich teaser for SEO and social)
         foreach (['excerpt_en', 'excerpt_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 155) {
-                $data[$field] = Str::limit($data[$field], 155, '');
-                $fixes[] = "{$field}: truncated to 155 chars";
+            if (mb_strlen($data[$field] ?? '') > 250) {
+                $data[$field] = Str::limit($data[$field], 250, '');
+                $fixes[] = "{$field}: truncated to 250 chars";
             }
         }
 
-        // Truncate meta titles (max 70 chars)
+        // Truncate meta titles (max 80 chars — Google displays ~60-80 chars in SERPs)
         foreach (['meta_title_en', 'meta_title_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 70) {
-                $data[$field] = Str::limit($data[$field], 70, '');
-                $fixes[] = "{$field}: truncated to 70 chars";
+            if (mb_strlen($data[$field] ?? '') > 80) {
+                $data[$field] = Str::limit($data[$field], 80, '');
+                $fixes[] = "{$field}: truncated to 80 chars";
             }
         }
 
@@ -1523,7 +1524,7 @@ PROMPT;
             // Title text (white, centered)
             $white = imagecolorallocate($img, 255, 255, 255);
             $fontSize = 5;
-            $titleShort = Str::limit($title, 80, '');
+            $titleShort = Str::limit($title, 120, '');
             $textWidth = imagefontwidth($fontSize) * strlen($titleShort);
             $x = max(20, (int)(($width - $textWidth) / 2));
             $y = (int)(($height / 2) - (imagefontheight($fontSize) / 2));

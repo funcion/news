@@ -38,13 +38,30 @@ return [
         // Strict grounding rules against hallucinations
         'focus_rules' => 'STRICTLY ADHERE TO THE FACTS PROVIDED. NEVER invent names, dates, statistics, or events not present in the SOURCE FACTS.',
 
+        // ---------------------------------------------------------------
+        // CONTENT LENGTH LIMITS (All enforced in ProcessArticleWithAIJob)
+        // ---------------------------------------------------------------
+        // Headline (title):        60-120 chars  | Truncated at 120 by autoFix
+        // Excerpt/Description:    160-250 chars  | Truncated at 250 by autoFix
+        // Meta Title (SEO tag):    40-80 chars   | Truncated at 80 by autoFix (Google shows ~60-80)
+        // Meta Description:       up to 160 chars | Truncated at 160 by autoFix
+        // Image ALT text:         up to 125 chars
+        // Image Title attribute:  up to 70 chars
+        //
+        // MINIMUM WORD COUNT (articles shorter than this are REJECTED and retried):
+        //   news / blog:  700 words minimum per language
+        //   guide:       1200 words minimum per language
+        //   review:       900 words minimum per language
+        //   pillar:      1600 words minimum per language
+        // ---------------------------------------------------------------
+
         // Word count targets per content type (Strict minimum 700+ words to prevent thin content)
         'word_targets' => [
-            'news'   => '700-1000 words EN | 700-1000 palabras ES (Mínimo estricto: 700 palabras)',
-            'blog'   => '850-1300 words EN | 850-1300 palabras ES (Mínimo estricto: 850 palabras)',
-            'guide'  => '1200-1800 words EN | 1200-1800 palabras ES (Mínimo estricto: 1200 palabras)',
-            'review' => '900-1400 words EN | 900-1400 palabras ES (Mínimo estricto: 900 palabras)',
-            'pillar' => '1600-2600 words EN | 1600-2600 palabras ES (Mínimo estricto: 1600 palabras)',
+            'news'   => '700-1200 words EN | 700-1200 palabras ES (Mínimo estricto: 700 palabras)',
+            'blog'   => '900-1500 words EN | 900-1500 palabras ES (Mínimo estricto: 900 palabras)',
+            'guide'  => '1200-2000 words EN | 1200-2000 palabras ES (Mínimo estricto: 1200 palabras)',
+            'review' => '900-1500 words EN | 900-1500 palabras ES (Mínimo estricto: 900 palabras)',
+            'pillar' => '1600-2800 words EN | 1600-2800 palabras ES (Mínimo estricto: 1600 palabras)',
         ],
 
         // Default author slug if fallback is needed
