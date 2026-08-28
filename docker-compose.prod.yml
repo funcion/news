@@ -1,0 +1,119 @@
+# ===================================================
+# Production Docker Compose for Coolify (Glodaxia News)
+# ===================================================
+services:
+  # 1. Servidor Web FrankenPHP
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      -auto_https=off
+      -APP_ENV=${APP_ENV:-production}
+      -APP_DEBUG=${APP_DEBUG:-false}
+      -APP_KEY=${APP_KEY}
+      -APP_URL=${APP_URL:-https://glodaxia.com}
+      -DB_CONNECTION=pgsql
+      -DB_HOST=postgres
+      -DB_PORT=5432
+      -DB_DATABASE=${DB_DATABASE:-glodaxia_news}
+      -DB_USERNAME=${DB_USERNAME:-glodaxia_user}
+      -DB_PASSWORD=${DB_PASSWORD}
+      -REDIS_HOST=redis
+      -REDIS_PORT=6379
+      -CACHE_STORE=redis
+      -SESSION_DRIVER=redis
+      -QUEUE_CONNECTION=redis
+      -DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      -SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+      -INDEXNOW_KEY=${INDEXNOW_KEY}
+    volumes:
+      -storage_data:/app/storage/app
+      -logs_data:/app/storage/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      -glodaxia_network
+
+  # 2. Horizon + Scheduler (Procesamiento de IA y Cronjobs)
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+    environment:
+      -APP_ENV=${APP_ENV:-production}
+      -APP_DEBUG=${APP_DEBUG:-false}
+      -APP_KEY=${APP_KEY}
+      -APP_URL=${APP_URL:-https://glodaxia.com}
+      -DB_CONNECTION=pgsql
+      -DB_HOST=postgres
+      -DB_PORT=5432
+      -DB_DATABASE=${DB_DATABASE:-glodaxia_news}
+      -DB_USERNAME=${DB_USERNAME:-glodaxia_user}
+      -DB_PASSWORD=${DB_PASSWORD}
+      -REDIS_HOST=redis
+      -REDIS_PORT=6379
+      -CACHE_STORE=redis
+      -SESSION_DRIVER=redis
+      -QUEUE_CONNECTION=redis
+      -DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      -SILICONFLOW_API_KEY=${SILICONFLOW_API_KEY}
+    volumes:
+      -storage_data:/app/storage/app
+      -logs_data:/app/storage/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      -glodaxia_network
+
+  # 3. Base de Datos PostgreSQL 17 + pgvector
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      -POSTGRES_DB=${DB_DATABASE:-glodaxia_news}
+      -POSTGRES_USER=${DB_USERNAME:-glodaxia_user}
+      -POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      -postgres_data:/var/lib/postgresql/data
+    networks:
+      -glodaxia_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-glodaxia_user} -d ${DB_DATABASE:-glodaxia_news}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 4. Redis 7 para Colas y Caché
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      -redis_data:/data
+    networks:
+      -glodaxia_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+  storage_data:
+  logs_data:
+
+networks:
+  glodaxia_network:
+    driver: bridge

@@ -4,7 +4,10 @@ namespace App\Filament\Resources\ArticleResource\Pages;
 
 use App\Filament\Resources\ArticleResource;
 use App\Mail\ArticleStatusChanged;
+use App\Services\AI\SiliconFlowImageService;
 use Filament\Actions;
+use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Mail;
 
@@ -21,6 +24,39 @@ class EditArticle extends EditRecord
                 ->color('info')
                 ->url(fn () => $this->record->url)
                 ->openUrlInNewTab(),
+            Actions\Action::make('regenerate_image')
+                ->label('Regenerar Portada IA')
+                ->icon('heroicon-o-sparkles')
+                ->color('primary')
+                ->form([
+                    Forms\Components\Textarea::make('prompt')
+                        ->label('Prompt Visual para FLUX.1 (En inglés)')
+                        ->helperText('Instrucciones visuales para la IA.')
+                        ->default(fn () => $this->record->ai_metadata['image_prompts'][0]['prompt_en'] ?? ($this->record->getTranslation('image_alt', 'en') ?: ('Editorial photojournalism style, high quality photography: ' . $this->record->getTranslation('title', 'en'))))
+                        ->rows(3)
+                        ->required(),
+                ])
+                ->modalHeading('🎨 Regenerar Portada con IA (FLUX.1)')
+                ->modalDescription('Se generará una nueva portada con SiliconFlow FLUX.1 y se actualizarán las colecciones de medios.')
+                ->modalSubmitActionLabel('Generar Imagen')
+                ->action(function (array $data) {
+                    $imageService = app(SiliconFlowImageService::class);
+                    $success = $imageService->regenerateHeroForArticle($this->record, $data['prompt']);
+
+                    if ($success) {
+                        Notification::make()
+                            ->title('Portada generada y actualizada con éxito')
+                            ->success()
+                            ->send();
+                        $this->record->refresh();
+                        $this->fillForm();
+                } else {
+                        Notification::make()
+                            ->title('Error al generar la imagen con SiliconFlow')
+                            ->danger()
+                            ->send();
+                }
+                }),
             Actions\DeleteAction::make(),
             Actions\Action::make('approve')
                 ->label('Aprobar')
@@ -74,19 +110,10 @@ class EditArticle extends EditRecord
         }
     }
 
-    /**
-     * Before filling the form, do nothing extra — 
-     * afterStateHydrated callbacks in the resource handle populating virtual fields.
-     */
-
-    /**
-     * Before saving, map virtual EN/ES fields to their translatable counterparts.
-     */
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $record = $this->getRecord();
 
-        // Save translatable fields via Spatie's setTranslation
         foreach ([
             'title'            => ['en' => $data['title_en'] ?? null, 'es' => $data['title_es'] ?? null],
             'excerpt'          => ['en' => $data['excerpt_en'] ?? null, 'es' => $data['excerpt_es'] ?? null],
@@ -113,10 +140,9 @@ class EditArticle extends EditRecord
 
         $record->save();
 
-        // Remove virtual keys from $data to avoid Filament trying to set them directly
         foreach (['title_en', 'title_es', 'slug_en', 'slug_es', 'excerpt_en', 'excerpt_es',
                   'content_en', 'content_es', 'meta_title_en', 'meta_title_es',
-                  'meta_description_en', 'meta_description_es'] as $key) {
+                  'meta_description', 'meta_description_es'] as $key) {
             unset($data[$key]);
         }
 

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
 use App\Mail\ArticleStatusChanged;
+use App\Services\AI\SiliconFlowImageService;
+use Filament\Notifications\Notification;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -155,6 +157,10 @@ class ArticleResource extends Resource
                                         TextInput::make('image_url')
                                             ->label('Featured Image URL')
                                             ->url()
+                                            ->columnSpanFull(),
+                                        Placeholder::make('image_preview')
+                                            ->label('Vista Previa de la Portada')
+                                            ->content(fn ($record) => $record?->image_url ? new \Illuminate\Support\HtmlString('<div class="mt-2"><img src="' . e($record->image_url) . '" class="w-full max-w-md h-auto rounded-xl shadow-md border border-gray-300 dark:border-gray-700" alt="Portada" /></div>') : 'Sin portada asignada')
                                             ->columnSpanFull(),
                                     ]),
 
@@ -348,6 +354,40 @@ class ArticleResource extends Resource
                             ->success()
                             ->send();
                     }),
+
+                                \Filament\Actions\Action::make('regenerate_image')
+                    ->label('Regenerar Portada IA')
+                    ->icon('heroicon-o-sparkles')
+                    ->color('primary')
+                    ->tooltip('Regenerar portada contextual con IA (FLUX.1)')
+                    ->form([
+                        Textarea::make('prompt')
+                            ->label('Prompt Visual para FLUX.1 (En inglés)')
+                            ->helperText('Puedes personalizar las instrucciones visuales para la IA o dejar el prompt generado automáticamente.')
+                            ->default(fn (Article $record) => $record->ai_metadata['image_prompts'][0]['prompt_en'] ?? ($record->getTranslation('image_alt', 'en') ?: ('Editorial photojournalism style, high quality photography: ' . $record->getTranslation('title', 'en'))))
+                            ->rows(3)
+                            ->required(),
+                    ])
+                    ->modalHeading('🎨 Regenerar Portada con IA (FLUX.1)')
+                    ->modalDescription('Se enviará una solicitud a SiliconFlow para generar una nueva portada de alta calidad y reemplazar la imagen actual.')
+                    ->modalSubmitActionLabel('Generar Portada')
+                    ->action(function (Article $record, array $data) {
+                        $imageService = app(SiliconFlowImageService::class);
+                        $success = $imageService->regenerateHeroForArticle($record, $data['prompt']);
+
+                        if ($success) {
+                            Notification::make()
+                                ->title('Imagen generada y actualizada con éxito')
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Error al generar la imagen con SiliconFlow')
+                                ->body('Revisa los logs o tu saldo de API en SiliconFlow.')
+                                ->danger()
+                                ->send();
+                    }
+                }),
 
                 \Filament\Actions\EditAction::make(),
                 \Filament\Actions\Action::make('publish_now')
