@@ -27,3 +27,4 @@ yarn-error.log
 storage/
 # .env has been removed from here by user request to allow tracking it.
 bootstrap/cache/config.php
+backup_glodaxia.*
