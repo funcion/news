@@ -126,6 +126,19 @@ return [
         // -------------------------------------------------------------------
         // Anti-AI Fingerprint Filter (Banned Clichés & Metaphors)
         // -------------------------------------------------------------------
+                // -------------------------------------------------------------------
+        // Strict Legal, Defamation & Journalistic Ethics Safeguards
+        // -------------------------------------------------------------------
+        'legal_ethics' => [
+            'zero_defamation'       => true,  // Prohibit unverified accusations against people/companies
+            'mandatory_attribution' => true,  // All non-obvious claims must cite source
+            'presumption_innocence' => true,  // Use conditional language in disputes/allegations
+            'prohibited_language'   => [
+                'insults', 'mockery', 'humiliation', 'slander', 'libel', 'malicious speculation'
+            ],
+            'standard'              => 'AP Stylebook / Reuters Trust Principles / SPJ Code of Ethics',
+        ],
+
         'blocked_phrases' => [
             'en' => [
                 'paradigm shift', 'game-changer', 'revolutionary', 'democratization of',
