@@ -252,6 +252,14 @@ class ArticleResource extends Resource
                     ->label('Usuario')
                     ->formatStateUsing(fn ($record) => $record->user?->getTranslation('name', 'es') ?: $record->user?->getTranslation('name', 'en') ?: '—')
                     ->sortable(),
+                TextColumn::make('ai_model')
+                    ->label('Modelo IA')
+                    ->badge()
+                    ->placeholder('—')
+                    ->getStateUsing(fn (Article $record) => $record->ai_metadata['model_used'] ?? $record->rawArticle?->ai_model ?? null)
+                    ->color(fn (?string $state): string => config("ai_models.models.{$state}.color") ?? ($state ? 'primary' : 'gray'))
+                    ->formatStateUsing(fn (?string $state): string => config("ai_models.models.{$state}.name") ?? ($state ? (basename($state) ?: $state) : '—'))
+                    ->tooltip(fn (Article $record) => $record->ai_metadata['model_used'] ?? $record->rawArticle?->ai_model ?? 'Sin modelo registrado'),
                 TextColumn::make('category.name')
                     ->formatStateUsing(fn ($record) => $record->category?->getTranslation('name', 'en') ?? '—')
                     ->sortable(),
