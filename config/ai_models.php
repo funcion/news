@@ -3,31 +3,44 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Default Primary AI Model
+    | Default Primary AI Model (OpenRouter Strictly)
     |--------------------------------------------------------------------------
-    | The main model used across all services (redaction, classification, tags).
+    | The #1 highest-priority, cost-effective model for redaction and intelligence.
     */
-    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-chat'),
+    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-v4-flash'),
 
     /*
     |--------------------------------------------------------------------------
-    | AI Models Pool (Failover Chain)
+    | AI Models Pool / Failover Priority Chain (OpenRouter Only)
     |--------------------------------------------------------------------------
-    | Ordered list of active models. If the primary model fails or times out,
-    | the system automatically fails over in sequence to the next model.
+    | Ordered strictly by priority and cost-efficiency:
+    | 1. deepseek/deepseek-v4-flash    (Top #1: Best analytical depth & bilingual quality)
+    | 2. qwen/qwen3.7-flash            (Top #2: Ultra fast, flawless JSON formatting)
+    | 3. deepseek/deepseek-v3.2        (Alternative high-reasoning DeepSeek)
+    | 4. qwen/qwen3.8-flash            (Next-gen Qwen speed & context)
+    | 5. meta-llama/llama-4-scout      (Meta Llama 4 high-speed editorial)
+    | 6. meta-llama/llama-4-maverick   (Meta Llama 4 deep context)
+    | 7. bytedance-seed/seed-1.6       (ByteDance robust failover)
     */
     'pool' => array_values(array_filter(
-        explode(',', env('AI_MODELS_POOL', 'deepseek/deepseek-chat,qwen/qwen3.7-flash,deepseek/deepseek-v4-flash-0731'))
+        explode(',', env('AI_MODELS_POOL', implode(',', [
+            'deepseek/deepseek-v4-flash',
+            'qwen/qwen3.7-flash',
+            'deepseek/deepseek-v3.2',
+            'qwen/qwen3.8-flash',
+            'meta-llama/llama-4-scout',
+            'meta-llama/llama-4-maverick',
+            'bytedance-seed/seed-1.6',
+        ])))
     )),
 
     /*
     |--------------------------------------------------------------------------
-    | Centralized UI Metadata (Badges & Names)
+    | Centralized UI Metadata (Badges & Colors in Filament)
     |--------------------------------------------------------------------------
-    | Dynamic registry of models, human-friendly names and Filament badge colors.
     */
     'models' => [
-        'deepseek/deepseek-v4-flash-0731' => [
+        'deepseek/deepseek-v4-flash' => [
             'name'  => 'DeepSeek V4 Flash',
             'color' => 'success',
         ],
@@ -35,9 +48,34 @@ return [
             'name'  => 'Qwen 3.7 Flash',
             'color' => 'warning',
         ],
+        'deepseek/deepseek-v3.2' => [
+            'name'  => 'DeepSeek V3.2',
+            'color' => 'success',
+        ],
+        'qwen/qwen3.8-flash' => [
+            'name'  => 'Qwen 3.8 Flash',
+            'color' => 'warning',
+        ],
+        'meta-llama/llama-4-scout' => [
+            'name'  => 'Llama 4 Scout',
+            'color' => 'info',
+        ],
+        'meta-llama/llama-4-maverick' => [
+            'name'  => 'Llama 4 Maverick',
+            'color' => 'info',
+        ],
+        'bytedance-seed/seed-1.6' => [
+            'name'  => 'Seed 1.6',
+            'color' => 'primary',
+        ],
+        // Legacy / Compatibility aliases
+        'deepseek/deepseek-v4-flash-0731' => [
+            'name'  => 'DeepSeek V4 Flash (0731)',
+            'color' => 'success',
+        ],
         'deepseek/deepseek-chat' => [
             'name'  => 'DeepSeek V3',
-            'color' => 'info',
+            'color' => 'success',
         ],
     ],
 
