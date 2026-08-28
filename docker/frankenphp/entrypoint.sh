@@ -56,7 +56,7 @@ if [ -f /app/vendor/autoload.php ]; then
     # Cachear para produccion (CRITICO para rendimiento)
     echo "Cacheando configuracion de produccion..."
     php artisan config:cache 2>&1 || true
-    php artisan route:cache 2>&1 || true
+    # php artisan route:cache (DESHABILITADO: mcamara/laravel-localization no es compatible con route:cache y causa 404 en rutas en espanol)
     php artisan view:cache 2>&1 || true
     php artisan event:cache 2>&1 || true
 
