@@ -15,14 +15,14 @@ class UserObserver
     public function deleting(User $user): void
     {
         // 1. Protection: SuperAdmin cannot be deleted under any circumstance
-        if ($user->hasRole('super_admin') || $user->email === 'admin@glodaxia.com') {
+        if ($user->hasRole('super_admin') || in_array($user->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) {
             throw ValidationException::withMessages([
                 'user' => 'El Super Administrador principal está blindado y no puede ser eliminado.',
             ]);
         }
 
         // 2. Find the unique SuperAdmin of the system to inherit orphan articles
-        $superAdmin = User::role('super_admin')->first() ?? User::where('email', 'admin@glodaxia.com')->first();
+        $superAdmin = User::role('super_admin')->first() ?? User::whereIn('email', ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])->first();
 
         if ($superAdmin && $superAdmin->id !== $user->id) {
             $count = Article::where('user_id', $user->id)->count();

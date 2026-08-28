@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Implicitly grant "super_admin" and admin@glodaxia.com all permissions
         Gate::before(function ($user, $ability) {
-            return ($user->hasRole('super_admin') || $user->email === 'admin@glodaxia.com') ? true : null;
+            return ($user->hasRole('super_admin') || in_array($user->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) ? true : null;
         });
 
         // Set the primary locale to English

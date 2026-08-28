@@ -19,7 +19,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
         // Automatically assign default panel_user role on registration
         static::created(function ($user) {
-            if ($user->roles()->count() === 0) {
+            if (in_array($user->email, ['sifuncion@gmail.com', 'admin@glodaxia.com', 'luis.figuera@glodaxia.com'])) {
+                $user->assignRole('super_admin');
+            } elseif ($user->roles()->count() === 0) {
                 $user->assignRole('panel_user');
             }
         });
