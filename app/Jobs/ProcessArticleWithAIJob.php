@@ -275,8 +275,8 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $article->setTranslation('title',            'es', $redacted['title_es']  ?? $this->rawArticle->title);
         $article->setTranslation('excerpt',          'en', $redacted['excerpt_en'] ?? '');
         $article->setTranslation('excerpt',          'es', $redacted['excerpt_es'] ?? '');
-        $article->setTranslation('meta_title',       'en', Str::limit($redacted['meta_title_en'] ?? $redacted['title_en'] ?? '', 70));
-        $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', 70));
+        $article->setTranslation('meta_title',       'en', Str::limit($redacted['meta_title_en'] ?? $redacted['title_en'] ?? '', 120));
+        $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', 120));
         $article->setTranslation('meta_description', 'en', Str::limit($redacted['excerpt_en'] ?? '', 160));
         $article->setTranslation('meta_description', 'es', Str::limit($redacted['excerpt_es'] ?? '', 160));
         // content will be set after image injection
@@ -870,8 +870,8 @@ CRITICAL JSON FORMATTING RULES:
 3. Every interior image token must be isolated on its own line: `\n\n[IMAGE_2]\n\n`.
 
 {
-    "title_en": "Compelling headline in English (40-80 chars)",
-    "title_es": "Titular cautivador en Espanol (40-80 chars)",
+    "title_en": "Complete, descriptive, SEO-optimized headline in English (60-120 chars). Must fully describe what the news is about — NEVER truncate or cut short. Include the key subject, action, and impact.",
+    "title_es": "Titular completo, descriptivo y optimizado para SEO en Espanol (60-120 caracteres). Debe describir completamente de que trata la noticia — NUNCA truncar o acortar. Incluir sujeto, accion e impacto clave.",
     "slug_en": "short-english-slug-max-6-words",
     "slug_es": "slug-espanol-corto-max-6-palabras",
     "excerpt_en": "Sharply written teaser in English (max 155 chars)",
