@@ -236,6 +236,7 @@ class ArticleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('15s')
             ->defaultSort('published_at', 'desc')
             ->columns([
                 ImageColumn::make('image_url')
@@ -378,77 +379,15 @@ class ArticleResource extends Resource
                     ->icon('heroicon-o-sparkles')
                     ->iconButton()
                     ->color('success')
-                    ->tooltip('🪄 Regenerar Título IA (1 Clic directo)')
+                    ->tooltip('🪄 Regenerar Título IA (1 Clic a la cola)')
                     ->action(function (Article $record) {
-                        $ai = app(\App\Services\AI\OpenRouterService::class);
-                        $titleMinChars   = (int) config('global.editorial.limits.title.min', 50);
-                        $titleMaxChars   = (int) config('global.editorial.limits.title.max', 130);
-                        $titleMinWords   = (int) config('global.editorial.limits.title.min_words', 7);
+                        \App\Jobs\RegenerateArticleTitleJob::dispatch($record);
                         
-                        $excerpt = $record->getTranslation('excerpt', 'es') ?: $record->getTranslation('excerpt', 'en') ?: '';
-                        $body = strip_tags($record->getTranslation('content', 'es') ?: $record->getTranslation('content', 'en') ?: '');
-                        $sampleBody = mb_substr($body, 0, 1200);
-                        $currentTitle = $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en');
-                        
-                        $prompt = <<<PROMPT
-You are a senior tech journalism headline editor for Glodaxia.
-Based on the following article facts and context, craft a compelling, complete, and highly descriptive headline in both English and Spanish.
-
-RULES:
-1. Length: Target between 70 and 115 characters. ABSOLUTE MAXIMUM is {$titleMaxChars} characters (STRICTLY between {$titleMinChars} and {$titleMaxChars} chars). NEVER exceed {$titleMaxChars} characters.
-2. Word count: Minimum {$titleMinWords} words.
-3. Structure: Standalone full sentence with subject, action, and key impact.
-4. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
-
-CURRENT HEADLINE: {$currentTitle}
-EXCERPT: {$excerpt}
-BODY SAMPLE: {$sampleBody}
-
-Return ONLY valid JSON (no markdown wrapper, no extra text):
-{
-    "title_es": "Titular completo en español...",
-    "title_en": "Complete headline in English..."
-}
-PROMPT;
-
-                        try {
-                            $rawJson = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
-                            $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($rawJson));
-                            $data = json_decode($cleanJson, true);
-                            
-                            if (!empty($data['title_es']) && !empty($data['title_en'])) {
-                                $cleaner = function(string $t, int $min, int $max): string {
-                                    $t = trim(strip_tags($t));
-                                    $t = trim($t, " \t\n\r\0\x0B\"'«»“”");
-                                    if (mb_strlen($t) <= $max) return $t;
-                                    $sub = mb_substr($t, 0, $max);
-                                    $sp = mb_strrpos($sub, ' ');
-                                    if ($sp !== false && $sp >= $min) $sub = mb_substr($sub, 0, $sp);
-                                    $sub = preg_replace('/\s+(?:de|del|con|para|por|en|a|y|e|o|u|que|sobre|tras|the|and|or|for|with|in|on|at|by|of|to|from|as|an|a)$/iu', '', $sub);
-                                    return rtrim($sub, " ,;:-–—/|\\");
-                                };
-                                $titleEs = $cleaner($data['title_es'], $titleMinChars, $titleMaxChars);
-                                $titleEn = $cleaner($data['title_en'], $titleMinChars, $titleMaxChars);
-
-                                $record->setTranslation('title', 'es', $titleEs);
-                                $record->setTranslation('title', 'en', $titleEn);
-                                $record->save();
-                                
-                                \Filament\Notifications\Notification::make()
-                                    ->title('Titular regenerado con éxito')
-                                    ->body("ES: {$data['title_es']}")
-                                    ->success()
-                                    ->send();
-                            } else {
-                                throw new \Exception('La IA no devolvió el formato JSON esperado.');
-                            }
-                        } catch (\Throwable $e) {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Error al regenerar titular')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
+                        \Filament\Notifications\Notification::make()
+                            ->title('🪄 Titular enviado a la cola de IA')
+                            ->body('Se está regenerando en segundo plano.')
+                            ->success()
+                            ->send();
                     }),
 
                 \Filament\Actions\Action::make('regenerate_image')
