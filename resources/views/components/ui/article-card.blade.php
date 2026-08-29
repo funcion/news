@@ -1,30 +1,33 @@
 {{-- resources/views/components/ui/article-card.blade.php --}}
 @props([
     'article',
-    'maxTitleLength' => 100,
     'showExcerpt' => true,
-    'excerptLength' => 150,
+    'titleMaxWords' => null,
+    'excerptLength' => null,
     'imageAspectRatio' => '16/9',
     'config' => []
 ])
 
 @php
-    // Configuración dinámica desde props o contexto
+    $titleMaxWords = $titleMaxWords ?? (int) config('global.editorial.limits.card.title_max_words', 15);
+    $excerptLength = $excerptLength ?? (int) config('global.editorial.limits.card.excerpt_max', 160);
+
     $config = array_merge([
-        'maxTitleLength' => $maxTitleLength,
+        'titleMaxWords' => $titleMaxWords,
         'showExcerpt' => $showExcerpt,
         'excerptLength' => $excerptLength,
         'imageAspectRatio' => $imageAspectRatio,
     ], $config);
     
     $titleId = 'article-title-' . $article->id;
-    $truncatedTitle = strlen($article->title) > $config['maxTitleLength'] 
-        ? substr($article->title, 0, $config['maxTitleLength']) . '...'
-        : $article->title;
+    $rawTitle = $article->title;
+
+    // En los listados truncar después de 15 palabras con '...'
+    $cardTitle = \Illuminate\Support\Str::words($rawTitle, $config['titleMaxWords'], '...');
     
     $truncatedExcerpt = $config['showExcerpt'] && $article->excerpt
-        ? (strlen($article->excerpt) > $config['excerptLength'] 
-            ? substr($article->excerpt, 0, $config['excerptLength']) . '...'
+        ? (mb_strlen($article->excerpt) > $config['excerptLength'] 
+            ? \Illuminate\Support\Str::limit($article->excerpt, $config['excerptLength'], '...')
             : $article->excerpt)
         : null;
 @endphp
@@ -36,8 +39,8 @@
 >
     <div class="relative w-full pb-[56.25%] rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
         <img
-            src="{{ $article->image }}"
-            alt="{{ $article->alt_text ?? 'Imagen de ' . $article->title }}"
+            src="{{ $article->image ?? $article->image_url ?? '/placeholder.webp' }}"
+            alt="{{ $article->alt_text ?? $article->image_alt ?? $rawTitle }}"
             loading="lazy"
             @load="isLoaded = true"
             :class="{ 'opacity-100': isLoaded }"
@@ -48,9 +51,9 @@
     <div class="flex flex-col gap-2 flex-1">
         <h3 
             id="{{ $titleId }}"
-            class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-100 m-0"
+            class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-100 m-0 group-hover:text-cyan-500 transition-colors"
         >
-            {{ $truncatedTitle }}
+            {{ $cardTitle }}
         </h3>
         
         @if($truncatedExcerpt)
@@ -60,12 +63,14 @@
         @endif
         
         <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
-            <time datetime="{{ $article->published_at->toIso8601String() }}">
-                {{ $article->published_at->format('d/m/Y') }}
+            <time datetime="{{ $article->published_at ? $article->published_at->toIso8601String() : '' }}">
+                {{ $article->published_at ? $article->published_at->format('d/m/Y') : '' }}
             </time>
-            <span class="bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 px-2 py-0.5 rounded-full font-medium uppercase text-[0.75rem] tracking-wider">
-                {{ $article->category->name }}
-            </span>
+            @if($article->category)
+                <span class="bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 px-2 py-0.5 rounded-full font-medium uppercase text-[0.75rem] tracking-wider">
+                    {{ $article->category->name }}
+                </span>
+            @endif
         </div>
     </div>
 </article>

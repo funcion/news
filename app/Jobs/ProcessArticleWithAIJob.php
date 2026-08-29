@@ -276,10 +276,12 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $article->setTranslation('title',            'es', $redacted['title_es']  ?? $this->rawArticle->title);
         $article->setTranslation('excerpt',          'en', $redacted['excerpt_en'] ?? '');
         $article->setTranslation('excerpt',          'es', $redacted['excerpt_es'] ?? '');
-        $article->setTranslation('meta_title',       'en', Str::limit($redacted['meta_title_en'] ?? $redacted['title_en'] ?? '', 120));
-        $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', 120));
-        $article->setTranslation('meta_description', 'en', Str::limit($redacted['excerpt_en'] ?? '', 160));
-        $article->setTranslation('meta_description', 'es', Str::limit($redacted['excerpt_es'] ?? '', 160));
+        $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 80);
+        $metaDescMax  = (int) config('global.editorial.limits.meta_description.max', 160);
+        $article->setTranslation('meta_title',       'en', Str::limit($redacted['meta_title_en'] ?? $redacted['title_en'] ?? '', $metaTitleMax));
+        $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', $metaTitleMax));
+        $article->setTranslation('meta_description', 'en', Str::limit($redacted['excerpt_en'] ?? '', $metaDescMax));
+        $article->setTranslation('meta_description', 'es', Str::limit($redacted['excerpt_es'] ?? '', $metaDescMax));
         // content will be set after image injection
         $article->setTranslation('content', 'en', '');
         $article->setTranslation('content', 'es', '');
@@ -299,8 +301,9 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
                 $altEs       = trim($imgData['alt_es'] ?? $altEn);
                 $captionEn   = trim($imgData['caption_en'] ?? $altEn);
                 $captionEs   = trim($imgData['caption_es'] ?? $altEs);
-                $titleEn     = Str::limit(trim($imgData['title_en'] ?? $altEn), 70);
-                $titleEs     = Str::limit(trim($imgData['title_es'] ?? $altEs), 70);
+                $imgTitleMax = (int) config('global.editorial.limits.image_title.max', 70);
+                $titleEn     = Str::limit(trim($imgData['title_en'] ?? $altEn), $imgTitleMax);
+                $titleEs     = Str::limit(trim($imgData['title_es'] ?? $altEs), $imgTitleMax);
 
                 if (empty($placeholder) || empty($promptEn)) continue;
 
@@ -777,6 +780,14 @@ PROMPT;
 
         $authorBioEs = $author->getTranslation('bio', 'es') ?: $author->bio;
 
+        $titleMinChars    = (int) config('global.editorial.limits.title.min', 60);
+        $titleMaxChars    = (int) config('global.editorial.limits.title.max', 160);
+        $titleMinWords    = (int) config('global.editorial.limits.title.min_words', 8);
+        $excerptMinChars  = (int) config('global.editorial.limits.excerpt.min', 160);
+        $excerptMaxChars  = (int) config('global.editorial.limits.excerpt.max', 250);
+        $imgAltMaxChars   = (int) config('global.editorial.limits.image_alt.max', 125);
+        $imgTitleMaxChars = (int) config('global.editorial.limits.image_title.max', 70);
+
         $prompt = <<<PROMPT
 You are a senior investigative tech columnist and essayist writing for Glodaxia (a premium digital journalism publication).
 Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based on the verified facts provided below.
@@ -896,12 +907,12 @@ CRITICAL JSON FORMATTING RULES:
 3. Every interior image token must be isolated on its own line: `\n\n[IMAGE_2]\n\n`.
 
 {
-    "title_en": "Complete, descriptive, SEO-optimized headline in English (60-120 chars). Must fully describe what the news is about — NEVER truncate or cut short. Include the key subject, action, and impact.",
-    "title_es": "Titular completo, descriptivo y optimizado para SEO en Espanol (60-120 caracteres). Debe describir completamente de que trata la noticia — NUNCA truncar o acortar. Incluir sujeto, accion e impacto clave.",
+    "title_en": "Complete, highly descriptive, journalistic headline in English ({$titleMinChars}-{$titleMaxChars} chars). MUST be a full standalone headline describing who, what happened, and why it matters — NEVER truncate, NEVER leave sentences incomplete. Minimum {$titleMinWords} words.",
+    "title_es": "Titular periodístico completo, altamente descriptivo e impactante en Español ({$titleMinChars}-{$titleMaxChars} caracteres). DEBE ser una oración completa con sujeto, verbo e impacto — NUNCA truncar ni dejar a medias. Mínimo {$titleMinWords} palabras.",
     "slug_en": "short-english-slug-max-6-words",
     "slug_es": "slug-espanol-corto-max-6-palabras",
-    "excerpt_en": "Sharply written teaser in English (160-250 chars). Must summarize WHO, WHAT, WHY it matters — enough context for a reader to decide to click. NEVER write fewer than 160 chars.",
-    "excerpt_es": "Extracto detallado en Espanol (160-250 caracteres). Debe resumir QUIÉN, QUÉ, POR QUÉ importa — suficiente contexto para que el lector decida hacer clic. NUNCA escribir menos de 160 caracteres.",
+    "excerpt_en": "Sharply written teaser in English ({$excerptMinChars}-{$excerptMaxChars} chars). Must summarize WHO, WHAT, WHY it matters — enough context for a reader to decide to click. NEVER write fewer than {$excerptMinChars} chars.",
+    "excerpt_es": "Extracto detallado en Espanol ({$excerptMinChars}-{$excerptMaxChars} caracteres). Debe resumir QUIÉN, QUÉ, POR QUÉ importa — suficiente contexto para que el lector decida hacer clic. NUNCA escribir menos de {$excerptMinChars} caracteres.",
     "content_en": "Full article in English with <p>, <h2>, [IMAGE_2], etc.",
     "content_es": "Articulo completo en Espanol con <p>, <h2>, [IMAGE_2], etc.",
     "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
@@ -909,12 +920,12 @@ CRITICAL JSON FORMATTING RULES:
         {
             "id": "[IMAGE_1]",
             "prompt_en": "Photojournalistic style, [scene description relevant to headline], 35mm lens, natural cinematic lighting, 8k, photorealistic, no text",
-            "alt_en": "Alt text in English (max 125 chars)",
-            "alt_es": "Texto alternativo en Espanol (max 125 chars)",
+            "alt_en": "Alt text in English (max {$imgAltMaxChars} chars)",
+            "alt_es": "Texto alternativo en Espanol (max {$imgAltMaxChars} chars)",
             "caption_en": "Contextual editorial caption",
             "caption_es": "Leyenda editorial contextual",
-            "title_en": "Image title (max 70 chars)",
-            "title_es": "Titulo imagen (max 70 chars)"
+            "title_en": "Image title (max {$imgTitleMaxChars} chars)",
+            "title_es": "Titulo imagen (max {$imgTitleMaxChars} chars)"
         },
         {
             "id": "[IMAGE_2]",
@@ -1070,7 +1081,17 @@ PROMPT;
             $errors[] = 'Missing [IMAGE_1] in image_prompts array (hero image required)';
         }
 
-        // 5. Title/excerpt length — AUTO-FIXED by autoFixRedactedOutput(), skip validation
+        // 5. Title length and depth validation (Strict limits from config/global.php)
+        $titleMinChars = (int) config('global.editorial.limits.title.min', 60);
+        $titleMinWords = (int) config('global.editorial.limits.title.min_words', 8);
+        foreach (['title_en' => 'English', 'title_es' => 'Español'] as $field => $langLabel) {
+            $titleStr = trim($data[$field] ?? '');
+            $titleLen = mb_strlen($titleStr);
+            $wordCount = count(preg_split('/\s+/u', $titleStr, -1, PREG_SPLIT_NO_EMPTY));
+            if ($titleLen < $titleMinChars || $wordCount < $titleMinWords) {
+                $errors[] = "{$field} is too short ({$titleLen} chars, {$wordCount} words). A full journalistic headline with subject, action and context is required (minimum {$titleMinChars} chars, minimum {$titleMinWords} words).";
+            }
+        }
 
         // 6. Strict Word Count Validation (Strict minimum: 700 words, no upper limit)
         $wordsEn = str_word_count(strip_tags($contentEn));
@@ -1128,40 +1149,44 @@ PROMPT;
     {
         $fixes = [];
 
-        // Truncate titles (max 120 chars — SEO-optimal for full descriptive headlines)
+        $titleMax     = (int) config('global.editorial.limits.title.max', 160);
+        $excerptMax   = (int) config('global.editorial.limits.excerpt.max', 250);
+        $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 80);
+        $metaDescMax  = (int) config('global.editorial.limits.meta_description.max', 160);
+
+        // Clean and safely trim excessively long titles using global config limit
         foreach (['title_en', 'title_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 120) {
-                $original = $data[$field];
-                $data[$field] = Str::limit($data[$field], 120, '');
-                // Cut at last space to avoid mid-word truncation
-                if (($lastSpace = mb_strrpos($data[$field], ' ')) !== false && $lastSpace > 80) {
-                    $data[$field] = mb_substr($data[$field], 0, $lastSpace);
+            if (!empty($data[$field])) {
+                $data[$field] = trim(preg_replace('/\s+/u', ' ', $data[$field]));
+                if (mb_strlen($data[$field]) > $titleMax) {
+                    $original = $data[$field];
+                    $data[$field] = Str::limit($data[$field], $titleMax, '');
+                    $fixes[] = "{$field}: safely trimmed from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
                 }
-                $fixes[] = "{$field}: truncated from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
             }
         }
 
-        // Truncate excerpts (max 250 chars — rich teaser for SEO and social)
+        // Truncate excerpts
         foreach (['excerpt_en', 'excerpt_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 250) {
-                $data[$field] = Str::limit($data[$field], 250, '');
-                $fixes[] = "{$field}: truncated to 250 chars";
+            if (mb_strlen($data[$field] ?? '') > $excerptMax) {
+                $data[$field] = Str::limit($data[$field], $excerptMax, '');
+                $fixes[] = "{$field}: truncated to {$excerptMax} chars";
             }
         }
 
-        // Truncate meta titles (max 80 chars — Google displays ~60-80 chars in SERPs)
+        // Truncate meta titles
         foreach (['meta_title_en', 'meta_title_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 80) {
-                $data[$field] = Str::limit($data[$field], 80, '');
-                $fixes[] = "{$field}: truncated to 80 chars";
+            if (mb_strlen($data[$field] ?? '') > $metaTitleMax) {
+                $data[$field] = Str::limit($data[$field], $metaTitleMax, '');
+                $fixes[] = "{$field}: truncated to {$metaTitleMax} chars";
             }
         }
 
-        // Truncate meta descriptions (max 160 chars)
+        // Truncate meta descriptions
         foreach (['meta_description_en', 'meta_description_es'] as $field) {
-            if (mb_strlen($data[$field] ?? '') > 160) {
-                $data[$field] = Str::limit($data[$field], 160, '');
-                $fixes[] = "{$field}: truncated to 160 chars";
+            if (mb_strlen($data[$field] ?? '') > $metaDescMax) {
+                $data[$field] = Str::limit($data[$field], $metaDescMax, '');
+                $fixes[] = "{$field}: truncated to {$metaDescMax} chars";
             }
         }
 

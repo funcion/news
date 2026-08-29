@@ -52,7 +52,7 @@ class EditCategory extends EditRecord
                         $fileNameEn = "{$slugEn}-cover-{$imgNum}.webp";
                         $category->addMedia($path)
                             ->usingFileName($fileNameEn)
-                            ->usingName(\Illuminate\Support\Str::limit($titleEn, 70))
+                            ->usingName(\Illuminate\Support\Str::limit($titleEn, (int) config('global.editorial.limits.image_title.max', 70)))
                             ->withCustomProperties([
                                 'lang' => 'en',
                                 'alt' => "Artistic cover representing {$titleEn} category",
@@ -65,7 +65,7 @@ class EditCategory extends EditRecord
                         $fileNameEs = "{$slugEs}-portada-{$imgNum}.webp";
                         $category->addMedia($path)
                             ->usingFileName($fileNameEs)
-                            ->usingName(\Illuminate\Support\Str::limit($titleEs, 70))
+                            ->usingName(\Illuminate\Support\Str::limit($titleEs, (int) config('global.editorial.limits.image_title.max', 70)))
                             ->withCustomProperties([
                                 'lang' => 'es',
                                 'alt' => "Portada artística que representa la categoría {$titleEs}",

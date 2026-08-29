@@ -118,8 +118,9 @@ class SiliconFlowImageService
         try {
             $altEn = $article->getTranslation('image_alt', 'en') ?: $article->getTranslation('title', 'en');
             $altEs = $article->getTranslation('image_alt', 'es') ?: $article->getTranslation('title', 'es');
-            $titleEn = Str::limit($article->getTranslation('title', 'en') ?? 'Hero', 70);
-            $titleEs = Str::limit($article->getTranslation('title', 'es') ?? 'Hero', 70);
+            $imgTitleMax = (int) config('global.editorial.limits.image_title.max', 70);
+            $titleEn = Str::limit($article->getTranslation('title', 'en') ?? 'Hero', $imgTitleMax);
+            $titleEs = Str::limit($article->getTranslation('title', 'es') ?? 'Hero', $imgTitleMax);
             $captionEn = $article->ai_metadata['image_prompts'][0]['caption_en'] ?? $altEn;
             $captionEs = $article->ai_metadata['image_prompts'][0]['caption_es'] ?? $altEs;
 

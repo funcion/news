@@ -86,7 +86,7 @@
                         </div>
                         <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug mb-3 tracking-tight group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                             <a href="{{ route('articles.show', app()->getLocale() === 'es' ? ($article->slug_es ?? $article->slug_en) : ($article->slug_en ?? $article->slug_es)) }}" class="focus-visible:outline-none focus-visible:underline">
-                                {{ $article->title }}
+                                {{ \Illuminate\Support\Str::words($article->title, (int) config('global.editorial.limits.card.title_max_words', 15), '...') }}
                             </a>
                         </h2>
                         <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-4">{{ $article->excerpt }}</p>

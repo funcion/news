@@ -78,30 +78,36 @@ return [
         ],
 
         // -------------------------------------------------------------------
-        // Standard Character & Length Limits (Enforced programmatically)
+        // Standard Character & Length Limits (Single Source of Truth)
         // -------------------------------------------------------------------
         'limits' => [
             'title' => [
-                'min' => 60,
-                'max' => 120,
+                'min'       => (int) env('ARTICLE_TITLE_MIN_CHARS', 50),
+                'max'       => (int) env('ARTICLE_TITLE_MAX_CHARS', 160),
+                'min_words' => (int) env('ARTICLE_TITLE_MIN_WORDS', 6),
             ],
             'excerpt' => [
-                'min' => 160,
-                'max' => 250,
+                'min' => (int) env('ARTICLE_EXCERPT_MIN_CHARS', 160),
+                'max' => (int) env('ARTICLE_EXCERPT_MAX_CHARS', 250),
             ],
             'meta_title' => [
-                'min' => 40,
-                'max' => 80,
+                'min' => (int) env('ARTICLE_META_TITLE_MIN_CHARS', 40),
+                'max' => (int) env('ARTICLE_META_TITLE_MAX_CHARS', 80),
             ],
             'meta_description' => [
-                'min' => 120,
-                'max' => 160,
+                'min' => (int) env('ARTICLE_META_DESC_MIN_CHARS', 120),
+                'max' => (int) env('ARTICLE_META_DESC_MAX_CHARS', 160),
             ],
             'image_alt' => [
-                'max' => 125,
+                'max' => (int) env('ARTICLE_IMAGE_ALT_MAX_CHARS', 125),
             ],
             'image_title' => [
-                'max' => 70,
+                'max' => (int) env('ARTICLE_IMAGE_TITLE_MAX_CHARS', 70),
+            ],
+            'card' => [
+                'title_max_words' => (int) env('ARTICLE_CARD_TITLE_MAX_WORDS', 15),
+                'title_max'       => (int) env('ARTICLE_CARD_TITLE_MAX_CHARS', 130),
+                'excerpt_max'     => (int) env('ARTICLE_CARD_EXCERPT_MAX_CHARS', 160),
             ],
             'reading_time_wpm' => 200,
             'raw_preview_chars' => 2000,

@@ -165,7 +165,7 @@
 
                     <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight mb-2 tracking-tighter group-hover:text-cyan-500 transition-colors">
                         <a href="{{ route('articles.show', \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getCurrentLocale() === 'es' ? $article->slug_es : $article->slug_en) }}">
-                            {{ $article->title }}
+                            {{ \Illuminate\Support\Str::words($article->title, (int) config('global.editorial.limits.card.title_max_words', 15), '...') }}
                         </a>
                     </h3>
                     

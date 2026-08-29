@@ -239,19 +239,54 @@ class ArticleResource extends Resource
             ->defaultSort('published_at', 'desc')
             ->columns([
                 ImageColumn::make('image_url')
-                    ->label('Image'),
+                    ->label('Portada')
+                    ->circular(false)
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover shadow-sm']),
+
                 TextColumn::make('title')
-                    ->label('Title (EN)')
-                    ->formatStateUsing(fn ($record) => $record->getTranslation('title', 'en'))
+                    ->label('Titular')
+                    ->formatStateUsing(function (Article $record) {
+                        return $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en') ?: '—';
+                    })
+                    ->description(function (Article $record) {
+                        $titleEs = $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en') ?: '';
+                        $len = mb_strlen($titleEs);
+                        $words = count(preg_split('/\s+/u', trim($titleEs), -1, PREG_SPLIT_NO_EMPTY));
+                        
+                        $minChars = (int) config('global.editorial.limits.title.min', 50);
+                        $maxChars = (int) config('global.editorial.limits.title.max', 160);
+                        $minWords = (int) config('global.editorial.limits.title.min_words', 6);
+                        
+                        if ($len === 0) {
+                            $statusBadge = 'Sin titular';
+                        } elseif ($len < $minChars || $words < $minWords) {
+                            $statusBadge = "🟡 {$len} caracteres • {$words} palabras (Corto / Incompleto)";
+                        } elseif ($len > $maxChars) {
+                            $statusBadge = "🔴 {$len} caracteres • {$words} palabras (Excedido)";
+                        } else {
+                            $statusBadge = "🟢 {$len} caracteres • {$words} palabras (Óptimo)";
+                        }
+
+                        $authorName = $record->user?->getTranslation('name', 'es') ?: $record->user?->getTranslation('name', 'en') ?: $record->user?->name ?: 'Sin autor';
+                        $categoryName = $record->category?->getTranslation('name', 'es') ?: $record->category?->getTranslation('name', 'en') ?: 'Sin categoría';
+
+                        return new \Illuminate\Support\HtmlString(
+                            "<div class='flex flex-col gap-1 mt-1'>" .
+                            "<div class='text-xs font-medium'>{$statusBadge}</div>" .
+                            "<div class='flex items-center gap-2.5 text-[11.5px] font-normal mt-0.5' style='color: #909090;'>" .
+                                "<span class='inline-flex items-center gap-1'>👤 {$authorName}</span>" .
+                                "<span style='opacity: 0.5;'>•</span>" .
+                                "<span class='inline-flex items-center gap-1'>📁 {$categoryName}</span>" .
+                            "</div>" .
+                            "</div>"
+                        );
+                    })
                     ->searchable(query: function ($query, $search) {
                         $query->whereRaw("title->>'en' ILIKE ?", ["%{$search}%"])
                               ->orWhereRaw("title->>'es' ILIKE ?", ["%{$search}%"]);
                     })
-                    ->limit(50),
-                TextColumn::make('user.name')
-                    ->label('Usuario')
-                    ->formatStateUsing(fn ($record) => $record->user?->getTranslation('name', 'es') ?: $record->user?->getTranslation('name', 'en') ?: '—')
-                    ->sortable(),
+                    ->wrap(),
+
                 TextColumn::make('ai_model')
                     ->label('Modelo IA')
                     ->badge()
@@ -260,10 +295,9 @@ class ArticleResource extends Resource
                     ->color(fn (?string $state): string => config("ai_models.models.{$state}.color") ?? ($state ? 'primary' : 'gray'))
                     ->formatStateUsing(fn (?string $state): string => config("ai_models.models.{$state}.name") ?? ($state ? (basename($state) ?: $state) : '—'))
                     ->tooltip(fn (Article $record) => $record->ai_metadata['model_used'] ?? $record->rawArticle?->ai_model ?? 'Sin modelo registrado'),
-                TextColumn::make('category.name')
-                    ->formatStateUsing(fn ($record) => $record->category?->getTranslation('name', 'en') ?? '—')
-                    ->sortable(),
+
                 TextColumn::make('status')
+                    ->label('Estado')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft'          => 'Borrador',
@@ -281,10 +315,14 @@ class ArticleResource extends Resource
                         'rejected'       => 'danger',
                         default          => 'gray',
                     }),
+
                 TextColumn::make('published_at')
-                    ->dateTime()
+                    ->label('Fecha')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
+
                 TextColumn::make('views')
+                    ->label('Vistas')
                     ->numeric()
                     ->sortable(),
             ])
@@ -333,131 +371,291 @@ class ArticleResource extends Resource
                     ->label('Categoría')
                     ->relationship('category', 'name'),
             ])
+            ->actionsColumnLabel('Acciones')
+            ->actionsColumnLabel('Acciones')
             ->actions([
-                \Filament\Actions\Action::make('view_live')
-                    ->label('Ver en la Web')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->color('info')
-                    ->tooltip('Abrir noticia publicada en la web pública')
-                    ->url(fn (Article $record) => $record->url)
-                    ->openUrlInNewTab(),
+                \Filament\Actions\ActionGroup::make([
+                    \Filament\Actions\Action::make('view_live')
+                        ->label('Ver en la Web')
+                        ->icon('heroicon-o-arrow-top-right-on-square')
+                        ->color('info')
+                        ->tooltip('Ver noticia publicada en la web pública')
+                        ->url(fn (Article $record) => $record->url)
+                        ->openUrlInNewTab(),
 
-                \Filament\Actions\Action::make('change_author')
-                    ->label('Cambiar Autor')
-                    ->icon('heroicon-o-user-circle')
-                    ->color('warning')
-                    ->tooltip('Reasignar redactor / autor de la noticia')
-                    ->form([
-                        Select::make('user_id')
-                            ->label('Nuevo Autor / Redactor Asignado')
-                            ->options(fn () => \App\Models\User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->pluck('name', 'id'))
-                            ->default(fn (Article $record) => $record->user_id)
-                            ->required()
-                            ->searchable(),
-                    ])
-                    ->action(function (Article $record, array $data) {
-                        $record->update(['user_id' => $data['user_id']]);
-                        \Filament\Notifications\Notification::make()
-                            ->title('Autor reasignado exitosamente')
-                            ->success()
-                            ->send();
-                    }),
+                    \Filament\Actions\Action::make('regenerate_title')
+                        ->label('Regenerar Título con IA')
+                        ->icon('heroicon-o-sparkles')
+                        ->color('success')
+                        ->tooltip('Regenerar titulares bilingües en 1 segundo a partir del contenido real')
+                        ->requiresConfirmation()
+                        ->modalHeading('🪄 Regenerar Titular con IA')
+                        ->modalDescription('Se redactará un nuevo titular periodístico completo, atractivo y coherente en español e inglés sin modificar las imágenes ni el cuerpo de la noticia.')
+                        ->action(function (Article $record) {
+                            $ai = app(\App\Services\AI\OpenRouterService::class);
+                            $titleMinChars   = (int) config('global.editorial.limits.title.min', 50);
+                            $titleMaxChars   = (int) config('global.editorial.limits.title.max', 160);
+                            $titleMinWords   = (int) config('global.editorial.limits.title.min_words', 6);
+                            
+                            $excerpt = $record->getTranslation('excerpt', 'es') ?: $record->getTranslation('excerpt', 'en') ?: '';
+                            $body = strip_tags($record->getTranslation('content', 'es') ?: $record->getTranslation('content', 'en') ?: '');
+                            $sampleBody = mb_substr($body, 0, 1200);
+                            $currentTitle = $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en');
+                            
+                            $prompt = <<<PROMPT
+You are a senior tech journalism headline editor for Glodaxia.
+Based on the following article facts and context, craft a compelling, complete, and highly descriptive headline in both English and Spanish.
 
-                                \Filament\Actions\Action::make('regenerate_image')
-                    ->label('Regenerar Portada IA')
-                    ->icon('heroicon-o-sparkles')
-                    ->color('primary')
-                    ->tooltip('Regenerar portada contextual con IA (FLUX.1)')
-                    ->form([
-                        Textarea::make('prompt')
-                            ->label('Prompt Visual para FLUX.1 (En inglés)')
-                            ->helperText('Puedes personalizar las instrucciones visuales para la IA o dejar el prompt generado automáticamente.')
-                            ->default(fn (Article $record) => $record->ai_metadata['image_prompts'][0]['prompt_en'] ?? ($record->getTranslation('image_alt', 'en') ?: ('Editorial photojournalism style, high quality photography: ' . $record->getTranslation('title', 'en'))))
-                            ->rows(3)
-                            ->required(),
-                    ])
-                    ->modalHeading('🎨 Regenerar Portada con IA (FLUX.1)')
-                    ->modalDescription('Se enviará una solicitud a SiliconFlow para generar una nueva portada de alta calidad y reemplazar la imagen actual.')
-                    ->modalSubmitActionLabel('Generar Portada')
-                    ->action(function (Article $record, array $data) {
-                        $imageService = app(SiliconFlowImageService::class);
-                        $success = $imageService->regenerateHeroForArticle($record, $data['prompt']);
+RULES:
+1. Length: Each headline MUST be between {$titleMinChars} and {$titleMaxChars} characters (aim for 70-130 chars).
+2. Word count: Minimum {$titleMinWords} words.
+3. Structure: Standalone full sentence with subject, action, and key impact.
+4. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
 
-                        if ($success) {
-                            Notification::make()
-                                ->title('Imagen generada y actualizada con éxito')
+CURRENT HEADLINE: {$currentTitle}
+EXCERPT: {$excerpt}
+BODY SAMPLE: {$sampleBody}
+
+Return ONLY valid JSON (no markdown wrapper, no extra text):
+{
+    "title_es": "Titular completo en español...",
+    "title_en": "Complete headline in English..."
+}
+PROMPT;
+
+                            try {
+                                $rawJson = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
+                                $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($rawJson));
+                                $data = json_decode($cleanJson, true);
+                                
+                                if (!empty($data['title_es']) && !empty($data['title_en'])) {
+                                    $record->setTranslation('title', 'es', trim($data['title_es']));
+                                    $record->setTranslation('title', 'en', trim($data['title_en']));
+                                    $record->save();
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Titular bilingüe regenerado con éxito')
+                                        ->body("ES: {$data['title_es']}")
+                                        ->success()
+                                        ->send();
+                                } else {
+                                    throw new \Exception('La IA no devolvió el formato JSON esperado.');
+                                }
+                            } catch (\Throwable $e) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Error al regenerar titular')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
+
+                    \Filament\Actions\Action::make('regenerate_image')
+                        ->label('Regenerar Portada con IA')
+                        ->icon('heroicon-o-photo')
+                        ->color('primary')
+                        ->tooltip('Regenerar portada contextual con IA (FLUX.1)')
+                        ->form([
+                            Textarea::make('prompt')
+                                ->label('Prompt Visual para FLUX.1 (En inglés)')
+                                ->helperText('Puedes personalizar las instrucciones visuales para la IA o dejar el prompt generado automáticamente.')
+                                ->default(fn (Article $record) => $record->ai_metadata['image_prompts'][0]['prompt_en'] ?? ($record->getTranslation('image_alt', 'en') ?: ('Editorial photojournalism style, high quality photography: ' . $record->getTranslation('title', 'en'))))
+                                ->rows(3)
+                                ->required(),
+                        ])
+                        ->modalHeading('🎨 Regenerar Portada con IA (FLUX.1)')
+                        ->modalDescription('Se enviará una solicitud a SiliconFlow para generar una nueva portada de alta calidad y reemplazar la imagen actual.')
+                        ->modalSubmitActionLabel('Generar Portada')
+                        ->action(function (Article $record, array $data) {
+                            $imageService = app(SiliconFlowImageService::class);
+                            $success = $imageService->regenerateHeroForArticle($record, $data['prompt']);
+
+                            if ($success) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Imagen generada y actualizada con éxito')
+                                    ->success()
+                                    ->send();
+                            } else {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Error al generar la imagen con SiliconFlow')
+                                    ->body('Revisa los logs o tu saldo de API en SiliconFlow.')
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
+
+                    \Filament\Actions\Action::make('change_author')
+                        ->label('Cambiar Autor')
+                        ->icon('heroicon-o-user-circle')
+                        ->color('warning')
+                        ->tooltip('Reasignar redactor / autor de la noticia')
+                        ->form([
+                            Select::make('user_id')
+                                ->label('Nuevo Autor / Redactor Asignado')
+                                ->options(fn () => \App\Models\User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->pluck('name', 'id'))
+                                ->default(fn (Article $record) => $record->user_id)
+                                ->required()
+                                ->searchable(),
+                        ])
+                        ->action(function (Article $record, array $data) {
+                            $record->update(['user_id' => $data['user_id']]);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Autor reasignado exitosamente')
                                 ->success()
                                 ->send();
+                        }),
+
+                    \Filament\Actions\Action::make('reprocess_article')
+                        ->label('Reprocesar Noticia Completa')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('danger')
+                        ->tooltip('Reescribir todo el artículo y sus imágenes desde cero a través del pipeline de IA')
+                        ->requiresConfirmation()
+                        ->modalHeading('🔄 ¿Reprocesar Noticia Completa?')
+                        ->modalDescription('Esta acción volverá a generar el contenido bilingüe y las imágenes usando la fuente original de la noticia. ¿Estás seguro?')
+                        ->action(function (Article $record) {
+                            if ($record->rawArticle) {
+                                $record->rawArticle->update(['status' => 'pending']);
+                                \App\Jobs\ProcessArticleWithAIJob::dispatch($record->rawArticle);
+                                
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Artículo enviado al pipeline de reescritura')
+                                    ->body('El trabajo de IA ha sido despachado a la cola asíncrona.')
+                                    ->info()
+                                    ->send();
                         } else {
-                            Notification::make()
-                                ->title('Error al generar la imagen con SiliconFlow')
-                                ->body('Revisa los logs o tu saldo de API en SiliconFlow.')
+                            \Filament\Notifications\Notification::make()
+                                ->title('No se encontró el registro original (RawArticle)')
                                 ->danger()
                                 ->send();
-                    }
-                }),
-
-                \Filament\Actions\EditAction::make(),
-                \Filament\Actions\Action::make('publish_now')
-                    ->label('Publicar Ahora')
-                    ->icon('heroicon-o-bolt')
-                    ->color('success')
-                    ->visible(fn (Article $record) => $record->status === 'scheduled')
-                    ->requiresConfirmation()
-                    ->modalHeading('¿Publicar artículo inmediatamente?')
-                    ->modalDescription('El artículo cambiará de estado "Programado" a "Publicado" y aparecerá de inmediato en la web pública.')
-                    ->action(function (Article $record) {
-                        $record->update(['status' => 'published', 'published_at' => now()]);
-                        try {
-                            event(new \App\Events\ArticlePublished($record));
-                            \App\Http\Controllers\SitemapController::flushCache();
-                            if ($record->slug_en) {
-                                \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
-                            }
-                            if ($record->slug_es) {
-                                \App\Http\Controllers\IndexNowController::ping(url('/es/' . $record->slug_es));
-                            }
-                        } catch (\Throwable $e) {
-                            // ignore ping error
                         }
                     }),
-                \Filament\Actions\Action::make('approve')
-                    ->label('Aprobar')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
-                    ->requiresConfirmation()
-                    ->action(function (Article $record) {
-                        $old = $record->status;
-                        $record->update(['status' => 'published', 'published_at' => now()]);
-                        static::sendNotification($record, $old, 'published');
-                        \App\Http\Controllers\SitemapController::flushCache();
-                        \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
-                    }),
-                \Filament\Actions\Action::make('reject')
-                    ->label('Rechazar')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
-                    ->requiresConfirmation()
-                    ->action(function (Article $record) {
-                        $old = $record->status;
-                        $record->update(['status' => 'rejected']);
-                        static::sendNotification($record, $old, 'rejected');
-                    }),
-                \Filament\Actions\Action::make('review')
-                    ->label('Enviar a Revisión')
-                    ->icon('heroicon-o-clock')
-                    ->color('warning')
-                    ->visible(fn (Article $record) => $record->status === 'draft')
-                    ->action(function (Article $record) {
-                        $old = $record->status;
-                        $record->update(['status' => 'pending_review']);
-                        static::sendNotification($record, $old, 'pending_review');
-                    }),
+
+                    \Filament\Actions\EditAction::make()
+                        ->label('Editar Artículo')
+                        ->icon('heroicon-o-pencil-square'),
+
+                    \Filament\Actions\Action::make('publish_now')
+                        ->label('Publicar Ahora')
+                        ->icon('heroicon-o-bolt')
+                        ->color('success')
+                        ->visible(fn (Article $record) => $record->status === 'scheduled')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Publicar artículo inmediatamente?')
+                        ->modalDescription('El artículo cambiará de estado "Programado" a "Publicado" y aparecerá de inmediato en la web pública.')
+                        ->action(function (Article $record) {
+                            $record->update(['status' => 'published', 'published_at' => now()]);
+                            try {
+                                event(new \App\Events\ArticlePublished($record));
+                                \App\Http\Controllers\SitemapController::flushCache();
+                                if ($record->slug_en) {
+                                    \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
+                                }
+                                if ($record->slug_es) {
+                                    \App\Http\Controllers\IndexNowController::ping(url('/es/' . $record->slug_es));
+                                }
+                            } catch (\Throwable $e) {
+                                // ignore ping error
+                            }
+                        }),
+
+                    \Filament\Actions\Action::make('approve')
+                        ->label('Aprobar y Publicar')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
+                        ->requiresConfirmation()
+                        ->action(function (Article $record) {
+                            $old = $record->status;
+                            $record->update(['status' => 'published', 'published_at' => now()]);
+                            static::sendNotification($record, $old, 'published');
+                            \App\Http\Controllers\SitemapController::flushCache();
+                            \App\Http\Controllers\IndexNowController::ping(url('/' . $record->slug_en));
+                        }),
+
+                    \Filament\Actions\Action::make('reject')
+                        ->label('Rechazar Noticia')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->visible(fn (Article $record) => in_array($record->status, ['draft', 'pending_review']))
+                        ->requiresConfirmation()
+                        ->action(function (Article $record) {
+                            $old = $record->status;
+                            $record->update(['status' => 'rejected']);
+                            static::sendNotification($record, $old, 'rejected');
+                        }),
+
+                    \Filament\Actions\Action::make('review')
+                        ->label('Enviar a Revisión')
+                        ->icon('heroicon-o-clock')
+                        ->color('warning')
+                        ->visible(fn (Article $record) => $record->status === 'draft')
+                        ->action(function (Article $record) {
+                            $old = $record->status;
+                            $record->update(['status' => 'pending_review']);
+                            static::sendNotification($record, $old, 'pending_review');
+                        }),
+                ])
+                ->label('Acciones')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('primary')
+                ->button()
+                ->tooltip('Opciones de la noticia'),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\BulkAction::make('regenerate_titles_bulk')
+                        ->label('🪄 Regenerar Títulos Seleccionados')
+                        ->icon('heroicon-o-sparkles')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Regenerar titulares de los artículos seleccionados?')
+                        ->modalDescription('Se enviará una solicitud a la IA para completar y enriquecer los titulares de todas las noticias seleccionadas.')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $ai = app(\App\Services\AI\OpenRouterService::class);
+                            $titleMinChars   = (int) config('global.editorial.limits.title.min', 50);
+                            $titleMaxChars   = (int) config('global.editorial.limits.title.max', 160);
+                            $titleMinWords   = (int) config('global.editorial.limits.title.min_words', 6);
+                            
+                            $updated = 0;
+                            foreach ($records as $record) {
+                                $excerpt = $record->getTranslation('excerpt', 'es') ?: $record->getTranslation('excerpt', 'en') ?: '';
+                                $body = strip_tags($record->getTranslation('content', 'es') ?: $record->getTranslation('content', 'en') ?: '');
+                                $sampleBody = mb_substr($body, 0, 1000);
+                                $currentTitle = $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en');
+                                
+                                $prompt = <<<PROMPT
+You are a senior tech headline editor for Glodaxia.
+Based on the following article, generate a complete, informative headline in English and Spanish ({$titleMinChars}-{$titleMaxChars} chars, min {$titleMinWords} words, standalone sentence, never truncated).
+
+CURRENT HEADLINE: {$currentTitle}
+EXCERPT: {$excerpt}
+BODY: {$sampleBody}
+
+Return ONLY JSON:
+{"title_es": "...", "title_en": "..."}
+PROMPT;
+
+                                try {
+                                    $rawJson = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
+                                    $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($rawJson));
+                                    $data = json_decode($cleanJson, true);
+                                    if (!empty($data['title_es']) && !empty($data['title_en'])) {
+                                        $record->setTranslation('title', 'es', trim($data['title_es']));
+                                        $record->setTranslation('title', 'en', trim($data['title_en']));
+                                        $record->save();
+                                        $updated++;
+                                    }
+                                } catch (\Throwable $e) {
+                                    // continue
+                                }
+                            }
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title("Se regeneraron {$updated} titulares exitosamente")
+                                ->success()
+                                ->send();
+                        }),
                     \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

@@ -96,8 +96,8 @@
                                 <time datetime="{{ $article->published_at?->toIso8601String() }}" class="text-slate-500 dark:text-slate-400 font-medium">{{ $article->published_at ? $article->published_at->format('d M, Y') : '' }}</time>
                             </div>
 
-                            <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
-                                <a href="{{ $articleUrl }}" class="focus-visible:outline-none focus-visible:underline">{{ $articleTitle }}</a>
+                            <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                                <a href="{{ $articleUrl }}" class="focus-visible:outline-none focus-visible:underline">{{ \Illuminate\Support\Str::words($articleTitle, (int) config('global.editorial.limits.card.title_max_words', 15), '...') }}</a>
                             </h2>
 
                             @if($articleExcerpt)
