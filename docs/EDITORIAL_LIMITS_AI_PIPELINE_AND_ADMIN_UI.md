@@ -156,13 +156,24 @@ Si por alguna razón la IA devuelve un titular de longitud superior a 130 caract
 7. **Acciones**: Botonera de acceso rápido.
 
 ### B. Acciones Rápidas por Fila (Botonera `[ 🪄 ] [ 🖼️ ] [ 🔄 ] [ ⋯ ]`)
+Las 3 acciones rápidas cuentan con **estados de carga persistentes (`animate-spin`)** en segundo plano:
+
 * **`[ 🪄 ]` Regenerar Título IA (1 Clic Asíncrono)**:
   * Despacha `RegenerateArticleTitleJob` en **5 milisegundos**.
-  * No bloquea la interfaz de Livewire.
-  * Cambia de inmediato a un **icono de carga giratorio en color ámbar `[ 🔄 ]` (`animate-spin`)**.
-* **`[ 🖼️ ]` Regenerar Portada IA (FLUX.1)**: Abre modal para personalizar el prompt visual y generar portada WebP en SiliconFlow.
-* **`[ 🔄 ]` Reprocesar Noticia Completa**: Envía el artículo al pipeline de redacción general en cola asíncrona (`ProcessArticleWithAIJob`).
-* **`[ ⋯ ]` Menú Desplegable**: Agrupa acciones administrativas (*Ver en la web, Cambiar autor, Editar, Publicar ahora, Aprobar, Rechazar, Enviar a revisión*).
+  * Activa la clave de Redis `article_title_processing_{id}`.
+  * Cambia al instante a un **icono de carga giratorio ámbar `[ 🔄 ]` (`animate-spin`)**.
+  * El titular muestra el pulso: `⏳ Regenerando titular con IA en segundo plano...`
+* **`[ 🖼️ ]` Regenerar Portada IA (FLUX.1)**:
+  * Abre modal para personalizar el prompt visual y despacha en segundo plano `RegenerateArticleHeroImageJob`.
+  * Activa la clave de Redis `article_image_processing_{id}`.
+  * Cambia al instante a un **icono de carga giratorio ámbar `[ 🔄 ]` (`animate-spin`)**.
+  * El titular muestra el pulso: `⏳ Generando nueva portada con IA (FLUX.1)...`
+* **`[ 🔄 ]` Reprocesar Noticia Completa (1 Clic Asíncrono)**:
+  * Despacha en segundo plano `ProcessArticleWithAIJob`.
+  * Activa la clave de Redis `article_full_reprocessing_{id}`.
+  * Cambia al instante a un **icono de carga giratorio ámbar `[ 🔄 ]` (`animate-spin`)**.
+  * El titular muestra el pulso: `⏳ Reescribiendo noticia e imágenes completas con IA...`
+* **`[ ⋯ ]` Menú Desplegable**: Agrupa acciones administrativas secundarias (*Ver en la web, Cambiar autor, Editar, Publicar ahora, Aprobar, Rechazar, Enviar a revisión*).
 
 ### C. Procesamiento Asíncrono y Estado Persistente
 

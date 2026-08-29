@@ -258,9 +258,15 @@ class ArticleResource extends Resource
                         $maxChars = (int) config('global.editorial.limits.title.max', 130);
                         $minWords = (int) config('global.editorial.limits.title.min_words', 7);
                         
-                        $isProcessing = \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}");
+                        $isTitleProc = \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}");
+                        $isImageProc = \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}");
+                        $isFullProc  = \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}");
 
-                        if ($isProcessing) {
+                        if ($isFullProc) {
+                            $statusBadge = "⏳ <span class='text-purple-500 dark:text-purple-400 font-semibold animate-pulse'>Reescribiendo noticia e imágenes completas con IA...</span>";
+                        } elseif ($isImageProc) {
+                            $statusBadge = "⏳ <span class='text-blue-500 dark:text-blue-400 font-semibold animate-pulse'>Generando nueva portada con IA (FLUX.1)...</span>";
+                        } elseif ($isTitleProc) {
                             $statusBadge = "⏳ <span class='text-amber-500 dark:text-amber-400 font-semibold animate-pulse'>Regenerando titular con IA en segundo plano...</span>";
                         } elseif ($len === 0) {
                             $statusBadge = 'Sin titular';
@@ -398,11 +404,13 @@ class ArticleResource extends Resource
                     }),
 
                 \Filament\Actions\Action::make('regenerate_image')
-                    ->label('Regenerar Portada')
-                    ->icon('heroicon-o-photo')
+                    ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'Generando Portada...' : 'Regenerar Portada')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-photo')
                     ->iconButton()
-                    ->color('primary')
-                    ->tooltip('🖼️ Regenerar Portada con IA (FLUX.1)')
+                    ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'warning' : 'primary')
+                    ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? ['class' => 'animate-spin opacity-80 pointer-events-none cursor-not-allowed'] : [])
+                    ->disabled(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}"))
+                    ->tooltip(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? '⏳ Generando portada con IA (FLUX.1) en segundo plano...' : '🖼️ Regenerar Portada con IA (FLUX.1)')
                     ->form([
                         Textarea::make('prompt')
                             ->label('Prompt Visual para FLUX.1 (En inglés)')
@@ -412,39 +420,35 @@ class ArticleResource extends Resource
                             ->required(),
                     ])
                     ->modalHeading('🎨 Regenerar Portada con IA (FLUX.1)')
-                    ->modalDescription('Se enviará una solicitud a SiliconFlow para generar una nueva portada de alta calidad y reemplazar la imagen actual.')
+                    ->modalDescription('Se despachará una tarea en segundo plano a SiliconFlow para generar una nueva portada de alta calidad y reemplazar la imagen actual.')
                     ->modalSubmitActionLabel('Generar Portada')
                     ->action(function (Article $record, array $data) {
-                        $imageService = app(SiliconFlowImageService::class);
-                        $success = $imageService->regenerateHeroForArticle($record, $data['prompt']);
+                        \Illuminate\Support\Facades\Cache::put("article_image_processing_{$record->id}", true, now()->addMinutes(3));
+                        \App\Jobs\RegenerateArticleHeroImageJob::dispatch($record, $data['prompt'] ?? null);
 
-                        if ($success) {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Imagen generada y actualizada con éxito')
-                                ->success()
-                                ->send();
-                        } else {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Error al generar la imagen con SiliconFlow')
-                                ->body('Revisa los logs o tu saldo de API en SiliconFlow.')
-                                ->danger()
-                                ->send();
-                        }
+                        \Filament\Notifications\Notification::make()
+                            ->title('🖼️ Portada enviada a la cola de IA')
+                            ->body('La imagen se está generando con FLUX.1 en segundo plano.')
+                            ->success()
+                            ->send();
                     }),
 
                 \Filament\Actions\Action::make('reprocess_article')
-                    ->label('Reprocesar Noticia')
-                    ->icon('heroicon-o-arrow-path')
+                    ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'Reescribiendo Noticia...' : 'Reprocesar Noticia')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-arrow-path')
                     ->iconButton()
-                    ->color('danger')
-                    ->tooltip('🔄 Reprocesar Noticia Completa (En Cola Asíncrona)')
+                    ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'warning' : 'danger')
+                    ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? ['class' => 'animate-spin opacity-80 pointer-events-none cursor-not-allowed'] : [])
+                    ->disabled(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}"))
+                    ->tooltip(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? '⏳ Reescribiendo artículo e imágenes completas con IA en segundo plano...' : '🔄 Reprocesar Noticia Completa (1 Clic directo a la cola)')
                     ->action(function (Article $record) {
                         if ($record->rawArticle) {
+                            \Illuminate\Support\Facades\Cache::put("article_full_reprocessing_{$record->id}", true, now()->addMinutes(5));
                             $record->rawArticle->update(['status' => 'pending']);
                             \App\Jobs\ProcessArticleWithAIJob::dispatch($record->rawArticle);
                             
                             \Filament\Notifications\Notification::make()
-                                ->title('Noticia enviada a la cola de IA')
+                                ->title('🔄 Noticia enviada a la cola de IA')
                                 ->body('El artículo y sus imágenes se están reescribiendo en segundo plano.')
                                 ->info()
                                 ->send();

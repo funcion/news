@@ -563,6 +563,10 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         }
         
         Log::info("Bilingual article created: {$article->id} with {$imageCount} images using model {$modelUsed}.");
+        
+        if (!empty($article->id)) {
+            \Illuminate\Support\Facades\Cache::forget("article_full_reprocessing_{$article->id}");
+        }
     }
 
     // -------------------------------------------------------------------------
