@@ -28,8 +28,15 @@ Route::get('/sitemap-tags.xml', [\App\Http\Controllers\SitemapController::class,
 Route::get('/sitemap-news.xml', [\App\Http\Controllers\SitemapController::class, 'news'])->name('sitemap.news');
 Route::get('/sitemap-images.xml', [\App\Http\Controllers\SitemapController::class, 'images'])->name('sitemap.images');
 
-// IndexNow verification endpoint (Bing/Yandex send GET with ?key=xxx to verify ownership)
+// IndexNow verification endpoint (Bing, Yandex, Copilot, ChatGPT Search)
 Route::get('/indexnow', [\App\Http\Controllers\IndexNowController::class, 'handle'])->name('indexnow');
+Route::get('/{key}.txt', function (string $key) {
+    $apiKey = config('services.indexnow.key', '');
+    if (!empty($apiKey) && $key === $apiKey) {
+        return response($apiKey, 200)->header('Content-Type', 'text/plain');
+    }
+    abort(404);
+})->where('key', '^[a-fA-F0-9]{8,128}$');
 
 // RSS Feed
 Route::get('/feed.xml', [\App\Http\Controllers\FrontendController::class, 'feed'])->name('feed');
