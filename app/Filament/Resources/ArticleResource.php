@@ -395,7 +395,7 @@ You are a senior tech journalism headline editor for Glodaxia.
 Based on the following article facts and context, craft a compelling, complete, and highly descriptive headline in both English and Spanish.
 
 RULES:
-1. Length: Each headline MUST be between {$titleMinChars} and {$titleMaxChars} characters (aim for 70-130 chars).
+1. Length: Target between 70 and 115 characters. ABSOLUTE MAXIMUM is {$titleMaxChars} characters (STRICTLY between {$titleMinChars} and {$titleMaxChars} chars). NEVER exceed {$titleMaxChars} characters.
 2. Word count: Minimum {$titleMinWords} words.
 3. Structure: Standalone full sentence with subject, action, and key impact.
 4. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
@@ -417,8 +417,21 @@ PROMPT;
                             $data = json_decode($cleanJson, true);
                             
                             if (!empty($data['title_es']) && !empty($data['title_en'])) {
-                                $record->setTranslation('title', 'es', trim($data['title_es']));
-                                $record->setTranslation('title', 'en', trim($data['title_en']));
+                                $cleaner = function(string $t, int $min, int $max): string {
+                                    $t = trim(strip_tags($t));
+                                    $t = trim($t, " \t\n\r\0\x0B\"'«»“”");
+                                    if (mb_strlen($t) <= $max) return $t;
+                                    $sub = mb_substr($t, 0, $max);
+                                    $sp = mb_strrpos($sub, ' ');
+                                    if ($sp !== false && $sp >= $min) $sub = mb_substr($sub, 0, $sp);
+                                    $sub = preg_replace('/\s+(?:de|del|con|para|por|en|a|y|e|o|u|que|sobre|tras|the|and|or|for|with|in|on|at|by|of|to|from|as|an|a)$/iu', '', $sub);
+                                    return rtrim($sub, " ,;:-–—/|\\");
+                                };
+                                $titleEs = $cleaner($data['title_es'], $titleMinChars, $titleMaxChars);
+                                $titleEn = $cleaner($data['title_en'], $titleMinChars, $titleMaxChars);
+
+                                $record->setTranslation('title', 'es', $titleEs);
+                                $record->setTranslation('title', 'en', $titleEn);
                                 $record->save();
                                 
                                 \Filament\Notifications\Notification::make()

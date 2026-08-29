@@ -38,7 +38,7 @@ You are a senior tech journalism headline editor for Glodaxia.
 Based on the following article facts and context, craft a compelling, complete, and highly descriptive headline in both English and Spanish.
 
 RULES:
-1. Length: Each headline MUST be between {$titleMinChars} and {$titleMaxChars} characters (aim for 70-130 chars).
+1. Length: Target between 70 and 115 characters. ABSOLUTE MAXIMUM is {$titleMaxChars} characters (STRICTLY between {$titleMinChars} and {$titleMaxChars} chars). NEVER exceed {$titleMaxChars} characters.
 2. Word count: Minimum {$titleMinWords} words.
 3. Structure: Standalone full sentence with subject, action, and key impact.
 4. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
@@ -60,10 +60,13 @@ PROMPT;
             $data = json_decode($cleanJson, true);
 
             if (!empty($data['title_es']) && !empty($data['title_en'])) {
-                $this->article->setTranslation('title', 'es', trim($data['title_es']));
-                $this->article->setTranslation('title', 'en', trim($data['title_en']));
+                $titleEs = $this->sanitizeTitle($data['title_es'], $titleMinChars, $titleMaxChars);
+                $titleEn = $this->sanitizeTitle($data['title_en'], $titleMinChars, $titleMaxChars);
+
+                $this->article->setTranslation('title', 'es', $titleEs);
+                $this->article->setTranslation('title', 'en', $titleEn);
                 $this->article->save();
-                Log::info("Regenerated title for Article #{$this->article->id}: {$data['title_es']}");
+                Log::info("Regenerated title for Article #{$this->article->id}: {$titleEs}");
             } else {
                 throw new \Exception("Invalid JSON returned: {$rawJson}");
             }
@@ -71,5 +74,23 @@ PROMPT;
             Log::error("Failed to regenerate title for Article #{$this->article->id}: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    protected function sanitizeTitle(string $title, int $minChars, int $maxChars): string
+    {
+        $title = trim(strip_tags($title));
+        $title = trim($title, " \t\n\r\0\x0B\"'«»“”");
+
+        if (mb_strlen($title) <= $maxChars) {
+            return $title;
+        }
+
+        $sub = mb_substr($title, 0, $maxChars);
+        $lastSpace = mb_strrpos($sub, ' ');
+        if ($lastSpace !== false && $lastSpace >= $minChars) {
+            $sub = mb_substr($sub, 0, $lastSpace);
+        }
+        $sub = preg_replace('/\s+(?:de|del|con|para|por|en|a|y|e|o|u|que|sobre|tras|the|and|or|for|with|in|on|at|by|of|to|from|as|an|a)$/iu', '', $sub);
+        return rtrim($sub, " ,;:-–—/|\\");
     }
 }

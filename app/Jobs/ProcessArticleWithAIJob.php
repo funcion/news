@@ -1151,20 +1151,30 @@ PROMPT;
     {
         $fixes = [];
 
-        $titleMax     = (int) config('global.editorial.limits.title.max', 160);
+        $titleMin     = (int) config('global.editorial.limits.title.min', 50);
+        $titleMax     = (int) config('global.editorial.limits.title.max', 130);
         $excerptMax   = (int) config('global.editorial.limits.excerpt.max', 250);
         $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 80);
         $metaDescMax  = (int) config('global.editorial.limits.meta_description.max', 160);
 
-        // Clean and safely trim excessively long titles using global config limit
+        // Clean and safely clamp excessively long titles using global config limit
         foreach (['title_en', 'title_es'] as $field) {
             if (!empty($data[$field])) {
-                $data[$field] = trim(preg_replace('/\s+/u', ' ', $data[$field]));
-                if (mb_strlen($data[$field]) > $titleMax) {
-                    $original = $data[$field];
-                    $data[$field] = Str::limit($data[$field], $titleMax, '');
-                    $fixes[] = "{$field}: safely trimmed from " . mb_strlen($original) . " to " . mb_strlen($data[$field]) . " chars";
+                $t = trim(preg_replace('/\s+/u', ' ', strip_tags($data[$field])));
+                $t = trim($t, " \t\n\r\0\x0B\"'«»“”");
+                $t = trim($t);
+                if (mb_strlen($t) > $titleMax) {
+                    $original = $t;
+                    $sub = mb_substr($t, 0, $titleMax);
+                    $lastSpace = mb_strrpos($sub, ' ');
+                    if ($lastSpace !== false && $lastSpace >= $titleMin) {
+                        $sub = mb_substr($sub, 0, $lastSpace);
+                    }
+                    $sub = preg_replace('/\s+(?:de|del|con|para|por|en|a|y|e|o|u|que|sobre|tras|the|and|or|for|with|in|on|at|by|of|to|from|as|an|a)$/iu', '', $sub);
+                    $t = rtrim($sub, " ,;:-–—/|\\");
+                    $fixes[] = "{$field}: safely clamped from " . mb_strlen($original) . " to " . mb_strlen($t) . " chars";
                 }
+                $data[$field] = $t;
             }
         }
 
