@@ -82,37 +82,37 @@ return [
         // -------------------------------------------------------------------
         'limits' => [
             'title' => [
-                'min'       => (int) env('ARTICLE_TITLE_MIN_CHARS', 50),
-                'max'       => (int) env('ARTICLE_TITLE_MAX_CHARS', 130),
-                'min_words' => (int) env('ARTICLE_TITLE_MIN_WORDS', 7),
+                'min'       => 50,
+                'max'       => 130,
+                'min_words' => 7,
             ],
             'excerpt' => [
-                'min' => (int) env('ARTICLE_EXCERPT_MIN_CHARS', 160),
-                'max' => (int) env('ARTICLE_EXCERPT_MAX_CHARS', 250),
+                'min' => 160,
+                'max' => 250,
             ],
             'meta_title' => [
-                'min' => (int) env('ARTICLE_META_TITLE_MIN_CHARS', 50),
-                'max' => (int) env('ARTICLE_META_TITLE_MAX_CHARS', 80),
+                'min' => 50,
+                'max' => 80,
             ],
             'meta_description' => [
-                'min' => (int) env('ARTICLE_META_DESC_MIN_CHARS', 120),
-                'max' => (int) env('ARTICLE_META_DESC_MAX_CHARS', 160),
+                'min' => 120,
+                'max' => 160,
             ],
             'image_alt' => [
-                'max' => (int) env('ARTICLE_IMAGE_ALT_MAX_CHARS', 125),
+                'max' => 125,
             ],
             'image_title' => [
-                'max' => (int) env('ARTICLE_IMAGE_TITLE_MAX_CHARS', 70),
+                'max' => 70,
             ],
             'card' => [
-                'title_max_words' => (int) env('ARTICLE_CARD_TITLE_MAX_WORDS', 15),
-                'title_max'       => (int) env('ARTICLE_CARD_TITLE_MAX_CHARS', 130),
-                'excerpt_max'     => (int) env('ARTICLE_CARD_EXCERPT_MAX_CHARS', 160),
+                'title_max_words' => 15,
+                'title_max'       => 130,
+                'excerpt_max'     => 160,
             ],
             'reading_time_wpm' => 200,
             'raw_preview_chars' => 2000,
             'min_words' => [
-                'news'   => (int) env('ARTICLE_MIN_WORDS_NEWS', 800),
+                'news'   => 800,
                 'blog'   => 900,
                 'guide'  => 1200,
                 'review' => 900,

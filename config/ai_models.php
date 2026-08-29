@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     | The #1 highest-priority, cost-effective model for redaction and intelligence.
     */
-    'default' => env('AI_DEFAULT_MODEL', 'deepseek/deepseek-v4-flash'),
+    'default' => 'deepseek/deepseek-v4-flash',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,17 +22,15 @@ return [
     | 6. meta-llama/llama-4-maverick   (Meta Llama 4 deep context)
     | 7. bytedance-seed/seed-1.6       (ByteDance robust failover)
     */
-    'pool' => array_values(array_filter(
-        explode(',', env('AI_MODELS_POOL', implode(',', [
-            'deepseek/deepseek-v4-flash',
-            'qwen/qwen3.7-flash',
-            'deepseek/deepseek-v3.2',
-            'qwen/qwen3.8-flash',
-            'meta-llama/llama-4-scout',
-            'meta-llama/llama-4-maverick',
-            'bytedance-seed/seed-1.6',
-        ])))
-    )),
+    'pool' => [
+        'deepseek/deepseek-v4-flash',
+        'qwen/qwen3.7-flash',
+        'deepseek/deepseek-v3.2',
+        'qwen/qwen3.8-flash',
+        'meta-llama/llama-4-scout',
+        'meta-llama/llama-4-maverick',
+        'bytedance-seed/seed-1.6',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -84,9 +82,9 @@ return [
     | Token Limits & Performance Tuners
     |--------------------------------------------------------------------------
     */
-    'max_tokens'                => (int) env('AI_MAX_TOKENS', 10000),
-    'classification_max_tokens' => (int) env('AI_CLASSIFICATION_MAX_TOKENS', 1500),
-    'tag_max_tokens'            => (int) env('AI_TAG_MAX_TOKENS', 500),
-    'temperature'               => (float) env('AI_TEMPERATURE', 0.7),
-    'timeout'                   => (int) env('AI_TIMEOUT', 180),
+    'max_tokens'                => 10000,
+    'classification_max_tokens' => 1500,
+    'tag_max_tokens'            => 500,
+    'temperature'               => 0.7,
+    'timeout'                   => 180,
 ];
