@@ -600,51 +600,15 @@ PROMPT;
                         ->label('🪄 Regenerar Títulos Seleccionados')
                         ->icon('heroicon-o-sparkles')
                         ->color('success')
-                        ->requiresConfirmation()
-                        ->modalHeading('¿Regenerar titulares de los artículos seleccionados?')
-                        ->modalDescription('Se enviará una solicitud a la IA para completar y enriquecer los titulares de todas las noticias seleccionadas.')
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
-                            $ai = app(\App\Services\AI\OpenRouterService::class);
-                            $titleMinChars   = (int) config('global.editorial.limits.title.min', 50);
-                            $titleMaxChars   = (int) config('global.editorial.limits.title.max', 160);
-                            $titleMinWords   = (int) config('global.editorial.limits.title.min_words', 6);
-                            
-                            $updated = 0;
+                            $count = $records->count();
                             foreach ($records as $record) {
-                                $excerpt = $record->getTranslation('excerpt', 'es') ?: $record->getTranslation('excerpt', 'en') ?: '';
-                                $body = strip_tags($record->getTranslation('content', 'es') ?: $record->getTranslation('content', 'en') ?: '');
-                                $sampleBody = mb_substr($body, 0, 1000);
-                                $currentTitle = $record->getTranslation('title', 'es') ?: $record->getTranslation('title', 'en');
-                                
-                                $prompt = <<<PROMPT
-You are a senior tech headline editor for Glodaxia.
-Based on the following article, generate a complete, informative headline in English and Spanish ({$titleMinChars}-{$titleMaxChars} chars, min {$titleMinWords} words, standalone sentence, never truncated).
-
-CURRENT HEADLINE: {$currentTitle}
-EXCERPT: {$excerpt}
-BODY: {$sampleBody}
-
-Return ONLY JSON:
-{"title_es": "...", "title_en": "..."}
-PROMPT;
-
-                                try {
-                                    $rawJson = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
-                                    $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($rawJson));
-                                    $data = json_decode($cleanJson, true);
-                                    if (!empty($data['title_es']) && !empty($data['title_en'])) {
-                                        $record->setTranslation('title', 'es', trim($data['title_es']));
-                                        $record->setTranslation('title', 'en', trim($data['title_en']));
-                                        $record->save();
-                                        $updated++;
-                                    }
-                                } catch (\Throwable $e) {
-                                    // continue
-                                }
+                                \App\Jobs\RegenerateArticleTitleJob::dispatch($record);
                             }
                             
                             \Filament\Notifications\Notification::make()
-                                ->title("Se regeneraron {$updated} titulares exitosamente")
+                                ->title("🪄 {$count} artículos enviados a la cola de IA")
+                                ->body("Los titulares se están regenerando en segundo plano de forma concurrente.")
                                 ->success()
                                 ->send();
                         }),
