@@ -254,8 +254,8 @@ class ArticleResource extends Resource
                         $words = count(preg_split('/\s+/u', trim($titleEs), -1, PREG_SPLIT_NO_EMPTY));
                         
                         $minChars = (int) config('global.editorial.limits.title.min', 50);
-                        $maxChars = (int) config('global.editorial.limits.title.max', 160);
-                        $minWords = (int) config('global.editorial.limits.title.min_words', 6);
+                        $maxChars = (int) config('global.editorial.limits.title.max', 130);
+                        $minWords = (int) config('global.editorial.limits.title.min_words', 7);
                         
                         if ($len === 0) {
                             $statusBadge = 'Sin titular';

@@ -780,9 +780,10 @@ PROMPT;
 
         $authorBioEs = $author->getTranslation('bio', 'es') ?: $author->bio;
 
-        $titleMinChars    = (int) config('global.editorial.limits.title.min', 60);
-        $titleMaxChars    = (int) config('global.editorial.limits.title.max', 160);
-        $titleMinWords    = (int) config('global.editorial.limits.title.min_words', 8);
+        $minArticleWords = (int) config('global.editorial.limits.min_words.news', 800);
+        $titleMinChars    = (int) config('global.editorial.limits.title.min', 50);
+        $titleMaxChars    = (int) config('global.editorial.limits.title.max', 130);
+        $titleMinWords    = (int) config('global.editorial.limits.title.min_words', 7);
         $excerptMinChars  = (int) config('global.editorial.limits.excerpt.min', 160);
         $excerptMaxChars  = (int) config('global.editorial.limits.excerpt.max', 250);
         $imgAltMaxChars   = (int) config('global.editorial.limits.image_alt.max', 125);
@@ -818,13 +819,13 @@ STRICT PERSONA GROUNDING:
 3. Adopt an authoritative yet natural, conversational tone. Write like a real staff writer for Wired, The Verge, MIT Technology Review, or The Atlantic.
 
 ═════════════════════════════════════════════════════════════════════
-═══ 3. STRICT LENGTH & DEPTH REQUIREMENTS (MANDATORY >= 700 WORDS) ═══
+═══ 3. STRICT LENGTH & DEPTH REQUIREMENTS (MANDATORY >= {$minArticleWords} WORDS) ═══
 ═════════════════════════════════════════════════════════════════════
-- ABSOLUTE MINIMUM: Each language version (content_en and content_es) MUST contain a STRICT MINIMUM OF 700 WORDS (actual narrative words, excluding HTML tags). This is a HARD LIMIT — the article will be automatically REJECTED and retried if it falls short.
+- ABSOLUTE MINIMUM: Each language version (content_en and content_es) MUST contain a STRICT MINIMUM OF {$minArticleWords} WORDS (actual narrative words, excluding HTML tags). This is a HARD LIMIT — the article will be automatically REJECTED and retried if it falls short.
 - OPTIMAL RANGE: Aim for {$wordTarget}. Rich, in-depth technical journalism is celebrated. Write as much as the story demands.
 - FLEXIBLE UPPER CEILING: There is NO penalty for exceeding the target. 1500-2000 word articles are preferred when the story warrants it.
 - FORBIDDEN THIN CONTENT: NEVER write shallow 200-400 word summaries. Expand deeply on technical architecture, market ripple effects, historical context, benchmarks, expert opinions, and practitioner takeaways. Every section must add NEW information.
-- Articles with fewer than 700 words will be automatically REJECTED by programmatic validation and the job will be retried.
+- Articles with fewer than {$minArticleWords} words will be automatically REJECTED by programmatic validation and the job will be retried.
 
 ═════════════════════════════════════════════════════════════════════
 ═══ 4. STRICT LEGAL, DEFAMATION PREVENTION & JOURNALISTIC ETHICS (CRITICAL) ═══
@@ -1093,15 +1094,16 @@ PROMPT;
             }
         }
 
-        // 6. Strict Word Count Validation (Strict minimum: 700 words, no upper limit)
+        // 6. Strict Word Count Validation (Dynamic strict minimum from config, default: 800 words)
+        $minArticleWords = (int) config('global.editorial.limits.min_words.news', 800);
         $wordsEn = str_word_count(strip_tags($contentEn));
         $wordsEs = str_word_count(strip_tags($contentEs));
 
-        if ($wordsEn < 700) {
-            $errors[] = "content_en has only {$wordsEn} words (STRICT minimum is 700 words). The article is too thin — expand depth, analysis, and context.";
+        if ($wordsEn < $minArticleWords) {
+            $errors[] = "content_en has only {$wordsEn} words (STRICT minimum is {$minArticleWords} words). The article is too thin — expand depth, analysis, and context.";
         }
-        if ($wordsEs < 700) {
-            $errors[] = "content_es has only {$wordsEs} words (STRICT minimum is 700 words). El artículo es demasiado corto — expandir análisis, contexto y profundidad.";
+        if ($wordsEs < $minArticleWords) {
+            $errors[] = "content_es has only {$wordsEs} words (STRICT minimum is {$minArticleWords} words). El artículo es demasiado corto — expandir análisis, contexto y profundidad.";
         }
 
         // 7. Check for blocked AI-fingerprint phrases (WARNING ONLY — auto-fixed in autoFixRedactedOutput)

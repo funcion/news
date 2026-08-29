@@ -83,15 +83,15 @@ return [
         'limits' => [
             'title' => [
                 'min'       => (int) env('ARTICLE_TITLE_MIN_CHARS', 50),
-                'max'       => (int) env('ARTICLE_TITLE_MAX_CHARS', 160),
-                'min_words' => (int) env('ARTICLE_TITLE_MIN_WORDS', 6),
+                'max'       => (int) env('ARTICLE_TITLE_MAX_CHARS', 130),
+                'min_words' => (int) env('ARTICLE_TITLE_MIN_WORDS', 7),
             ],
             'excerpt' => [
                 'min' => (int) env('ARTICLE_EXCERPT_MIN_CHARS', 160),
                 'max' => (int) env('ARTICLE_EXCERPT_MAX_CHARS', 250),
             ],
             'meta_title' => [
-                'min' => (int) env('ARTICLE_META_TITLE_MIN_CHARS', 40),
+                'min' => (int) env('ARTICLE_META_TITLE_MIN_CHARS', 50),
                 'max' => (int) env('ARTICLE_META_TITLE_MAX_CHARS', 80),
             ],
             'meta_description' => [
@@ -112,7 +112,7 @@ return [
             'reading_time_wpm' => 200,
             'raw_preview_chars' => 2000,
             'min_words' => [
-                'news'   => 700,
+                'news'   => (int) env('ARTICLE_MIN_WORDS_NEWS', 800),
                 'blog'   => 900,
                 'guide'  => 1200,
                 'review' => 900,
@@ -122,7 +122,7 @@ return [
 
         // Word count targets per content type (for prompt context)
         'word_targets' => [
-            'news'   => '700-1200 words EN | 700-1200 palabras ES (Mínimo estricto: 700 palabras)',
+            'news'   => '800-1200 words EN | 800-1200 palabras ES (Mínimo estricto: 800 palabras)',
             'blog'   => '900-1500 words EN | 900-1500 palabras ES (Mínimo estricto: 900 palabras)',
             'guide'  => '1200-2000 words EN | 1200-2000 palabras ES (Mínimo estricto: 1200 palabras)',
             'review' => '900-1500 words EN | 900-1500 palabras ES (Mínimo estricto: 900 palabras)',
