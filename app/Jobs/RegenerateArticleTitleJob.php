@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class RegenerateArticleTitleJob implements ShouldQueue
@@ -73,6 +74,8 @@ PROMPT;
         } catch (\Throwable $e) {
             Log::error("Failed to regenerate title for Article #{$this->article->id}: " . $e->getMessage());
             throw $e;
+        } finally {
+            Cache::forget("article_title_processing_{$this->article->id}");
         }
     }
 

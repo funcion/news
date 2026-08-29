@@ -236,7 +236,7 @@ class ArticleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('15s')
+            ->poll('5s')
             ->defaultSort('published_at', 'desc')
             ->columns([
                 ImageColumn::make('image_url')
@@ -258,7 +258,11 @@ class ArticleResource extends Resource
                         $maxChars = (int) config('global.editorial.limits.title.max', 130);
                         $minWords = (int) config('global.editorial.limits.title.min_words', 7);
                         
-                        if ($len === 0) {
+                        $isProcessing = \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}");
+
+                        if ($isProcessing) {
+                            $statusBadge = "⏳ <span class='text-amber-500 dark:text-amber-400 font-semibold animate-pulse'>Regenerando titular con IA en segundo plano...</span>";
+                        } elseif ($len === 0) {
                             $statusBadge = 'Sin titular';
                         } elseif ($len < $minChars || $words < $minWords) {
                             $statusBadge = "🟡 {$len} caracteres • {$words} palabras (Corto / Incompleto)";
@@ -375,12 +379,15 @@ class ArticleResource extends Resource
             ->actionsColumnLabel('Acciones')
             ->actions([
                 \Filament\Actions\Action::make('regenerate_title')
-                    ->label('Regenerar Título')
-                    ->icon('heroicon-o-sparkles')
+                    ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'Regenerando Titular...' : 'Regenerar Título')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-sparkles')
                     ->iconButton()
-                    ->color('success')
-                    ->tooltip('🪄 Regenerar Título IA (1 Clic a la cola)')
+                    ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'warning' : 'success')
+                    ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? ['class' => 'animate-spin opacity-80 pointer-events-none cursor-not-allowed'] : [])
+                    ->disabled(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}"))
+                    ->tooltip(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? '⏳ Regenerando titular con IA en segundo plano...' : '🪄 Regenerar Título IA (1 Clic directo)')
                     ->action(function (Article $record) {
+                        \Illuminate\Support\Facades\Cache::put("article_title_processing_{$record->id}", true, now()->addMinutes(3));
                         \App\Jobs\RegenerateArticleTitleJob::dispatch($record);
                         
                         \Filament\Notifications\Notification::make()
@@ -555,6 +562,7 @@ class ArticleResource extends Resource
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
                             $count = $records->count();
                             foreach ($records as $record) {
+                                \Illuminate\Support\Facades\Cache::put("article_title_processing_{$record->id}", true, now()->addMinutes(3));
                                 \App\Jobs\RegenerateArticleTitleJob::dispatch($record);
                             }
                             
