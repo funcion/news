@@ -39,10 +39,11 @@ You are a senior tech journalism headline editor for Glodaxia.
 Based on the following article facts and context, craft a compelling, complete, and highly descriptive headline in both English and Spanish.
 
 RULES:
-1. Length: Target between 70 and 115 characters. ABSOLUTE MAXIMUM is {$titleMaxChars} characters (STRICTLY between {$titleMinChars} and {$titleMaxChars} chars). NEVER exceed {$titleMaxChars} characters.
-2. Word count: Minimum {$titleMinWords} words.
-3. Structure: Standalone full sentence with subject, action, and key impact.
-4. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
+1. LANGUAGE PURITY (ZERO TOLERANCE): title_en MUST be 100% in English. title_es MUST be 100% in Spanish. Never output Spanish in title_en or English in title_es.
+2. Length: Target between 70 and 115 characters. ABSOLUTE MAXIMUM is {$titleMaxChars} characters (STRICTLY between {$titleMinChars} and {$titleMaxChars} chars). NEVER exceed {$titleMaxChars} characters.
+3. Word count: Minimum {$titleMinWords} words.
+4. Structure: Standalone full sentence with subject, action, and key impact.
+5. STRICT: NEVER truncate, never leave sentences unfinished, no clickbait.
 
 CURRENT HEADLINE: {$currentTitle}
 EXCERPT: {$excerpt}
@@ -61,6 +62,19 @@ PROMPT;
             $data = json_decode($cleanJson, true);
 
             if (!empty($data['title_es']) && !empty($data['title_en'])) {
+                // Strict language verification
+                $esMarkersInEn = preg_match_all('/\b(?:de|la|los|las|del|en|para|con|sobre|según|este|esta)\b/iu', $data['title_en']);
+                $enMarkersInEn = preg_match_all('/\b(?:the|and|with|from|which|about|between|for|after)\b/iu', $data['title_en']);
+                if ($esMarkersInEn >= 2 && $enMarkersInEn === 0) {
+                    throw new \Exception("AI generated Spanish in title_en: {$data['title_en']}");
+                }
+
+                $enMarkersInEs = preg_match_all('/\b(?:the|and|with|from|which|about|between|for|after)\b/iu', $data['title_es']);
+                $esMarkersInEs = preg_match_all('/\b(?:de|la|los|las|del|en|para|con|sobre|según|este|esta)\b/iu', $data['title_es']);
+                if ($enMarkersInEs >= 2 && $esMarkersInEs === 0) {
+                    throw new \Exception("AI generated English in title_es: {$data['title_es']}");
+                }
+
                 $titleEs = $this->sanitizeTitle($data['title_es'], $titleMinChars, $titleMaxChars);
                 $titleEn = $this->sanitizeTitle($data['title_en'], $titleMinChars, $titleMaxChars);
 

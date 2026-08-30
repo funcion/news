@@ -111,6 +111,17 @@ Para mantener el principio de **Single Source of Truth** y evitar configuracione
 
 ## 5. Pipeline de Redacción e IA (`ProcessArticleWithAIJob.php`)
 
+### A. Validación Estricta de Integridad de Idioma (Zero Tolerance)
+Para evitar que un modelo de IA entregue contenido en español dentro de los campos en inglés (`content_en`, `title_en`, `excerpt_en`) o viceversa:
+1. **Regla Absoluta en el Prompt**: Sección `0. ABSOLUTE LANGUAGE SEPARATION RULE` que prohíbe explícitamente el cruce de idiomas.
+2. **Clasificador Determinístico de Stopwords (`validateLanguageIntegrity`)**:
+   - Analiza la densidad de palabras de función exclusivas del inglés y del español.
+   - Si `content_en` contiene stopwords en español (o `content_es` en inglés), la respuesta es **rechazada automáticamente como error fatal**.
+   - El pipeline descarta el intento y pasa inmediatamente al siguiente modelo del pool de IA (`failover chain`) hasta obtener redacción 100% nativa y pura en cada idioma.
+3. **Validación en Titulares y Extractos**: Detección de conectores y marcadores lingüísticos en `title_en` / `title_es`.
+
+### B. Inyección Dinámica y Target Calibrado
+
 ### Inyección Dinámica y Target Calibrado
 El prompt del redactor de IA consume dinámicamente los valores de `config/global.php`:
 * **Calibración de Longitud**: Se instruye a la IA a apuntar a un rango de **70 a 115 caracteres** (máximo absoluto de 130), garantizando que el titular resultante caiga en la zona verde óptima sin excederse.

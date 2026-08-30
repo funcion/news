@@ -797,6 +797,17 @@ You are a senior investigative tech columnist and essayist writing for Glodaxia 
 Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based on the verified facts provided below.
 
 ═════════════════════════════════════════════════════════════════════
+═══ 0. ABSOLUTE LANGUAGE SEPARATION RULE (ZERO TOLERANCE) ═══
+═════════════════════════════════════════════════════════════════════
+1. "title_en", "excerpt_en", and "content_en" MUST BE 100% WRITTEN IN THE ENGLISH LANGUAGE.
+   - It is a catastrophic failure to put Spanish (or any non-English language) inside "content_en", "title_en", or "excerpt_en".
+   - Even if the raw source material is in Spanish, you MUST translate and synthesize the entire narrative into native, fluent, professional English.
+
+2. "title_es", "excerpt_es", and "content_es" MUST BE 100% WRITTEN IN THE SPANISH LANGUAGE.
+   - It is a catastrophic failure to put English inside "content_es", "title_es", or "excerpt_es".
+   - Even if the raw source material is in English, you MUST translate and synthesize the entire narrative into native, fluent, professional Spanish.
+
+═════════════════════════════════════════════════════════════════════
 ═══ 1. CONTEXT & VERIFIED SOURCE FACTS ═══
 ═════════════════════════════════════════════════════════════════════
 - CURRENT DATE: {$today} (Current Year: {$currentYear})
@@ -1050,8 +1061,13 @@ PROMPT;
      * Returns empty array if valid, or array of error messages.
      */
     protected function validateRedactedOutput(array $data): array
-    {
-        $errors = [];
+    {        $errors = [];
+
+        // 0. STRICT BILINGUAL LANGUAGE INTEGRITY CHECK (ZERO TOLERANCE)
+        $langErrors = $this->validateLanguageIntegrity($data);
+        if (!empty($langErrors)) {
+            return $langErrors; // Hard fail immediately so job retries with next model
+        }
 
         $contentEn = $data['content_en'] ?? '';
         $contentEs = $data['content_es'] ?? '';
@@ -1365,6 +1381,103 @@ PROMPT;
      * Detects AI-fingerprint patterns: uniform paragraph lengths, no single-sentence paragraphs, etc.
      * Returns array of warning strings (not hard errors).
      */
+    /**
+     * Strictly validate that content, titles, and excerpts are written in their assigned language.
+     */
+    protected function validateLanguageIntegrity(array $data): array
+    {
+        $errors = [];
+
+        $esStopwords = [
+            'de', 'la', 'que', 'el', 'en', 'y', 'a', 'los', 'del', 'se', 'las', 'por', 'un', 'para', 'con', 'no',
+            'una', 'su', 'al', 'lo', 'como', 'más', 'mas', 'pero', 'sus', 'le', 'ya', 'o', 'este', 'sí', 'si',
+            'porque', 'esta', 'entre', 'cuando', 'muy', 'sin', 'sobre', 'también', 'tambien', 'me', 'hasta', 'hay',
+            'donde', 'quien', 'desde', 'todo', 'nos', 'durante', 'todos', 'uno', 'les', 'ni', 'contra', 'otros',
+            'ese', 'eso', 'ante', 'ellos', 'e', 'esto', 'mí', 'mi', 'antes', 'algunos', 'qué', 'unos', 'otro',
+            'otras', 'otra', 'él', 'tanto', 'esa', 'estos', 'mucho', 'quienes', 'nada', 'muchos', 'cual', 'sea',
+            'poco', 'ella', 'estar', 'haber', 'estas', 'estaba', 'estamos', 'algunas', 'algo', 'nosotros', 'según',
+            'además', 'después', 'través', 'año', 'años', 'cuenta', 'forma', 'parte', 'llegó', 'crear', 'nueva',
+            'nuevo', 'nuevos', 'nuevas', 'sistema', 'último', 'últimos', 'primer', 'primera', 'momento', 'mayor'
+        ];
+
+        $enStopwords = [
+            'the', 'and', 'of', 'to', 'a', 'in', 'that', 'is', 'was', 'for', 'on', 'are', 'as', 'with', 'his',
+            'they', 'at', 'be', 'this', 'have', 'from', 'or', 'one', 'had', 'by', 'word', 'but', 'not', 'what',
+            'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she',
+            'do', 'how', 'their', 'if', 'will', 'up', 'other', 'about', 'out', 'many', 'then', 'them', 'these',
+            'so', 'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time', 'has', 'look', 'two', 'more',
+            'write', 'go', 'see', 'number', 'way', 'could', 'people', 'than', 'first', 'water', 'been', 'call',
+            'who', 'its', 'now', 'find', 'also', 'new', 'after', 'state', 'only', 'year', 'years', 'over', 'most',
+            'such', 'where', 'both', 'between', 'during', 'through', 'under', 'while', 'because', 'should', 'well'
+        ];
+
+        $countStopwords = function (string $text, array $stopwords): int {
+            $cleaned = mb_strtolower(strip_tags($text));
+            $words = preg_split('/[^\p{L}\p{N}]+/u', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
+            if (empty($words)) return 0;
+            $swMap = array_flip($stopwords);
+            $count = 0;
+            foreach ($words as $w) {
+                if (isset($swMap[$w])) {
+                    $count++;
+                }
+            }
+            return $count;
+        };
+
+        // 1. Validate content_en (MUST BE ENGLISH)
+        $contentEn = $data['content_en'] ?? '';
+        $enScoreInEn = $countStopwords($contentEn, $enStopwords);
+        $esScoreInEn = $countStopwords($contentEn, $esStopwords);
+        if ($esScoreInEn > $enScoreInEn || ($esScoreInEn >= 15 && $enScoreInEn < 20)) {
+            $errors[] = "FATAL LANGUAGE MISMATCH: content_en appears to be written in Spanish! (Found {$esScoreInEn} Spanish stopwords vs {$enScoreInEn} English stopwords). content_en MUST be 100% English.";
+        }
+
+        // 2. Validate content_es (MUST BE SPANISH)
+        $contentEs = $data['content_es'] ?? '';
+        $enScoreInEs = $countStopwords($contentEs, $enStopwords);
+        $esScoreInEs = $countStopwords($contentEs, $esStopwords);
+        if ($enScoreInEs > $esScoreInEs || ($enScoreInEs >= 15 && $esScoreInEs < 20)) {
+            $errors[] = "FATAL LANGUAGE MISMATCH: content_es appears to be written in English! (Found {$enScoreInEs} English stopwords vs {$esScoreInEs} Spanish stopwords). content_es MUST be 100% Spanish.";
+        }
+
+        // 3. Validate title_en and title_es
+        $titleEn = $data['title_en'] ?? '';
+        $titleEs = $data['title_es'] ?? '';
+        
+        $esMarkersInTitleEn = $countStopwords($titleEn, ['de', 'la', 'los', 'las', 'del', 'en', 'para', 'con', 'sobre', 'según', 'después', 'través', 'este', 'esta', 'como']);
+        $enMarkersInTitleEn = $countStopwords($titleEn, ['the', 'and', 'with', 'from', 'which', 'about', 'between', 'for', 'in', 'on', 'at', 'by', 'after', 'under']);
+        if ($esMarkersInTitleEn >= 2 && $enMarkersInTitleEn === 0) {
+            $errors[] = "FATAL LANGUAGE MISMATCH: title_en contains Spanish words ('{$titleEn}'). title_en MUST be 100% English.";
+        }
+
+        $enMarkersInTitleEs = $countStopwords($titleEs, ['the', 'and', 'with', 'from', 'which', 'about', 'between', 'for', 'after', 'under', 'through']);
+        $esMarkersInTitleEs = $countStopwords($titleEs, ['de', 'la', 'los', 'las', 'del', 'en', 'para', 'con', 'sobre', 'según', 'como', 'este', 'esta']);
+        if ($enMarkersInTitleEs >= 2 && $esMarkersInTitleEs === 0) {
+            $errors[] = "FATAL LANGUAGE MISMATCH: title_es contains English words ('{$titleEs}'). title_es MUST be 100% Spanish.";
+        }
+
+        // 4. Validate excerpt_en and excerpt_es
+        $excerptEn = $data['excerpt_en'] ?? '';
+        $excerptEs = $data['excerpt_es'] ?? '';
+        if (!empty($excerptEn)) {
+            $enScoreInExcerptEn = $countStopwords($excerptEn, $enStopwords);
+            $esScoreInExcerptEn = $countStopwords($excerptEn, $esStopwords);
+            if ($esScoreInExcerptEn > $enScoreInExcerptEn && $esScoreInExcerptEn >= 4) {
+                $errors[] = "FATAL LANGUAGE MISMATCH: excerpt_en appears to be written in Spanish ('{$excerptEn}'). excerpt_en MUST be 100% English.";
+            }
+        }
+        if (!empty($excerptEs)) {
+            $enScoreInExcerptEs = $countStopwords($excerptEs, $enStopwords);
+            $esScoreInExcerptEs = $countStopwords($excerptEs, $esStopwords);
+            if ($enScoreInExcerptEs > $esScoreInExcerptEs && $enScoreInExcerptEs >= 4) {
+                $errors[] = "FATAL LANGUAGE MISMATCH: excerpt_es appears to be written in English ('{$excerptEs}'). excerpt_es MUST be 100% Spanish.";
+            }
+        }
+
+        return $errors;
+    }
+
     private function validateParagraphAsymmetry(string $html, string $lang): array
     {
         $warnings = [];
