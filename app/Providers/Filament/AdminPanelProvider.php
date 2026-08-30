@@ -63,6 +63,25 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn () => new \Illuminate\Support\HtmlString('
+                    <style>
+                        @keyframes glodaxia-spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        .glodaxia-spinning-svg,
+                        .glodaxia-spinner-active svg,
+                        .glodaxia-spinner-active .fi-icon-btn-icon,
+                        .glodaxia-spinner-active .fi-btn-icon {
+                            animation: glodaxia-spin 0.85s linear infinite !important;
+                            transform-origin: center center !important;
+                            display: inline-block !important;
+                        }
+                    </style>
+                ')
+            )
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()->navigationGroup('Seguridad y Roles'),
             ])
