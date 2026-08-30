@@ -249,9 +249,8 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $slugEn = $this->ensureUniqueSlug($slugEn, 'slug_en');
         $slugEs = $this->ensureUniqueSlug($slugEs, 'slug_es');
 
-        // Build the article fresh — use new + setTranslation so we never
-        // pass a PHP array into a column that may still be VARCHAR(255).
-        $article = new Article();
+        // Reuse existing Article if reprocessing, or create a new one
+        $article = $this->rawArticle->article ?? new Article();
         $article->raw_article_id = $this->rawArticle->id;
         $article->slug_en        = $slugEn;
         $article->slug_es        = $slugEs;
