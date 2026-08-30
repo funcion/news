@@ -220,23 +220,12 @@ Las 3 acciones rápidas cuentan con **estados de carga persistentes (`animate-sp
 
 ---
 
-## 8. Comando de Reparación y Auditoría Lingüística (`php artisan articles:fix-languages`)
+## 8. Sistema de Auto-Curación en Vuelo (In-Flight Self-Healing)
+El pipeline de redacción (`ProcessArticleWithAIJob.php`) es 100% autónomo y auto-correctivo:
 
-Para auditar y reparar de forma inmediata cualquier artículo histórico que tenga texto en el idioma incorrecto (por ejemplo, contenido en español dentro de `content_en` o viceversa):
-
-### Ejecución en Servidor / Terminal
-* **Modo Auditoría (Dry Run)**: Detecta y lista qué artículos tienen errores de idioma sin modificar nada:
-  ```bash
-  php artisan articles:fix-languages --dry-run
-  ```
-* **Reparación Automática de Toda la Base de Datos**: Escanea y reescribe/traduce automáticamente con IA todos los artículos afectados a su idioma correspondiente respetando etiquetas HTML y marcadores de imagen:
-  ```bash
-  php artisan articles:fix-languages
-  ```
-* **Reparación de un Artículo Específico por ID**:
-  ```bash
-  php artisan articles:fix-languages --id=123
-  ```
+1. **Detección Determinística en Memoria**: Si cualquier modelo de IA entrega contenido en español dentro de `content_en` o contenido en inglés dentro de `content_es` (sin importar el idioma de la fuente original: chino, inglés, español, francés, etc.):
+2. **Traducción y Reescritura Automática en Memoria (`autoTranslateToLanguage`)**: Antes de guardar en la base de datos, el Job detecta la anomalía y traduce/reescribe automáticamente el contenido y los titulares al idioma correspondiente respetando etiquetas HTML y marcadores `[IMAGE_N]`.
+3. **Validación de Cierre y Failover**: Si la auto-curación no alcanza la pureza requerida, el Job descarta el intento y pasa automáticamente al siguiente modelo del pool de IA.
 
 ## 9. Nuevos Jobs Creados: `app/Jobs/RegenerateArticleTitleJob.php` y `RegenerateArticleHeroImageJob.php`
 

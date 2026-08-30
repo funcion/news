@@ -1179,6 +1179,29 @@ PROMPT;
     {
         $fixes = [];
 
+        // ── In-Flight Self-Healing: Auto-translate if AI inverted or mixed languages ──
+        if (!empty($data['content_en']) && $this->isSpanishContent($data['content_en'])) {
+            Log::warning("Self-Healing: content_en for RawArticle #{$this->rawArticle->id} was generated in Spanish. Translating to English in-flight...");
+            $data['content_en'] = $this->autoTranslateToLanguage($data['content_en'], 'en');
+            $fixes[] = "content_en: auto-translated from Spanish to English";
+        }
+
+        if (!empty($data['content_es']) && $this->isEnglishContent($data['content_es'])) {
+            Log::warning("Self-Healing: content_es for RawArticle #{$this->rawArticle->id} was generated in English. Translating to Spanish in-flight...");
+            $data['content_es'] = $this->autoTranslateToLanguage($data['content_es'], 'es');
+            $fixes[] = "content_es: auto-translated from English to Spanish";
+        }
+
+        if (!empty($data['title_en']) && $this->isSpanishShortText($data['title_en'])) {
+            $data['title_en'] = $this->autoTranslateToLanguage($data['title_en'], 'en', isShortText: true);
+            $fixes[] = "title_en: auto-translated from Spanish to English";
+        }
+
+        if (!empty($data['title_es']) && $this->isEnglishShortText($data['title_es'])) {
+            $data['title_es'] = $this->autoTranslateToLanguage($data['title_es'], 'es', isShortText: true);
+            $fixes[] = "title_es: auto-translated from English to Spanish";
+        }
+
         $titleMin     = (int) config('global.editorial.limits.title.min', 50);
         $titleMax     = (int) config('global.editorial.limits.title.max', 130);
         $excerptMax   = (int) config('global.editorial.limits.excerpt.max', 250);
@@ -1390,6 +1413,110 @@ PROMPT;
      * Detects AI-fingerprint patterns: uniform paragraph lengths, no single-sentence paragraphs, etc.
      * Returns array of warning strings (not hard errors).
      */
+    /**
+     * In-flight self-healing auto-translation to ensure strict bilingual purity.
+     */
+    protected function autoTranslateToLanguage(string $text, string $targetLang, bool $isShortText = false): string
+    {
+        try {
+            $ai = app(\App\Services\AI\OpenRouterService::class);
+            $langName = $targetLang === 'es' ? 'Spanish' : 'English';
+
+            if ($isShortText) {
+                $prompt = "You are a professional tech journalism headline editor. Translate the following text into 100% natural, fluent {$langName}. Return ONLY the translation without quotes, markdown or extra words.\n\nTEXT:\n" . trim(strip_tags($text));
+                $res = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
+                return trim(preg_replace('/^["\'«“]+|["\'»”]+$/u', '', trim($res)));
+            }
+
+            $prompt = <<<PROMPT
+You are a senior tech journalism editor for Glodaxia.
+Translate and rewrite the following HTML article content into 100% fluent, native, and in-depth {$langName} journalism.
+
+CRITICAL RULES:
+1. The output MUST be 100% in {$langName}. Absolutely zero foreign language words.
+2. Preserve all HTML tags (<p>, <h2>, <ul>, <li>, <strong>, <em>, etc.) and [IMAGE_N] placeholders exactly intact on their own lines.
+3. Keep the full journalistic depth, tone, and facts.
+4. Output ONLY the resulting HTML content (no markdown wrappers, no code blocks, no preamble).
+
+CONTENT TO TRANSLATE:
+{$text}
+PROMPT;
+
+            $res = $ai->complete([['role' => 'user', 'content' => $prompt]], config('ai_models.default'));
+            return trim(preg_replace('/^```(?:html)?\s*|\s*```$/i', '', trim($res)));
+        } catch (\Throwable $e) {
+            Log::error("autoTranslateToLanguage failed for RawArticle #{$this->rawArticle->id}: " . $e->getMessage());
+            return $text;
+        }
+    }
+
+    protected function isSpanishContent(string $html): bool
+    {
+        if (empty(trim($html))) return false;
+        $esCount = $this->countLanguageStopwords($html, 'es');
+        $enCount = $this->countLanguageStopwords($html, 'en');
+        return ($esCount > $enCount && $esCount >= 15) || ($esCount >= 20 && $enCount < 10);
+    }
+
+    protected function isEnglishContent(string $html): bool
+    {
+        if (empty(trim($html))) return false;
+        $enCount = $this->countLanguageStopwords($html, 'en');
+        $esCount = $this->countLanguageStopwords($html, 'es');
+        return ($enCount > $esCount && $enCount >= 15) || ($enCount >= 20 && $esCount < 10);
+    }
+
+    protected function isSpanishShortText(string $text): bool
+    {
+        $esCount = preg_match_all('/\b(?:de|la|los|las|del|en|para|con|sobre|según|este|esta)\b/iu', $text);
+        $enCount = preg_match_all('/\b(?:the|and|with|from|which|about|between|for|after)\b/iu', $text);
+        return $esCount >= 2 && $enCount === 0;
+    }
+
+    protected function isEnglishShortText(string $text): bool
+    {
+        $enCount = preg_match_all('/\b(?:the|and|with|from|which|about|between|for|after)\b/iu', $text);
+        $esCount = preg_match_all('/\b(?:de|la|los|las|del|en|para|con|sobre|según|este|esta)\b/iu', $text);
+        return $enCount >= 2 && $esCount === 0;
+    }
+
+    protected function countLanguageStopwords(string $text, string $lang): int
+    {
+        $esStopwords = [
+            'de', 'la', 'que', 'el', 'en', 'y', 'a', 'los', 'del', 'se', 'las', 'por', 'un', 'para', 'con', 'no',
+            'una', 'su', 'al', 'lo', 'como', 'más', 'mas', 'pero', 'sus', 'le', 'ya', 'o', 'este', 'sí', 'si',
+            'porque', 'esta', 'entre', 'cuando', 'muy', 'sin', 'sobre', 'también', 'tambien', 'me', 'hasta', 'hay',
+            'donde', 'quien', 'desde', 'todo', 'nos', 'durante', 'todos', 'uno', 'les', 'ni', 'contra', 'otros',
+            'ese', 'eso', 'ante', 'ellos', 'e', 'esto', 'mí', 'mi', 'antes', 'algunos', 'qué', 'unos', 'otro',
+            'otras', 'otra', 'él', 'tanto', 'esa', 'estos', 'mucho', 'quienes', 'nada', 'muchos', 'cual', 'sea',
+            'poco', 'ella', 'estar', 'haber', 'estas', 'estaba', 'estamos', 'algunas', 'algo', 'nosotros', 'según',
+            'además', 'después', 'través', 'año', 'años', 'cuenta', 'forma', 'parte', 'llegó', 'crear', 'nueva'
+        ];
+
+        $enStopwords = [
+            'the', 'and', 'of', 'to', 'a', 'in', 'that', 'is', 'was', 'for', 'on', 'are', 'as', 'with', 'his',
+            'they', 'at', 'be', 'this', 'have', 'from', 'or', 'one', 'had', 'by', 'word', 'but', 'not', 'what',
+            'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she',
+            'do', 'how', 'their', 'if', 'will', 'up', 'other', 'about', 'out', 'many', 'then', 'them', 'these',
+            'so', 'some', 'her', 'would', 'make', 'like', 'him', 'into', 'time', 'has', 'look', 'two', 'more',
+            'write', 'go', 'see', 'number', 'way', 'could', 'people', 'than', 'first', 'water', 'been', 'call',
+            'who', 'its', 'now', 'find', 'also', 'new', 'after', 'state', 'only', 'year', 'years', 'over', 'most'
+        ];
+
+        $stopwords = $lang === 'es' ? $esStopwords : $enStopwords;
+        $cleaned = mb_strtolower(strip_tags($text));
+        $words = preg_split('/[^\p{L}\p{N}]+/u', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($words)) return 0;
+        $swMap = array_flip($stopwords);
+        $count = 0;
+        foreach ($words as $w) {
+            if (isset($swMap[$w])) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     /**
      * Strictly validate that content, titles, and excerpts are written in their assigned language.
      */
