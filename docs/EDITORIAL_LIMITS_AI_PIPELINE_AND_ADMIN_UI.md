@@ -220,7 +220,25 @@ Las 3 acciones rápidas cuentan con **estados de carga persistentes (`animate-sp
 
 ---
 
-## 8. Nuevo Job Creado: `app/Jobs/RegenerateArticleTitleJob.php`
+## 8. Comando de Reparación y Auditoría Lingüística (`php artisan articles:fix-languages`)
+
+Para auditar y reparar de forma inmediata cualquier artículo histórico que tenga texto en el idioma incorrecto (por ejemplo, contenido en español dentro de `content_en` o viceversa):
+
+### Ejecución en Servidor / Terminal
+* **Modo Auditoría (Dry Run)**: Detecta y lista qué artículos tienen errores de idioma sin modificar nada:
+  ```bash
+  php artisan articles:fix-languages --dry-run
+  ```
+* **Reparación Automática de Toda la Base de Datos**: Escanea y reescribe/traduce automáticamente con IA todos los artículos afectados a su idioma correspondiente respetando etiquetas HTML y marcadores de imagen:
+  ```bash
+  php artisan articles:fix-languages
+  ```
+* **Reparación de un Artículo Específico por ID**:
+  ```bash
+  php artisan articles:fix-languages --id=123
+  ```
+
+## 9. Nuevos Jobs Creados: `app/Jobs/RegenerateArticleTitleJob.php` y `RegenerateArticleHeroImageJob.php`
 
 Job encolable dedicado a la reparación y optimización de titulares:
 * Implementa `ShouldQueue`, `Queueable`, `SerializesModels`.
