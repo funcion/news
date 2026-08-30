@@ -235,7 +235,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 
         // --- CLEANUP: Remove AI hallucinated image attributes + inline URLs ---
         $contentEn = $this->cleanHallucinatedAttributes($redacted['content_en'] ?? '');
-        $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? $contentEn);
+        $contentEs = $this->cleanHallucinatedAttributes($redacted['content_es'] ?? '');
         $contentEn = $this->cleanInlineUrls($contentEn);
         $contentEs = $this->cleanInlineUrls($contentEs);
         $contentEn = $this->ensureHtmlParagraphs($contentEn);
@@ -812,6 +812,7 @@ Your task is to write an ORIGINAL, RIGOROUS, HIGH-IMPACT journalism column based
 ═════════════════════════════════════════════════════════════════════
 - CURRENT DATE: {$today} (Current Year: {$currentYear})
 - SOURCE PUBLISHED: {$sourceDate} ({$articleAge})
+- SOURCE LANGUAGE DETECTED: {$sourceLangName} (MANDATORY: Regardless of source language, you MUST write native English in 'content_en'/'title_en'/'excerpt_en', and native Spanish in 'content_es'/'title_es'/'excerpt_es')
 - VERIFIED SOURCE FACTS: {$topic}
 - RAW SOURCE EXCERPT (first 2000 chars of original content, for tone & context reference only — do NOT copy verbatim): {$rawSourceExcerpt}
 - ARTICLE ARCHETYPE: {$styleDna['archetypeName']}
