@@ -67,17 +67,34 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn () => new \Illuminate\Support\HtmlString('
                     <style>
-                        @keyframes glodaxia-spin {
+                        @keyframes glodaxia-spin-ring {
                             0% { transform: rotate(0deg); }
                             100% { transform: rotate(360deg); }
                         }
-                        .glodaxia-spinning-svg,
-                        .glodaxia-spinner-active svg,
-                        .glodaxia-spinner-active .fi-icon-btn-icon,
-                        .glodaxia-spinner-active .fi-btn-icon {
-                            animation: glodaxia-spin 0.85s linear infinite !important;
-                            transform-origin: center center !important;
-                            display: inline-block !important;
+                        /* Hide original icon and filament indicator when background processing */
+                        .is-processing-bg {
+                            position: relative !important;
+                            pointer-events: none !important;
+                            cursor: not-allowed !important;
+                            opacity: 0.9 !important;
+                        }
+                        .is-processing-bg svg,
+                        .is-processing-bg .fi-icon-btn-icon,
+                        .is-processing-bg .fi-btn-icon,
+                        .is-processing-bg .fi-icon-btn-loading-indicator {
+                            display: none !important;
+                        }
+                        /* Render pure circular dynamic spinner */
+                        .is-processing-bg::after {
+                            content: "" !important;
+                            display: block !important;
+                            width: 1.15rem !important;
+                            height: 1.15rem !important;
+                            border: 2.5px solid rgba(245, 158, 11, 0.25) !important;
+                            border-top-color: #f59e0b !important;
+                            border-radius: 50% !important;
+                            animation: glodaxia-spin-ring 0.75s linear infinite !important;
+                            margin: auto !important;
                         }
                     </style>
                 ')
