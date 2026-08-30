@@ -386,7 +386,7 @@ class ArticleResource extends Resource
             ->actions([
                 \Filament\Actions\Action::make('regenerate_title')
                     ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'Regenerando Titular...' : 'Regenerar Título')
-                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'heroicon-o-spinner-circle' : 'heroicon-o-sparkles')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-sparkles')
                     ->iconButton()
                     ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? 'warning' : 'success')
                     ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_title_processing_{$record->id}") ? ['class' => 'glodaxia-spinner-active opacity-90 pointer-events-none cursor-not-allowed'] : [])
@@ -405,7 +405,7 @@ class ArticleResource extends Resource
 
                 \Filament\Actions\Action::make('regenerate_image')
                     ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'Generando Portada...' : 'Regenerar Portada')
-                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'heroicon-o-spinner-circle' : 'heroicon-o-photo')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-photo')
                     ->iconButton()
                     ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? 'warning' : 'primary')
                     ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_image_processing_{$record->id}") ? ['class' => 'glodaxia-spinner-active opacity-90 pointer-events-none cursor-not-allowed'] : [])
@@ -435,7 +435,7 @@ class ArticleResource extends Resource
 
                 \Filament\Actions\Action::make('reprocess_article')
                     ->label(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'Reescribiendo Noticia...' : 'Reprocesar Noticia')
-                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'heroicon-o-spinner-circle' : 'heroicon-o-arrow-path')
+                    ->icon(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'heroicon-o-arrow-path' : 'heroicon-o-arrow-path')
                     ->iconButton()
                     ->color(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? 'warning' : 'danger')
                     ->extraAttributes(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? ['class' => 'glodaxia-spinner-active opacity-90 pointer-events-none cursor-not-allowed'] : [])
