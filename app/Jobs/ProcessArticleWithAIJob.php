@@ -39,7 +39,8 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
     }
 
     public function __construct(
-        protected RawArticle $rawArticle
+        protected RawArticle $rawArticle,
+        public bool $forceReprocess = false
     ) {}
 
     public function handle(ModelRouterService $ai, \App\Services\AI\SiliconFlowImageService $imageService, \App\Services\AI\TagGeneratorService $tagService, \App\Services\AI\DuplicateCheckerService $duplicateChecker, \App\Services\SEO\EntityAutoLinkerService $autoLinker): void
@@ -171,19 +172,23 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         }
 
         // --- DUPLICATE CHECK LEVEL 1, 2, 2.5 & 3 WITH CATEGORY PARTITION & LLM JUDGE ---
-        $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
-             $this->rawArticle->title ?? '',
-             $this->rawArticle->content ?? '',
-             $this->rawArticle->url ?? '',
-             $this->rawArticle->id,
-             $categoryId,
-             $canonicalEventSlug,
-             $summaryText
-        );
+        if (!$this->forceReprocess) {
+            $isDuplicate = $duplicateChecker->checkAndHandleDuplicate(
+                 $this->rawArticle->title ?? '',
+                 $this->rawArticle->content ?? '',
+                 $this->rawArticle->url ?? '',
+                 $this->rawArticle->id,
+                 $categoryId,
+                 $canonicalEventSlug,
+                 $summaryText
+            );
 
-        if ($isDuplicate) {
-             $this->rawArticle->update(['status' => 'processed']);
-             return;
+            if ($isDuplicate) {
+                 $this->rawArticle->update(['status' => 'processed']);
+                 return;
+            }
+        } else {
+            Log::info("🔄 Force Reprocess active for RawArticle #{$this->rawArticle->id}: bypassing duplicate checker.");
         }
 
         $author = User::role(['redactor', 'admin', 'super_admin'])->where('is_active', true)->inRandomOrder()->first();
@@ -251,13 +256,16 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 
         // Reuse existing Article if reprocessing, or create a new one
         $article = $this->rawArticle->article ?? new Article();
+        $wasPublished = $article->exists && in_array($article->status, ['published', 'scheduled']);
+        $originalPublishedAt = $article->exists ? $article->published_at : null;
+
         $article->raw_article_id = $this->rawArticle->id;
         $article->slug_en        = $slugEn;
         $article->slug_es        = $slugEs;
-        $article->user_id        = $author->id;
+        $article->user_id        = $article->exists ? ($article->user_id ?? $author->id) : $author->id;
         $article->category_id    = $categoryId;
-        $article->status         = 'draft'; // Keep as draft during processing so it is hidden from the public frontend until complete
-        $article->published_at   = now();
+        $article->status         = $article->exists ? $article->status : 'draft';
+        $article->published_at   = $originalPublishedAt ?: now();
         $article->seo_score      = 85; // Static default — self-reported AI scores are unreliable, use Filament for manual override
         $article->meta_keywords  = $redacted['keywords'] ?? [];
         $article->reading_time   = $this->calculateReadingTime($contentEn, $contentEs);

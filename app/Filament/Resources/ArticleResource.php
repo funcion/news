@@ -445,7 +445,7 @@ class ArticleResource extends Resource
                         if ($record->rawArticle) {
                             \Illuminate\Support\Facades\Cache::put("article_full_reprocessing_{$record->id}", true, now()->addMinutes(5));
                             $record->rawArticle->update(['status' => 'pending']);
-                            \App\Jobs\ProcessArticleWithAIJob::dispatch($record->rawArticle);
+                            \App\Jobs\ProcessArticleWithAIJob::dispatch($record->rawArticle, true);
                             
                             \Filament\Notifications\Notification::make()
                                 ->title('🔄 Noticia enviada a la cola de IA')

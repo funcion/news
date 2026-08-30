@@ -120,7 +120,14 @@ Para evitar que un modelo de IA entregue contenido en español dentro de los cam
    - El pipeline descarta el intento y pasa inmediatamente al siguiente modelo del pool de IA (`failover chain`) hasta obtener redacción 100% nativa y pura en cada idioma.
 3. **Validación en Titulares y Extractos**: Detección de conectores y marcadores lingüísticos en `title_en` / `title_es`.
 
-### B. Inyección Dinámica y Target Calibrado
+### B. Mecanismo de Reprocesamiento Forzado (`forceReprocess`)
+Cuando el usuario solicita **"Reprocesar Noticia Completa"** desde el panel:
+- Se despacha `ProcessArticleWithAIJob($rawArticle, forceReprocess: true)`.
+- **Bypass del Detector de Duplicados**: El verificador de duplicados se omite intencionalmente para no abortar el trabajo, permitiendo regenerar el 100% del contenido y las traducciones.
+- **Preservación de Estado**: Si la noticia ya estaba publicada (`published`), mantiene su estado y su fecha original de publicación sin enviarse a borrador.
+- **Validación Lingüística Activa**: El nuevo clasificador de stopwords garantiza que `content_en` sea 100% inglés y `content_es` sea 100% español sin importar el idioma de la fuente original.
+
+### C. Inyección Dinámica y Target Calibrado
 
 ### Inyección Dinámica y Target Calibrado
 El prompt del redactor de IA consume dinámicamente los valores de `config/global.php`:
