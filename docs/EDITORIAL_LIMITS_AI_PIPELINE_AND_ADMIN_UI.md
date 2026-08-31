@@ -40,6 +40,11 @@ Al invocar `ProcessArticleWithAIJob($rawArticle, forceReprocess: true)`:
 
 ---
 
+### 2.1 Preservación Cronológica de Publicación (`published_at`)
+Para evitar que un artículo antiguo salte al primer lugar de la portada al ser reprocesado:
+* **Si es Noticia Nueva**: Aplica la fecha actual (`now()`) o la cola programada según la configuración.
+* **Si es Reprocesamiento (`isReprocessing`)**: Mantiene de forma intacta su fecha y hora original (`$originalPublishedAt`) y su estado original (`$originalStatus`), reescribiendo el contenido sin alterar su posición histórica en la web ni en el panel.
+
 ## 3. Blindaje de Idioma y Auto-Curación en Vuelo (Zero Tolerance)
 
 Para garantizar que **nunca se mezcle contenido en español dentro de la edición en inglés ni contenido en inglés dentro de la edición en español**:

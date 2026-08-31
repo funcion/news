@@ -261,9 +261,10 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $slugEs = $this->ensureUniqueSlug($slugEs, 'slug_es');
 
         // Reuse existing Article if reprocessing, or create a new one
+        $isReprocessing = $this->forceReprocess || ($this->rawArticle->article && $this->rawArticle->article->exists);
         $article = $this->rawArticle->article ?? new Article();
-        $wasPublished = $article->exists && in_array($article->status, ['published', 'scheduled']);
         $originalPublishedAt = $article->exists ? $article->published_at : null;
+        $originalStatus = $article->exists ? $article->status : 'published';
 
         $article->raw_article_id = $this->rawArticle->id;
         $article->slug_en        = $slugEn;
@@ -524,35 +525,43 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $modelUsed = $redacted['__model_used'] ?? $redacted['_model_used'] ?? config('ai_models.default');
 
         // --- ATOMIC DB TRANSACTION: Guarantees full consistency between Article and RawArticle ---
-        \Illuminate\Support\Facades\DB::transaction(function () use ($article, $contentEn, $contentEs, $imageCount, $modelUsed) {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($article, $contentEn, $contentEs, $imageCount, $modelUsed, $isReprocessing, $originalPublishedAt, $originalStatus) {
             $article->setTranslation('content', 'en', $contentEn);
             $article->setTranslation('content', 'es', $contentEs);
 
-            // Dynamic Staggered Publishing (Configurable from /admin/settings-page)
+            // Dynamic Publishing / Reprocessing Logic
             if ($imageCount > 0) {
-                $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', false);
-                $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
-                $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
-
-                if ($isStaggered && $maxDelay > 0) {
-                    $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
-                        ->whereNotNull('published_at')
-                        ->max('published_at');
-
-                    $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
-                        ? \Carbon\Carbon::parse($latestArticleDate)
-                        : now();
-
-                    $delayMinutes = random_int($minDelay, $maxDelay);
-                    $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
-
-                    $article->status = 'scheduled';
-                    $article->published_at = $publishAt;
-                    Log::info("Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m delay, range: {$minDelay}-{$maxDelay}m).");
+                if ($isReprocessing && $originalPublishedAt) {
+                    // Reprocessing existing article: preserve original date and status (does not jump to position #1)
+                    $article->status = $originalStatus;
+                    $article->published_at = $originalPublishedAt;
+                    Log::info("Article {$article->id} reprocessed. Preserving original published_at: {$originalPublishedAt->toDateTimeString()} (Status: {$originalStatus}).");
                 } else {
-                    $article->status = 'published';
-                    $article->published_at = now();
-                    Log::info("Article {$article->id} published immediately (staggered delay disabled in settings).");
+                    // New article: apply staggered or immediate publishing
+                    $isStaggered = (bool) \App\Models\Setting::get('publishing.staggered_enabled', false);
+                    $minDelay = max(0, (int) \App\Models\Setting::get('publishing.delay_min_minutes', 1));
+                    $maxDelay = max($minDelay, (int) \App\Models\Setting::get('publishing.delay_max_minutes', 60));
+
+                    if ($isStaggered && $maxDelay > 0) {
+                        $latestArticleDate = Article::whereIn('status', ['published', 'scheduled'])
+                            ->whereNotNull('published_at')
+                            ->max('published_at');
+
+                        $baseTime = ($latestArticleDate && \Carbon\Carbon::parse($latestArticleDate)->isFuture())
+                            ? \Carbon\Carbon::parse($latestArticleDate)
+                            : now();
+
+                        $delayMinutes = random_int($minDelay, $maxDelay);
+                        $publishAt = $baseTime->copy()->addMinutes($delayMinutes);
+
+                        $article->status = 'scheduled';
+                        $article->published_at = $publishAt;
+                        Log::info("New Article {$article->id} ('{$article->slug_es}') scheduled for publication at {$publishAt->toDateTimeString()} (+{$delayMinutes}m delay, range: {$minDelay}-{$maxDelay}m).");
+                    } else {
+                        $article->status = 'published';
+                        $article->published_at = now();
+                        Log::info("New Article {$article->id} published immediately with current timestamp.");
+                    }
                 }
             } else {
                 $article->status = 'draft';
