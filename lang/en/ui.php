@@ -16,7 +16,7 @@ return array (
   'contact_us' => 'Contact Us',
   'contact_title' => 'Contact Us',
   'contact_subtitle' => 'Have a question, feedback, or technical scoop? Our team is here to listen.',
-  'editorial_disclosure_footer' => 'At Glodaxia, we go beyond the headlines. We analyze tech breakthroughs, share clear opinions and independent viewpoints, and make complex digital innovation simple, human, and accessible to everyone.',
+  'editorial_disclosure_footer' => 'At Glodaxia, we analyze the tech landscape with passion, human insight, and honesty. We go beyond the headlines with sharp opinions and clear analysis, making complex digital innovation simple and accessible to everyone.',
   'legal_nav' => 'Legal & Transparency',
   'privacy_policy' => 'Privacy Policy',
   'terms_of_service' => 'Terms & Conditions',
