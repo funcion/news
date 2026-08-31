@@ -289,9 +289,9 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         $article->setTranslation('meta_title',       'es', Str::limit($redacted['meta_title_es'] ?? $redacted['title_es'] ?? '', $metaTitleMax));
         $article->setTranslation('meta_description', 'en', Str::limit($redacted['excerpt_en'] ?? '', $metaDescMax));
         $article->setTranslation('meta_description', 'es', Str::limit($redacted['excerpt_es'] ?? '', $metaDescMax));
-        // content will be set after image injection
-        $article->setTranslation('content', 'en', '');
-        $article->setTranslation('content', 'es', '');
+        // Set full content immediately (never set to empty string)
+        $article->setTranslation('content', 'en', $contentEn);
+        $article->setTranslation('content', 'es', $contentEs);
         $article->save();
 
         // --- IMAGE GENERATION (shared across languages) ---

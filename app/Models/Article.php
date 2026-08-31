@@ -15,6 +15,11 @@ class Article extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, HasTranslations;
 
     /**
+     * Disable fallback locale so English NEVER falls back to Spanish or vice-versa.
+     */
+    public bool $useFallbackLocale = false;
+
+    /**
      * The translatable fields — stored as {"en": "...", "es": "..."} in JSONB.
      */
     public array $translatable = [
