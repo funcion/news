@@ -267,7 +267,7 @@ export class AccessibilityManager {
             // Implementación básica de validación de contraste
             // Nota: Para producción, usar una librería como `color-contrast-checker`
             if (bgColor !== 'rgba(0, 0, 0, 0)' && textColor !== 'rgba(0, 0, 0, 0)') {
-                console.log(`Contraste para ${el.tagName}:`, { bgColor, textColor });
+                // validated contrast
             }
         });
         

@@ -2,7 +2,8 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
 // Initialize Vanilla CookieConsent v3
-CookieConsent.run({
+const runConsent = () => {
+    CookieConsent.run({
     guiOptions: {
         consentModal: {
             layout: 'box',
@@ -125,6 +126,15 @@ CookieConsent.run({
             }
         }
     }
-});
+    });
+};
 
 export default CookieConsent;
+
+if (typeof window !== 'undefined') {
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(runConsent, { timeout: 2000 });
+    } else {
+        setTimeout(runConsent, 1000);
+    }
+}

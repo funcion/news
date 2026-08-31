@@ -35,7 +35,7 @@
         <div class="pointer-events-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-lg shadow-2xl shadow-cyan-500/20 p-4 flex items-center gap-4 overflow-hidden">
             <template x-if="newArticle">
                  <div class="flex items-center gap-4 w-full">
-                    <img :src="newArticle.image_url" :alt="newArticle.title" width="56" height="56" class="h-14 w-14 rounded-lg object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
+                    <img :src="newArticle.image_url" :alt="newArticle.title" width="56" height="56" loading="lazy" decoding="async" class="h-14 w-14 rounded-lg object-cover shadow-sm bg-gray-100 dark:bg-gray-800">
                     <div class="flex-1 min-w-0">
                         <span class="inline-flex items-center rounded-lg bg-cyan-100 dark:bg-cyan-900/40 px-2 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 mb-1">
                             {{ __('ui.just_published') }}
