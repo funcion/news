@@ -45,6 +45,13 @@ Para evitar que un artículo antiguo salte al primer lugar de la portada al ser 
 * **Si es Noticia Nueva**: Aplica la fecha actual (`now()`) o la cola programada según la configuración.
 * **Si es Reprocesamiento (`isReprocessing`)**: Mantiene de forma intacta su fecha y hora original (`$originalPublishedAt`) y su estado original (`$originalStatus`), reescribiendo el contenido sin alterar su posición histórica en la web ni en el panel.
 
+### 2.2 Optimización para Motores de Búsqueda Generativos (GEO) e Intención de Búsqueda
+El prompt incorpora directivas avanzadas para posicionar en Google AI Overviews, SearchGPT, Perplexity y buscadores semánticos de 2026:
+1. **Respuesta Directa en Párrafo 1**: Responde qué pasó, quién está involucrado y por qué importa en las primeras 60 palabras para ganar *Featured Snippets* y citas directas de IA.
+2. **Encabezados Basados en Intención (`<h2>` / `<h3>`)**: Estructura temática clara que responde a las preguntas reales de los usuarios e ingenieros.
+3. **Ganancia de Información (*Information Gain*) y Densidad de Entidades**: Cifras exactas, versiones, arquitecturas y comparativas técnicas estructuradas.
+4. **Opinión Crítica y Autoridad (E-E-A-T)**: Criterio editorial propio analizando ventajas, limitaciones y compromisos (*trade-offs*).
+
 ## 3. Blindaje de Idioma y Auto-Curación en Vuelo (Zero Tolerance)
 
 Para garantizar que **nunca se mezcle contenido en español dentro de la edición en inglés ni contenido en inglés dentro de la edición en español**:
