@@ -943,6 +943,10 @@ CRITICAL JSON FORMATTING RULES:
     "slug_es": "slug-espanol-corto-max-6-palabras",
     "excerpt_en": "Sharply written teaser in English ({$excerptMinChars}-{$excerptMaxChars} chars). Must summarize WHO, WHAT, WHY it matters — enough context for a reader to decide to click. NEVER write fewer than {$excerptMinChars} chars.",
     "excerpt_es": "Extracto detallado en Espanol ({$excerptMinChars}-{$excerptMaxChars} caracteres). Debe resumir QUIÉN, QUÉ, POR QUÉ importa — suficiente contexto para que el lector decida hacer clic. NUNCA escribir menos de {$excerptMinChars} caracteres.",
+    "meta_title_en": "Concise SEO title in English (50-70 chars max)",
+    "meta_title_es": "Título SEO conciso en Español (50-70 caracteres max)",
+    "meta_description_en": "Concise SEO description in English (120-160 chars max)",
+    "meta_description_es": "Descripción SEO concisa en Español (120-160 caracteres max)",
     "content_en": "Full article in English with <p>, <h2>, [IMAGE_2], etc.",
     "content_es": "Articulo completo en Espanol con <p>, <h2>, [IMAGE_2], etc.",
     "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
@@ -1211,7 +1215,7 @@ PROMPT;
         $titleMin     = (int) config('global.editorial.limits.title.min', 50);
         $titleMax     = (int) config('global.editorial.limits.title.max', 130);
         $excerptMax   = (int) config('global.editorial.limits.excerpt.max', 250);
-        $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 80);
+        $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 70);
         $metaDescMax  = (int) config('global.editorial.limits.meta_description.max', 160);
 
         // Clean and safely clamp excessively long titles using global config limit

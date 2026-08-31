@@ -113,13 +113,21 @@ class EditArticle extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $record = $this->getRecord();
+        $metaTitleMax = (int) config('global.editorial.limits.meta_title.max', 70);
+        $metaDescMax  = (int) config('global.editorial.limits.meta_description.max', 160);
 
         foreach ([
             'title'            => ['en' => $data['title_en'] ?? null, 'es' => $data['title_es'] ?? null],
             'excerpt'          => ['en' => $data['excerpt_en'] ?? null, 'es' => $data['excerpt_es'] ?? null],
             'content'          => ['en' => $data['content_en'] ?? null, 'es' => $data['content_es'] ?? null],
-            'meta_title'       => ['en' => $data['meta_title_en'] ?? null, 'es' => $data['meta_title_es'] ?? null],
-            'meta_description' => ['en' => $data['meta_description_en'] ?? null, 'es' => $data['meta_description_es'] ?? null],
+            'meta_title'       => [
+                'en' => isset($data['meta_title_en']) ? \Illuminate\Support\Str::limit(trim($data['meta_title_en']), $metaTitleMax, '') : null,
+                'es' => isset($data['meta_title_es']) ? \Illuminate\Support\Str::limit(trim($data['meta_title_es']), $metaTitleMax, '') : null,
+            ],
+            'meta_description' => [
+                'en' => isset($data['meta_description_en']) ? \Illuminate\Support\Str::limit(trim($data['meta_description_en']), $metaDescMax, '') : null,
+                'es' => isset($data['meta_description_es']) ? \Illuminate\Support\Str::limit(trim($data['meta_description_es']), $metaDescMax, '') : null,
+            ],
         ] as $field => $translations) {
             foreach ($translations as $locale => $value) {
                 if ($value !== null) {

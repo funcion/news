@@ -92,7 +92,7 @@ return [
             ],
             'meta_title' => [
                 'min' => 50,
-                'max' => 80,
+                'max' => 70,
             ],
             'meta_description' => [
                 'min' => 120,

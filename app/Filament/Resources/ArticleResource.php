@@ -180,8 +180,8 @@ class ArticleResource extends Resource
                                             ])->columnSpanFull(),
                                         TextInput::make('meta_title_en')
                                             ->label('Meta Title (EN)')
-                                            ->maxLength(70)
-                                            ->helperText('Max 70 characters')
+                                            ->maxLength((int) config('global.editorial.limits.meta_title.max', 70))
+                                            ->helperText('50-70 characters (Google SERP standard)')
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_title', 'en'));
@@ -189,7 +189,8 @@ class ArticleResource extends Resource
                                             }),
                                         TextInput::make('meta_title_es')
                                             ->label('Meta Title (ES)')
-                                            ->maxLength(70)
+                                            ->maxLength((int) config('global.editorial.limits.meta_title.max', 70))
+                                            ->helperText('50-70 characters (Google SERP standard)')
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_title', 'es'));
@@ -198,8 +199,8 @@ class ArticleResource extends Resource
                                         Textarea::make('meta_description_en')
                                             ->label('Meta Description (EN)')
                                             ->rows(2)
-                                            ->maxLength(160)
-                                            ->helperText('Max 160 characters')
+                                            ->maxLength((int) config('global.editorial.limits.meta_description.max', 160))
+                                            ->helperText('120-160 characters (Google SERP standard)')
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_description', 'en'));
@@ -208,7 +209,8 @@ class ArticleResource extends Resource
                                         Textarea::make('meta_description_es')
                                             ->label('Meta Description (ES)')
                                             ->rows(2)
-                                            ->maxLength(160)
+                                            ->maxLength((int) config('global.editorial.limits.meta_description.max', 160))
+                                            ->helperText('120-160 characters (Google SERP standard)')
                                             ->afterStateHydrated(function ($component, $state, $record) {
                                                 if ($record) {
                                                     $component->state($record->getTranslation('meta_description', 'es'));
