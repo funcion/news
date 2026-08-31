@@ -21,20 +21,26 @@ window.Pusher = Pusher;
 const rawAblyKey = window.laravelConfig?.ably?.key ?? import.meta.env.VITE_ABLY_KEY;
 
 if (rawAblyKey) {
-    // Si la clave tiene formato 'keyId:secret', extraemos solo la parte pública
     const publicAblyKey = rawAblyKey.includes(':') ? rawAblyKey.split(':')[0] : rawAblyKey;
-
-    window.Echo = new Echo({
-        broadcaster: 'pusher',
-        key: publicAblyKey,
-        wsHost: 'realtime-pusher.ably.io',
-        wsPort: 443,
-        wssPort: 443,
-        forceTLS: true,
-        disableStats: true,
-        cluster: 'mt1',
-        enabledTransports: ['ws', 'wss'],
-    });
+    const startEcho = () => {
+        if (window.Echo) return;
+        window.Echo = new Echo({
+            broadcaster: 'pusher',
+            key: publicAblyKey,
+            wsHost: 'realtime-pusher.ably.io',
+            wsPort: 443,
+            wssPort: 443,
+            forceTLS: true,
+            disableStats: true,
+            cluster: 'mt1',
+            enabledTransports: ['ws', 'wss'],
+        });
+    };
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(startEcho, { timeout: 2500 });
+    } else {
+        setTimeout(startEcho, 1500);
+    }
 } else {
     // Ably optional in public views
     window.Echo = {

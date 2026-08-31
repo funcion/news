@@ -2,6 +2,11 @@
     <x-slot:title>{{ isset($category) ? ($category->meta_title ?: ($category->name . ' | ' . config('app.name', 'Glodaxia'))) : (config('app.name', 'Glodaxia') . ' | Tech, AI & Digital Intelligence') }}</x-slot>
     <x-slot:robots>{{ isset($category) ? $category->robots_meta : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }}</x-slot>
     <x-slot:metaDescription>{{ isset($category) ? ($category->meta_description ?: ($category->description ?: __('ui.category_meta_desc', ['category' => $category->name]))) : __('ui.meta_desc') }}</x-slot>
+    <x-slot:head>
+        @if(isset($articles) && $articles->isNotEmpty() && $articles->first()->image_url)
+            <link rel="preload" as="image" href="{{ $articles->first()->image_url }}" fetchpriority="high">
+        @endif
+    </x-slot:head>
 <!-- Real-time Notifier -->
     <div x-data="{ 
             newArticle: null, 
@@ -10,7 +15,7 @@
                 if (window.Echo) {
                     window.Echo.channel('public-news')
                         .listen('ArticlePublished', (e) => {
-                            console.log('New article broadcast received:', e);
+                            
                             this.newArticle = e;
                             this.showBanner = true;
                             // Auto-hide after 30 seconds
