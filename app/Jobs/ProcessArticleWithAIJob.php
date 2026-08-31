@@ -62,7 +62,7 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
 
         // Fail-Fast Guard: Refresh from DB to verify if user changed status to 'ignored' or cancelled
         $this->rawArticle->refresh();
-        if (!$this->rawArticle->exists || $this->rawArticle->status !== 'pending') {
+        if (!$this->rawArticle->exists || ($this->rawArticle->status !== 'pending' && !$this->forceReprocess)) {
             Log::info("🛑 ProcessArticleWithAIJob: Aborting execution for RawArticle #{$this->rawArticle->id} because current DB status is '{$this->rawArticle->status}'.");
             return;
         }
