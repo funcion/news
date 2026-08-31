@@ -11,6 +11,16 @@
     @endif
 
     <x-slot:head>
+        @php
+            $loc = app()->getLocale();
+            $fMedia = $article->getFirstMedia("images_{$loc}");
+            $heroPreloadUrl = $fMedia ? $fMedia->getUrl('large') : $article->image_url;
+            $heroPreloadSrcset = $fMedia ? ($fMedia->getSrcset('large') ?? ($fMedia->getUrl('thumb') . ' 480w, ' . $fMedia->getUrl('medium') . ' 800w, ' . $fMedia->getUrl('large') . ' 1200w')) : null;
+        @endphp
+        @if($heroPreloadUrl)
+            <link rel="preload" as="image" href="{{ $heroPreloadUrl }}" @if($heroPreloadSrcset) imagesrcset="{{ $heroPreloadSrcset }}" imagesizes="(max-width: 600px) 100vw, (max-width: 1200px) 800px, 1200px" @endif fetchpriority="high">
+        @endif
+
         <!-- JSON-LD Structured Data -->
         @if(isset($article->ai_metadata['json_ld']))
             <script type="application/ld+json">
