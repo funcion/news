@@ -568,6 +568,17 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         // --- Generate Embedding ---
         $duplicateChecker->generateAndStoreEmbedding($article, $contentEn);
 
+        // --- SEO & IndexNow Real-Time Instant Notification ---
+        if ($article->status === 'published') {
+            \App\Http\Controllers\SitemapController::flushCache();
+            if ($article->slug_en) {
+                \App\Http\Controllers\IndexNowController::ping(url('/' . $article->slug_en));
+            }
+            if ($article->slug_es) {
+                \App\Http\Controllers\IndexNowController::ping(url('/es/' . $article->slug_es));
+            }
+        }
+
         // --- Generate and sync Tags ---
         $extractedTags = $tagService->generateTags($contentEn);
         if (!empty($extractedTags)) {

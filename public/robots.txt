@@ -1,8 +1,9 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /horizon
 Disallow: /horizon/*
 
-Sitemap: /sitemap.xml
+Sitemap: https://glodaxia.com/sitemap.xml
+Sitemap: https://glodaxia.com/sitemap-news.xml
