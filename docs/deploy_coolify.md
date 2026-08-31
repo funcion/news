@@ -212,25 +212,25 @@ HORIZON_PREFIX=glodaxia_horizon:
 # --- WEBSOCKETS (ABLY) ---
 BROADCAST_CONNECTION=ably
 BROADCAST_DRIVER=ably
-ABLY_KEY=ljcq8Q.lmSrNw:RMkrNf6VTUXrJQxjvke7gyrqjIV-5Z6Ov2uNyRON7wI
+ABLY_KEY=<tu_ably_key>
 
 # --- STORAGE R2 CLOUDFLARE ---
 FILESYSTEM_DISK=local
 MEDIA_DISK=r2
 R2_ACCESS_KEY_ID=e01f7d19440820846d99dd24cf00c690
-R2_SECRET_ACCESS_KEY=734cf6c89bce7502cc3f57279803160fcea5f73351485ee8d2cf6f668950bb9e
+R2_SECRET_ACCESS_KEY=<tu_r2_secret_access_key>
 R2_BUCKET=glodaxia-media
 R2_ENDPOINT=https://2f804b6957d992282275865a8626b949.r2.cloudflarestorage.com
 R2_PUBLIC_URL=https://media.glodaxia.com
 CLOUDFLARE_ZONE_ID=a143de8f9ff38c189f40c3456237f771
-CLOUDFLARE_API_TOKEN=cfut_vnMkI1pY1qCg3GlpTi9x1pkKDgRNP5fKoTs4doKJ7ab4c423
+CLOUDFLARE_API_TOKEN=<tu_cloudflare_api_token_cache_purge>
 
 # --- INTELIGENCIA ARTIFICIAL ---
-OPENROUTER_API_KEY=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
+OPENROUTER_API_KEY=<tu_openrouter_api_key>
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-SILICONFLOW_API_KEY=sk-rjxtzmhoryiwftvlvjjvwmlzyvtqmvpekxkhfjjzvchcdzaw
+SILICONFLOW_API_KEY=<tu_siliconflow_api_key>
 SILICONFLOW_IMAGE_MODEL=black-forest-labs/FLUX.1-schnell
-JINA_API_KEY=jina_847316c404d144e88d30a70fee3de8fb_r6yZ2h3PEFYoM0m6JbSqubL5fLc
+JINA_API_KEY=<tu_jina_api_key>
 AI_MODELS_POOL=deepseek/deepseek-v4-flash-0731,qwen/qwen3.7-flash,deepseek/deepseek-chat
 AI_MAX_TOKENS=10000
 AI_CLASSIFICATION_MAX_TOKENS=1500
