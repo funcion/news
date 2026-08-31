@@ -71,20 +71,24 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
         Log::info("Processing RawArticle: {$this->rawArticle->id} (Bilingual EN/ES) at {$today}.");
 
         // --- Guard against incomplete/failed previous attempts ---
-        $existing = Article::where('raw_article_id', $this->rawArticle->id)->first();
-        if ($existing) {
-            $contentEn = $existing->getTranslation('content', 'en');
-            $contentEs = $existing->getTranslation('content', 'es');
-            
-            if ($existing->status === 'published' && !empty($contentEn) && !empty($contentEs)) {
-                Log::warning("RawArticle {$this->rawArticle->id} has already been fully processed and published (Article {$existing->id}). Skipping.");
-                $this->rawArticle->update(['status' => 'processed']);
-                return;
+        if (!$this->forceReprocess) {
+            $existing = Article::where('raw_article_id', $this->rawArticle->id)->first();
+            if ($existing) {
+                $contentEn = $existing->getTranslation('content', 'en');
+                $contentEs = $existing->getTranslation('content', 'es');
+                
+                if ($existing->status === 'published' && !empty($contentEn) && !empty($contentEs)) {
+                    Log::warning("RawArticle {$this->rawArticle->id} has already been fully processed and published (Article {$existing->id}). Skipping.");
+                    $this->rawArticle->update(['status' => 'processed']);
+                    return;
+                }
+                
+                // If it exists but is incomplete (e.g. empty content or still draft), delete it so we can start fresh
+                Log::info("Found incomplete/failed Article {$existing->id} for RawArticle {$this->rawArticle->id}. Deleting to retry fresh.");
+                $existing->delete();
             }
-            
-            // If it exists but is incomplete (e.g. empty content or still draft), delete it so we can start fresh
-            Log::info("Found incomplete/failed Article {$existing->id} for RawArticle {$this->rawArticle->id}. Deleting to retry fresh.");
-            $existing->delete();
+        } else {
+            Log::info("🔄 Force Reprocess active for RawArticle #{$this->rawArticle->id}: bypassing existing published check.");
         }
 
         try {
@@ -103,40 +107,42 @@ class ProcessArticleWithAIJob implements ShouldQueue, ShouldBeUnique
             throw new \Exception("AI classification failed (empty response). Retrying...");
         }
 
-        if (!($classification['is_relevant'] ?? false) && empty($classification['is_seed'])) {
-            $this->rawArticle->update(['status' => 'ignored']);
-            Log::info("RawArticle {$this->rawArticle->id} ignored by AI (not relevant).");
-            return;
-        }
+        if (!$this->forceReprocess) {
+            if (!($classification['is_relevant'] ?? false) && empty($classification['is_seed'])) {
+                $this->rawArticle->update(['status' => 'ignored']);
+                Log::info("RawArticle {$this->rawArticle->id} ignored by AI (not relevant).");
+                return;
+            }
 
-        // --- FILTER: Sensitive / Harmful Content ---
-        if (!empty($classification['is_sensitive']) && $classification['is_sensitive'] === true) {
-            $this->rawArticle->update(['status' => 'ignored']);
-            Log::warning("RawArticle {$this->rawArticle->id} flagged as sensitive content. Blocked.");
-            return;
-        }
+            // --- FILTER: Sensitive / Harmful Content ---
+            if (!empty($classification['is_sensitive']) && $classification['is_sensitive'] === true) {
+                $this->rawArticle->update(['status' => 'ignored']);
+                Log::warning("RawArticle {$this->rawArticle->id} flagged as sensitive content. Blocked.");
+                return;
+            }
 
-        // --- FILTER: Potentially False / Misinformation ---
-        if (!empty($classification['is_potentially_false']) && $classification['is_potentially_false'] === true) {
-            $this->rawArticle->update(['status' => 'ignored']);
-            Log::warning("RawArticle {$this->rawArticle->id} flagged as potentially false/misinformation. Blocked.");
-            return;
-        }
+            // --- FILTER: Potentially False / Misinformation ---
+            if (!empty($classification['is_potentially_false']) && $classification['is_potentially_false'] === true) {
+                $this->rawArticle->update(['status' => 'ignored']);
+                Log::warning("RawArticle {$this->rawArticle->id} flagged as potentially false/misinformation. Blocked.");
+                return;
+            }
 
-        // --- FILTER: Article Age (null-safe for articles without source) ---
-        $source = $this->rawArticle->source;
-        $maxAgeDays = $source?->max_age_days ?? 7;
-        if ($this->rawArticle->published_at && $this->rawArticle->published_at->lt(now()->subDays($maxAgeDays))) {
-            $this->rawArticle->update(['status' => 'ignored']);
-            Log::info("RawArticle {$this->rawArticle->id} rejected: article is {$this->rawArticle->published_at->diffForHumans()}, max age is {$maxAgeDays} days.");
-            return;
-        }
+            // --- FILTER: Article Age (null-safe for articles without source) ---
+            $source = $this->rawArticle->source;
+            $maxAgeDays = $source?->max_age_days ?? 7;
+            if ($this->rawArticle->published_at && $this->rawArticle->published_at->lt(now()->subDays($maxAgeDays))) {
+                $this->rawArticle->update(['status' => 'ignored']);
+                Log::info("RawArticle {$this->rawArticle->id} rejected: article is {$this->rawArticle->published_at->diffForHumans()}, max age is {$maxAgeDays} days.");
+                return;
+            }
 
-        // --- FILTER: Source Trust (null-safe — no source = trusted by default) ---
-        if ($source && !$source->trusted && $source->score < 50) {
-            $this->rawArticle->update(['status' => 'ignored']);
-            Log::warning("RawArticle {$this->rawArticle->id} rejected: untrusted source with low score ({$source->score}).");
-            return;
+            // --- FILTER: Source Trust (null-safe — no source = trusted by default) ---
+            if ($source && !$source->trusted && $source->score < 50) {
+                $this->rawArticle->update(['status' => 'ignored']);
+                Log::warning("RawArticle {$this->rawArticle->id} rejected: untrusted source with low score ({$source->score}).");
+                return;
+            }
         }
 
         // Extract category for partitioned semantic check (Optimized JSONB search)

@@ -442,22 +442,29 @@ class ArticleResource extends Resource
                     ->disabled(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}"))
                     ->tooltip(fn (Article $record) => \Illuminate\Support\Facades\Cache::has("article_full_reprocessing_{$record->id}") ? '⏳ Reescribiendo noticia e imágenes completas con IA en segundo plano...' : '🔄 Reprocesar Noticia Completa (1 Clic directo a la cola)')
                     ->action(function (Article $record) {
-                        if ($record->rawArticle) {
-                            \Illuminate\Support\Facades\Cache::put("article_full_reprocessing_{$record->id}", true, now()->addMinutes(5));
-                            $record->rawArticle->update(['status' => 'pending']);
-                            \App\Jobs\ProcessArticleWithAIJob::dispatch($record->rawArticle, true);
-                            
-                            \Filament\Notifications\Notification::make()
-                                ->title('🔄 Noticia enviada a la cola de IA')
-                                ->body('El artículo y sus imágenes se están reescribiendo en segundo plano.')
-                                ->info()
-                                ->send();
-                        } else {
-                            \Filament\Notifications\Notification::make()
-                                ->title('No se encontró el registro original (RawArticle)')
-                                ->danger()
-                                ->send();
+                        $rawArticle = $record->rawArticle;
+                        if (!$rawArticle) {
+                            $rawArticle = \App\Models\RawArticle::create([
+                                'title' => $record->getTranslation('title', 'en') ?: $record->getTranslation('title', 'es') ?: 'Tech News',
+                                'content' => $record->getTranslation('content', 'es') ?: $record->getTranslation('content', 'en') ?: ($record->excerpt ?? ''),
+                                'summary' => $record->excerpt ?? '',
+                                'url' => $record->ai_metadata['origin_url'] ?? url('/' . ($record->slug_en ?? $record->slug_es)),
+                                'status' => 'pending',
+                                'published_at' => $record->published_at ?? now(),
+                            ]);
+                            $record->raw_article_id = $rawArticle->id;
+                            $record->save();
                         }
+
+                        \Illuminate\Support\Facades\Cache::put("article_full_reprocessing_{$record->id}", true, now()->addMinutes(5));
+                        $rawArticle->update(['status' => 'pending']);
+                        \App\Jobs\ProcessArticleWithAIJob::dispatch($rawArticle, true);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('🔄 Noticia enviada a la cola de IA')
+                            ->body('El artículo se está reescribiendo y traduciendo completamente en segundo plano.')
+                            ->success()
+                            ->send();
                     }),
 
                 \Filament\Actions\ActionGroup::make([
