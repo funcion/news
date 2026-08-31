@@ -16,7 +16,7 @@ return array (
   'contact_us' => 'Contáctanos',
   'contact_title' => 'Contáctanos',
   'contact_subtitle' => '¿Tienes alguna pregunta, sugerencia o primicia? Nuestro equipo está listo para escucharte.',
-  'editorial_disclosure_footer' => 'En Glodaxia exploramos el futuro de la tecnología con pasión, criterio humano y honestidad. Acercamos la innovación a las personas mediante historias y análisis claros, rigurosos y respaldados por tecnología de vanguardia.',
+  'editorial_disclosure_footer' => 'En Glodaxia vamos más allá del titular. Analizamos las noticias de tecnología, compartimos opiniones y puntos de vista claros, y explicamos la complejidad de la innovación digital de forma sencilla, humana y accesible para todos.',
   'legal_nav' => 'Legal y Transparencia',
   'privacy_policy' => 'Política de Privacidad',
   'terms_of_service' => 'Términos y Condiciones',

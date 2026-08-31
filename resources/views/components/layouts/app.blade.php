@@ -663,7 +663,7 @@
                             <li><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl('/login') }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-block">{{ __('ui.auth_sign_in_button') }}</a></li>
                         @endauth
                         <li>
-                            <a href="{{ route('sitemap') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                            <a href="{{ route('sitemap') }}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
                                 {{ __('ui.sitemap_xml') }}
                                 <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -671,7 +671,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('sitemap.news') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                            <a href="{{ route('sitemap.news') }}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
                                 {{ __('ui.google_news_sitemap') }}
                                 <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -679,7 +679,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('feed') }}" target="_blank" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
+                            <a href="{{ route('feed') }}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors inline-flex items-center gap-1.5">
                                 {{ __('ui.rss_feed') }}
                                 <svg width="14" height="14" style="width: 14px; height: 14px; min-width: 14px; opacity: 0.6; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>

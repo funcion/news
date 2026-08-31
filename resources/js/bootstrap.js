@@ -36,7 +36,7 @@ if (rawAblyKey) {
         enabledTransports: ['ws', 'wss'],
     });
 } else {
-    console.warn('Ably configuration not found. Realtime connections disabled.');
+    // Ably optional in public views
     window.Echo = {
         channel: () => ({ listen: () => ({}) }),
         private: () => ({ listen: () => ({}) }),
@@ -57,5 +57,5 @@ Alpine.plugin(focus);
 // Iniciar Alpine.js cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     Alpine.start();
-    console.log('Alpine.js started successfully');
+    
 });

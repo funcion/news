@@ -159,7 +159,7 @@
                 @endphp
 
                 @foreach($platforms as $p)
-                    <a href="{{ $p['url'] }}" target="_blank" 
+                    <a href="{{ $p['url'] }}" target="_blank" rel="noopener noreferrer" 
                        class="{{ $p['bg'] }} h-12 w-12 flex items-center justify-center rounded-lg text-white hover:scale-110 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-black/10 group" 
                        title="{{ $p['id'] }}">
                         <svg aria-hidden="true"  class="h-6 w-6 {{ $p['id'] === 'em' ? '' : 'fill-current' }} group-hover:drop-shadow-md" {!! $p['id'] === 'em' ? 'fill="none" stroke="currentColor"' : '' !!} viewBox="0 0 24 24">
